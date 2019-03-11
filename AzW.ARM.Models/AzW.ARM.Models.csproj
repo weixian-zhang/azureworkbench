@@ -1,0 +1,87 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="AppService\**" />
+    <Compile Remove="BatchAI\**" />
+    <Compile Remove="Batch\**" />
+    <Compile Remove="Cdn\**" />
+    <Compile Remove="Compute\**" />
+    <Compile Remove="ContainerInstance\**" />
+    <Compile Remove="ContainerRegistry\**" />
+    <Compile Remove="ContainerService\**" />
+    <Compile Remove="CosmosDB\**" />
+    <Compile Remove="Dns\**" />
+    <Compile Remove="EventHub\**" />
+    <Compile Remove="Graph.RBAC\**" />
+    <Compile Remove="KeyVault\**" />
+    <Compile Remove="Locks\**" />
+    <Compile Remove="Monitor\**" />
+    <Compile Remove="Msi\**" />
+    <Compile Remove="Network\**" />
+    <Compile Remove="RedisCache\**" />
+    <Compile Remove="ResourceManager\**" />
+    <Compile Remove="Search\**" />
+    <Compile Remove="ServiceBus\**" />
+    <Compile Remove="Sql\**" />
+    <Compile Remove="Storage\**" />
+    <Compile Remove="TrafficManager\**" />
+    <EmbeddedResource Remove="AppService\**" />
+    <EmbeddedResource Remove="BatchAI\**" />
+    <EmbeddedResource Remove="Batch\**" />
+    <EmbeddedResource Remove="Cdn\**" />
+    <EmbeddedResource Remove="Compute\**" />
+    <EmbeddedResource Remove="ContainerInstance\**" />
+    <EmbeddedResource Remove="ContainerRegistry\**" />
+    <EmbeddedResource Remove="ContainerService\**" />
+    <EmbeddedResource Remove="CosmosDB\**" />
+    <EmbeddedResource Remove="Dns\**" />
+    <EmbeddedResource Remove="EventHub\**" />
+    <EmbeddedResource Remove="Graph.RBAC\**" />
+    <EmbeddedResource Remove="KeyVault\**" />
+    <EmbeddedResource Remove="Locks\**" />
+    <EmbeddedResource Remove="Monitor\**" />
+    <EmbeddedResource Remove="Msi\**" />
+    <EmbeddedResource Remove="Network\**" />
+    <EmbeddedResource Remove="RedisCache\**" />
+    <EmbeddedResource Remove="ResourceManager\**" />
+    <EmbeddedResource Remove="Search\**" />
+    <EmbeddedResource Remove="ServiceBus\**" />
+    <EmbeddedResource Remove="Sql\**" />
+    <EmbeddedResource Remove="Storage\**" />
+    <EmbeddedResource Remove="TrafficManager\**" />
+    <None Remove="AppService\**" />
+    <None Remove="BatchAI\**" />
+    <None Remove="Batch\**" />
+    <None Remove="Cdn\**" />
+    <None Remove="Compute\**" />
+    <None Remove="ContainerInstance\**" />
+    <None Remove="ContainerRegistry\**" />
+    <None Remove="ContainerService\**" />
+    <None Remove="CosmosDB\**" />
+    <None Remove="Dns\**" />
+    <None Remove="EventHub\**" />
+    <None Remove="Graph.RBAC\**" />
+    <None Remove="KeyVault\**" />
+    <None Remove="Locks\**" />
+    <None Remove="Monitor\**" />
+    <None Remove="Msi\**" />
+    <None Remove="Network\**" />
+    <None Remove="RedisCache\**" />
+    <None Remove="ResourceManager\**" />
+    <None Remove="Search\**" />
+    <None Remove="ServiceBus\**" />
+    <None Remove="Sql\**" />
+    <None Remove="Storage\**" />
+    <None Remove="TrafficManager\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.18" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+  </ItemGroup>
+
+</Project>
