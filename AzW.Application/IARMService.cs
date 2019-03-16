@@ -4,6 +4,7 @@ using Microsoft.Azure.Management.ResourceManager.Fluent;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace AzW.Application
 {
@@ -13,6 +14,8 @@ namespace AzW.Application
 
         IEnumerable<AzResourceGroup> GetResourceGroups();
 
-        IEnumerable<string> GetLocations();
+        IEnumerable<string> GetRegions();
+
+        Task<IEnumerable<VMImage>> GetVMImagesAsync(string region);
     }
 }

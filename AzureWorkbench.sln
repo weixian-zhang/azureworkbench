@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzW.Visualizer", "AzW.Visua
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzW.Model", "AzW.Model\AzW.Model.csproj", "{8DC8A585-AEC0-45C8-A059-168625C7575C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzW.Infrastructure", "AzW.Infrastructure\AzW.Infrastructure.csproj", "{C81666EA-92AB-48BA-9DEB-9E25C7A43BD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzW.Infrastructure", "AzW.Infrastructure\AzW.Infrastructure.csproj", "{C81666EA-92AB-48BA-9DEB-9E25C7A43BD9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzW.Cache", "AzW.Cache\AzW.Cache.csproj", "{1EF4CC98-A297-47C1-B7FA-07E886A3B720}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{C81666EA-92AB-48BA-9DEB-9E25C7A43BD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C81666EA-92AB-48BA-9DEB-9E25C7A43BD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C81666EA-92AB-48BA-9DEB-9E25C7A43BD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EF4CC98-A297-47C1-B7FA-07E886A3B720}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EF4CC98-A297-47C1-B7FA-07E886A3B720}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EF4CC98-A297-47C1-B7FA-07E886A3B720}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EF4CC98-A297-47C1-B7FA-07E886A3B720}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -61,6 +67,7 @@ Global
 		{868EDF95-F652-40A1-978E-95C4AEC1F074} = {5C61537B-C44C-4BA0-A3FD-1C99765CA561}
 		{C4A4B498-945B-48ED-8481-F32A1911A17B} = {2DB9AE54-4819-4154-85F2-62CCF92CB53F}
 		{C81666EA-92AB-48BA-9DEB-9E25C7A43BD9} = {11B4CCF3-6169-4BC4-999D-9BB2C4A73123}
+		{1EF4CC98-A297-47C1-B7FA-07E886A3B720} = {11B4CCF3-6169-4BC4-999D-9BB2C4A73123}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C4C3851F-205D-421C-800F-9E6DE720B8EE}

@@ -32,6 +32,8 @@ namespace AzW.Designer
                     Publisher = "MicrosoftWindowsServer"
                 });
 
+            
+
         }
 
         private IAzure _azure;

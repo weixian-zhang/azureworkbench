@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using AutoMapper;
 using AzW.Designer;
 using AzW.Model;
@@ -36,11 +37,14 @@ namespace AzW.Application
             return subscriptionList;
         }
 
-        public IEnumerable<string> GetLocations()
+        public IEnumerable<string> GetRegions()
         {
-           var result = PSManager.ExecuteCmdlet("Get-AzureRmLocation");
+            return _armManager.GetRegions();
+        }
 
-            return null;
+        public async Task<IEnumerable<VMImage>> GetVMImagesAsync(string region)
+        {
+            return await _armManager.GetVMImagesAsync(region);
         }
 
         private IAzure _azure;

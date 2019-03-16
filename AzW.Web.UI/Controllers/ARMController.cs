@@ -1,10 +1,12 @@
 using AzW.Application;
 using AzW.Model;
+using AzW.Model.Designer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AzW.Web.UI.Controllers
 {
@@ -39,7 +41,13 @@ namespace AzW.Web.UI.Controllers
         [Route("loc")]
         public IEnumerable<string> GetLocations()
         {
-            return _armService.GetLocations();
+            return _armService.GetRegions();
+        }
+
+        [Route("vmimgs")]
+        public async Task<IEnumerable<VMImage>> GetVMImages(string region)
+        {
+            return await _armService.GetVMImagesAsync(region);
         }
 
         private IHttpContextAccessor _httpcontext;

@@ -36,6 +36,30 @@
                             <v-flex xs12 sm6 md4>
                                 <v-text-field label="Admin Password" required v-model="vmContext.AdminPassword"></v-text-field>
                             </v-flex>
+                            <v-flex xs12 sm6 md4>
+                                <v-select
+                                :items="vmImagePublisher"
+                                label="Image Publisher"
+                                required></v-select>
+                            </v-flex>
+                            <v-flex xs12 sm6 md4>
+                                <v-select
+                                :items="vmImageOffer"
+                                label="Image Offer"
+                                required></v-select>
+                            </v-flex>
+                            <v-flex xs12 sm6 md4>
+                                <v-select
+                                :items="vmImageSku"
+                                label="Image Sku"
+                                required></v-select>
+                            </v-flex>
+                            <v-flex xs12 sm6 md4>
+                                <v-select
+                                :items="vmImageVersion"
+                                label="Image Version"
+                                required></v-select>
+                            </v-flex>
                         </v-layout>
                     </v-container>
                     <small>*indicates required field</small>
@@ -62,7 +86,12 @@
       data () {
           return {
               openDialog: false,
-              vmContext: null
+              vmContext: null,
+              regions: null,
+              vmImagePublisher: null,
+              vmImageOffer: null,
+              vmImageSku: null,
+              vmImageVersion: null
           }
       },
 
