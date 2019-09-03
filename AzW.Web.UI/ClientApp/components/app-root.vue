@@ -6,12 +6,6 @@
       <v-btn flat to="/designer">
             Designer
       </v-btn>
-       <v-btn flat to="/visualizer">
-            Visualizer
-      </v-btn>
-      <v-btn flat to="/commcenter">
-            Command Center
-      </v-btn>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-sm-and-down">
         <!--subscription -->

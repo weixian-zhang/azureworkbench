@@ -9,6 +9,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.12",
     "@fortawesome/free-solid-svg-icons": "^5.6.3",
+    "bootstrap": "4.3.1",
     "axios": "^0.18.0",
     "core-js": "^2.5.3",
     "cuid": "^2.1.4",
@@ -65,9 +66,9 @@
     "vue-cli-plugin-vuetify": "^0.4.6",
     "vue-loader": "^14.2.2",
     "vuetify-loader": "^1.0.5",
-    "webpack": "^2.7.0",
-    "webpack-cli": "^3.1.2",
-    "webpack-hot-middleware": "^2.21.2"
+    "webpack": "4.39.3",
+    "webpack-cli": "3.3.7",
+    "webpack-hot-middleware": "2.25.0"
   },
   "license": "MIT",
   "repository": {
