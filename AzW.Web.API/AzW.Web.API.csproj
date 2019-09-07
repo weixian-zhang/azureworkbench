@@ -5,6 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AzW.Application\AzW.Application.csproj" />
+    <ProjectReference Include="..\AzW.Secret\AzW.Secret.csproj" />
+    <ProjectReference Include="..\AzW.Dto\AzW.Dto.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,54 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using AzW.Designer;
-using AzW.Model;
-using AzW.Model.Designer;
-using Microsoft.Azure.Management.Fluent;
-using Microsoft.Azure.Management.ResourceManager.Fluent;
+using AzW.Dto;
+using Microsoft.Azure.Management;
+using Microsoft.Azure.Management.ResourceManager;
 
 namespace AzW.Application
 {
     public class ARMService : IARMService
     {
-        public ARMService(IARMManager armManager, IMapper mapper)
+        public ARMService(IMapper mapper)
         {  
-            _armManager = armManager;
             _mapper = mapper;
         }
 
         public IEnumerable<AzResourceGroup> GetResourceGroups()
         {
-           IEnumerable<IResourceGroup> irscgroups = _armManager.GetResourceGroups();
-
-            var rgList = _mapper.Map<List<AzResourceGroup>>(irscgroups);
-
-            return rgList;
+            //HttpClient c = new HttpClient(new HttpClientHandler({Credentials = new Credentials});
+            ISubscriptionClient subClient = new SubscriptionClient(null);
+        
+           return null;
         }
 
         public IEnumerable<AzSubscription> GetSubscriptions()
         {
-            var isubscriptions = _armManager.GetSubscriptions();
-
-            var subscriptionList = _mapper.Map<List<AzSubscription>>(isubscriptions);
-
-            return subscriptionList;
+            return null;
         }
 
-        public IEnumerable<string> GetRegions()
-        {
-            return _armManager.GetRegions();
-        }
-
-        public async Task<IEnumerable<VMImage>> GetVMImagesAsync(string region)
-        {
-            return await _armManager.GetVMImagesAsync(region);
-        }
-
-        private IAzure _azure;
-        private IARMManager _armManager;
         private SignInContext _signinContext;
         private readonly IMapper _mapper;
     }

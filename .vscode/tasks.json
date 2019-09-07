@@ -2,6 +2,45 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "build AzW.Application",
+            "command": "dotnet build",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/AzW.Application",
+                "env": {
+                    "ASPNETCORE_ENVIRONMENT": "Development"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "build AzW.Dto",
+            "command": "dotnet build",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/AzW.Dto",
+                "env": {
+                    "ASPNETCORE_ENVIRONMENT": "Development"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "build AzW.Secret",
+            "command": "dotnet build",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/AzW.Secret",
+                "env": {
+                    "ASPNETCORE_ENVIRONMENT": "Development"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
             "label": "build API",
             "command": "dotnet build",
             "type": "shell",
