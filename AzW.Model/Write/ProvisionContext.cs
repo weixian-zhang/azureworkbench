@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AzW.Dto
+namespace AzW.Model
 {
     public class ProvisionContext
     {
@@ -11,7 +11,5 @@ namespace AzW.Dto
         public string SubscriptionName { get; set; }
 
         public string ResourceGroupName { get; set; }
-
-        public IEnumerable<ResourceIcon> ResourceIcons { get; set; }
     }
 }

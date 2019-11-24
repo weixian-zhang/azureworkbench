@@ -1,42 +1,44 @@
 using AzW.Application;
 using AzW.Dto;
+using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace AzW.Web.UI.Controllers
+namespace AzW.Web.API
 {
     //ARM APIs get subscriptions, Resource Groups and other information based on
     //users' RBAC
     [Authorize]
-    [Route("arm")]
-    public class ARMController : Controller
+    [Route("api/arm")]
+    public class ArmController : BaseController
     {
-        public ARMController(IAzService azservice)
+        public ArmController(WorkbenchSecret secrets) : base(secrets)
         {
-            //_httpcontext = httpContext;
-            _azsvc = azservice;
+          
         }
 
-        [Authorize]
-        [HttpGet("scrp")]
+        [Authorize(AuthenticationSchemes = AzureADDefaults.BearerAuthenticationScheme)]
+        [HttpGet("sub")]
         public JsonResult GetSubscriptions()
         {
-            var subscriptions = _azsvc.ArmService.GetSubscriptions();
+            //var subscriptions = _azsvc.ArmService.GetSubscriptions();
 
-            return new JsonResult(subscriptions);
+            return null; //new JsonResult(subscriptions);
         }
 
         [Authorize]
         [HttpGet("rg")]
         public JsonResult GetSResourceGroups()
         {
-            var resourceGroups = _azsvc.ArmService.GetResourceGroups();
+            //var resourceGroups = _azsvc.ArmService.GetResourceGroups();
 
-            return new JsonResult(resourceGroups);
+            return new JsonResult(null);
         }
 
         [Route("loc")]
@@ -44,13 +46,6 @@ namespace AzW.Web.UI.Controllers
         {
             return null;
             //return _armService.GetRegions();
-        }
-
-        [Route("vmimgs")]
-        public async Task<IEnumerable<VMImage>> GetVMImages(string region)
-        {
-            return null;
-            //return await _armService.GetVMImagesAsync(region);
         }
 
         private IHttpContextAccessor _httpcontext;

@@ -4,6 +4,6 @@ namespace AzW.Secret
 {
     public interface ISecretManager
     {
-        AzSecret GetSecret();
+        T GetSecret<T>() where T : class;
     }
 }

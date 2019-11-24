@@ -1,3 +1,5 @@
+using System;
+using System.ComponentModel;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.UserSecrets;
 
@@ -7,20 +9,23 @@ namespace AzW.Secret
     {
         public static IConfigurationRoot Configuration { get; set; }
         
-        public AzSecret GetSecret()
+        public T GetSecret<T>() where T : class
         {
             var builder = new ConfigurationBuilder();
-            builder.AddUserSecrets<AzSecret>();
+            builder.AddUserSecrets<T>();
             Configuration = builder.Build();
 
-            return new AzSecret()
+            var secret = Activator.CreateInstance(typeof(T));
+            PropertyDescriptorCollection props = TypeDescriptor.GetProperties(secret);
+
+            foreach (PropertyDescriptor pd in props)
             {
-                ClientId = Configuration["ClientId"],
-                ClientSecret = Configuration["ClientSecret"],
-                TenantId = Configuration["TenantId"],
-                AzSQLConnectionString = Configuration["AzSQLConnectionString"],
+               string envSecret = Configuration[pd.Name];
+
+                pd.SetValue(secret, envSecret);
             };
-            
+
+            return (T)secret;
         }
     }
 }

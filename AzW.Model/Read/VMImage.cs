@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace AzW.Dto
+namespace AzW.Model
 {
     public class VMImage
     {

@@ -8,10 +8,10 @@ namespace AzW.Secret
         {
             string env = Environment.GetEnvironmentVariable("env");
 
-            if(env == "dev")
+            if(string.IsNullOrEmpty(env) || env == "dev")
                 return new DoNetCoreSecretManager();
             else
-                return new AppSvcSettingsSecretManager();
+                return new EnvironmentVariableSecretManager();
         }
     }
 }

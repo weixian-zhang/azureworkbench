@@ -5,17 +5,34 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "debug blazor",
+            "name": "Debug API",
             "type": "coreclr",
             "request": "launch",
-            "pipeTransport": {
-                "pipeCwd": "dotnet run --Configuration Debug",
-                "pipeProgram": "enter the fully qualified path for the pipe program name, for example '/usr/bin/ssh'",
-                "pipeArgs": ["--Configuration"],
-                "debuggerPath": "enter the path for the debugger on the target machine, for example ~/vsdbg/vsdbg"
-            },
+            "preLaunchTask": "build API",
+            "program": "${workspaceFolder}/AzW.Web.API/bin/Debug/netcoreapp3.0/AzW.Web.API.exe",
             "args": [],
-            "cwd": "${workspaceFolder}/AzW.Web.UI",
+            "cwd": "${workspaceRoot}",
+            "stopAtEntry": false,
+            "launchBrowser": {
+                "enabled": true,
+                "args": "${auto-detect-url}",
+                "windows": {
+                    "command": "cmd.exe",
+                    "args": "/C start ${auto-detect-url}"
+                },
+                "osx": {
+                    "command": "open"
+                },
+                "linux": {
+                    "command": "xdg-open"
+                }
+            },
+            "env": {
+                "env": "dev"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceRoot}/Views"
+            }
         },
         {
             "name": ".NET Core Attach",

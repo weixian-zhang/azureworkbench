@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
+﻿using AzW.Secret;
+using Microsoft.Identity.Client;
 using Microsoft.Rest;
 using System;
 using System.Collections.Generic;
@@ -8,12 +9,16 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+
 namespace AzW.Application
 {
     public class AzSDKCredentials : ServiceClientCredentials
     {
-        public AzSDKCredentials(string tenantId, string clientId, string clientSecret)
+        //for on-behalf-of oauth flow
+        public AzSDKCredentials
+            (string accessToken, string tenantId, string clientId, string clientSecret)
         {
+            _delegatedUserContextAccessToken = accessToken;
             _tenantId = tenantId;
             _clientId = clientId;
             _clientSecret = clientSecret;
@@ -25,19 +30,29 @@ namespace AzW.Application
 
         public override void InitializeServiceClient<T>(ServiceClient<T> client)
         {
-            var authenticationContext =
-                new AuthenticationContext($"https://login.windows.net/{_tenantId}");
+            //https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/on-behalf-of
 
-            var credential = new ClientCredential(clientId: _clientId, clientSecret: _clientSecret);
+            IConfidentialClientApplication confiApp =
+                ConfidentialClientApplicationBuilder.Create(_clientId)
+                .WithClientSecret(_clientSecret)
+                .Build();
+            
+            var userAssertion =
+                new UserAssertion(_delegatedUserContextAccessToken, "urn:ietf:params:oauth:grant-type:jwt-bearer");
+            
+            IEnumerable<string> requestedScopes = new List<string>()
+            {
+                {"https://management.core.windows.net//.default"}
+            };
 
-            var result = authenticationContext.AcquireTokenAsync
-                (resource: "https://management.core.windows.net/",
-                    clientCredential: credential).GetAwaiter().GetResult();
+            AuthenticationResult result = confiApp
+                .AcquireTokenOnBehalfOf(requestedScopes, userAssertion)
+                .ExecuteAsync()
+                .GetAwaiter()
+                .GetResult();
 
             if (result == null)
-            {
                 throw new InvalidOperationException("Failed to obtain the JWT token");
-            }
 
             AuthenticationToken = result.AccessToken;
         }
@@ -51,17 +66,16 @@ namespace AzW.Application
 
             if (AuthenticationToken == null)
             {
-                throw new InvalidOperationException("Token Provider Cannot Be Null");
+                throw new InvalidOperationException("Access Token Cannot Be Null");
             }
 
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", AuthenticationToken);
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            //request.Version = new Version(apiVersion);
+            
             await base.ProcessHttpRequestAsync(request, cancellationToken);
 
         }
-
+        private string _delegatedUserContextAccessToken;
         private string _tenantId;
         private string _clientId;
         private string _clientSecret;

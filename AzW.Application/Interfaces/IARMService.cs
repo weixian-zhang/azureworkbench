@@ -1,4 +1,4 @@
-﻿using AzW.Dto;
+﻿using AzW.Model;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
 using System;
 using System.Collections.Generic;
@@ -9,8 +9,6 @@ namespace AzW.Application
 {
     public interface IARMService
     {
-        IEnumerable<AzSubscription> GetSubscriptions();
-
-        IEnumerable<AzResourceGroup> GetResourceGroups();
+        Task<IEnumerable<AzSubscription>> GetSubscriptions();
     }
 }

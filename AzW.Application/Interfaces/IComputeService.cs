@@ -1,7 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AzW.Dto;
+using AzW.Model;
 
 namespace AzW.Application
 {

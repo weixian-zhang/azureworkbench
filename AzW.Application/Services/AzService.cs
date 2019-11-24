@@ -1,15 +1,9 @@
-using AzW.Secret;
-
 namespace AzW.Application
 {
-    public interface IAzService
+    public class AzService : IAzService
     {
-        //IAzService Auth(WorkbenchSecret secret);
-
         public IARMService ArmService { get; set; }
-
         public IComputeService ComputeService { get; set; }
-
         public IDeployService DeployService { get; set; }
     }
 }

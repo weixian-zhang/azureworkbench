@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AzW.Dto;
+using AzW.Model;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AzW.Web.UI.Controllers
 {
     [Authorize]
-    [Route("provisioner")]
+    [Route("api")]
     public class ProvisionController : Controller
     {
         public ProvisionController()

@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AzW.Dto
+namespace AzW.Model
 {
-    public class VirtualMachine : ResourceContext
+    public class VirtualMachine
     {
         //https://docs.microsoft.com/en-us/dotnet/api/overview/azure/?view=azure-dotnet
         
