@@ -4,17 +4,18 @@
     <UserSecretsId>7211aa50-115d-4544-9cf0-c4499c5f2e9f</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AzW.Secret\AzW.Secret.csproj"/>
-    <ProjectReference Include="..\AzW.Model\AzW.Model.csproj"/>
-    <ProjectReference Include="..\AzW.Application\AzW.Application.csproj"/>
+    <ProjectReference Include="..\AzW.Secret\AzW.Secret.csproj" />
+    <ProjectReference Include="..\AzW.Model\AzW.Model.csproj" />
+    <ProjectReference Include="..\AzW.Application\AzW.Application.csproj" />
+    <ProjectReference Include="..\AzW.Infrastructure.Azure\AzW.Infrastructure.Azure.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.5.0"/>
-    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="3.0.0-preview9.19424.4"/>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.0.0"/>
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.0.0-rc4"/>
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0-preview8.19405.4"/>
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.0.0-preview8.19405.4"/>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="3.0.0"/>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="3.0.0-preview9.19424.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.0.0-rc4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0-preview8.19405.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.0.0-preview8.19405.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="3.0.0" />
   </ItemGroup>
 </Project>

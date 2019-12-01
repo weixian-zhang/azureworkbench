@@ -15,11 +15,12 @@ public static class ObjectMapper
     {
         CreateMap();
     }
+    
     private static void CreateMap()
     {
         AutoMapper.Mapper.Initialize(cfg =>
         {
-            //cfg.CreateMap<Subscription, AzSubscription>();
+            cfg.CreateMap<Subscription, AzSubscription>();
         });
     }
 }

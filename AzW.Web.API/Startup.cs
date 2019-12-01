@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using AzW.Application;
+using System.IdentityModel.Tokens.Jwt;
+using AzW.Infrastructure;
 
 namespace AzW.Web.API
 {
@@ -34,18 +36,25 @@ namespace AzW.Web.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            InitSecrets();
-
             services.AddControllers();
 
             services.AddSwaggerGen();
-            
-            services.AddSingleton<WorkbenchSecret>(sp => {return _secrets; });
+
+            InitSecrets();
+
+            ConfigureAzureAdAuth(services);
+
+            ConfigureDependencies(services);
 
             //https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki/How-ASP.NET-Core-uses-Microsoft.IdentityModel-extensions-for-.NET
 
             //https://docs.microsoft.com/en-us/azure/active-directory/develop/scenario-protected-web-api-app-configuration
             
+            
+        }
+
+        private void ConfigureAzureAdAuth(IServiceCollection services)
+        {
             services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
             .AddAzureADBearer(options => Configuration.Bind("AzureAd", options));
             
@@ -60,80 +69,74 @@ namespace AzW.Web.API
                     options.Audience,
                     $"api://{options.Audience}"
                 };
-            
-            options.TokenValidationParameters.ValidateIssuer = false;
+                options.TokenValidationParameters.ValidateIssuer = false;
+                options.SaveToken = true;
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = context =>
+                    {
+                        var jwtToken = context.SecurityToken as JwtSecurityToken;
+                        string accessToken = jwtToken.RawData;
+
+                        var ui = new UserIdentity()
+                        {
+                            AccessToken = accessToken
+                        };
+
+                        context.Principal.AddIdentity(ui);
+                        
+
+                        //log to DB signin info
+                        // Add the access_token as a claim, as we may actually need it
 
 
+                        // if (accessToken != null)
+                        // {
+                        //     ClaimsIdentity identity = context.Ticket.Principal.Identity as ClaimsIdentity;
+                        //     if (identity != null)
+                        //     {
+                        //         identity.AddClaim(new Claim("access_token", accessToken.RawData));
+                        //     }
+                        // }
+
+                        return Task.CompletedTask;
+                    }
+                };
                 // Instead of using the default validation (validating against a single tenant,
                 // as we do in line-of-business apps),
                 // we inject our own multitenant validation logic (which even accepts both v1 and v2 tokens).
                 //options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(options.Authority).Validate;
             });
+        }
+
+        private void ConfigureDependencies(IServiceCollection services)
+        {
+            var apiSecret = new ApiSecret()
+                    {
+                        AzCosmonMongoConnectionString = _secrets.AzCosmonMongoConnectionString,
+                        ClientId = _secrets.ClientId,
+                        ClientSecret = _secrets.ClientSecret,
+                        TenantId = _secrets.TenantId
+                    };
             
-            
-            
-            // .AddJwtBearer(opt => {
-            //     opt.SaveToken = true;
-            //     opt.MetadataAddress = "https://login.microsoftonline.com/organizations/v2.0/.well-known/openid-configuration";
-            //     opt.Audience = azadOptions.ClientId;
-            //     opt.Authority = "https://login.microsoftonline.com/common/v2.0";
-            //     opt.TokenValidationParameters.ValidateIssuer = false;
-            //     opt.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey
-            //                  (Encoding.ASCII.GetBytes(""));
+            services.AddSingleton<ApiSecret>(sp => {return apiSecret ;} );
 
-                // opt.TokenValidationParameters.   = new TokenValidationParameters
-                //     {
-                //         RequireSignedTokens = false,
-                //         ValidateIssuerSigningKey = false,
-                //         ValidateLifetime = true,
-                //         ValidateAudience = false,
-                //         ValidateIssuer = false,
-                //         IssuerSigningKey = new SymmetricSecurityKey
-                //             (Encoding.ASCII.GetBytes(azadOptions.ClientSecret)),
-                //         ValidAudiences = new List<string>
-                //         {
-                //             azadOptions.ClientId
-                //         },
-                //     } ;
-                
-                // opt.Events = new JwtBearerEvents()
-                // {
-                //     OnTokenValidated = context =>
-                //             {
-                //                 Console.WriteLine("OnTokenValidated: " + 
-                //                     context.SecurityToken);
-                //                 return Task.CompletedTask;
-                //             },
-                    
-                //     OnAuthenticationFailed = context => 
-                //     {
-                        
-                //         return null;
-                //     }
-                    
-                // };
-            //});
+            // var _azSdkCred = new AzSDKCredentials
+            //     (_secrets.AccessToken, _secrets.TenantId, _secrets.ClientId, _secrets.ClientSecret);
 
-            // ISecretManager secretManager = SecretManagerFactory.Create();
-            // services.AddSingleton<ISecretManager>(secretManager);
+            // services.AddTransient<IAzArmService>(sp => {
+            //     return new AzArmService(_azSdkCred);
+            // });
 
-//             services.AddScoped<IReportService>(provider => {
-//     var httpContext = provider.GetRequired<IHttpContextAccessor>().HttpContext;
+            // services.AddTransient<IAzureInfoService>(sp => {
+            //     return new AzureInfoService(new AzArmService(_azSdkCred));
+            // });
 
-//     if(httpContext.User.IsAuthorized) 
-//     {
-//         return new AuthorizedUserReportService(...);
-//         // or resolve it provider.GetService<AuthorizedUserReportService>()
-//     }
-
-//     return new AnonymousUserReportService(...);
-//     // or resolve it provider.GetService<AnonymousUserReportService>()
-// });
         }
 
         private void InitSecrets()
         {
-            _secrets = SecretManagerFactory.Create().GetSecret<WorkbenchSecret>();
+            _secrets = SecretManagerFactory.Create().GetSecret<ApiSecret>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -162,6 +165,6 @@ namespace AzW.Web.API
             
         }
 
-        private WorkbenchSecret _secrets;
+        private ApiSecret _secrets;
     }
 }

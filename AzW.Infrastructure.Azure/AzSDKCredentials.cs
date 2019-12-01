@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 
-namespace AzW.Application
+namespace AzW.Infrastructure
 {
     public class AzSDKCredentials : ServiceClientCredentials
     {
@@ -24,37 +24,45 @@ namespace AzW.Application
             _clientSecret = clientSecret;
         }
 
-        public string AccessToken { get { return AuthenticationToken; } }
+        public string AccessToken { get { return _delegatedUserContextAccessToken; } }
 
         private string AuthenticationToken { get; set; }
 
         public override void InitializeServiceClient<T>(ServiceClient<T> client)
         {
-            //https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/on-behalf-of
-
-            IConfidentialClientApplication confiApp =
-                ConfidentialClientApplicationBuilder.Create(_clientId)
-                .WithClientSecret(_clientSecret)
-                .Build();
-            
-            var userAssertion =
-                new UserAssertion(_delegatedUserContextAccessToken, "urn:ietf:params:oauth:grant-type:jwt-bearer");
-            
-            IEnumerable<string> requestedScopes = new List<string>()
+            try
             {
-                {"https://management.core.windows.net//.default"}
-            };
+                //https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/on-behalf-of
 
-            AuthenticationResult result = confiApp
-                .AcquireTokenOnBehalfOf(requestedScopes, userAssertion)
-                .ExecuteAsync()
-                .GetAwaiter()
-                .GetResult();
+                IConfidentialClientApplication azwApi =
+                    ConfidentialClientApplicationBuilder.Create(_clientId)
+                    .WithClientSecret(_clientSecret)
+                    .WithTenantId(_tenantId)
+                    .Build();
+                
+                var userAssertion =
+                    new UserAssertion(_delegatedUserContextAccessToken, "urn:ietf:params:oauth:grant-type:jwt-bearer");
+                
+                IEnumerable<string> requestedScopes = new List<string>()
+                {
+                    {"https://management.azure.com/.default"}
+                };
 
-            if (result == null)
-                throw new InvalidOperationException("Failed to obtain the JWT token");
+                AuthenticationResult result = azwApi
+                    .AcquireTokenOnBehalfOf(requestedScopes, userAssertion)
+                    .ExecuteAsync()
+                    .GetAwaiter()
+                    .GetResult();
 
-            AuthenticationToken = result.AccessToken;
+                if (result == null)
+                    throw new InvalidOperationException("Failed to obtain the JWT token");
+
+                AuthenticationToken = result.AccessToken;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
         public override async Task ProcessHttpRequestAsync
             (HttpRequestMessage request, CancellationToken cancellationToken)

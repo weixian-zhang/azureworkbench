@@ -12,11 +12,11 @@ namespace AzW.Web.UI.Controllers
     [Route("compute")]
     public class ComputeController : Controller
     {
-        public ComputeController(IAzService azsvc)
+        public ComputeController(IAzureInfoService azInfoSvc)
         {
-            _azsvc = azsvc;
+            _azInfoSvc = azInfoSvc;
         }
 
-        private IAzService _azsvc;
+        private IAzureInfoService _azInfoSvc;
     }
 }

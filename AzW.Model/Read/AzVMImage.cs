@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AzW.Model
 {
-    public class VMImage
+    public class AzVMImage
     {
         public string Publisher { get; set; }
 

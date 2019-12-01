@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AzW.Application
+namespace AzW.Infrastructure
 {
-    public interface IDeployService
+    public interface IAzDeployService
     {
         void Deploy(ProvisionContext provisionContext);
     }

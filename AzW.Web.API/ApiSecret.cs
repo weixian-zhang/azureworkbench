@@ -1,6 +1,6 @@
 namespace AzW.Web.API
 {
-    public class WorkbenchSecret
+    public class ApiSecret
     {
        public string AzCosmonMongoConnectionString { get; set; }
 

@@ -54,32 +54,16 @@
             "problemMatcher": []
         },
         {
-            "label": "build blazor",
+            "label": "build Infra",
             "command": "dotnet build",
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/Portal/Elenktis.Web.Portal",
+                "cwd": "${workspaceFolder}/AzW.Infrastructure",
                 "env": {
-                    "ASPNETCORE_ENVIRONMENT": "Development"
+                    "env": "dev"
                 }
             },
-            "problemMatcher": []
-        },
-        {
-            "label": "run blazor",
-            "command": "dotnet run --c Debug",
-            "type": "shell",
-            "args": [],
-            "options": {
-                "cwd": "${workspaceFolder}/Portal/Elenktis.Web.Portal"
-            },
-            "problemMatcher": []
-        },
-        {
-            "label": "launch chrome blazor debugger",
-            "command": "chrome.exe --remote-debugging-port=9222 http://localhost:5000/",
-            "type": "shell",
             "problemMatcher": []
         }
     ]

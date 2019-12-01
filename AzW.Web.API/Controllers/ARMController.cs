@@ -1,5 +1,8 @@
 using AzW.Application;
 using AzW.Dto;
+using AzW.Infrastructure;
+using AzW.Model;
+using AzW.Secret;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -14,22 +17,27 @@ namespace AzW.Web.API
 {
     //ARM APIs get subscriptions, Resource Groups and other information based on
     //users' RBAC
-    [Authorize]
+    [Authorize(AuthenticationSchemes = AzureADDefaults.BearerAuthenticationScheme)]
     [Route("api/arm")]
     public class ArmController : BaseController
     {
-        public ArmController(WorkbenchSecret secrets) : base(secrets)
+        public ArmController(ApiSecret secret)//(IAzureInfoService azInfoSvc)
         {
-          
+            
+            _secret = secret;
         }
 
-        [Authorize(AuthenticationSchemes = AzureADDefaults.BearerAuthenticationScheme)]
         [HttpGet("sub")]
-        public JsonResult GetSubscriptions()
-        {
-            //var subscriptions = _azsvc.ArmService.GetSubscriptions();
+        public async Task<IEnumerable<AzSubscription>> GetSubscriptions()
+        {   
+            var azInfosvc = new AzureInfoService
+                (new AzArmService(
+                    new AzSDKCredentials(GetUserIdentity().AccessToken,
+                    _secret.TenantId, _secret.ClientId, _secret.ClientSecret)));
 
-            return null; //new JsonResult(subscriptions);
+            var subscriptions = await azInfosvc.GetSubscriptions();
+
+            return subscriptions;
         }
 
         [Authorize]
@@ -48,8 +56,7 @@ namespace AzW.Web.API
             //return _armService.GetRegions();
         }
 
-        private IHttpContextAccessor _httpcontext;
 
-        private IAzService _azsvc;
+        private ApiSecret _secret;
     }
 }
