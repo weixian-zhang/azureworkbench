@@ -40,6 +40,8 @@ namespace AzW.Web.API
 
             services.AddSwaggerGen();
 
+            services.AddCors();
+
             InitSecrets();
 
             ConfigureAzureAdAuth(services);
@@ -146,6 +148,11 @@ namespace AzW.Web.API
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors(builder => builder
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());   
 
             app.UseAuthentication();
 
