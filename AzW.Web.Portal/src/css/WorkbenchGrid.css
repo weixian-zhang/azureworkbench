@@ -1,0 +1,18 @@
+.workbenchgrid-container {
+  flex-grow: 1;
+  font-size: 93.8%;    
+    background-color: #fcfcfc; 
+    background-image: 
+      /* -webkit-linear-gradient(0deg, transparent .05em, rgba(0,0,0,.05) .05em, rgba(0,0,0,.05) .125000em, transparent .125000em),
+      -webkit-linear-gradient(rgba(0,0,0,.05) .062500em, transparent .062500em), */
+      -moz-linear-gradient(0deg, transparent .05em, rgba(0,0,0,.05) .05em, rgba(0,0,0,.05) .125000em, transparent .125000em),
+      -moz-linear-gradient(rgba(0,0,0,.05) .062500em, transparent .062500em);
+      /* -ms-linear-gradient(0deg, transparent .05em, rgba(0,0,0,.05) .05em, rgba(0,0,0,.05) .125000em, transparent .125000em),
+      -ms-linear-gradient(rgba(0,0,0,.05) .062500em, transparent .062500em),
+      -o-linear-gradient(0deg, transparent .05em, rgba(0,0,0,.05) .05em, rgba(0,0,0,.05) .125000em, transparent .125000em),
+      -o-linear-gradient(rgba(0,0,0,.05) .062500em, transparent .062500em),
+      linear-gradient(0deg, transparent .05em, rgba(0,0,0,.05) .05em, rgba(0,0,0,.05) .125000em, transparent .125000em),
+      linear-gradient(rgba(0,0,0,.05) .062500em, transparent .062500em); */
+    background-size: .75em .75em;  
+    background-position: 0 -0.5em;
+}

@@ -1,0 +1,20 @@
+.azurepanel-container, .propertiespanel-container {
+  flex: 0 0 230px;
+  background: #f5f8fa;
+  max-width: 230px;
+}
+
+.azurepanel-container {
+  border-right: 1px solid #d2d6d7;
+}
+
+.propertiespanel-container {
+  border-left: 1px solid #d2d6d7;
+  padding: 0 4px;
+}
+
+.propertiespanel-header {
+  padding: 7px 3px;
+  margin-bottom: 11px;
+  border-bottom: 1px solid #d2d6d7;
+}
