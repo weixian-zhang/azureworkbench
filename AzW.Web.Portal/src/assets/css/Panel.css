@@ -18,3 +18,8 @@
   margin-bottom: 11px;
   border-bottom: 1px solid #d2d6d7;
 }
+
+.azurepanel-icon, .azurepanel-icon > svg {
+  width: 16px;
+  height: 16px;
+}
