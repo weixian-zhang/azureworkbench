@@ -1,6 +1,7 @@
 import React from "react";
 import { H3, Classes, Button, Intent, Overlay, Spinner } from "@blueprintjs/core";
 import { Route } from "react-router-dom";
+import "../../assets/css/Authentication.css";
 
 const ProtectedRoute = ({ 
   component: Component, 
@@ -17,7 +18,7 @@ const ProtectedRoute = ({
         <Component {...props} />
       ) : (
         <div>
-          <Overlay isOpen={overlayState.isOpen} onClose={onOverlayClose} hasBackdrop={false} usePortal={true} canOutsideClickClose={true} canEscapeKeyClose={true}>
+          <Overlay isOpen={overlayState.isOpen} onClose={onOverlayClose} hasBackdrop={false} usePortal={true} canOutsideClickClose={false} canEscapeKeyClose={true}>
             <div className={[Classes.CARD, Classes.ELEVATION_4, "login-overlay"]}>
               { !isLoginInProcess ? (
               <div>
