@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import { Tree } from "@blueprintjs/core";
-import "../../assets/css/Authentication.css";
-
+import { ReactComponent as CosmosDB } from "../../assets/azure_icons/Databases Service Color/Azure Cosmos DB.svg";
+import { ReactComponent as PostgreSQL } from "../../assets/azure_icons/Databases Service Color/Azure Database for PostgreSQL servers.svg";
+import { ReactComponent as VirtualMachines } from "../../assets/azure_icons/Compute Service Color/VM/VM.svg";
+import { ReactComponent as FunctionApp } from "../../assets/azure_icons/Compute Service Color/Function Apps.svg";
 export default class AzurePanel extends Component {
 
   constructor(props) {
@@ -12,24 +14,43 @@ export default class AzurePanel extends Component {
       nodes: [
         {
           id: 0,
-          icon: "database",
+          isExpanded: true,
+          label: "Compute",
+          childNodes: [
+            {
+              id: 1,
+              icon: <span icon="document" className="bp3-icon bp3-icon-document bp3-tree-node-icon azurepanel-icon">
+                <VirtualMachines />
+              </span>,
+              label: "Virtual machines"
+            },
+            {
+              id: 2,
+              icon: <span icon="document" className="bp3-icon bp3-icon-document bp3-tree-node-icon azurepanel-icon">
+                <FunctionApp />
+            </span>,
+              label: "Function App"
+            }
+          ]
+        },
+        {
+          id: 3,
           isExpanded: true,
           label: "Databases",
           childNodes: [
             {
-              id: 1,
-              icon: "document",
-              label: "Cosmos DB"
+              id: 4,
+              icon: <span icon="document" className="bp3-icon bp3-icon-document bp3-tree-node-icon azurepanel-icon">
+                <CosmosDB />
+              </span>,
+              label: "Azure Cosmos DB"
             },
             {
-              id: 2,
-              icon: "document",
-              label: "SQL databases"
-            },
-            {
-              id: 3,
-              icon: "document",
-              label: "PostgreSQL"
+              id: 5,
+              icon: <span icon="document" className="bp3-icon bp3-icon-document bp3-tree-node-icon azurepanel-icon">
+                <PostgreSQL />
+            </span>,
+              label: "Azure Database for PostgreSQL servers"
             }
           ]
         },
