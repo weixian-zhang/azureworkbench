@@ -30,15 +30,15 @@ class App extends Component {
   render() {
     return (
       <Switch>
-        <ProtectedRoute exact path="/" account={this.props.account} component={MainWorkbench} overlayState={this.state.overlayState} onOverlayClose={this.closeOverlay} onMsalLogin={this.props.login} />
+        <ProtectedRoute exact path="/" account={this.props.account} component={MainWorkbench} overlayState={this.state.overlayState} onOverlayClose={this.closeOverlay} onMsalLogin={this.props.login} isLoginInProcess={this.props.isLoginInProcess}/>
       </Switch>
     );
   }
 }
 
 function mapStateToProps(state) {
-  const { account } = state.msal;
-  return { account };
+  const { account, isLoginInProcess } = state.msal;
+  return { account, isLoginInProcess };
 }
 
 function mapDispatchToProps (dispatch) {
