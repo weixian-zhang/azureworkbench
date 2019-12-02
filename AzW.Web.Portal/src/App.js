@@ -38,7 +38,6 @@ class App extends Component {
 
 function mapStateToProps(state) {
   const { account } = state.msal;
-  console.log(state);
   return { account };
 }
 
