@@ -10,9 +10,6 @@ const persistConfig = {
   key: "root",
   storage,
   // stateReconciler: hardSet,
-  // transforms: [
-  //   createBlacklistFilter("auth", []),
-  // ]
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = createStore(persistedReducer, applyMiddleware(thunk));

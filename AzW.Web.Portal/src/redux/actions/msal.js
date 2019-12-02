@@ -17,7 +17,7 @@ export function msalLoginAsync() {
       scopes: [
         "api://5700106c-06c4-4bde-ab79-b1dc3a255b85/AzResource.Deploy"
       ],
-      // prompt: "select_account"
+      prompt: "select_account"
     });
     dispatch(msalLogin());
   };

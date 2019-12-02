@@ -71,16 +71,4 @@ msalApp.handleRedirectCallback(async (error, response) => {
   }
 });
 
-// msalApp.handleRedirectCallback(response => {
-//   // console.log(response);
-//   store.dispatch(msalLoginSuccess(response));
-//   // store.dispatch({
-//   //   type: MSAL_LOGIN_SUCCESS,
-//   //   account: response
-//   // })
-// }, error => {
-//   // console.log(error);
-//   // console.log(response);
-// });
-
 export default msalApp;
