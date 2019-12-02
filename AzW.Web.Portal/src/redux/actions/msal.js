@@ -1,9 +1,5 @@
-import { MSAL_LOGIN } from "./constants";
+import { MSAL_LOGIN, MSAL_LOGOUT } from "./constants";
 import msalApp from "../../services/msal";
-
-// To implement
-// export const MSAL_VERIFY_FAILED = "MSAL_VERIFY_FAILED";
-// export const MSAL_VERIFY_SUCCESS = "MSAL_VERIFY_SUCCESS";
 
 export function msalLogin() {
   return {
@@ -20,5 +16,11 @@ export function msalLoginAsync() {
       prompt: "select_account"
     });
     dispatch(msalLogin());
+  };
+}
+
+export function msalLogout() {
+  return {
+    type: MSAL_LOGOUT
   };
 }

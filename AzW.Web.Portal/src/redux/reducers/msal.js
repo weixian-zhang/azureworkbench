@@ -39,7 +39,6 @@ export default function msalReducer(state=initialState, action) {
     case MSAL_LOGOUT:
       return {
         ...state,
-        isLoginInProcess: false,
         account: null
       };
 

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { Navbar, Button, Alignment, AnchorButton } from "@blueprintjs/core";
+import { Navbar, Button, Alignment, AnchorButton, Popover, Menu, Position, MenuItem, Classes, Icon } from "@blueprintjs/core";
 import { connect } from "react-redux";
+import { msalLoginAsync, msalLogout } from "../../redux/actions";
 
 class Header extends Component {
   render() {
@@ -16,11 +17,23 @@ class Header extends Component {
             href="https://github.com/Code-Norris/azureworkbench"
             target="_blank"
           />
-          <Button
-            className="bp3-minimal"
-            icon="person"
-            text={this.props.account != null ? this.props.account.account.userName : null}
-          />
+          <Popover content={ this.props.account != null ?
+            (
+              <Menu className={Classes.ELEVATION_1}>
+                <MenuItem labelElement={<Icon icon="log-out" />} text="Logout" onClick={this.props.logout} />
+              </Menu>
+            ) : (
+              <Menu className={Classes.ELEVATION_1}>
+                <MenuItem labelElement={<Icon icon="log-in" />} text="Login" onClick={this.props.login} />
+              </Menu>
+            )
+          } position={Position.BOTTOM}>
+            <Button
+              className="bp3-minimal"
+              icon="person"
+              text={this.props.account != null ? this.props.account.account.userName : null}
+            />
+          </Popover>
         </Navbar.Group>
       </Navbar>
     );
@@ -28,11 +41,15 @@ class Header extends Component {
 }
 
 function mapStateToProps(state) {
-  // console.log(state);
   const { account } = state.msal;
   return { account };
 }
 
-// function mapDispatchToProps (dispatch) {}
+function mapDispatchToProps (dispatch) {
+  return {
+    login: () => dispatch(msalLoginAsync()),
+    logout: () => dispatch(msalLogout())
+  };
+}
 
-export default connect(mapStateToProps)(Header);
+export default connect(mapStateToProps, mapDispatchToProps)(Header);
