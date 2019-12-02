@@ -1,0 +1,4 @@
+export const MSAL_LOGIN = "MSAL_LOGIN";
+export const MSAL_LOGIN_SUCCESS = "MSAL_LOGIN_SUCCESS";
+export const MSAL_LOGIN_FAILED = "MSAL_LOGIN_FAILED";
+export const MSAL_LOGOUT = "MSAL_LOGOUT";

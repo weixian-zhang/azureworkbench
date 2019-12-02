@@ -1,18 +1,22 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 import App from "./App";
 import "normalize.css";
 import "@blueprintjs/core/lib/css/blueprint.css"; 
 import "@blueprintjs/icons/lib/css/blueprint-icons.css";
-import "./css/index.css";
+import "./assets/css/index.css";
 
 import { Provider } from "react-redux";
-import { createStore } from "redux";
-import rootReducer from "./reducers";
-const store = createStore(rootReducer);
+import { PersistGate } from "redux-persist/integration/react";
+import { store, persistor } from "./redux/store";
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
-  </Provider>, 
+    <PersistGate loading={null} persistor={persistor}>
+      <Router>
+        <App />
+      </Router>
+    </PersistGate>
+  </Provider>,
 document.getElementById("root"));
