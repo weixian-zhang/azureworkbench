@@ -10,7 +10,9 @@ export class VM extends Resource
             Dependencies: {
                 PublicIP: '',
                 Subnet: '',
-                VirtualNetwork: ''
+                VirtualNetwork: '',
+                Zone: '',
+                Tags: []
             }
             
         };

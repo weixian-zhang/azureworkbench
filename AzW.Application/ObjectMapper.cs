@@ -1,5 +1,6 @@
 using AutoMapper;
 using AzW.Model;
+using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Models;
 
 public static class ObjectMapper
@@ -20,7 +21,7 @@ public static class ObjectMapper
     {
         AutoMapper.Mapper.Initialize(cfg =>
         {
-            cfg.CreateMap<Subscription, AzSubscription>();
+            cfg.CreateMap<ISubscription, AzSubscription>();
         });
     }
 }

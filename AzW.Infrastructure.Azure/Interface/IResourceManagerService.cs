@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AzW.Infrastructure.Azure
+namespace AzW.Infrastructure.AzureServices
 {
     public interface IResourceManagerService
     {
-        Task<IEnumerable<Subscription>> GetSubscriptions();
+        Task<IEnumerable<ISubscription>> GetSubscriptions();
 
-        Task<IEnumerable<ResourceGroup>> GetResourceGroups(string subscriptionId);
+        Task<IEnumerable<IResourceGroup>> GetResourceGroups(string subscriptionId);
 
         IEnumerable<string> GetLocations();
     }

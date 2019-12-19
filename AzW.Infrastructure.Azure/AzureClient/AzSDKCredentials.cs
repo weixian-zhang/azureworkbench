@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 
-namespace AzW.Infrastructure.Azure
+namespace AzW.Infrastructure.AzureServices
 {
     public class AzSDKCredentials : ServiceClientCredentials
     {
@@ -84,7 +84,10 @@ namespace AzW.Infrastructure.Azure
 
         }
         private string _delegatedUserContextAccessToken;
+        
         private string _tenantId;
+        public string TenantId {get {return _tenantId;}}
+
         private string _clientId;
         private string _clientSecret;
     }

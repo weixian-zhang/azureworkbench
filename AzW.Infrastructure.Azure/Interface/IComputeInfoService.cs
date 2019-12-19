@@ -1,4 +1,4 @@
-namespace AzW.Infrastructure.Azure
+namespace AzW.Infrastructure.AzureServices
 {
     public interface IComputeInfoService
     {

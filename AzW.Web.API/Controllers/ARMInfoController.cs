@@ -1,7 +1,7 @@
 using AzW.Application;
 using AzW.Dto;
 using AzW.Infrastructure;
-using AzW.Infrastructure.Azure;
+using AzW.Infrastructure.AzureServices;
 using AzW.Model;
 using AzW.Secret;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
@@ -22,21 +22,20 @@ namespace AzW.Web.API
     [Route("api/arm")]
     public class ARMInfoController : BaseController
     {
-        public ARMInfoController(ApiSecret secret)//(IAzureInfoService azInfoSvc)
+        public ARMInfoController(ApiSecret secret)
         {
-            
             _secret = secret;
         }
 
         [HttpGet("sub")]
         public async Task<IEnumerable<AzSubscription>> GetSubscriptions()
         {   
-            var azInfosvc = new AzureInfoService
-                (new ResourceManagerService(
+            var rmsvc = new ResourceManagerLogic(
+                new ResourceManagerService(
                     new AzSDKCredentials(GetUserIdentity().AccessToken,
                     _secret.TenantId, _secret.ClientId, _secret.ClientSecret)));
 
-            var subscriptions = await azInfosvc.GetSubscriptions();
+            var subscriptions = await rmsvc.GetSubscriptions();
 
             return subscriptions;
         }

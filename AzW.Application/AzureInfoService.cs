@@ -1,16 +1,17 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AzW.Infrastructure;
-using AzW.Infrastructure.Azure;
+using AzW.Infrastructure.AzureServices;
 using AzW.Model;
 using AzW.Secret;
+using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Models;
 
 namespace AzW.Application
 {
-    public class AzureInfoService : IAzureInfoService
+    public class ResourceManagerLogic : IAzureInfoService
     {
-        public AzureInfoService(IResourceManagerService azRscManager)
+        public ResourceManagerLogic(IResourceManagerService azRscManager)
         {
             _azRscManager = azRscManager;
         }
@@ -30,7 +31,7 @@ namespace AzW.Application
            var subs = await _azRscManager.GetSubscriptions();
 
            var azSubs = ObjectMapper.Mapper.Map
-            <IEnumerable<Subscription>, IEnumerable<AzSubscription>>(subs);
+            <IEnumerable<ISubscription>, IEnumerable<AzSubscription>>(subs);
 
             return azSubs;
         }

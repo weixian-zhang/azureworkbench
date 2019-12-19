@@ -3,37 +3,32 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Microsoft.Azure.Management.ResourceManager;
+using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
 using Microsoft.Azure.Management.ResourceManager.Models;
 using Microsoft.Rest.Azure;
 
-namespace AzW.Infrastructure.Azure
+namespace AzW.Infrastructure.AzureServices
 {
     public class ResourceManagerService : BaseService, IResourceManagerService
     {
-        public ResourceManagerService(AzSDKCredentials sdkCred)
+        public ResourceManagerService(AzSDKCredentials sdkCred) : base(sdkCred)
         {  
             _sdkCreds = sdkCred;
         }
 
-        public async Task<IEnumerable<ResourceGroup>> GetResourceGroups(string subscriptionId)
+        public async Task<IEnumerable<IResourceGroup>> GetResourceGroups(string subscriptionId)
         {
-            ISubscriptionClient subClient = new SubscriptionClient(_sdkCreds);
-            
-            var rmClient = new ResourceManagementClient(_sdkCreds);
-
-            rmClient.SubscriptionId = subscriptionId;
-
-            var rgs = await rmClient.ResourceGroups.ListAsync();
+            var rgs = 
+                await AzAuthClient.WithDefaultSubscription().ResourceGroups.ListAsync();
 
             return rgs;
         }
 
-        public async Task<IEnumerable<Subscription>> GetSubscriptions()
+        public async Task<IEnumerable<ISubscription>> GetSubscriptions()
         {
-            ISubscriptionClient subClient = new SubscriptionClient(_sdkCreds);
-
-            IPage<Subscription> subs =  await subClient.Subscriptions.ListAsync();
+            var subs = 
+                await AzAuthClient.WithDefaultSubscription().Subscriptions.ListAsync();
 
             return subs;
         }

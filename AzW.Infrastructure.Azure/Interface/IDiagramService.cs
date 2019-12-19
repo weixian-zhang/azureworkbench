@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using AzW.Model;
 
-namespace AzW.Infrastructure.Azure
+namespace AzW.Infrastructure.AzureServices
 {
     public interface IDiagramService
     {

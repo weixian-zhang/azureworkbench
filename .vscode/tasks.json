@@ -15,12 +15,25 @@
             "problemMatcher": []
         },
         {
-            "label": "build AzW.Dto",
+            "label": "build AzW.Infra.Azure",
             "command": "dotnet build",
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/AzW.Dto",
+                "cwd": "${workspaceFolder}/AzW.Infrastructure.Azure",
+                "env": {
+                    "ASPNETCORE_ENVIRONMENT": "Development"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "build AzW.Model",
+            "command": "dotnet build",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/AzW.Model",
                 "env": {
                     "ASPNETCORE_ENVIRONMENT": "Development"
                 }

@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AzW.Model;
 
-namespace AzW.Infrastructure.Azure
+namespace AzW.Infrastructure.AzureServices
 {
     public class DiagramService : IDiagramService
     {

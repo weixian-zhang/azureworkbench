@@ -1,16 +1,22 @@
 using AzW.Model;
-using Microsoft.Azure.Management.Compute;
-using Microsoft.Azure.Management.Compute.Models;
+using Microsoft.Azure.Management.Fluent;
+using Microsoft.Azure.Management.ResourceManager.Fluent;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
+using Microsoft.Rest;
 
-namespace AzW.Infrastructure.Azure
+namespace AzW.Infrastructure.AzureServices
 {
-    public class ProvisionService : IProvisionService
+    public class ProvisionService : BaseService, IProvisionService
     {
+        public ProvisionService(AzSDKCredentials sdkCred) :  base(sdkCred)
+        {
+
+        }
+
         public void Provision(ProvisionContext provisionContext)
         {
-            // ComputeManagementClient c;
-            // IVirtualMachinesOperations operations;
-            // operations.CreateOrUpdate("","", new VirtualMachine(). )
+            throw new System.NotImplementedException();
         }
     }
 }
