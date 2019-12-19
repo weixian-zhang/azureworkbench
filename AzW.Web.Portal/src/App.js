@@ -1,0 +1,50 @@
+import React, { Component } from "react";
+import { Switch } from "react-router-dom";
+import { connect } from "react-redux";
+import ProtectedRoute from "./components/Auth/ProtectedRoute";
+import MainWorkbench from "./components/Workbench"
+import { msalLoginAsync } from "./redux/actions";
+
+class App extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      overlayState: {
+        isOpen: true,
+      }
+    };
+
+    this.closeOverlay = this.closeOverlay.bind(this);
+  }
+
+  closeOverlay() {
+    this.setState({
+      overlayState: {
+        isOpen: false
+      }
+    });
+  }
+
+  render() {
+    return (
+      <Switch>
+        <ProtectedRoute exact path="/" account={this.props.account} component={MainWorkbench} overlayState={this.state.overlayState} onOverlayClose={this.closeOverlay} onMsalLogin={this.props.login} isLoginInProcess={this.props.isLoginInProcess}/>
+      </Switch>
+    );
+  }
+}
+
+function mapStateToProps(state) {
+  const { account, isLoginInProcess } = state.msal;
+  return { account, isLoginInProcess };
+}
+
+function mapDispatchToProps (dispatch) {
+  return {
+    login: () => dispatch(msalLoginAsync())
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

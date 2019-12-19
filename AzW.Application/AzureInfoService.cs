@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AzW.Infrastructure;
+using AzW.Infrastructure.Azure;
 using AzW.Model;
 using AzW.Secret;
 using Microsoft.Azure.Management.ResourceManager.Models;
@@ -9,9 +10,9 @@ namespace AzW.Application
 {
     public class AzureInfoService : IAzureInfoService
     {
-        public AzureInfoService(IAzArmService azArmSvc)
+        public AzureInfoService(IResourceManagerService azRscManager)
         {
-            _azArmSvc = azArmSvc;
+            _azRscManager = azRscManager;
         }
 
         public Task<IEnumerable<AzLocation>> GetLocations()
@@ -26,7 +27,7 @@ namespace AzW.Application
 
         public async Task<IEnumerable<AzSubscription>> GetSubscriptions()
         {
-           var subs = await _azArmSvc.GetSubscriptions();
+           var subs = await _azRscManager.GetSubscriptions();
 
            var azSubs = ObjectMapper.Mapper.Map
             <IEnumerable<Subscription>, IEnumerable<AzSubscription>>(subs);
@@ -34,6 +35,6 @@ namespace AzW.Application
             return azSubs;
         }
 
-        private IAzArmService _azArmSvc;
+        private IResourceManagerService _azRscManager;
     }
 }
