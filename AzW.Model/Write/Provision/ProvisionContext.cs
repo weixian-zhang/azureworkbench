@@ -11,5 +11,7 @@ namespace AzW.Model
         public string SubscriptionName { get; set; }
 
         public string ResourceGroupName { get; set; }
+
+        public string Location { get; set; }
     }
 }

@@ -1,10 +1,13 @@
 import React, { Component } from "react";
 import { Tree } from "@blueprintjs/core";
+
 import { ReactComponent as CosmosDB } from "../../assets/azure_icons/Databases Service Color/Azure Cosmos DB.svg";
 import { ReactComponent as PostgreSQL } from "../../assets/azure_icons/Databases Service Color/Azure Database for PostgreSQL servers.svg";
 import { ReactComponent as VirtualMachines } from "../../assets/azure_icons/Compute Service Color/VM/VM.svg";
 import { ReactComponent as FunctionApp } from "../../assets/azure_icons/Compute Service Color/Function Apps.svg";
-export default class AzurePanel extends Component {
+
+
+export default class ResourcePalette extends Component {
 
   constructor(props) {
     super(props);
@@ -19,15 +22,13 @@ export default class AzurePanel extends Component {
           childNodes: [
             {
               id: 1,
-              icon: <span icon="document" className="bp3-icon bp3-icon-document bp3-tree-node-icon azurepanel-icon">
-                <VirtualMachines />
-              </span>,
-              label: "Virtual machines"
+              icon: null,
+              label: <div id="azpanel-icon-vm" resourcecategory='compute'  resourcetype='vm'><span className="bp3-icon bp3-icon-document bp3-tree-node-icon azurepanel-icon"><VirtualMachines /></span>Virtual machines</div>
             },
             {
               id: 2,
               icon: <span icon="document" className="bp3-icon bp3-icon-document bp3-tree-node-icon azurepanel-icon">
-                <FunctionApp />
+                <FunctionApp resource="function-app" />
             </span>,
               label: "Function App"
             }
@@ -68,6 +69,7 @@ export default class AzurePanel extends Component {
     this.setState(this.state);
   };
 
+
   render() {
     return (
       <div className="azurepanel-container">
@@ -78,6 +80,9 @@ export default class AzurePanel extends Component {
           onNodeExpand={this.handleNodeExpand}
         />
       </div>
+
+
+      
     );
   };
 }

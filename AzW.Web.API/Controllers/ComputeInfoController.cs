@@ -9,10 +9,10 @@ using System.Collections.Generic;
 namespace AzW.Web.UI.Controllers
 {
     [Authorize]
-    [Route("compute")]
-    public class ComputeController : Controller
+    [Route("api/info/compute")]
+    public class ComputeInfoController : Controller
     {
-        public ComputeController(IAzureInfoService azInfoSvc)
+        public ComputeInfoController(IAzureInfoService azInfoSvc)
         {
             _azInfoSvc = azInfoSvc;
         }

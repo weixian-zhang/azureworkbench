@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 
-namespace AzW.Infrastructure
+namespace AzW.Infrastructure.Azure
 {
     public class AzSDKCredentials : ServiceClientCredentials
     {

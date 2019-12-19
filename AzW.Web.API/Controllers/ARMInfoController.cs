@@ -19,9 +19,9 @@ namespace AzW.Web.API
     //users' RBAC
     [Authorize(AuthenticationSchemes = AzureADDefaults.BearerAuthenticationScheme)]
     [Route("api/arm")]
-    public class ArmController : BaseController
+    public class ARMInfoController : BaseController
     {
-        public ArmController(ApiSecret secret)//(IAzureInfoService azInfoSvc)
+        public ARMInfoController(ApiSecret secret)//(IAzureInfoService azInfoSvc)
         {
             
             _secret = secret;

@@ -24,7 +24,7 @@ const ProtectedRoute = ({
               <div>
                 <H3>Welcome!</H3>
                   <p>
-                    Azure workbench is a tool to visualise your cloud architecture and export them into a json file to deploy it easily.
+                    Azure Workbench helps you create Azure architecture diagrams and these diagrams can be shared, deployed and cost calculated.
                   </p>
                   <p>
                       Save your deployments by logging in to your Azure account.
