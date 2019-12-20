@@ -1,0 +1,12 @@
+{
+  "resourceName": "Virtual Machine",
+  "resourceCategory": "Compute",
+  "resourceIcon": "Compute Service Color/VM/VM.svg",
+  "resourceConfig": [
+    {
+      "configName": "Name",
+      "configType": "input",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+.actionbar, .actionbar > div {
+  height: 36px !important;
+  background-color: #f5f5f5 !important;
+}
+
+.actionbar-text {
+  font-size: 13px !important;
+  margin: 0 7px !important;
+}
+
+.actionbar-divider {
+  margin: 3px !important;
+}
+
+.actionbar-btn svg {
+  width: 13px;
+  height: 13px;
+}
+
+.actionbar-btn span {
+  font-size: 13px;
+}
+
+.actionbar-tooltip div.bp3-popover-arrow {
+  display: none;
+}
+
+.actionbar-tooltip div.bp3-popover-content {
+  padding: 2px 5px;
+  font-size: 10px;
+}

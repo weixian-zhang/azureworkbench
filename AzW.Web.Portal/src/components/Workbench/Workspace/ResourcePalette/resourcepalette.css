@@ -1,0 +1,29 @@
+.rp {
+  flex-grow: 0;
+  flex-shrink: 0;
+  height: 100%;
+  display: flex;
+}
+
+.rp-main {
+  background: #fbfbfb;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.rp-collapse {
+  transform: none !important;
+  width: 8px;
+  min-width: 8px;
+  background-color: #fbfbfb;
+  cursor: col-resize;
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAHBAMAAADdS/HjAAAAGFBMVEUzMzP///9tbW1QUFCKiopBQUF8fHxfX1/IXlmXAAAAHUlEQVQImWMQEGAQFWUQFmYQF2cQEmIQE2MQEQEACy4BF67hpEwAAAAASUVORK5CYII=);
+  background-repeat: no-repeat;
+  background-position: center center;
+  border-left: 1px solid#e5e5e5;
+  border-right: 1px solid#e5e5e5;
+}
+
+.rp-collapse:hover {
+  background-color: #e0e0e0;
+}

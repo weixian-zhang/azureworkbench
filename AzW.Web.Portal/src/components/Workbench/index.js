@@ -1,15 +1,15 @@
 import React, { Component } from "react";
-import Header from "./Header";
-import Workbench from "./Workbench";
+import Menu from "./Menu";
 import ActionBar from "./ActionBar";
+import Workspace from "./Workspace";
 
 export default class MainWorkbench extends Component {
   render() {
     return (
-      <div className="container">
-        <Header/>
+      <div>
+        <Menu />
         <ActionBar />
-        <Workbench/>
+        <Workspace />
       </div>
     );
   }
