@@ -9,9 +9,9 @@ using Microsoft.Azure.Management.ResourceManager.Models;
 
 namespace AzW.Application
 {
-    public class ResourceManagerLogic : IAzureInfoService
+    public class ARMLogic : IAzureInfoService
     {
-        public ResourceManagerLogic(IResourceManagerService azRscManager)
+        public ARMLogic(IResourceManagerService azRscManager)
         {
             _azRscManager = azRscManager;
         }

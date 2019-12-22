@@ -3,8 +3,10 @@ import { Tree } from "@blueprintjs/core";
 
 import { ReactComponent as CosmosDB } from "../../assets/azure_icons/Databases Service Color/Azure Cosmos DB.svg";
 import { ReactComponent as PostgreSQL } from "../../assets/azure_icons/Databases Service Color/Azure Database for PostgreSQL servers.svg";
-import { ReactComponent as VirtualMachines } from "../../assets/azure_icons/Compute Service Color/VM/VM.svg";
-import { ReactComponent as FunctionApp } from "../../assets/azure_icons/Compute Service Color/Function Apps.svg";
+import { ReactComponent as VirtualMachine } from "../../assets/azure_icons/ComputeServiceColor/VM/VM.svg";
+import { ReactComponent as FunctionApp } from "../../assets/azure_icons/ComputeServiceColor/Function Apps.svg";
+
+import { ReactComponent as VirtualNetwork } from "../../assets/azure_icons/Networking Service Color/Virtual Networks.svg";
 
 
 export default class ResourcePalette extends Component {
@@ -23,7 +25,7 @@ export default class ResourcePalette extends Component {
             {
               id: 1,
               icon: null,
-              label: <div id="azpanel-icon-vm" resourcecategory='compute'  resourcetype='vm'><span className="bp3-icon bp3-icon-document bp3-tree-node-icon azurepanel-icon"><VirtualMachines /></span>Virtual machines</div>
+              label: <div id="azpanel-icon-vm" resourcecategory='compute'  resourcetype='vm'><span className="bp3-icon bp3-icon-document bp3-tree-node-icon azurepanel-icon"><VirtualMachine /></span>Virtual machines</div>
             },
             {
               id: 2,
@@ -35,7 +37,19 @@ export default class ResourcePalette extends Component {
           ]
         },
         {
-          id: 3,
+          id: 1,
+          isExpanded: true,
+          label: "Networking",
+          childNodes: [
+            {
+              id: 1,
+              icon: null,
+              label: <div id="azpanel-icon-vnet" resourcecategory='network' resourcetype='vnet'><span className="bp3-icon bp3-icon-document bp3-tree-node-icon azurepanel-icon"><VirtualNetwork /></span>Virtual machines</div>
+            }
+          ]
+        },
+        {
+          id: 2,
           isExpanded: true,
           label: "Databases",
           childNodes: [

@@ -10,9 +10,9 @@ using Microsoft.Rest.Azure;
 
 namespace AzW.Infrastructure.AzureServices
 {
-    public class ResourceManagerService : BaseService, IResourceManagerService
+    public class ARMRService : BaseService, IResourceManagerService
     {
-        public ResourceManagerService(AzSDKCredentials sdkCred) : base(sdkCred)
+        public ARMRService(AzSDKCredentials sdkCred) : base(sdkCred)
         {  
             _sdkCreds = sdkCred;
         }

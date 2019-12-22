@@ -30,8 +30,8 @@ namespace AzW.Web.API
         [HttpGet("sub")]
         public async Task<IEnumerable<AzSubscription>> GetSubscriptions()
         {   
-            var rmsvc = new ResourceManagerLogic(
-                new ResourceManagerService(
+            var rmsvc = new ARMLogic(
+                new ARMRService(
                     new AzSDKCredentials(GetUserIdentity().AccessToken,
                     _secret.TenantId, _secret.ClientId, _secret.ClientSecret)));
 
