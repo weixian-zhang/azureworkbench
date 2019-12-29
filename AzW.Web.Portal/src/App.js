@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import MainWorkbench from "./components/Workbench"
 import { msalLoginAsync } from "./redux/actions";
+import {addDiagram, deleteDiagram, addVertex} from './redux/actions/graphActions';
 
 class App extends Component {
 

@@ -1,8 +1,9 @@
-export class VM 
+export default class DiagramContext
 {
-    constructor()
-    {
+    constructor(){
+        this.diagramId = '';
         this.subscriptionId = '';
         this.resourceGroup = '';
+        this.vertices = new Array();
     }
 }

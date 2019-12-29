@@ -3,3 +3,24 @@ html, body, #root, .container, #root > div {
   display: flex;
   flex-direction: column;
 }
+
+inline {
+  display: inline;
+}
+
+.tile-panel {
+  vertical-align: top;
+  display: inline-block;
+  text-align: center;
+  width: 50px;
+  margin-right: 8px;
+}
+.azure-rsc-icon {
+  width: 30px;
+  height: 30px;
+}
+.tile-text {
+  font-size: small;
+  font-family: 'Segoe UI';
+  display: block;
+}

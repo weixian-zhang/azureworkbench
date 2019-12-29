@@ -1,20 +1,39 @@
-import Resource from './Resource';
-
-export default class VM extends Resource
+export default class VM
 {
-    constructor() {
-        super(null);
-        this.Name = '';
-        this.spec = {
-            SKU: '',
-            Dependencies: {
-                PublicIP: '',
-                Subnet: '',
-                VirtualNetwork: '',
-                Zone: '',
-                Tags: []
+    constructor (){
+        this.ResourceType = '';
+        this.ResourceCategory = '';
+        this.GraphModel = {
+            IconId: '',
+            X: '',
+            Y: '',
+            Width: '',
+            Height: '',
+            Edges: {
+                subnets: [],
+                loadbalancer: {
+                    edge: ''
+                },
+                appGateway: {
+                    edge: ''
+                }
             }
-            
         };
- }
+
+        this.ProvisionContext = {
+            Name: '',
+            Location: '',
+            PublicIP: false,
+            VMPublisher: '',
+            VMOffer: '',
+            VMSKU: '',
+            RootUsername: '',
+            RootPassword: '',
+            Tags: [],
+            Dependencies: {
+                VNetAddress: '',
+                SubnetName: ''
+            }
+        }; 
+    }
 }

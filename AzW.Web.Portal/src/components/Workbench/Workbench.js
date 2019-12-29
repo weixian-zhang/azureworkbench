@@ -6,40 +6,47 @@ import 'jquery-ui/ui/widgets/droppable';
 
 import ResourcePalette from "./ResourcePalette";
 import DiagramEditor from "./DiagramEditor";
-import PropertiesPanel from "./PropertiesPanel";
+
 import "../../assets/css/Panel.css";
 import "../../assets/css/Workbench.css";
 import "../../assets/css/WorkbenchGrid.css";
 
-import {VM} from "../../models/VM";
-
 export default class Workbench extends Component {
   constructor(props) {
     super(props);
-    this.diagram = {
-      
-    };
+    
+    this.iconId = "";
+    this.VMPropertyPanelShow = false;
+
+    this.diagramEditor = React.createRef();
   }
 
   addResourceToDiagramEditor(item) 
   {
       var resourceCategory = item.attr('resourcecategory');
       var resourceType = item.attr('resourcetype');
-
-      this.refs.diagramEditor.addResourceToEditorFromPalette(resourceCategory, resourceType);
+      this.diagramEditor.addResourceToEditorFromPalette(resourceType);
   }
 
-
   componentDidMount() {
+      //this.diagramEditor = this.refs.diagramEditor;
       this.makeResourceIconDraggable();
+  }
+
+  workbenchLoadPropertyPanel = (iconId, panelTypeToShow) => {
+     switch(panelTypeToShow)
+     {
+       case "vm":
+        this.VMPropertyPanelShow = true;
+        break;
+     }
   }
 
   render() {
     return (
       <div className="workbench-container">
-        <ResourcePalette/>
-        <DiagramEditor ref="diagramEditor"/>
-        <PropertiesPanel/>
+        <ResourcePalette />
+        <DiagramEditor />
       </div>
     );
   }

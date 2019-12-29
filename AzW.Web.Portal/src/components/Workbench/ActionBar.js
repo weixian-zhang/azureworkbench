@@ -19,6 +19,10 @@ export default class ActionBar extends Component {
                         <button class="bp3-button">Calculate</button>
                         <span class="bp3-navbar-divider"></span>
                         <button class="bp3-button">Deploy</button>
+                        <span class="bp3-navbar-divider"></span>
+                        <button class="bp3-button">Save Draft</button>
+                        <span class="bp3-navbar-divider"></span>
+                        <button class="bp3-button">Generate Link</button>
                     </div>
                 </div>
             </nav>
