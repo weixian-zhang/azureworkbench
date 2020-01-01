@@ -2,22 +2,16 @@ export default class VM
 {
     constructor (){
         this.ResourceType = '';
-        this.ResourceCategory = '';
+
         this.GraphModel = {
-            IconId: '',
+            Id: '',
+            ParentId: '',
+            IsParent: false,
             X: '',
             Y: '',
             Width: '',
             Height: '',
-            Edges: {
-                subnets: [],
-                loadbalancer: {
-                    edge: ''
-                },
-                appGateway: {
-                    edge: ''
-                }
-            }
+            Edges: []
         };
 
         this.ProvisionContext = {
