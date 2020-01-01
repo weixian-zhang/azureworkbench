@@ -4,8 +4,9 @@ import VMPropertiesPanel from "./VMPropertiesPanel";
 import VM from "../../models/VM";
 import ShortUniqueId from 'short-unique-id';
 import AzureIcons from "../../services/AzureIcons";
+import NSGIcon from "../../assets/azure_icons/Networking Service Color/Network Security Groups (Classic).svg";
 import MxGraphManager from '../../services/MxGraphManager';
-import { mxCellOverlay, mxImage, mxImageBundle, overlay, mxEvent, mxUtils } from "mxgraph-js";
+import { mxCellOverlay, mxImage, mxKeyHandler, overlay, mxEvent, mxUtils } from "mxgraph-js";
 
 
  export default class DiagramEditor extends Component {
@@ -25,8 +26,9 @@ import { mxCellOverlay, mxImage, mxImageBundle, overlay, mxEvent, mxUtils } from
     this.graph = this.graphManager.graph;
     this.props.mxgraphManagerReadyCallback(this.graphManager);
 
-    this.addDblClickEventToDeleteVertex();
-    
+    this.addDblClickEventToOpenPropPanel();
+    this.addDeleteKeyEventToDeleteVertex();
+
     //create refs
     this.vmPropPanel = React.createRef();
   } 
@@ -34,14 +36,12 @@ import { mxCellOverlay, mxImage, mxImageBundle, overlay, mxEvent, mxUtils } from
   render() {
     return (
       <div id="diagramEditor" className="workbenchgrid-container">
-        
         <VMPropertiesPanel ref={this.vmPropPanel} />
       </div>
     );
   }
   
-  addDblClickEventToDeleteVertex(){
-
+  addDblClickEventToOpenPropPanel(){
     this.graph.addListener(mxEvent.DOUBLE_CLICK, (sender, evt) =>
         {
           var cell = evt.getProperty('cell');
@@ -52,6 +52,16 @@ import { mxCellOverlay, mxImage, mxImageBundle, overlay, mxEvent, mxUtils } from
           this.determineResourcePropertyPanelToShow(resourceType);
         });  
   }
+
+  addDeleteKeyEventToDeleteVertex(){
+      // delete key remove vertex
+      var keyHandler = new mxKeyHandler(this.graph);
+      keyHandler.bindKey(46, (evt) =>
+        {
+            this.graph.removeCells();
+        });
+  }
+
   addResourceToEditorFromPalette = (dropContext) => {
 
     switch(dropContext.resourceType) {
@@ -83,8 +93,8 @@ import { mxCellOverlay, mxImage, mxImageBundle, overlay, mxEvent, mxUtils } from
     //mxgraph examples
     https://jgraph.github.io/mxgraph/javascript/index.html
 
-    var bundle = new mxImageBundle();
-    bundle.putImage('nsg', 'data:image/svg+xml,'+ AzureIcons.NSG(), null);
+    //var bundle = new mxImageBundle();
+    //bundle.putImage('nsg', 'data:image/svg+xml,'+ AzureIcons.NSG(), null);
 
       var vnetCell = this.graph.insertVertex(
         this.graph.getDefaultParent(),
@@ -99,7 +109,7 @@ import { mxCellOverlay, mxImage, mxImageBundle, overlay, mxEvent, mxUtils } from
 
       // Creates a new overlay with an image and a tooltip
     var nsgOverlay = new mxCellOverlay(
-      new mxImage(bundle.getImage("nsg"), 20, 20),
+      new mxImage('', 20, 20),
       "NSG"
     );
     
