@@ -23,13 +23,13 @@ namespace AzW.Infrastructure.AzureServices
             .WithSubnets(new Dictionary<string,string>(){{"",""}})
             .Create();
 
-            AzAuthClient.WithDefaultSubscription().VirtualMachines.Define("")
-            .WithRegion("")
-            .WithExistingResourceGroup("")
-            .WithExistingPrimaryNetwork(vnet)
-            .WithSubnet("")
-            .WithPrimaryPrivateIPAddressDynamic()
-            .WithNewPrimaryPublicIPAddress()
+            // AzAuthClient.WithDefaultSubscription().VirtualMachines.Define("")
+            // .WithRegion("")
+            // .WithExistingResourceGroup("")
+            // .WithExistingPrimaryNetwork(vnet)
+            // .WithSubnet("")
+            // .WithPrimaryPrivateIPAddressDynamic()
+            // .WithNewPrimaryPublicIPAddress()
 
             throw new System.NotImplementedException();
         }

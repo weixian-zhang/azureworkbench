@@ -3,28 +3,11 @@ import {
     mxGuide,
     mxEdgeHandler,
     mxGraphHandler,
-    Drawer,
-    Switch,
-    FormGroup, InputGroup,
-    mxRectangle,
-    mxParallelEdgeLayout,
     mxConstants,
     mxEdgeStyle,
-    mxLayoutManager,
-    mxCell,
-    mxGeometry,
     mxRubberband,
-    mxDragSource,
-    mxKeyHandler,
-    mxCodec,
-    mxClient,
-    mxConnectionHandler,
     mxUtils,
-    mxToolbar,
     mxEvent,
-    mxCellTracker,
-    mxImage,
-    mxFastOrganicLayout
   } from "mxgraph-js";
 
 export default class MxGraphManager
@@ -55,6 +38,14 @@ export default class MxGraphManager
     initGraphBehavior(){
 
         var rubberband = new mxRubberband(this.graph);
+
+        // Disables built-in context menu
+        mxEvent.disableContextMenu(this.container);
+        
+        this.graph.setPanning(true);
+
+        //contrain drag boundary of child within parent
+        mxGraphHandler.prototype.removeCellsFromParent = false
         
         // Enables guides
         mxGraphHandler.prototype.guidesEnabled = true;
@@ -95,15 +86,18 @@ export default class MxGraphManager
     }
 
     makeIconDraggable(htmlElement, resourceTypeName, onDropCallback) {
+        var thisComp = this;
         var vmss = mxUtils.makeDraggable(htmlElement, this.graph,
             function(graph, evt, target, x, y)
             {
-              var dropContext = {
-                x: x,
-                y: y,
-                resourceType: resourceTypeName
-              };
-              onDropCallback(dropContext);
+                thisComp.graph.clearSelection();
+
+                var dropContext = {
+                    x: x,
+                    y: y,
+                    resourceType: resourceTypeName
+                };
+                onDropCallback(dropContext);
             }, null);
     }
 

@@ -108,56 +108,7 @@ export default class ResourcePalette extends Component {
     this.graphManager.makeIconDraggable(this.vmssIcon.current, "vmss", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.vnetIcon.current, "vnet", thisComponent.props.addResourceToDiagramEditor);
     
-
-    // // Creates the graph inside the given container
-    // var graph = new mxGraph(document.getElementById("diagramEditor"));
-    // this.props.setParentGraphContainer(graph);
-
-    // var vm = mxUtils.makeDraggable(this.vmIcon.current, this.graphManager.getGraphInstance(),
-    //     function(graph, evt, target, x, y)
-    //     {
-    //       var dropContext = {
-    //           x: x,
-    //           y: y,
-    //           resourceType: "vm"
-    //         };
-    //       thisComponent.props.addResourceToDiagramEditor(dropContext);
-    //     }, null);
-
-    // var vmss = mxUtils.makeDraggable(this.vmssIcon.current, graph,
-    //     function(graph, evt, target, x, y)
-    //     {
-    //       var dropContext = {
-    //         x: x,
-    //         y: y,
-    //         resourceType: "vmss"
-    //       };
-    //     }, null);
-
-    // var vnet = mxUtils.makeDraggable(this.vnetIcon.current, graph,
-    //   function(graph, evt, target, x, y)
-    //   {
-    //       var dropContext = {
-    //           x: x,
-    //           y: y,
-    //           resourceType: "vnet"
-    //       };
-    //       thisComponent.props.addResourceToDiagramEditor(dropContext);
-    //   }, null);
-				
-				// Redirects feature to global switch. Note that this feature should only be used
-				// if the the x and y arguments are used in funct to insert the cell.
-				// ds.isGuidesEnabled = function()
-				// {
-				// 	return this.graph.graphHandler.guidesEnabled;
-				// };
-				
-			// Restores original drag icon while outside of graph
-			//ds.createDragElement = mxDragSource.prototype.createDragElement;
-  
-
-    
-  }
+   }
 
  
 }
