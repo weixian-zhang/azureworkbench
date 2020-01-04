@@ -23,6 +23,11 @@ namespace AzW.Infrastructure.AzureServices
             .WithSubnets(new Dictionary<string,string>(){{"",""}})
             .Create();
 
+            // AzAuthClient.WithSubscription("").Networks.Define("").WithRegion("")
+            // .WithExistingResourceGroup("").WithAddressSpace("")
+            // .WithSubnet()
+
+
             // AzAuthClient.WithDefaultSubscription().VirtualMachines.Define("")
             // .WithRegion("")
             // .WithExistingResourceGroup("")

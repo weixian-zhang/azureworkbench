@@ -8,7 +8,10 @@ class Header extends Component {
     return (
       <Navbar>
         <Navbar.Group align={Alignment.LEFT}>
-          <Navbar.Heading><img src ="../../assets/azure_icons/azure-logo.svg" alt="" />Azure Workbench</Navbar.Heading>
+          <Navbar.Heading>
+            <div style={{display: 'inline'}}><img src ={require('../../assets/azure_icons/azure-logo.svg')} alt="" style={{width : 25, height : 25, marginRight: 3}} /></div>
+            <div style={{display: 'inline'}}>Azure Workbench</div>
+          </Navbar.Heading>
         </Navbar.Group>
         <Navbar.Group align={Alignment.RIGHT}>
           <AnchorButton 

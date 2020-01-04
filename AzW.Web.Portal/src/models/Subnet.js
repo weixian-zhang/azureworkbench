@@ -1,7 +1,7 @@
-export default class VNet
+export default class Subnet
 {
     constructor (){
-        this.ResourceType = 'vnet';
+        this.ResourceType = 'subnet';
 
         this.GraphModel = {
             Id: '',
@@ -16,9 +16,8 @@ export default class VNet
 
         this.ProvisionContext = {
             Name: '',
-            Location: '',
-            AddressSpace: false,
-            Subnets: [] //dict<string,string>: subnet name, subnet range
-        }; 
+            CIDR: '',
+            NSG: []
+        };
     }
 }

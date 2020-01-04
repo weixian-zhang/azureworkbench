@@ -1,13 +1,16 @@
 
 import React, { Component } from "react";
-import VMPropertiesPanel from "./VMPropertiesPanel";
+import {Toaster, Position, Intent} from "@blueprintjs/core";
+import VMPropPanel from "./PropPanel/VMPropPanel";
+import VNetPropPanel from "./PropPanel/VNetPropPanel";
 import VM from "../../models/VM";
 import VNet from "../../models/VNet";
 import ShortUniqueId from 'short-unique-id';
-import AzureIcons from "../../services/AzureIcons";
-import NSGIcon from "../../assets/azure_icons/Networking Service Color/Network Security Groups (Classic).svg";
-import MxGraphManager from '../../services/MxGraphManager';
-import { mxCellOverlay, mxImage, mxKeyHandler, overlay, mxEvent, mxUtils, mxDragSource, mxUndoManager } from "mxgraph-js";
+import AzureIcons from "./Helpers/AzureIcons";
+import Messages from "./Helpers/Messages";
+import MxGraphManager from './Helpers/MxGraphManager';
+import { mxCellOverlay, mxImage, mxKeyHandler, mxConstants, overlay, mxEvent, mxUtils,mxPopupMenuHandler, mxDragSource, mxUndoManager, mxCell } from "mxgraph-js";
+import Subnet from "../../models/Subnet";
 
 
  export default class DiagramEditor extends Component {
@@ -31,15 +34,18 @@ import { mxCellOverlay, mxImage, mxKeyHandler, overlay, mxEvent, mxUtils, mxDrag
     this.addDeleteKeyEventToDeleteVertex();
     this.addContextMenu();
     this.addCtrlZEventToUndo();
+    this.addDragOverEventForVMOverSubnetHighlight();
 
     //create refs
     this.vmPropPanel = React.createRef();
+    this.vnetPropPanel = React.createRef();
   } 
 
   render() {
     return (
       <div id="diagramEditor" className="workbenchgrid-container">
-        <VMPropertiesPanel ref={this.vmPropPanel} />
+        <VMPropPanel ref={this.vmPropPanel} saveVMModelToDiagramEditor={this.fromVMPropPanelSaveModel} />
+        <VNetPropPanel ref={this.vnetPropPanel} />
       </div>
     );
   }
@@ -87,8 +93,21 @@ import { mxCellOverlay, mxImage, mxKeyHandler, overlay, mxEvent, mxUtils, mxDrag
     }
 }
 
+addDragOverEventForVMOverSubnetHighlight() {
+  mxEvent.addListener(this.graphManager.container, 'dragover', function(evt)
+				{
+					if (this.graph.isEnabled())
+					{
+						evt.stopPropagation();
+						evt.preventDefault();
+					}
+				});
+}
+
   addContextMenu(){
     var thisComponent = this;
+
+    this.graph.popupMenuHandler.autoExpand = true;
     //Installs a popupmenu handler using local function (see below).
     this.graph.popupMenuHandler.factoryMethod = function(menu, cell, evt)
     {
@@ -98,13 +117,6 @@ import { mxCellOverlay, mxImage, mxKeyHandler, overlay, mxEvent, mxUtils, mxDrag
 
   addResourceToEditorFromPalette = (dropContext) => {
 
-    var cell = this.graph.getCellAt(dropContext.x, dropContext.y);
-
-    if(cell != null)
-    {
-      this.addVMIntoSubnet(cell, dropContext);
-      return;
-    }
 
     switch(dropContext.resourceType) {
       case 'vm':
@@ -121,10 +133,11 @@ import { mxCellOverlay, mxImage, mxKeyHandler, overlay, mxEvent, mxUtils, mxDrag
   determineResourcePropertyPanelToShow = (resourceType, resourceModel) => {
     switch (resourceType) {
       case "vm":
+        this.vmPropPanel.current.setResourceModelFromDiagramEditor(resourceModel);
         this.vmPropPanel.current.show(true);
         break;
       case "vnet":
-        this.vmPropPanel.current.show(true);
+        this.vnetPropPanel.current.show(true);
         break;
       default:
         break;
@@ -139,30 +152,31 @@ import { mxCellOverlay, mxImage, mxKeyHandler, overlay, mxEvent, mxUtils, mxDrag
       var vnetModel = new VNet();
       vnetModel.resourceType = "vnet"
       vnetModel.GraphModel.Id = this.shortUID.randomUUID(6);
+      vnetModel.ProvisionContext.Name = 'vnet_' + vnetModel.GraphModel.Id;
       
       this.graphManager.graph.getModel().beginUpdate();
       try
       {
+          //overlay event listener
+          https://stackoverflow.com/questions/45708656/drag-event-on-mxgraph-overlay
+          // Creates a new overlay with an image and a tooltip
+        var vnetIconOverlay = new mxCellOverlay(
+          new mxImage(require('../../assets/azure_icons/Networking Service Color/Virtual Network (Classic).svg'),25, 25),
+          null,  mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP
+        );
+
           var vnetCell = this.graph.insertVertex(
             this.graph.getDefaultParent(),
             null,
             vnetModel,
             dropContext.x,
             dropContext.y,
-            400,
-            200,
-            "verticalLabelPosition=top;verticalAlign=bottom;"
+            500,
+            550,
+            "verticalLabelPosition=top;verticalAlign=bottom;align=right;STYLE_STROKEWIDTH=2"
           );
-          
-          // Creates a new overlay with an image and a tooltip
-        var nsgOverlay = new mxCellOverlay(
-          new mxImage(require('../../assets/azure_icons/Networking Service Color/Network Security Groups (Classic).svg'),
-          20, 20),
-          "NSG"
-        );
         
-        // Sets the overlay for the cell in the graph
-        this.graph.addCellOverlay(vnetCell, nsgOverlay);
+        this.graph.addCellOverlay(vnetCell, vnetIconOverlay);
     }
     finally
     {
@@ -174,19 +188,36 @@ import { mxCellOverlay, mxImage, mxKeyHandler, overlay, mxEvent, mxUtils, mxDrag
   addSubnet = (vnetCell) => {
       //var vnetCell = this.graph.getCell(vnetVertexId);
 
+      var subnet = new Subnet();
+      subnet.GraphModel.Id = this.shortUID.randomUUID(6);
+      subnet.ProvisionContext.Name = "subnet_" + subnet.GraphModel.Id;
+
       this.graphManager.graph.getModel().beginUpdate();
       try 
       {
-        var subnetCell = this.graph.insertVertex(
-          vnetCell,
-          null,
-          'subnet',
-          vnetCell.getGeometry().x,
-          vnetCell.getGeometry().y,
-          vnetCell.getGeometry().width - 30,
-          vnetCell.getGeometry().height - 100,
-          "verticalLabelPosition=top;verticalAlign=bottom;"
+        var nsgOverlay = new mxCellOverlay(
+          new mxImage(require('../../assets/azure_icons/Networking Service Color/NSG.png'),25, 25),
+          null,  mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP
         );
+
+        var subnetLogoOverlay = new mxCellOverlay(
+          new mxImage(require('../../assets/azure_icons/Networking Service Color/Subnet.png'),25, 25),
+          null,  mxConstants.ALIGN_Right, mxConstants.ALIGN_TOP
+        );
+
+        var subnetVertex = this.graph.insertVertex(
+          vnetCell,
+          subnet.GraphModel.Id,
+          subnet,
+          ((vnetCell.getGeometry().x /2) / 2) - 15,
+          vnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
+          vnetCell.getGeometry().width - 90,
+          100,
+          "verticalLabelPosition=top;verticalAlign=bottom;align=right"
+        );
+ 
+        this.graph.addCellOverlay(subnetVertex, subnetLogoOverlay);
+        this.graph.addCellOverlay(subnetVertex, nsgOverlay);
       }
       finally
       {
@@ -196,21 +227,30 @@ import { mxCellOverlay, mxImage, mxKeyHandler, overlay, mxEvent, mxUtils, mxDrag
   }
 
   addVM = (dropContext) => {
+    var cell = this.graph.getCellAt(dropContext.x, dropContext.y);
+    if(dropContext.resourceType == "vm" && (cell == null || cell.value.ResourceType != "subnet"))
+    {
+        Toaster.create({
+          position: Position.TOP,
+          autoFocus: false,
+          canEscapeKeyClear: true
+        }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.VMInSubnet()});
+        return;
+    }
 
      var vmModel = new VM();
      vmModel.GraphModel.IconId = this.shortUID.randomUUID(6);
      vmModel.ProvisionContext.Name = "vm_" + vmModel.GraphModel.IconId;
      vmModel.GraphModel.ResourceType = "vm";
+     vmModel.ProvisionContext.Name = "vm-" + vmModel.GraphModel.IconId;
 
      this.graphManager.graph.getModel().beginUpdate();
      try
      {
         var vm = this.graph.insertVertex
-          (this.graphManager.graph.getDefaultParent(), vmModel.GraphModel.IconId ,vmModel , dropContext.x, dropContext.y, 45, 45,
-          "verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + this.azureIcons.VirtualMachine());
-
-          vm.setConnectable(false);
-        }
+          (cell, vmModel.GraphModel.IconId ,vmModel , cell.getGeometry().x, cell.getGeometry().x, 45, 45,
+          "verticalLabelPosition=bottom;verticalAlign=bottom;shape=image;image=data:image/svg+xml," + this.azureIcons.VirtualMachine());
+    }
      finally
      {
        // Updates the display
@@ -218,34 +258,12 @@ import { mxCellOverlay, mxImage, mxKeyHandler, overlay, mxEvent, mxUtils, mxDrag
      }
   }
 
-  addVMIntoSubnet(subnetCell, dropContext) {
-    var vmModel = new VM();
-     vmModel.GraphModel.IconId = this.shortUID.randomUUID(6);
-     vmModel.ProvisionContext.Name = "vm_" + vmModel.GraphModel.IconId;
-     vmModel.GraphModel.ResourceType = "vm";
-
-     this.graphManager.graph.getModel().beginUpdate();
-     try
-     {
-        var vm = this.graph.insertVertex
-          (subnetCell, vmModel.GraphModel.IconId ,vmModel , dropContext.x, dropContext.y, 45, 45,
-          "verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + this.azureIcons.VirtualMachine());
-
-          vm.setConnectable(false);
-        }
-     finally
-     {
-       // Updates the display
-       this.graphManager.graph.getModel().endUpdate();
-     }
-  }
-  
   createContextMenu = (graph, menu, cell, evt) => {
 
     if(cell == null || cell.value == null | cell.value.GraphModel == null)
         return;
     
-        var thisComponent = this;
+    var thisComponent = this;
 
     menu.addItem('Bring to Front', '', function()
       {
@@ -278,6 +296,12 @@ import { mxCellOverlay, mxImage, mxKeyHandler, overlay, mxEvent, mxUtils, mxDrag
     this.graph.selectAll();
     var cells = this.graph.getSelectionCells(); 
     this.graph.clearSelection();
+  }
+
+  //callbacks from Ref components
+  fromVMPropPanelSaveModel(vmModel) {
+      var vmCell = this.graph.getModel().getCell(vmModel.GraphModel.Id);
+      vmCell.value.ProvisionContext = vmModel.ProvisionContext; 
   }
 
 }

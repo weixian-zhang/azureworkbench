@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { FormGroup, InputGroup, Switch, Drawer, DrawerLayout } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
 
-export default class VMPropertiesPanel extends Component {
+export default class VNetPropPanel extends Component {
   constructor(props) {
       super(props);
       this.state ={
@@ -27,7 +27,7 @@ export default class VMPropertiesPanel extends Component {
           usePortal= {true}
           size= {Drawer.SIZE_SMALL}
       >
-              <Switch checked={false} label="Public IP"  />
+              
               <a class="bp3-button Alignment.CENTER" role="button" tabIndex={0}>Click</a>
     
       </Drawer>

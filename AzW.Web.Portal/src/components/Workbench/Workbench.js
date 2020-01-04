@@ -8,32 +8,6 @@ import "../../assets/css/Panel.css";
 import "../../assets/css/Workbench.css";
 import "../../assets/css/WorkbenchGrid.css";
 
-import {
-  mxGraph,
-  Drawer,
-  Switch,
-  FormGroup, InputGroup,
-  mxRectangle,
-  mxParallelEdgeLayout,
-  mxConstants,
-  mxEdgeStyle,
-  mxLayoutManager,
-  mxCell,
-  mxGeometry,
-  mxRubberband,
-  mxDragSource,
-  mxKeyHandler,
-  mxCodec,
-  mxClient,
-  mxConnectionHandler,
-  mxUtils,
-  mxToolbar,
-  mxEvent,
-  mxCellTracker,
-  mxImage,
-  mxFastOrganicLayout
-} from "mxgraph-js";
-import MxGraphManager from "../../services/MxGraphManager";
 
 export default class Workbench extends Component {
   constructor(props) {

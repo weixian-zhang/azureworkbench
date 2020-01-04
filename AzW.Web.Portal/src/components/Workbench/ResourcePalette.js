@@ -6,36 +6,7 @@ import { ReactComponent as VirtualMachine } from "../../assets/azure_icons/Compu
 import { ReactComponent as VMSS } from "../../assets/azure_icons/ComputeServiceColor/VM/VM Scale Sets.svg";
 import { ReactComponent as FunctionApp } from "../../assets/azure_icons/ComputeServiceColor/Function Apps.svg";
 import { ReactComponent as VirtualNetwork } from "../../assets/azure_icons/Networking Service Color/Virtual Networks.svg";
-import MxGraphManager from '../../services/MxGraphManager';
 
-import {
-  mxGraph,
-  mxGuide,
-  mxEdgeHandler,
-  mxGraphHandler,
-  Drawer,
-  Switch,
-  FormGroup, InputGroup,
-  mxRectangle,
-  mxParallelEdgeLayout,
-  mxConstants,
-  mxEdgeStyle,
-  mxLayoutManager,
-  mxCell,
-  mxGeometry,
-  mxRubberband,
-  mxDragSource,
-  mxKeyHandler,
-  mxCodec,
-  mxClient,
-  mxConnectionHandler,
-  mxUtils,
-  mxToolbar,
-  mxEvent,
-  mxCellTracker,
-  mxImage,
-  mxFastOrganicLayout
-} from "mxgraph-js";
 
 export default class ResourcePalette extends Component {
 
@@ -49,10 +20,18 @@ export default class ResourcePalette extends Component {
     this.vnetIcon = React.createRef();
 
     this.state = {
+      isShapeOpen: false,
       isComputeOpen: false,
       isNetworkingOpen: false,
       graphContainer: null
     }
+  }
+
+  shapePanelHeaderClick = () => { 
+    this.setState(
+      { 
+        isShapeOpen: !this.state.isComputeOpen
+      }) 
   }
 
   computePanelHeaderClick = () => { 
@@ -77,6 +56,22 @@ export default class ResourcePalette extends Component {
   render(){
     return (
       <div className="azurepanel-container" >
+        <h3 class="collapse-header" onClick={this.shapePanelHeaderClick}>Shapes</h3>
+        <Collapse isOpen={this.state.isShapeOpen} accordion={true} keepChildrenMounted={true} >
+          <div class="tile-panel">
+            
+            <div class="tile-text">Straight Connector</div>
+          </div>
+          <div class="tile-panel">
+            
+            <div class="tile-text">Rounded Connector</div>
+          </div>
+          <div class="tile-panel">
+
+            <div class="tile-text">Label</div>
+          </div>
+        </Collapse>
+
         <h3 class="collapse-header" onClick={this.computePanelHeaderClick}>Compute</h3>
         <Collapse isOpen={this.state.isComputeOpen} accordion={true} keepChildrenMounted={true} >
           <div class="tile-panel" ref={this.vmIcon}>
