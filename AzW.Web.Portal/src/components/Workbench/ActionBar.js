@@ -16,16 +16,18 @@ export default class ActionBar extends Component {
                         <span className="bp3-navbar-divider"></span>
                         <span>Resource Groups</span>
                         <span className="bp3-navbar-divider"></span>
-                        <button className="bp3-button">Calculate</button>
-                        <span className="bp3-navbar-divider"></span>
                         <button className="bp3-button">Deploy</button>
                         <span className="bp3-navbar-divider"></span>
-                        <button className="bp3-button">Save Draft</button>
+                        <button className="bp3-button">Save</button>
                         <span className="bp3-navbar-divider"></span>
-                        <button className="bp3-button">Generate Link</button>
+                        <button className="bp3-button" onClick={this.shareDiagram}>Share</button>
                     </div>
                 </div>
             </nav>
         );
     };
+
+    shareDiagram = () => {
+        this.props.shareDiagram();
+    }
 }

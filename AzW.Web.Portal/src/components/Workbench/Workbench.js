@@ -38,6 +38,10 @@ export default class Workbench extends Component {
       })
   }
 
+  shareDiagram = () => {
+    return this.DiagramEditor.current.shareDiagram();
+  }
+
   render = () => {
     const { renderResourcePalette } = this.state
     return (
@@ -47,6 +51,8 @@ export default class Workbench extends Component {
         <DiagramEditor ref={this.DiagramEditor} mxgraphManagerReadyCallback={this.mxgraphManagerReadyCallback} />
       </div>
     );
+
+
   }
 
   

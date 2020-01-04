@@ -2,6 +2,7 @@
   flex: 0 0 230px;
   background: #f5f8fa;
   max-width: 230px;
+  overflow: scroll;
 }
 
 .azurepanel-container {

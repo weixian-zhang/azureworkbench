@@ -9,7 +9,7 @@ import ShortUniqueId from 'short-unique-id';
 import AzureIcons from "./Helpers/AzureIcons";
 import Messages from "./Helpers/Messages";
 import MxGraphManager from './Helpers/MxGraphManager';
-import { mxCellOverlay, mxImage, mxKeyHandler, mxConstants, overlay, mxEvent, mxUtils,mxPopupMenuHandler, mxDragSource, mxUndoManager, mxCell } from "mxgraph-js";
+import { mxCodec, mxPoint, mxGeometry, mxCellOverlay, mxImage, mxKeyHandler, mxConstants, mxEvent, mxUtils,mxPopupMenuHandler, mxDragSource, mxUndoManager, mxCell } from "mxgraph-js";
 import Subnet from "../../models/Subnet";
 
 
@@ -34,6 +34,7 @@ import Subnet from "../../models/Subnet";
     this.addDeleteKeyEventToDeleteVertex();
     this.addContextMenu();
     this.addCtrlZEventToUndo();
+    this.addCtrlCCopyVertices();
     this.addDragOverEventForVMOverSubnetHighlight();
 
     //create refs
@@ -55,7 +56,7 @@ import Subnet from "../../models/Subnet";
         {
           var cell = evt.getProperty('cell');
 
-          if(cell.value == null)
+          if(cell.value == null || cell.value.GraphModel == null)
             return;
 
           let iconId = cell.value.GraphModel.IconId;
@@ -93,6 +94,16 @@ import Subnet from "../../models/Subnet";
     }
 }
 
+addCtrlCCopyVertices() {
+  var keyHandler = new mxKeyHandler(this.graph);
+  keyHandler.getFunction = function(evt) {
+    if (evt != null && evt.ctrlKey == true && evt.key == 'c')
+    {
+        mxUtils.alert('ctrl c');
+    }
+  }
+}
+
 addDragOverEventForVMOverSubnetHighlight() {
   mxEvent.addListener(this.graphManager.container, 'dragover', function(evt)
 				{
@@ -117,13 +128,20 @@ addDragOverEventForVMOverSubnetHighlight() {
 
   addResourceToEditorFromPalette = (dropContext) => {
 
-
     switch(dropContext.resourceType) {
       case 'vm':
         this.addVM(dropContext);
         break;
       case 'vnet':
         this.addVNet(dropContext);
+        break;
+      case 'curvearrow':
+        this.addCurveArrow(dropContext);
+        break;
+      case 'straightarrow':
+        this.addStraightArrow(dropContext);
+        break;
+      case 'label':
         break;
       default:
         return null;
@@ -142,6 +160,52 @@ addDragOverEventForVMOverSubnetHighlight() {
       default:
         break;
     }
+  }
+
+  addStraightArrow(dropContext){
+
+    this.graphManager.graph.getModel().beginUpdate();
+      try
+      {
+        var parent = this.graph.getDefaultParent();
+        // this.graph.insertEdge(parent,
+        //   this.shortUID.randomUUID(6));
+        var cell = new mxCell('', new mxGeometry(dropContext.x, dropContext.y, 50, 50), 'curved=0;endArrow=classic;html=1;');
+        cell.geometry.setTerminalPoint(new mxPoint(dropContext.x, dropContext.y), true);
+        cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
+        cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
+        cell.geometry.relative = true;
+        cell.edge = true;
+        this.graph.addCell(cell, parent);
+      }
+      finally
+      {
+        // Updates the display
+        this.graphManager.graph.getModel().endUpdate();
+      }
+  }
+
+  addCurveArrow(dropContext){
+
+    this.graphManager.graph.getModel().beginUpdate();
+      try
+      {
+        var parent = this.graph.getDefaultParent();
+        // this.graph.insertEdge(parent,
+        //   this.shortUID.randomUUID(6));
+        var cell = new mxCell('', new mxGeometry(dropContext.x, dropContext.y, 50, 50), 'curved=1;endArrow=classic;html=1;');
+        cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 30, dropContext.y + 30), true);
+        cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
+        cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
+        cell.geometry.relative = true;
+        cell.edge = true;
+        this.graph.addCell(cell, parent);
+      }
+      finally
+      {
+        // Updates the display
+        this.graphManager.graph.getModel().endUpdate();
+      }
   }
 
   addVNet = (dropContext) => {
@@ -173,9 +237,9 @@ addDragOverEventForVMOverSubnetHighlight() {
             dropContext.y,
             500,
             550,
-            "verticalLabelPosition=top;verticalAlign=bottom;align=right;STYLE_STROKEWIDTH=2"
+            "editable=0;verticalLabelPosition=top;verticalAlign=bottom;align=right;STYLE_STROKEWIDTH=2"
           );
-        
+          
         this.graph.addCellOverlay(vnetCell, vnetIconOverlay);
     }
     finally
@@ -213,7 +277,7 @@ addDragOverEventForVMOverSubnetHighlight() {
           vnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
           vnetCell.getGeometry().width - 90,
           100,
-          "verticalLabelPosition=top;verticalAlign=bottom;align=right"
+          "editable=0;verticalLabelPosition=top;verticalAlign=bottom;align=right"
         );
  
         this.graph.addCellOverlay(subnetVertex, subnetLogoOverlay);
@@ -249,7 +313,7 @@ addDragOverEventForVMOverSubnetHighlight() {
      {
         var vm = this.graph.insertVertex
           (cell, vmModel.GraphModel.IconId ,vmModel , cell.getGeometry().x, cell.getGeometry().x, 45, 45,
-          "verticalLabelPosition=bottom;verticalAlign=bottom;shape=image;image=data:image/svg+xml," + this.azureIcons.VirtualMachine());
+          "editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + this.azureIcons.VirtualMachine());
     }
      finally
      {
@@ -267,12 +331,12 @@ addDragOverEventForVMOverSubnetHighlight() {
 
     menu.addItem('Bring to Front', '', function()
       {
-        mxUtils.alert('bring to front');
+        thisComponent.graph.orderCells(false); 
       });
 
       menu.addItem('Send To Back', '', function()
       {
-        mxUtils.alert('send to back');
+        thisComponent.graph.orderCells(true); 
       });
 
       menu.addSeparator();
@@ -291,17 +355,16 @@ addDragOverEventForVMOverSubnetHighlight() {
       }
   }
 
-  saveDraft(){
-    this.graph.clearSelection();
-    this.graph.selectAll();
-    var cells = this.graph.getSelectionCells(); 
-    this.graph.clearSelection();
-  }
-
   //callbacks from Ref components
   fromVMPropPanelSaveModel(vmModel) {
       var vmCell = this.graph.getModel().getCell(vmModel.GraphModel.Id);
       vmCell.value.ProvisionContext = vmModel.ProvisionContext; 
+  }
+
+  shareDiagram(){
+    var encoder = new mxCodec();
+    var node = encoder.encode(this.graph.getModel());
+    mxUtils.popup(mxUtils.getPrettyXml(node), true);
   }
 
 }

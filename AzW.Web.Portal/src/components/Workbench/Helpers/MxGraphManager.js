@@ -54,23 +54,13 @@ export default class MxGraphManager
         mxEvent.disableContextMenu(this.container);
         
         //this.graph.setPanning(true);
-        this.graph.setTooltips(true);
-        this.graph.htmlLabels = true;
+        //this.graph.setTooltips(true);
         this.graph.setConnectable(true);
-        //this.graph.setConnectableEdges(true);
+        
+        this.initLabelBehaviour();
 
         this.addConnectablePortsToAllAddedVertex();
-        
-
-        // Overrides method to provide ProvisionContext.Name as label
-        this.graph.convertValueToString = function(cell)
-        {
-            if(cell.value != null && cell.value.ProvisionContext != null)
-                return cell.value.ProvisionContext.Name;
-            else
-                return '';
-        };
-                
+         
         //contrain drag boundary of child within parent
         mxGraphHandler.prototype.removeCellsFromParent = false
         
@@ -85,6 +75,79 @@ export default class MxGraphManager
     
         // Enables snapping waypoints to terminals
         mxEdgeHandler.prototype.snapToTerminals = true;
+    }
+
+    initLabelBehaviour(){
+
+        //this.graph.htmlLabels = true;
+        this.graph.setHtmlLabels(true);
+        this.graph.htmlLabels = true;
+        this.graph.autoSizeCellsOnAdd = true;
+
+        // Overrides method to provide ProvisionContext.Name as label
+        this.graph.convertValueToString = function(cell)
+        {
+            if(cell.value != null && cell.value.ProvisionContext != null)
+                return cell.value.ProvisionContext.Name;
+            else
+                return cell.value;
+        };
+
+        // Truncates the label to the size of the vertex
+        // this.graph.getLabel = function(cell)
+        // {
+        //     var label = (this.labelsVisible) ? getCellLabelValue(cell) : '';
+        //     var geometry = this.model.getGeometry(cell);
+            
+        //     if (!this.model.isCollapsed(cell) && geometry != null && (geometry.offset == null ||
+        //         (geometry.offset.x == 0 && geometry.offset.y == 0)) && this.model.isVertex(cell) &&
+        //         geometry.width >= 2)
+        //     {
+        //         var style = this.getCellStyle(cell);
+        //         var fontSize = style[mxConstants.STYLE_FONTSIZE] || mxConstants.DEFAULT_FONTSIZE;
+                
+        //         //var max = geometry.width / (fontSize * 0.625);
+        //         // if (max < label.length)
+        //         // {
+        //         //     return label.substring(0, max) + '...';
+        //         // }
+        //     }
+            
+        //     return label;
+        // };
+
+        // Enables wrapping for vertex labels
+        // this.graph.isWrapping = function(cell)
+        // {
+        //     return this.model.isCollapsed(cell);
+        // };
+        
+        //Enables clipping of vertex labels if no offset is defined
+        // this.graph.isLabelClipped = function(cell)
+        // {
+        //     var geometry = this.model.getGeometry(cell);
+            
+        //     return geometry != null && !geometry.relative && (geometry.offset == null ||
+        //         (geometry.offset.x == 0 && geometry.offset.y == 0));
+        // };
+                   
+
+        // Returns a HTML representation of the cell
+        // this.graph.getLabel = function(cell)
+        // {
+        //     var div = document.createElement('div');
+        //     div.style.height = '100%';
+        //     div.style.width = '100%';
+        //     div.style.textAlign = 'center';
+        //     div.style.fontSize = '12px';
+        //     div.style.color = '#774400';
+        //     div.style.position = "fixed";
+        //     div.style.top = cell.getGeometry().x + 100;
+        //     div.style.left = cell.getGeometry().y + 50;
+        //     mxUtils.write(div, getCellLabelValue(cell));
+
+        //     return div;
+        // };
     }
 
     initGraphStyle(){
@@ -152,23 +215,23 @@ export default class MxGraphManager
         var parent = graph.getDefaultParent();
 
         // Ports are equal for all shapes...
-        var ports = new Array();
+        // var ports = new Array();
         
-        // NOTE: Constraint is used later for orthogonal edge routing (currently ignored)
-        ports['w'] = {x: 0, y: 0.5, perimeter: true, constraint: 'west'};
-        ports['e'] = {x: 1, y: 0.5, perimeter: true, constraint: 'east'};
-        ports['n'] = {x: 0.5, y: 0, perimeter: true, constraint: 'north'};
-        ports['s'] = {x: 0.5, y: 1, perimeter: true, constraint: 'south'};
-        ports['nw'] = {x: 0, y: 0, perimeter: true, constraint: 'north west'};
-        ports['ne'] = {x: 1, y: 0, perimeter: true, constraint: 'north east'};
-        ports['sw'] = {x: 0, y: 1, perimeter: true, constraint: 'south west'};
-        ports['se'] = {x: 1, y: 1, perimeter: true, constraint: 'south east'};			
+        // // NOTE: Constraint is used later for orthogonal edge routing (currently ignored)
+        // ports['w'] = {x: 0, y: 0.5, perimeter: true, constraint: 'west'};
+        // ports['e'] = {x: 1, y: 0.5, perimeter: true, constraint: 'east'};
+        // ports['n'] = {x: 0.5, y: 0, perimeter: true, constraint: 'north'};
+        // ports['s'] = {x: 0.5, y: 1, perimeter: true, constraint: 'south'};
+        // ports['nw'] = {x: 0, y: 0, perimeter: true, constraint: 'north west'};
+        // ports['ne'] = {x: 1, y: 0, perimeter: true, constraint: 'north east'};
+        // ports['sw'] = {x: 0, y: 1, perimeter: true, constraint: 'south west'};
+        // ports['se'] = {x: 1, y: 1, perimeter: true, constraint: 'south east'};			
         
         // Extends shapes classes to return their ports
-        mxShape.prototype.getPorts = function()
-        {
-            return ports;
-        };
+        // mxShape.prototype.getPorts = function()
+        // {
+        //     return ports;
+        // };
 
         // Disables floating connections (only connections via ports allowed)
         graph.connectionHandler.isConnectableCell = function(cell)
@@ -191,7 +254,8 @@ export default class MxGraphManager
         // and getSourcePerimeterPoint should be overriden by setting sourceConstraint
         // sourceConstraint to null in mouseMove and updating it and returning the
         // nearest point (cp) in getSourcePerimeterPoint (see below)
-        var mxConnectionHandlerUpdateEdgeState = mxConnectionHandler.prototype.updateEdgeState;
+        var mxConnectionHandlerUpdateEdgeState =
+            mxConnectionHandler.prototype.updateEdgeState;
         mxConnectionHandler.prototype.updateEdgeState = function(pt, constraint)
         {
             if (pt != null && this.previous != null)
@@ -229,14 +293,12 @@ export default class MxGraphManager
             {
                 if (terminal != null && this.model.isVertex(terminal.cell))
                 {
-                    return [new mxConnectionConstraint(new mxPoint(0, 0), true),
+                    return [
                         new mxConnectionConstraint(new mxPoint(0.5, 0), true),
-                        new mxConnectionConstraint(new mxPoint(1, 0), true),
                         new mxConnectionConstraint(new mxPoint(0, 0.5), true),
                         new mxConnectionConstraint(new mxPoint(1, 0.5), true),
-                        new mxConnectionConstraint(new mxPoint(0, 1), true),
                         new mxConnectionConstraint(new mxPoint(0.5, 1), true),
-                        new mxConnectionConstraint(new mxPoint(1, 1), true)];
+                    ];
                 }
 
                 return null;
