@@ -9,7 +9,7 @@ import ShortUniqueId from 'short-unique-id';
 import AzureIcons from "./Helpers/AzureIcons";
 import Messages from "./Helpers/Messages";
 import MxGraphManager from './Helpers/MxGraphManager';
-import { mxCodec, mxPoint, mxGeometry, mxCellOverlay, mxImage, mxKeyHandler, mxConstants, mxEvent, mxUtils,mxPopupMenuHandler, mxDragSource, mxUndoManager, mxCell } from "mxgraph-js";
+import { mxPopupMenu, mxCodec, mxPoint, mxGeometry, mxCellOverlay, mxImage, mxKeyHandler, mxConstants, mxEvent, mxUtils,mxPopupMenuHandler, mxDragSource, mxUndoManager, mxCell } from "mxgraph-js";
 import Subnet from "../../models/Subnet";
 
 
@@ -60,7 +60,7 @@ import Subnet from "../../models/Subnet";
             return;
 
           let iconId = cell.value.GraphModel.IconId;
-          let resourceType = cell.value.GraphModel.ResourceType;
+          let resourceType = cell.value.ResourceType;
 
           this.determineResourcePropertyPanelToShow(resourceType, cell.value);
         });  
@@ -116,33 +116,69 @@ addDragOverEventForVMOverSubnetHighlight() {
 }
 
   addContextMenu(){
+    this.graph.popupMenuHandler.autoExpand = true;
+
     var thisComponent = this;
 
-    this.graph.popupMenuHandler.autoExpand = true;
     //Installs a popupmenu handler using local function (see below).
     this.graph.popupMenuHandler.factoryMethod = function(menu, cell, evt)
     {
-      thisComponent.createContextMenu(this.graph, menu, cell, evt);
+      if(cell == null || cell.value == null | cell.value.GraphModel == null)
+        return;
+    
+      menu.addItem('Bring to Front', '', function()
+        {
+          thisComponent.graph.orderCells(false); 
+        });
+
+        menu.addItem('Send To Back', '', function()
+        {
+          thisComponent.graph.orderCells(true); 
+        });
+
+        //for vnet
+        if(cell.value.resourceType == "vnet")
+        {
+          menu.addSeparator();
+          
+          menu.addItem('Add Subnet', '', function()
+          {
+            thisComponent.addSubnet(cell); // is vnetCell
+          });
+    
+          menu.addItem('Add Peering', '', function()
+          {
+            mxUtils.alert('MenuItem1');
+          });
+        }
     };
+      
   }
 
   addResourceToEditorFromPalette = (dropContext) => {
 
     switch(dropContext.resourceType) {
-      case 'vm':
-        this.addVM(dropContext);
-        break;
-      case 'vnet':
-        this.addVNet(dropContext);
-        break;
-      case 'curvearrow':
-        this.addCurveArrow(dropContext);
+
+      case 'elbowarrow':
+        this.addElbowArrow(dropContext);
         break;
       case 'straightarrow':
         this.addStraightArrow(dropContext);
         break;
       case 'label':
+        this.addLabel(dropContext);
         break;
+     
+      case 'vmWindows':
+        this.addVM(dropContext, 'vmWindows');
+        break;
+      case 'vmLinux':
+        this.addVM(dropContext, 'vmWindows');
+        break;
+      case 'vnet':
+        this.addVNet(dropContext);
+        break;
+
       default:
         return null;
     }
@@ -150,7 +186,11 @@ addDragOverEventForVMOverSubnetHighlight() {
 
   determineResourcePropertyPanelToShow = (resourceType, resourceModel) => {
     switch (resourceType) {
-      case "vm":
+      case "vmWindows":
+        this.vmPropPanel.current.setResourceModelFromDiagramEditor(resourceModel);
+        this.vmPropPanel.current.show(true);
+        break;
+      case "vmLinux":
         this.vmPropPanel.current.setResourceModelFromDiagramEditor(resourceModel);
         this.vmPropPanel.current.show(true);
         break;
@@ -168,9 +208,8 @@ addDragOverEventForVMOverSubnetHighlight() {
       try
       {
         var parent = this.graph.getDefaultParent();
-        // this.graph.insertEdge(parent,
-        //   this.shortUID.randomUUID(6));
-        var cell = new mxCell('', new mxGeometry(dropContext.x, dropContext.y, 50, 50), 'curved=0;endArrow=classic;html=1;');
+        var randomId = this.shortUID.randomUUID(6);
+        var cell = new mxCell(randomId, new mxGeometry(dropContext.x, dropContext.y, 50, 50), 'straightedgestyle'); //curved=0;endArrow=classic;html=1;
         cell.geometry.setTerminalPoint(new mxPoint(dropContext.x, dropContext.y), true);
         cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
         cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
@@ -185,16 +224,16 @@ addDragOverEventForVMOverSubnetHighlight() {
       }
   }
 
-  addCurveArrow(dropContext){
+  addElbowArrow(dropContext){
 
-    this.graphManager.graph.getModel().beginUpdate();
+      this.graphManager.graph.getModel().beginUpdate();
       try
       {
         var parent = this.graph.getDefaultParent();
-        // this.graph.insertEdge(parent,
-        //   this.shortUID.randomUUID(6));
-        var cell = new mxCell('', new mxGeometry(dropContext.x, dropContext.y, 50, 50), 'curved=1;endArrow=classic;html=1;');
-        cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 30, dropContext.y + 30), true);
+
+        var randomId = this.shortUID.randomUUID(6);
+        var cell = new mxCell(randomId, new mxGeometry(dropContext.x, dropContext.y, 50, 50), 'elbowedgestyle');
+        cell.getGeometry().setTerminalPoint(new mxPoint(dropContext.x + 30, dropContext.y + 30), true);
         cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
         cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
         cell.geometry.relative = true;
@@ -206,6 +245,21 @@ addDragOverEventForVMOverSubnetHighlight() {
         // Updates the display
         this.graphManager.graph.getModel().endUpdate();
       }
+  }
+
+  addLabel = (dropContext) => {
+    this.graphManager.graph.getModel().beginUpdate();
+    try
+    {
+      var randomId = this.shortUID.randomUUID(6);
+      this.graph.insertVertex
+        (this.graph.getDefaultParent(),randomId, 'Text', dropContext.x, dropContext.y, 0, 0, 'strokeColor=none;fillColor=none;resizable=0;autosize=1;');
+    }
+    finally
+    {
+      // Updates the display
+      this.graphManager.graph.getModel().endUpdate();
+    }
   }
 
   addVNet = (dropContext) => {
@@ -224,10 +278,10 @@ addDragOverEventForVMOverSubnetHighlight() {
           //overlay event listener
           https://stackoverflow.com/questions/45708656/drag-event-on-mxgraph-overlay
           // Creates a new overlay with an image and a tooltip
-        var vnetIconOverlay = new mxCellOverlay(
-          new mxImage(require('../../assets/azure_icons/Networking Service Color/Virtual Network (Classic).svg'),25, 25),
-          null,  mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP
-        );
+          var vnetIconOverlay = new mxCellOverlay(
+            new mxImage(require('../../assets/azure_icons/Networking Service Color/Virtual Network (Classic).svg'),25, 25),
+            null,  mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP
+          );
 
           var vnetCell = this.graph.insertVertex(
             this.graph.getDefaultParent(),
@@ -237,7 +291,7 @@ addDragOverEventForVMOverSubnetHighlight() {
             dropContext.y,
             500,
             550,
-            "editable=0;verticalLabelPosition=top;verticalAlign=bottom;align=right;STYLE_STROKEWIDTH=2"
+            "vnetstyle" //"rounded=1;editable=0;verticalLabelPosition=top;verticalAlign=bottom;align=right;STYLE_STROKEWIDTH=2"
           );
           
         this.graph.addCellOverlay(vnetCell, vnetIconOverlay);
@@ -260,12 +314,12 @@ addDragOverEventForVMOverSubnetHighlight() {
       try 
       {
         var nsgOverlay = new mxCellOverlay(
-          new mxImage(require('../../assets/azure_icons/Networking Service Color/NSG.png'),25, 25),
+          new mxImage(require('../../assets/azure_icons/Networking Service Color/NSG.png'),20, 20),
           null,  mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP
         );
 
         var subnetLogoOverlay = new mxCellOverlay(
-          new mxImage(require('../../assets/azure_icons/Networking Service Color/Subnet.png'),25, 25),
+          new mxImage(require('../../assets/azure_icons/Networking Service Color/Subnet.png'),15, 15),
           null,  mxConstants.ALIGN_Right, mxConstants.ALIGN_TOP
         );
 
@@ -290,9 +344,9 @@ addDragOverEventForVMOverSubnetHighlight() {
       }
   }
 
-  addVM = (dropContext) => {
+  addVM = (dropContext, os) => {
     var cell = this.graph.getCellAt(dropContext.x, dropContext.y);
-    if(dropContext.resourceType == "vm" && (cell == null || cell.value.ResourceType != "subnet"))
+    if((dropContext.resourceType == "vmWindows" || dropContext.resourceType == "vmLinux") && (cell == null || cell.value.ResourceType != "subnet"))
     {
         Toaster.create({
           position: Position.TOP,
@@ -303,56 +357,26 @@ addDragOverEventForVMOverSubnetHighlight() {
     }
 
      var vmModel = new VM();
+     vmModel.ResourceType = os;
      vmModel.GraphModel.IconId = this.shortUID.randomUUID(6);
      vmModel.ProvisionContext.Name = "vm_" + vmModel.GraphModel.IconId;
      vmModel.GraphModel.ResourceType = "vm";
      vmModel.ProvisionContext.Name = "vm-" + vmModel.GraphModel.IconId;
+
+     var iconByOS = (os == 'windows') ? this.azureIcons.VirtualMachineWindows() : this.azureIcons.VirtualMachineLinux();
 
      this.graphManager.graph.getModel().beginUpdate();
      try
      {
         var vm = this.graph.insertVertex
           (cell, vmModel.GraphModel.IconId ,vmModel , cell.getGeometry().x, cell.getGeometry().x, 45, 45,
-          "editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + this.azureIcons.VirtualMachine());
+          "editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + iconByOS);
     }
      finally
      {
        // Updates the display
        this.graphManager.graph.getModel().endUpdate();
      }
-  }
-
-  createContextMenu = (graph, menu, cell, evt) => {
-
-    if(cell == null || cell.value == null | cell.value.GraphModel == null)
-        return;
-    
-    var thisComponent = this;
-
-    menu.addItem('Bring to Front', '', function()
-      {
-        thisComponent.graph.orderCells(false); 
-      });
-
-      menu.addItem('Send To Back', '', function()
-      {
-        thisComponent.graph.orderCells(true); 
-      });
-
-      menu.addSeparator();
-
-      if(cell.value.resourceType == "vnet")
-      {
-        menu.addItem('Add Subnet', '', function()
-        {
-          thisComponent.addSubnet(cell); // is vnetCell
-        });
-  
-        menu.addItem('Add Peering', '', function()
-        {
-          mxUtils.alert('MenuItem1');
-        });
-      }
   }
 
   //callbacks from Ref components
@@ -362,9 +386,13 @@ addDragOverEventForVMOverSubnetHighlight() {
   }
 
   shareDiagram(){
+    mxUtils.popup(this.getDiagramAsXml(), true);
+  }
+
+  getDiagramAsXml(){
     var encoder = new mxCodec();
     var node = encoder.encode(this.graph.getModel());
-    mxUtils.popup(mxUtils.getPrettyXml(node), true);
+    return mxUtils.getPrettyXml(node);
   }
 
 }

@@ -1,7 +1,7 @@
 export default class VM
 {
     constructor (){
-        this.ResourceType = 'vm';
+        this.ResourceType = 'm';
 
         this.GraphModel = {
             Id: '',

@@ -39,3 +39,22 @@ inline {
   cursor: pointer;
   margin: 0px;
 }
+
+
+/*required for popupMenuHandler*/
+div.mxPopupMenu {
+  -webkit-box-shadow: 3px 3px 6px #C0C0C0;
+  -moz-box-shadow: 3px 3px 6px #C0C0C0;
+  box-shadow: 3px 3px 6px #C0C0C0;
+  background: white;
+  position: absolute;
+  border: 3px solid #e7e7e7;
+  padding: 3px;
+}
+div.mxCellEditor {
+
+  background: white;
+  position: absolute;
+  border: 3px solid #e7e7e7;
+  padding: 3px;
+}

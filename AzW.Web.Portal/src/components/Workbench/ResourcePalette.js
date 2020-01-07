@@ -1,20 +1,27 @@
 import React, { Component, useRef } from "react";
 import { Collapse } from "@blueprintjs/core";
+import { ReactComponent as SQLDatabase } from "../../assets/azure_icons/Databases Service Color/SQL Databases.svg";
 import { ReactComponent as CosmosDB } from "../../assets/azure_icons/Databases Service Color/Azure Cosmos DB.svg";
 import { ReactComponent as PostgreSQL } from "../../assets/azure_icons/Databases Service Color/Azure Database for PostgreSQL servers.svg";
-import { ReactComponent as VirtualMachine } from "../../assets/azure_icons/ComputeServiceColor/VM/VM.svg";
+import { ReactComponent as VirtualMachine } from "../../assets/azure_icons/ComputeServiceColor/VM/VM-windows.svg";
+import { ReactComponent as LinuxVirtualMachine } from "../../assets/azure_icons/ComputeServiceColor/VM/VM-Linux.svg";
 import { ReactComponent as VMSS } from "../../assets/azure_icons/ComputeServiceColor/VM/VM Scale Sets.svg";
 import { ReactComponent as FunctionApp } from "../../assets/azure_icons/ComputeServiceColor/Function Apps.svg";
 import { ReactComponent as VirtualNetwork } from "../../assets/azure_icons/Networking Service Color/Virtual Networks.svg";
 import { ReactComponent as AppGateway } from "../../assets/azure_icons/Networking Service Color/Application Gateway.svg";
 import { ReactComponent as LoadBalancer } from "../../assets/azure_icons/Networking Service Color/Load Balancers.svg";
 import { ReactComponent as AzFirewall } from "../../assets/azure_icons/Networking Service Color/Azure Firewall.svg";
+import { ReactComponent as DNSPrivateZone } from "../../assets/azure_icons/Networking Service Color/DNS Private Zones.svg";
+import { ReactComponent as Storage } from "../../assets/azure_icons/Storage Service Color/Blob Storage.svg";
 import { ReactComponent as ContainerInstance } from "../../assets/azure_icons/Container Service Color/Container Instances.svg";
 import { ReactComponent as ContainerRegistry } from "../../assets/azure_icons/Container Service Color/Container Registries.svg";
 import { ReactComponent as Kubernetes } from "../../assets/azure_icons/Container Service Color/Kubernetes Services.svg";
 import { ReactComponent as ASE } from "../../assets/azure_icons/Web Service Color/App Service Environments.svg";
 import { ReactComponent as AppService } from "../../assets/azure_icons/Web Service Color/App Services.svg";
 import { ReactComponent as APIM } from "../../assets/azure_icons/Integration Service Color/API Management Services.svg";
+import { ReactComponent as Sentinel } from "../../assets/azure_icons/Security Service Color/Azure Sentinel.svg";
+import { ReactComponent as KeyVault } from "../../assets/azure_icons/Security Service Color/Key Vaults.svg";
+import { ReactComponent as SecurityCenter } from "../../assets/azure_icons/Security Service Color/Security Center.svg";
 
 export default class ResourcePalette extends Component {
 
@@ -24,11 +31,15 @@ export default class ResourcePalette extends Component {
     this.graphManager = this.props.mxgraphManager;
 
     this.straightArrow = React.createRef();
-    this.curveArrow = React.createRef();
+    this.elbowArrow = React.createRef();
     this.label = React.createRef();
-    this.vmIcon = React.createRef();
+    this.vmWindowsIcon = React.createRef();
+    this.vmLinuxIcon = React.createRef();
     this.vmssIcon =  React.createRef();
     this.funcIcon = React.createRef();
+    this.ase = React.createRef();
+    this.appsvc = React.createRef();
+    this.azfw = React.createRef();
     this.vnetIcon = React.createRef();
     this.nlbIcon = React.createRef();
     this.appgwIcon = React.createRef();
@@ -42,6 +53,8 @@ export default class ResourcePalette extends Component {
       isNetworkingOpen: false,
       isContainerOpen: false,
       isIntegrationOpen: false,
+      isStorageOpen: false,
+      isDatabaseOpen: false,
       graphContainer: null
     }
   }
@@ -49,9 +62,16 @@ export default class ResourcePalette extends Component {
   shapePanelHeaderClick = () => { 
     this.setState(
       { 
-        isShapeOpen: !this.state.isComputeOpen
+        isShapeOpen: !this.state.isShapeOpen
       }) 
   }
+
+  storagePanelHeaderClick = () => { 
+    this.setState(
+      { 
+        isStorageOpen: !this.state.isStorageOpen
+      }) 
+  }  
 
   computePanelHeaderClick = () => { 
     this.setState(
@@ -81,6 +101,13 @@ export default class ResourcePalette extends Component {
       })
   }
 
+  databasePanelHeaderClick = () => {
+    this.setState(
+      { 
+        isDatabaseOpen: !this.state.isDatabaseOpen
+      })
+  }
+
 
   componentDidMount = () =>  
   {
@@ -96,9 +123,9 @@ export default class ResourcePalette extends Component {
             <img src={require('../../assets/azure_icons/straight-connector.png')} width="25" height="25" />
             <div class="tile-text">Straight Connector</div>
           </div>
-          <div class="tile-panel" ref={this.curveArrow}>
+          <div class="tile-panel" ref={this.elbowArrow}>
             <img src={require('../../assets/azure_icons/round-connector.png')} width="25" height="25" />
-            <div class="tile-text">Curve Connector</div>
+            <div class="tile-text">Elbow Connector</div>
           </div>
           <div class="tile-panel" ref={this.label}>
           <img src={require('../../assets/azure_icons/text.png')} width="25" height="25" />
@@ -108,9 +135,13 @@ export default class ResourcePalette extends Component {
 
         <h3 class="collapse-header" onClick={this.computePanelHeaderClick}>Compute</h3>
         <Collapse isOpen={this.state.isComputeOpen} accordion={true} keepChildrenMounted={true} >
-          <div class="tile-panel" ref={this.vmIcon}>
+          <div class="tile-panel" ref={this.vmWindowsIcon}>
             <VirtualMachine class="azure-rsc-icon" />
-            <div class="tile-text">VM</div>
+            <div class="tile-text">Windows VM</div>
+          </div>
+          <div class="tile-panel" ref={this.vmLinuxIcon}>
+            <LinuxVirtualMachine class="azure-rsc-icon" />
+            <div class="tile-text">Linux VM</div>
           </div>
           <div class="tile-panel" ref={this.vmssIcon}>
             <VMSS class="azure-rsc-icon" />
@@ -148,6 +179,34 @@ export default class ResourcePalette extends Component {
             <AzFirewall class="azure-rsc-icon" />
             <div class="tile-text">Firewall</div>
           </div>
+          <div class="tile-panel" ref={this.dnsprivatezoneIcon}>
+            <DNSPrivateZone class="azure-rsc-icon" />
+            <div class="tile-text">DNS Private Zone</div>
+          </div>
+        </Collapse>
+      
+        <h3 class="collapse-header" onClick={this.storagePanelHeaderClick}>Storage</h3>
+        <Collapse isOpen={this.state.isStorageOpen} accordion={true} keepChildrenMounted={true} >
+          <div class="tile-panel" ref={this.storageIcon}>
+            <Storage class="azure-rsc-icon" />
+            <div class="tile-text">Storage</div>
+          </div>
+        </Collapse>
+      
+        <h3 class="collapse-header" onClick={this.databasePanelHeaderClick}>Database</h3>
+        <Collapse isOpen={this.state.isDatabaseOpen} accordion={true} keepChildrenMounted={true} >
+          <div class="tile-panel" ref={this.postgresqlIcon}>
+            <PostgreSQL class="azure-rsc-icon" />
+            <div class="tile-text">PostgreSQL</div>
+          </div>
+          <div class="tile-panel" ref={this.sqldbIcon}>
+            <SQLDatabase class="azure-rsc-icon" />
+            <div class="tile-text">SQL DB</div>
+          </div>
+          <div class="tile-panel" ref={this.cosmosdbIcon}>
+            <CosmosDB class="azure-rsc-icon" />
+            <div class="tile-text">Cosmos DB</div>
+          </div>
         </Collapse>
      
       <h3 class="collapse-header" onClick={this.containerPanelHeaderClick}>Container</h3>
@@ -184,10 +243,13 @@ export default class ResourcePalette extends Component {
     var thisComponent = this;
 
     this.graphManager.makeIconDraggable(this.straightArrow.current, "straightarrow", thisComponent.props.addResourceToDiagramEditor);
-    this.graphManager.makeIconDraggable(this.curveArrow.current, "curvearrow", thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.elbowArrow.current, "elbowarrow", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.label.current, "label", thisComponent.props.addResourceToDiagramEditor);
-    this.graphManager.makeIconDraggable(this.vmIcon.current, "vm", thisComponent.props.addResourceToDiagramEditor);
+    
+    this.graphManager.makeIconDraggable(this.vmWindowsIcon.current, "vmWindows", thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.vmLinuxIcon.current, "vmLinux", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.vmssIcon.current, "vmss", thisComponent.props.addResourceToDiagramEditor);
+    
     this.graphManager.makeIconDraggable(this.vnetIcon.current, "vnet", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.nlbIcon.current, "nlb", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.appgwIcon.current, "appgw", thisComponent.props.addResourceToDiagramEditor);

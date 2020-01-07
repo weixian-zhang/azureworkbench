@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Navbar, FilmSuggest } from "@blueprintjs/core";
+import { Navbar, FilmSuggest, Toaster, Position, Intent } from "@blueprintjs/core";
 
 export default class ActionBar extends Component {
 
@@ -16,9 +16,11 @@ export default class ActionBar extends Component {
                         <span className="bp3-navbar-divider"></span>
                         <span>Resource Groups</span>
                         <span className="bp3-navbar-divider"></span>
-                        <button className="bp3-button">Deploy</button>
+                        <button className="bp3-button" onClick={this.calculate}>Calculate</button>
                         <span className="bp3-navbar-divider"></span>
-                        <button className="bp3-button">Save</button>
+                        <button className="bp3-button" onClick={this.deploy}>Deploy</button>
+                        <span className="bp3-navbar-divider"></span>
+                        <button className="bp3-button" onClick={this.saveToWorkspace}>Save to workspace</button>
                         <span className="bp3-navbar-divider"></span>
                         <button className="bp3-button" onClick={this.shareDiagram}>Share</button>
                     </div>
@@ -29,5 +31,32 @@ export default class ActionBar extends Component {
 
     shareDiagram = () => {
         this.props.shareDiagram();
+    }
+
+    calculate(){
+        Toaster.create({
+            position: Position.TOP,
+            autoFocus: false,
+            canEscapeKeyClear: true
+          }).show({intent: Intent.SUCCESS, timeout: 3000, message: 'Coming Soon..only Share is released'});
+          return;
+    }
+
+    deploy(){
+        Toaster.create({
+            position: Position.TOP,
+            autoFocus: false,
+            canEscapeKeyClear: true
+          }).show({intent: Intent.SUCCESS, timeout: 3000, message: 'Coming Soon..only Share is released'});
+          return;
+    }
+
+    saveToWorkspace(){
+        Toaster.create({
+            position: Position.TOP,
+            autoFocus: false,
+            canEscapeKeyClear: true
+          }).show({intent: Intent.SUCCESS, timeout: 3000, message: 'Coming Soon..only Share is released'});
+          return;
     }
 }
