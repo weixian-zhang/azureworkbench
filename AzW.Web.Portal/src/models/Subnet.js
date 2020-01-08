@@ -1,17 +1,9 @@
 export default class Subnet
 {
     constructor (){
-        this.ResourceType = 'subnet';
-
         this.GraphModel = {
-            Id: '',
-            ParentId: '',
-            IsParent: false,
-            X: '',
-            Y: '',
-            Width: '',
-            Height: '',
-            Edges: []
+            ResourceType: 'subnet',
+            DisplayName: ''
         };
 
         this.ProvisionContext = {

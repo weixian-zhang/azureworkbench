@@ -93,7 +93,7 @@ export default class MxGraphManager
         this.graph.convertValueToString = function(cell)
         {
             if(cell.value != null && cell.value.ProvisionContext != null)
-                return cell.value.ProvisionContext.Name;
+                return cell.value.GraphModel.DisplayName;
             else
                 return cell.value;
         };
@@ -109,7 +109,8 @@ export default class MxGraphManager
         //default vertex style
         var vnetCellStyle  = new Object();
         vnetCellStyle[mxConstants.STYLE_STROKECOLOR] = 'darkblue';
-        vnetCellStyle[mxConstants.STYLE_ROUNDED] = false;
+        vnetCellStyle[mxConstants.SHAPE_RECTANGLE] = 'rectangle';
+        vnetCellStyle[mxConstants.RECTANGLE_ROUNDING_FACTOR] = '0.0';
         vnetCellStyle[mxConstants.STYLE_SHADOW] = false;
         vnetCellStyle[mxConstants.STYLE_FILLCOLOR] = 'white';
         vnetCellStyle[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
@@ -119,6 +120,20 @@ export default class MxGraphManager
         vnetCellStyle[mxConstants.STYLE_ROUNDED] = '1';
         vnetCellStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "TOP";
         this.graph.getStylesheet().putCellStyle('vnetstyle', vnetCellStyle);
+
+        var subnetCellStyle  = new Object();
+        subnetCellStyle[mxConstants.STYLE_STROKECOLOR] = 'black';
+        subnetCellStyle[mxConstants.SHAPE_RECTANGLE] = 'rectangle';
+        subnetCellStyle[mxConstants.RECTANGLE_ROUNDING_FACTOR] = '0.0';
+        subnetCellStyle[mxConstants.STYLE_SHADOW] = false;
+        subnetCellStyle[mxConstants.STYLE_FILLCOLOR] = 'white';
+        subnetCellStyle[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
+        subnetCellStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
+        subnetCellStyle[mxConstants.STYLE_FONTSIZE] = '12';
+        subnetCellStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
+        subnetCellStyle[mxConstants.STYLE_ROUNDED] = '1';
+        subnetCellStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "TOP";
+        this.graph.getStylesheet().putCellStyle('subnetstyle', subnetCellStyle);
 
         //elbow edge style
         var elbowEdgeStyle = new Object();

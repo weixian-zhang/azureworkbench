@@ -23,6 +23,8 @@ export default class ActionBar extends Component {
                         <button className="bp3-button" onClick={this.saveToWorkspace}>Save to workspace</button>
                         <span className="bp3-navbar-divider"></span>
                         <button className="bp3-button" onClick={this.shareDiagram}>Share</button>
+                        <span className="bp3-navbar-divider"></span>
+                        <button className="bp3-button" intent="success">$USD 0.00</button>
                     </div>
                 </div>
             </nav>

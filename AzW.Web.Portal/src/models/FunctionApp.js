@@ -1,16 +1,14 @@
-export default class VNet
+export default class FunctionApp
 {
     constructor (){
         this.GraphModel = {
-            ResourceType: 'vnet',
+            ResourceType: 'func',
             DisplayName: ''
         };
 
         this.ProvisionContext = {
             Name: '',
             Location: '',
-            AddressSpace: false,
-            Subnets: []
         }; 
     }
 }

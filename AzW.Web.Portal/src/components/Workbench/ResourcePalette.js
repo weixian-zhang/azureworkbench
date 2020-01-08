@@ -37,8 +37,8 @@ export default class ResourcePalette extends Component {
     this.vmLinuxIcon = React.createRef();
     this.vmssIcon =  React.createRef();
     this.funcIcon = React.createRef();
-    this.ase = React.createRef();
-    this.appsvc = React.createRef();
+    this.aseIcon = React.createRef();
+    this.appsvcIcon = React.createRef();
     this.azfw = React.createRef();
     this.vnetIcon = React.createRef();
     this.nlbIcon = React.createRef();
@@ -147,11 +147,11 @@ export default class ResourcePalette extends Component {
             <VMSS class="azure-rsc-icon" />
             <div class="tile-text">VM Scale Sets</div>
           </div>
-          <div class="tile-panel" ref={this.vmssIcon}>
+          <div class="tile-panel" ref={this.appsvcIcon}>
             <AppService class="azure-rsc-icon" />
             <div class="tile-text">App Service</div>
           </div>
-          <div class="tile-panel" ref={this.vmssIcon}>
+          <div class="tile-panel" ref={this.aseIcon}>
             <ASE class="azure-rsc-icon" />
             <div class="tile-text">App Service Environment</div>
           </div>
@@ -249,7 +249,10 @@ export default class ResourcePalette extends Component {
     this.graphManager.makeIconDraggable(this.vmWindowsIcon.current, "vmWindows", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.vmLinuxIcon.current, "vmLinux", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.vmssIcon.current, "vmss", thisComponent.props.addResourceToDiagramEditor);
-    
+    this.graphManager.makeIconDraggable(this.appsvcIcon.current, "appsvc", thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.aseIcon.current, "ase", thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.funcIcon.current, "func", thisComponent.props.addResourceToDiagramEditor);
+
     this.graphManager.makeIconDraggable(this.vnetIcon.current, "vnet", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.nlbIcon.current, "nlb", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.appgwIcon.current, "appgw", thisComponent.props.addResourceToDiagramEditor);

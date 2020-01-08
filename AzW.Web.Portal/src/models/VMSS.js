@@ -1,15 +1,14 @@
-export default class VM
+export default class VMSS
 {
     constructor (){
         this.GraphModel = {
-            ResourceType: '',
+            ResourceType: 'vmss',
             DisplayName: ''
         };
 
         this.ProvisionContext = {
             Name: '',
             Location: '',
-            PublicIP: false,
             RootUsername: '',
             RootPassword: '',
             Tags: [],

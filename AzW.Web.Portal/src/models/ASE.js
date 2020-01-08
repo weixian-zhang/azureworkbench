@@ -1,8 +1,8 @@
-export default class VNet
+export default class ASE
 {
     constructor (){
         this.GraphModel = {
-            ResourceType: 'vnet',
+            ResourceType: 'ase',
             DisplayName: ''
         };
 
@@ -10,7 +10,7 @@ export default class VNet
             Name: '',
             Location: '',
             AddressSpace: false,
-            Subnets: []
+            Subnet: ''
         }; 
     }
 }

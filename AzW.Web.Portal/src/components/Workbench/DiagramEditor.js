@@ -4,6 +4,7 @@ import {Toaster, Position, Intent} from "@blueprintjs/core";
 import VMPropPanel from "./PropPanel/VMPropPanel";
 import VNetPropPanel from "./PropPanel/VNetPropPanel";
 import VM from "../../models/VM";
+import VMSS from "../../models/VMSS";
 import VNet from "../../models/VNet";
 import ShortUniqueId from 'short-unique-id';
 import AzureIcons from "./Helpers/AzureIcons";
@@ -11,7 +12,7 @@ import Messages from "./Helpers/Messages";
 import MxGraphManager from './Helpers/MxGraphManager';
 import { mxPopupMenu, mxCodec, mxPoint, mxGeometry, mxCellOverlay, mxImage, mxKeyHandler, mxConstants, mxEvent, mxUtils,mxPopupMenuHandler, mxDragSource, mxUndoManager, mxCell } from "mxgraph-js";
 import Subnet from "../../models/Subnet";
-
+let xmlParser = require('xml2json-light');
 
  export default class DiagramEditor extends Component {
   constructor(props) {
@@ -175,6 +176,10 @@ addDragOverEventForVMOverSubnetHighlight() {
       case 'vmLinux':
         this.addVM(dropContext, 'vmWindows');
         break;
+      case 'vmss':
+        this.addVMSS(dropContext, 'vmss');
+        break;
+
       case 'vnet':
         this.addVNet(dropContext);
         break;
@@ -271,6 +276,7 @@ addDragOverEventForVMOverSubnetHighlight() {
       vnetModel.resourceType = "vnet"
       vnetModel.GraphModel.Id = this.shortUID.randomUUID(6);
       vnetModel.ProvisionContext.Name = 'vnet_' + vnetModel.GraphModel.Id;
+      vnetModel.GraphModel.DisplayName = vnetModel.ProvisionContext.Name;
       
       this.graphManager.graph.getModel().beginUpdate();
       try
@@ -289,10 +295,11 @@ addDragOverEventForVMOverSubnetHighlight() {
             vnetModel,
             dropContext.x,
             dropContext.y,
-            500,
-            550,
+            300,
+            400,
             "vnetstyle" //"rounded=1;editable=0;verticalLabelPosition=top;verticalAlign=bottom;align=right;STYLE_STROKEWIDTH=2"
           );
+        
           
         this.graph.addCellOverlay(vnetCell, vnetIconOverlay);
     }
@@ -309,6 +316,7 @@ addDragOverEventForVMOverSubnetHighlight() {
       var subnet = new Subnet();
       subnet.GraphModel.Id = this.shortUID.randomUUID(6);
       subnet.ProvisionContext.Name = "subnet_" + subnet.GraphModel.Id;
+      subnet.GraphModel.DisplayName = subnet.ProvisionContext.Name
 
       this.graphManager.graph.getModel().beginUpdate();
       try 
@@ -331,7 +339,7 @@ addDragOverEventForVMOverSubnetHighlight() {
           vnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
           vnetCell.getGeometry().width - 90,
           100,
-          "editable=0;verticalLabelPosition=top;verticalAlign=bottom;align=right"
+          'subnetstyle' //"editable=0;verticalLabelPosition=top;verticalAlign=bottom;align=right"
         );
  
         this.graph.addCellOverlay(subnetVertex, subnetLogoOverlay);
@@ -344,32 +352,44 @@ addDragOverEventForVMOverSubnetHighlight() {
       }
   }
 
-  addVM = (dropContext, os) => {
+  addVM = (dropContext, vmType) => {
+    
     var cell = this.graph.getCellAt(dropContext.x, dropContext.y);
-    if((dropContext.resourceType == "vmWindows" || dropContext.resourceType == "vmLinux") && (cell == null || cell.value.ResourceType != "subnet"))
+    
+    if(dropContext.resourceType == "vmWindows" ||
+        dropContext.resourceType == "vmLinux")
     {
-        Toaster.create({
-          position: Position.TOP,
-          autoFocus: false,
-          canEscapeKeyClear: true
-        }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.VMInSubnet()});
-        return;
+      if(cell == null || cell.value.GraphModel.ResourceType != "subnet")
+        {
+          Toaster.create({
+            position: Position.TOP,
+            autoFocus: false,
+            canEscapeKeyClear: true
+          }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.VMInSubnet()});
+          return;
+        }
+      
     }
 
      var vmModel = new VM();
-     vmModel.ResourceType = os;
+     vmModel.ResourceType = vmType;
      vmModel.GraphModel.IconId = this.shortUID.randomUUID(6);
      vmModel.ProvisionContext.Name = "vm_" + vmModel.GraphModel.IconId;
-     vmModel.GraphModel.ResourceType = "vm";
-     vmModel.ProvisionContext.Name = "vm-" + vmModel.GraphModel.IconId;
+     vmModel.GraphModel.DisplayName = vmModel.ProvisionContext.Name;
 
-     var iconByOS = (os == 'windows') ? this.azureIcons.VirtualMachineWindows() : this.azureIcons.VirtualMachineLinux();
+    var iconByOS;
+    if(vmType == 'vmWindows')
+      iconByOS = this.azureIcons.VirtualMachineWindows();
+    else if(vmType == 'vmLinux')
+      iconByOS = this.azureIcons.VirtualMachineWindows();
+    else
+      iconByOS = this.azureIcons.VMSS();
 
      this.graphManager.graph.getModel().beginUpdate();
      try
      {
         var vm = this.graph.insertVertex
-          (cell, vmModel.GraphModel.IconId ,vmModel , cell.getGeometry().x, cell.getGeometry().x, 45, 45,
+          (cell, vmModel.GraphModel.IconId ,vmModel , cell.getGeometry().x, cell.getGeometry().x, 40, 40,
           "editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + iconByOS);
     }
      finally
@@ -379,6 +399,43 @@ addDragOverEventForVMOverSubnetHighlight() {
      }
   }
 
+  addVMSS = (dropContext) => {
+    var cell = this.graph.getCellAt(dropContext.x, dropContext.y); //subnet cell
+    
+    if(dropContext.resourceType == "vmss" &&
+       cell == null || cell.value.GraphModel.ResourceType != "subnet")
+        {
+          Toaster.create({
+            position: Position.TOP,
+            autoFocus: false,
+            canEscapeKeyClear: true
+          }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.VMInSubnet()});
+          return;
+        }
+      
+    
+
+     var vmssModel = new VMSS();
+     vmssModel.GraphModel.IconId = this.shortUID.randomUUID(6);
+     vmssModel.ProvisionContext.Name = "vmss_" + vmssModel.GraphModel.IconId;
+     vmssModel.GraphModel.DisplayName = vmssModel.ProvisionContext.Name;
+
+     this.graphManager.graph.getModel().beginUpdate();
+     try
+     {
+        var vm = this.graph.insertVertex
+          (cell, vmssModel.GraphModel.IconId ,vmssModel , cell.getGeometry().x, cell.getGeometry().x, 40, 40,
+          "editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + this.azureIcons.VMSS());
+    }
+     finally
+     {
+       // Updates the display
+       this.graphManager.graph.getModel().endUpdate();
+     }
+  }
+
+
+
   //callbacks from Ref components
   fromVMPropPanelSaveModel(vmModel) {
       var vmCell = this.graph.getModel().getCell(vmModel.GraphModel.Id);
@@ -386,13 +443,16 @@ addDragOverEventForVMOverSubnetHighlight() {
   }
 
   shareDiagram(){
-    mxUtils.popup(this.getDiagramAsXml(), true);
+    mxUtils.popup(this.getDiagramAsJson(), true);
   }
 
-  getDiagramAsXml(){
+  getDiagramAsJson(){
     var encoder = new mxCodec();
     var node = encoder.encode(this.graph.getModel());
-    return mxUtils.getPrettyXml(node);
+    var diagramInXml = mxUtils.getPrettyXml(node);
+    var jsonObj = xmlParser.xml2json(diagramInXml);
+    var diagramInJsonString = JSON.stringify(jsonObj)
+    return diagramInJsonString;
   }
 
 }

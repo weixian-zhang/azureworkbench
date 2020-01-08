@@ -1,16 +1,14 @@
-export default class VNet
+export default class AppService
 {
     constructor (){
         this.GraphModel = {
-            ResourceType: 'vnet',
+            ResourceType: 'ase',
             DisplayName: ''
         };
 
         this.ProvisionContext = {
             Name: '',
             Location: '',
-            AddressSpace: false,
-            Subnets: []
         }; 
     }
 }
