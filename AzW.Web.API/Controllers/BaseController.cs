@@ -13,7 +13,7 @@ namespace AzW.Web.API
         protected UserIdentity GetUserIdentity()
         {
             if(User == null || User.Identities == null)
-                throw new Exception("User identity is null");
+                return null;
 
             foreach(var identity in User.Identities)
             {

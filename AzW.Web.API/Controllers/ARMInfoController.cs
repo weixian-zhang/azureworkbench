@@ -22,7 +22,7 @@ namespace AzW.Web.API
     [Route("api/arm")]
     public class ARMInfoController : BaseController
     {
-        public ARMInfoController(ApiSecret secret)
+        public ARMInfoController(WorkbenchSecret secret)
         {
             _secret = secret;
         }
@@ -57,6 +57,6 @@ namespace AzW.Web.API
         }
 
 
-        private ApiSecret _secret;
+        private WorkbenchSecret _secret;
     }
 }

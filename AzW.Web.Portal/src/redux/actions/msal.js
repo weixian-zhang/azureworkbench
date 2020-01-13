@@ -9,12 +9,39 @@ export function msalLogin() {
 
 export function msalLoginAsync() {
   return dispatch => {
-    msalApp.loginRedirect({
-      scopes: [
-        "api://5700106c-06c4-4bde-ab79-b1dc3a255b85/AzResource.Deploy"
-      ],
-      prompt: "select_account"
-    });
+    
+    // msalApp.loginRedirect({
+    //   scopes: [
+    //     "api://16afdc21-ffd3-4cf8-aeae-63bebf9e327e/azworkbench-portal-deploy"
+    //   ],
+    //   prompt: "select_account"
+    // });
+
+    const accessTokenRequest = {
+      scopes: ["api://16afdc21-ffd3-4cf8-aeae-63bebf9e327e/azworkbench-portal-deploy"]
+  }
+
+    msalApp.acquireTokenPopup(accessTokenRequest).then(function(accessTokenResponse) {
+      // Acquire token silent success
+      // call API with token
+      let accessToken = accessTokenResponse.accessToken;
+      let account = accessTokenResponse.account;
+       
+  }).catch(function (error) {
+      //Acquire token silent failure, send an interactive request.
+      if (error.errorMessage.indexOf("interaction_required") !== -1) {
+        msalApp.acquireTokenPopup(accessTokenRequest).then(function(accessTokenResponse) {
+              // Acquire token interactive success
+          }).catch(function(error) {
+              // Acquire token interactive failure
+              console.log(error);
+          });
+      }
+      console.log(error);
+  });
+
+
+
     dispatch(msalLogin());
   };
 }

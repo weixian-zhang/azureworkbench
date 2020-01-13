@@ -76,17 +76,17 @@ export default class MxGraphManager
         mxGraphHandler.prototype.removeCellsFromParent = false
         
         // // Enables guides
-        mxGraphHandler.prototype.guidesEnabled = true;
+        //mxGraphHandler.prototype.guidesEnabled = true;
     
         // Enables snapping waypoints to terminals
-        mxEdgeHandler.prototype.snapToTerminals = true;
+        //mxEdgeHandler.prototype.snapToTerminals = true;
     }
 
     initLabelBehaviour(){
 
         //this.graph.htmlLabels = true;
-        this.graph.setHtmlLabels(true);
-        this.graph.htmlLabels = true;
+        this.graph.setHtmlLabels(false);
+        this.graph.htmlLabels = false;
         this.graph.autoSizeCellsOnAdd = true;
 
         // Overrides method to provide ProvisionContext.Name as label
@@ -117,8 +117,10 @@ export default class MxGraphManager
         vnetCellStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
         vnetCellStyle[mxConstants.STYLE_FONTSIZE] = '12';
         vnetCellStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
-        vnetCellStyle[mxConstants.STYLE_ROUNDED] = '1';
+        vnetCellStyle[mxConstants.STYLE_ROUNDED] = '0';
         vnetCellStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "TOP";
+        vnetCellStyle[mxConstants.STYLE_LABEL_POSITION] = "ALIGN_RIGHT";
+        vnetCellStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "TOP";
         this.graph.getStylesheet().putCellStyle('vnetstyle', vnetCellStyle);
 
         var subnetCellStyle  = new Object();
@@ -132,7 +134,9 @@ export default class MxGraphManager
         subnetCellStyle[mxConstants.STYLE_FONTSIZE] = '12';
         subnetCellStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
         subnetCellStyle[mxConstants.STYLE_ROUNDED] = '1';
-        subnetCellStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "TOP";
+        subnetCellStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "ALIGN_TOP,";
+        subnetCellStyle[mxConstants.STYLE_LABEL_POSITION] = "ALIGN_RIGHT";
+        subnetCellStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "TOP";
         this.graph.getStylesheet().putCellStyle('subnetstyle', subnetCellStyle);
 
         //elbow edge style
@@ -200,12 +204,6 @@ export default class MxGraphManager
             return graph.connectionHandler.isConnectableCell(cell);
         };
         
-        // Snaps to fixed points
-        // mxConstraintHandler.prototype.intersects = function(icon, point, source, existingEdge)
-        // {
-        //     return (!source || existingEdge) || mxUtils.intersects(icon.bounds, point);
-        // };
-        
         // Special case: Snaps source of new connections to fixed points
         // Without a connect preview in connectionHandler.createEdgeState mouseMove
         // and getSourcePerimeterPoint should be overriden by setting sourceConstraint
@@ -248,6 +246,12 @@ export default class MxGraphManager
 
         graph.getAllConnectionConstraints = function(terminal)
             {
+                //do not put port constriants when cell is selected,
+                //this causes bad experience in wanting to resize cell but accidentally
+                //drag edge out of ports.
+                if(graph.getSelectionModel().isSelected(terminal.cell))
+                    return;
+
                 if (terminal != null && this.model.isVertex(terminal.cell))
                 {
                     return [
@@ -262,9 +266,11 @@ export default class MxGraphManager
             };
     }
 
-    exportDiagram() {
-        var enc = new mxCodec(mxUtils.createXmlDocument());
-        var node = enc.encode(this.graph.getModel());
-        return mxUtils.getPrettyXml(node);
+    isCellExist() {
+        var cells = this.graph.getChildVertices(this.graph.getDefaultParent());
+        if(cells.length > 0)
+            return true;
+        else
+            return false;
     }
 }

@@ -18,6 +18,7 @@ using System.Text;
 using AzW.Application;
 using System.IdentityModel.Tokens.Jwt;
 using AzW.Infrastructure;
+using AzW.Infrastructure.Data;
 
 namespace AzW.Web.API
 {
@@ -112,16 +113,15 @@ namespace AzW.Web.API
         }
 
         private void ConfigureDependencies(IServiceCollection services)
-        {
-            var apiSecret = new ApiSecret()
-                    {
-                        AzCosmonMongoConnectionString = _secrets.AzCosmonMongoConnectionString,
-                        ClientId = _secrets.ClientId,
-                        ClientSecret = _secrets.ClientSecret,
-                        TenantId = _secrets.TenantId
-                    };
-            
-            services.AddSingleton<ApiSecret>(sp => {return apiSecret ;} );
+        {          
+            services.AddCors(o => o.AddPolicy("CORSPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            }));
+
+            services.AddSingleton<WorkbenchSecret>(sp => {return _secrets ;} );
 
             // var _azSdkCred = new AzSDKCredentials
             //     (_secrets.AccessToken, _secrets.TenantId, _secrets.ClientId, _secrets.ClientSecret);
@@ -130,15 +130,14 @@ namespace AzW.Web.API
             //     return new AzArmService(_azSdkCred);
             // });
 
-            // services.AddTransient<IAzureInfoService>(sp => {
-            //     return new AzureInfoService(new AzArmService(_azSdkCred));
-            // });
+            services.AddTransient<IDiagramLogic, DiagramLogic>();
+            services.AddTransient<IDiagramRepository, DiagramRepository>();
 
         }
 
         private void InitSecrets()
         {
-            _secrets = SecretManagerFactory.Create().GetSecret<ApiSecret>();
+            _secrets = SecretManagerFactory.Create().GetSecret<WorkbenchSecret>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -149,11 +148,8 @@ namespace AzW.Web.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors(builder => builder
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader());   
-
+            app.UseCors("CORSPolicy");
+            
             app.UseAuthentication();
 
             app.UseSwagger();
@@ -172,6 +168,6 @@ namespace AzW.Web.API
             
         }
 
-        private ApiSecret _secrets;
+        private WorkbenchSecret _secrets;
     }
 }

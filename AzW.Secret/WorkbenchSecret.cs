@@ -11,5 +11,7 @@ namespace AzW.Secret
         public string TenantId { get; set; }
 
         public string AccessToken { get; set; }
+
+        public string PortalUrl { get; set; }
     }
 }

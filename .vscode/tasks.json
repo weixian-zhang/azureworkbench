@@ -67,12 +67,12 @@
             "problemMatcher": []
         },
         {
-            "label": "build Infra",
+            "label": "build Infra Data",
             "command": "dotnet build",
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/AzW.Infrastructure",
+                "cwd": "${workspaceFolder}/AzW.Infrastructure.Data",
                 "env": {
                     "env": "dev"
                 }

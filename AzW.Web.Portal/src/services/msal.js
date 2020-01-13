@@ -15,8 +15,8 @@ export const isIE = () => {
 
 const msalApp = new UserAgentApplication({
   auth: {
-    clientId: "d77431ff-1996-404d-970c-adc2725d7e87",
-    authority: "https://login.microsoftonline.com/fc418f16-5c93-437d-b743-05e9e2a04d93",
+    clientId: "16afdc21-ffd3-4cf8-aeae-63bebf9e327e",
+    authority: "https://login.microsoftonline.com/common",
     validateAuthority: true,
     postLogoutRedirectUri: "http://localhost:3000",
     navigateToLoginRequestUrl: false
@@ -37,6 +37,9 @@ const msalApp = new UserAgentApplication({
       warning: console.warn,
       warningPii: console.warn
     }
+  },
+  logger: {
+    //https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-logging?tabs=dotnet
   }
 });
 
@@ -58,7 +61,8 @@ msalApp.handleRedirectCallback(async (error, response) => {
   if (error) {
     store.dispatch(msalLoginError(error));
   }
-  else if (response) {
+  else if (response) 
+  {
     // Temporary workaround for MSAL and persistent storage
     // MSAL redirects back to our SPA and this immediately fires the callback
     // but our persistent storage overwrites this afterwards, so the user never

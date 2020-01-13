@@ -1,28 +1,50 @@
 
 
+using System.Threading.Tasks;
+using AzW.Application;
+using AzW.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AzW.Web.API
 {
     
-    [Route("api/fiddler")]
+    [Route("api")]
     public class DiagramController : BaseController
     {
-        [HttpGet("gendiagramlink")]
-        public string GenerateDiagramLink()
+        public DiagramController(IDiagramLogic diagramLogic)
         {
-            return "https://azureworkench.com?dia=311dssfsefseg2234";
+            _diagramLogic = diagramLogic;
         }
 
-        [HttpGet("loaddiagram")]
-        public string LoadDiagramLink(string linkUrl)
+        [HttpPost("dia/anony/share")]
+        public async Task<string> GenerateDiagramLink([FromBody]AnonyDiagramShareContext context)
         {
-            return "{'nodes': ['resourceType': '']}";
+            string shareLink =
+                await _diagramLogic.GenerateShareLinkForAnonyDiagramAsync(context);
+            
+            return shareLink;
+
         }
 
-        public void SaveDiagram() //diagram object
+        [HttpGet("dia/anony/shareload")]
+        public async Task<string> GetSharedDiagram([FromQuery]string anonyDiagramId)
+        {
+            var anonyDiagram =
+                await _diagramLogic.GetSharedDiagramAsync(anonyDiagramId);
+            
+            return JsonConvert.SerializeObject(anonyDiagram);
+        }
+
+        [Authorize()]
+        [HttpPost("dia/save")]
+        public void SaveDiagram()
         {
 
         }
+
+        private IDiagramLogic _diagramLogic;
     }
 }

@@ -1,17 +1,19 @@
 
 import React, { Component } from "react";
-import {Toaster, Position, Intent} from "@blueprintjs/core";
+import {Spinner, InputGroup, Classes, Button, Intent, Overlay, Toaster, Position} from "@blueprintjs/core";
 import VMPropPanel from "./PropPanel/VMPropPanel";
 import VNetPropPanel from "./PropPanel/VNetPropPanel";
 import VM from "../../models/VM";
 import VMSS from "../../models/VMSS";
 import VNet from "../../models/VNet";
+import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext"; 
 import ShortUniqueId from 'short-unique-id';
 import AzureIcons from "./Helpers/AzureIcons";
 import Messages from "./Helpers/Messages";
 import MxGraphManager from './Helpers/MxGraphManager';
-import { mxPopupMenu, mxCodec, mxPoint, mxGeometry, mxCellOverlay, mxImage, mxKeyHandler, mxConstants, mxEvent, mxUtils,mxPopupMenuHandler, mxDragSource, mxUndoManager, mxCell } from "mxgraph-js";
+import { mxClipboard, mxCodec, mxPoint, mxGeometry, mxCellOverlay, mxImage, mxKeyHandler, mxConstants, mxEvent, mxUtils,mxPopupMenuHandler, mxDragSource, mxUndoManager, mxCell, mxEditor } from "mxgraph-js";
 import Subnet from "../../models/Subnet";
+import DiagramService from '../../services/DiagramService';
 let xmlParser = require('xml2json-light');
 
  export default class DiagramEditor extends Component {
@@ -20,9 +22,14 @@ let xmlParser = require('xml2json-light');
     this.shortUID = new ShortUniqueId();
     this.graph = null;
     this.azureIcons = AzureIcons;
-    
-    //property panel visibility
-    this.showVMPropertyPanel = false;
+
+    //state
+    this.state = {
+        showShareDiagramPopup: false,
+        shareLink: '',
+        shareLinkInputbox: null,
+        showSpinner: false
+    }
   }
 
   componentDidMount() {   
@@ -31,12 +38,17 @@ let xmlParser = require('xml2json-light');
     this.graph = this.graphManager.graph;
     this.props.mxgraphManagerReadyCallback(this.graphManager);
 
+    //services
+    this.diagramService = new DiagramService();
+
     this.addDblClickEventToOpenPropPanel();
     this.addDeleteKeyEventToDeleteVertex();
     this.addContextMenu();
     this.addCtrlZEventToUndo();
-    this.addCtrlCCopyVertices();
+    this.addCtrlCCtrlVCopyPasteVertices();
     this.addDragOverEventForVMOverSubnetHighlight();
+
+    this.importXmlAsDiagram();
 
     //create refs
     this.vmPropPanel = React.createRef();
@@ -48,7 +60,22 @@ let xmlParser = require('xml2json-light');
       <div id="diagramEditor" className="workbenchgrid-container">
         <VMPropPanel ref={this.vmPropPanel} saveVMModelToDiagramEditor={this.fromVMPropPanelSaveModel} />
         <VNetPropPanel ref={this.vnetPropPanel} />
+        <Overlay isOpen={this.state.showShareDiagramPopup} onClose={this.closeShareDiagramPopup} >
+          <div className={[Classes.CARD, Classes.ELEVATION_4, "login-overlay"]}>
+          <InputGroup
+                    disabled={true}
+                    value={this.state.shareLink}
+                    inputRef={(input) => {
+                      if(this.state.shareLinkInputbox == null)
+                        this.setState({shareLinkInputbox: input})
+                  }}
+                />
+            <Button className="bp3-button bp3-intent-success" icon="tick" onClick={this.copySharedLink}>Copy</Button>
+          </div>
+        </Overlay>
+        {this.state.showSpinner ? <Spinner intent={Intent.PRIMARY} size={Spinner.SIZE_STANDARD} value={0.6} /> : '' }
       </div>
+      
     );
   }
   
@@ -95,13 +122,14 @@ let xmlParser = require('xml2json-light');
     }
 }
 
-addCtrlCCopyVertices() {
+addCtrlCCtrlVCopyPasteVertices() {
   var keyHandler = new mxKeyHandler(this.graph);
+  var thisComp = this;
   keyHandler.getFunction = function(evt) {
     if (evt != null && evt.ctrlKey == true && evt.key == 'c')
-    {
-        mxUtils.alert('ctrl c');
-    }
+      thisComp.copyToClipboard();
+    if(evt != null && evt.ctrlKey == true && evt.key == 'v')
+      thisComp.pasteFromClipboard();
   }
 }
 
@@ -301,7 +329,7 @@ addDragOverEventForVMOverSubnetHighlight() {
           );
         
           
-        this.graph.addCellOverlay(vnetCell, vnetIconOverlay);
+        //this.graph.addCellOverlay(vnetCell, vnetIconOverlay);
     }
     finally
     {
@@ -412,8 +440,6 @@ addDragOverEventForVMOverSubnetHighlight() {
           }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.VMInSubnet()});
           return;
         }
-      
-    
 
      var vmssModel = new VMSS();
      vmssModel.GraphModel.IconId = this.shortUID.randomUUID(6);
@@ -434,25 +460,203 @@ addDragOverEventForVMOverSubnetHighlight() {
      }
   }
 
-
-
   //callbacks from Ref components
   fromVMPropPanelSaveModel(vmModel) {
       var vmCell = this.graph.getModel().getCell(vmModel.GraphModel.Id);
       vmCell.value.ProvisionContext = vmModel.ProvisionContext; 
   }
 
-  shareDiagram(){
-    mxUtils.popup(this.getDiagramAsJson(), true);
+  copyToClipboard =() => {
+    var cells = this.graph.getSelectionCells();
+      if(cells == null)
+      return;
+
+      var result = this.graph.getExportableCells(cells);
+    
+      mxClipboard.parents = new Object();
+    
+      for (var i = 0; i < result.length; i++)
+      {
+        mxClipboard.parents[i] = this.graph.model.getParent(cells[i]);
+      }
+    
+      mxClipboard.insertCount = 1;
+      mxClipboard.setCells(this.graph.cloneCells(result));
+    
+      return result;
   }
 
-  getDiagramAsJson(){
+  pasteFromClipboard = () => {
+    if (!mxClipboard.isEmpty())
+      {
+        var cells = this.graph.getImportableCells(mxClipboard.getCells());
+        var delta = mxClipboard.insertCount * mxClipboard.STEPSIZE;
+        var parent = this.graph.getDefaultParent();
+    
+        this.graph.model.beginUpdate();
+        try
+        {
+          for (var i = 0; i < cells.length; i++)
+          {
+            var tmp = (mxClipboard.parents != null && this.graph.model.contains(mxClipboard.parents[i])) ?
+                 mxClipboard.parents[i] : parent;
+            cells[i] = this.graph.importCells([cells[i]], delta, delta, tmp)[0];
+          }
+        }
+        finally
+        {
+          this.graph.model.endUpdate();
+        }
+    
+        // Increments the counter and selects the inserted cells
+        mxClipboard.insertCount++;
+        this.graph.setSelectionCells(cells);
+      }
+  }
+  showSpinner(toShow) {
+    if(toShow)
+      this.setState({showSpinner: true});
+    else
+    this.setState({showSpinner: false});
+  }
+
+  loadSharedDiagram = (diagramId) => {
+      var thisComp = this;
+      this.diagramService.loadAnonymousDiagram(diagramId,
+        function(anonyDiagramContext) {
+          thisComp.importXmlAsDiagram(anonyDiagramContext.DiagramXml);
+        },
+        function (error){
+          Toaster.create({
+            position: Position.TOP,
+            autoFocus: false,
+            canEscapeKeyClear: true
+          }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.SharedDiagramLoadError()});
+          return;
+        });
+  }
+
+  shareDiagram(){
+    // this.setState({showShareDiagramPopup: true});
+    // return;
+    //check if there are nodes in graph, if not return
+    if(!this.graphManager.isCellExist())
+      {
+        Toaster.create({
+          position: Position.TOP,
+          autoFocus: false,
+          canEscapeKeyClear: true
+        }).show({intent: Intent.WARNING, timeout: 3000, message: Messages.SharedDiagramNoCellOnGraph()});
+        return;
+      }
+    
+    this.showSpinner(true);
+
+    var thisComp = this;
+    var anonyDiagramContext = new AnonymousDiagramContext();
+    anonyDiagramContext.DiagramName = this.shortUID.randomUUID(6);
+    anonyDiagramContext.DiagramXml = this.getDiagramAsXml();
+    anonyDiagramContext.DateTimeSaved = new Date();
+
+    var shareLink = this.diagramService
+      .saveAnonymousDiagram(anonyDiagramContext,
+        function (shareLink){
+          thisComp.showSpinner(false);
+          thisComp.setState({shareLink: shareLink, showShareDiagramPopup: true});
+        },
+        function(error){
+          thisComp.showSpinner(false);
+          Toaster.create({
+            position: Position.TOP,
+            autoFocus: false,
+            canEscapeKeyClear: true
+          }).show({intent: Intent.DANGER, timeout: 3000, message: error.message});
+        });
+  }
+
+  copySharedLink = () => {
+    var el = document.createElement('textarea');
+    el.value = this.state.shareLinkInputbox.value;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    
+    Toaster.create({
+      position: Position.TOP,
+      autoFocus: false,
+      canEscapeKeyClear: true
+    }).show({intent: Intent.SUCCESS, timeout: 3000, message: Messages.SharedDiagramLinkCopied()});
+    
+    return;
+  }
+
+  getDiagramAsXml(){
     var encoder = new mxCodec();
     var node = encoder.encode(this.graph.getModel());
-    var diagramInXml = mxUtils.getPrettyXml(node);
-    var jsonObj = xmlParser.xml2json(diagramInXml);
-    var diagramInJsonString = JSON.stringify(jsonObj)
-    return diagramInJsonString;
+
+    var bodyTagInNode = node.getElementsByTagName('body')[0];
+    node.getElementsByTagName('root')[0].removeChild(bodyTagInNode);
+
+    var diagramInXml = mxUtils.getXml(node, true);
+    return diagramInXml;
   }
+
+  importXmlAsDiagram = (xml) => {
+      var doc = mxUtils.parseXml(xml);
+      var decoder = new mxCodec(doc);
+      decoder.decode(doc.documentElement, this.graph.model);
+      this.graph.refresh();
+
+      // var doc = mxUtils.parseXml(xml);
+      // var codec = new mxCodec(doc);
+      // var elt = doc.documentElement.firstChild;
+      // var cells = [];
+      // while (elt != null){                
+      //   cells.push(codec.decodeCell(elt));
+      //     this.graph.refresh();
+      //   elt = elt.nextSibling;
+      // }
+
+      // this.graph.addCells(cells);
+
+        // let doc = mxUtils.parseXml(xml);
+        // let codec = new mxCodec(doc);
+        // codec.decode(doc.documentElement, this.graph.getModel());
+        // let elt = doc.documentElement.firstChild;
+        // let cells = [];
+        // while (elt != null)
+        // {
+        //     let cell = codec.decode(elt)
+        //     if(cell != undefined){
+        //         if(cell.id != undefined && cell.parent != undefined && (cell.id == cell.parent)){
+        //             elt = elt.nextSibling;
+        //             continue;
+        //         }   
+        //         cells.push(cell);
+        //     }
+        //     elt = elt.nextSibling;
+        // }
+        // this.graph.addCells(cells);
+
+
+    // myEditor.editor.setGraphXml(doc.documentElement);
+
+
+    // var doc = mxUtils.parseXml(xml);
+    // var codec = new mxCodec(doc);
+    // var elt = doc.documentElement.firstChild;
+    // var cells = [];
+    // while (elt != null){                
+    //   cells.push(codec.decodeCell(elt));
+    //   this.graph.refresh();
+    //   elt = elt.nextSibling;
+    // }
+
+    // this.graph.addCells(cells);
+
+  }
+
+  closeShareDiagramPopup = () => this.setState({ showShareDiagramPopup: false, useTallContent: false });
 
 }

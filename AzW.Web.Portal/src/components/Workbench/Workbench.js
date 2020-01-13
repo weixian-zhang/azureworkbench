@@ -38,8 +38,14 @@ export default class Workbench extends Component {
       })
   }
 
-  shareDiagram = () => {
-    return this.DiagramEditor.current.shareDiagram();
+  //called at ActionBar Share button
+  shareDiagram() {
+    this.DiagramEditor.current.shareDiagram();
+  }
+
+  //called at index/MainWorkbench when navigated to shared diagram link
+  loadSharedDiagram = (diagramId) => {
+    return this.DiagramEditor.current.loadSharedDiagram(diagramId);
   }
 
   render = () => {

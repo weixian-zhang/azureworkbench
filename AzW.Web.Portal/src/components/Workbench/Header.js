@@ -2,8 +2,21 @@ import React, { Component } from "react";
 import { Navbar, Button, Alignment, AnchorButton, Popover, Menu, Position, MenuItem, Classes, Icon } from "@blueprintjs/core";
 import { connect } from "react-redux";
 import { msalLoginAsync, msalLogout } from "../../redux/actions";
+import AuthService from '../../services/AuthService';
 
 class Header extends Component {
+
+  constructor(props) {
+
+    super(props);
+
+    this.authService = new AuthService();
+
+    this.state = {
+        isLogin: false
+    }
+  }
+  
   render() {
     return (
       <Navbar>
@@ -14,20 +27,20 @@ class Header extends Component {
           </Navbar.Heading>
         </Navbar.Group>
         <Navbar.Group align={Alignment.RIGHT}>
-          <AnchorButton 
+          {/* <AnchorButton 
             className="bp3-minimal"
             icon="git-new-branch"
             href="https://github.com/Code-Norris/azureworkbench"
             target="_blank"
-          />
+          /> */}
           <Popover content={ this.props.account != null ?
             (
               <Menu className={Classes.ELEVATION_1}>
-                <MenuItem labelElement={<Icon icon="log-out" />} text="Logout" onClick={this.props.logout} />
+                {this.state.isLogin == true ? <MenuItem labelElement={<Icon icon="log-out" />} text="Logout" onClick={this.logout} /> : ''}
               </Menu>
             ) : (
               <Menu className={Classes.ELEVATION_1}>
-                <MenuItem labelElement={<Icon icon="log-in" />} text="Login" onClick={this.props.login} />
+                 {this.state.isLogin == false ? <MenuItem labelElement={<Icon icon="log-in" />} text="Login" onClick={this.login} /> : '' }
               </Menu>
             )
           } position={Position.BOTTOM}>
@@ -41,6 +54,19 @@ class Header extends Component {
       </Navbar>
     );
   }
+
+  login = () => {
+    this.authService.Login(function (loginResponse){
+      this.setState({isLogin: true})
+    });
+    
+  }
+
+  logout = () => {
+    this.authService.Login();
+    this.setState({isLogin: false})
+  }
+
 }
 
 function mapStateToProps(state) {

@@ -35,6 +35,8 @@ namespace AzW.Infrastructure.AzureServices
             // .WithSubnet("")
             // .WithPrimaryPrivateIPAddressDynamic()
             // .WithNewPrimaryPublicIPAddress()
+            // .WithLatestWindowsImage("publisher", "offer", "sku")
+            // //.WithLatestLinuxImage("publisher", "offer", "sku")
 
             throw new System.NotImplementedException();
         }

@@ -7,6 +7,7 @@ import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
 export default class VMPropPanel extends Component {
   constructor(props) {
       super(props);
+
       this.state ={
         isOpen: false,
         showPassword: false,
@@ -42,6 +43,7 @@ export default class VMPropPanel extends Component {
           usePortal= {true}
           size= {Drawer.SIZE_SMALL}
       >
+          <h3>Provision</h3>
           <FormGroup
               label="Name"
               labelFor="text-input"
@@ -67,8 +69,10 @@ export default class VMPropPanel extends Component {
                 />
           </FormGroup>
           <Switch checked={this.state.vmModel.ProvisionContext.PublicIP} label="Public IP"  />
+          
+          <h3>Calculator</h3>
           <a class="bp3-button Alignment.CENTER" role="button" onClick={this.saveVMModelToDiagramEditor} tabIndex={0}>Save</a>
-    
+
       </Drawer>
     );
   }

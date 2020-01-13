@@ -1,5 +1,7 @@
 import React, { Component, useRef } from "react";
 import { Collapse } from "@blueprintjs/core";
+import { ReactComponent as Circle } from "../../assets/azure_icons/shape-circle.svg";
+import { ReactComponent as User } from "../../assets/azure_icons/shape-user.svg";
 import { ReactComponent as SQLDatabase } from "../../assets/azure_icons/Databases Service Color/SQL Databases.svg";
 import { ReactComponent as CosmosDB } from "../../assets/azure_icons/Databases Service Color/Azure Cosmos DB.svg";
 import { ReactComponent as PostgreSQL } from "../../assets/azure_icons/Databases Service Color/Azure Database for PostgreSQL servers.svg";
@@ -33,6 +35,11 @@ export default class ResourcePalette extends Component {
     this.straightArrow = React.createRef();
     this.elbowArrow = React.createRef();
     this.label = React.createRef();
+    this.rectangle = React.createRef();
+    this.circle = React.createRef();
+    this.triangle = React.createRef();
+    this.user = React.createRef();
+
     this.vmWindowsIcon = React.createRef();
     this.vmLinuxIcon = React.createRef();
     this.vmssIcon =  React.createRef();
@@ -128,8 +135,24 @@ export default class ResourcePalette extends Component {
             <div class="tile-text">Elbow Connector</div>
           </div>
           <div class="tile-panel" ref={this.label}>
-          <img src={require('../../assets/azure_icons/text.png')} width="25" height="25" />
+            <img src={require('../../assets/azure_icons/text.png')} width="25" height="25" />
             <div class="tile-text">Label</div>
+          </div>
+          <div class="tile-panel" ref={this.rectangle}>
+            <img src={require('../../assets/azure_icons/shape-rectangle.png')} width="25" height="25" />
+            <div class="tile-text">Rectangle</div>
+          </div>
+          <div class="tile-panel" ref={this.triangle}>
+            <img src={require('../../assets/azure_icons/shape-triangle.png')} width="25" height="25" />
+            <div class="tile-text">Triangle</div>
+          </div>
+          <div class="tile-panel" ref={this.circle}>
+            <Circle class="azure-rsc-icon" />
+            <div class="tile-text">Circle</div>
+          </div>
+          <div class="tile-panel" ref={this.user}>
+            <User class="azure-rsc-icon" />
+            <div class="tile-text">User</div>
           </div>
         </Collapse>
 
@@ -191,7 +214,12 @@ export default class ResourcePalette extends Component {
             <Storage class="azure-rsc-icon" />
             <div class="tile-text">Storage</div>
           </div>
+          <div class="tile-panel" ref={this.azfileIcon}>
+          <img src={require('../../assets/azure_icons/azure-storage-files.png')} width="25" height="25" />
+            <div class="tile-text">Azure File</div>
+          </div>
         </Collapse>
+
       
         <h3 class="collapse-header" onClick={this.databasePanelHeaderClick}>Database</h3>
         <Collapse isOpen={this.state.isDatabaseOpen} accordion={true} keepChildrenMounted={true} >

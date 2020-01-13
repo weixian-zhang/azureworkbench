@@ -13,12 +13,13 @@ const ProtectedRoute = ({
   ...rest }) => (
   <Route
     { ...rest }
-    render={ props =>
+    render=
+    { props =>
       account != null ? (
         <Component {...props} />
       ) : (
         <div>
-          <Overlay isOpen={overlayState.isOpen} onClose={onOverlayClose} hasBackdrop={false} usePortal={true} canOutsideClickClose={false} canEscapeKeyClose={true}>
+          {/* <Overlay isOpen={overlayState.isOpen} onClose={onOverlayClose} hasBackdrop={false} usePortal={true} canOutsideClickClose={false} canEscapeKeyClose={true}>
             <div className={[Classes.CARD, Classes.ELEVATION_4, "login-overlay"]}>
               { !isLoginInProcess ? (
               <div>
@@ -41,7 +42,7 @@ const ProtectedRoute = ({
               </div>
               ) : <Spinner intent={Intent.PRIMARY} size={50} />}
             </div>
-          </Overlay>
+          </Overlay> */}
           <Component {...props} />
         </div>
       )
