@@ -10,11 +10,14 @@ import AnonymousDiagramContext from "../../models/services/AnonymousDiagramConte
 import ShortUniqueId from 'short-unique-id';
 import AzureIcons from "./Helpers/AzureIcons";
 import Messages from "./Helpers/Messages";
+import Utils from "./Helpers/Utils";
 import MxGraphManager from './Helpers/MxGraphManager';
-import { mxClipboard, mxCodec, mxPoint, mxGeometry, mxCellOverlay, mxImage, mxKeyHandler, mxConstants, mxEvent, mxUtils,mxPopupMenuHandler, mxDragSource, mxUndoManager, mxCell, mxEditor } from "mxgraph-js";
+import { mxCellPath, mxDefaultToolbar, mxDefaultPopupMenu, mxDefaultKeyHandler, mxStylesheet, mxGraphModel, mxClipboard, mxCodec, mxPoint, mxGeometry, mxCellOverlay, mxImage, mxKeyHandler, mxConstants, mxEvent, mxUtils,mxPopupMenuHandler, mxDragSource, mxUndoManager, mxCell, mxEditor, mxGraph } from "mxgraph-js";
 import Subnet from "../../models/Subnet";
+import LoadAnonyDiagramContext from "../../models/LoadAnonyDiagramContext";
 import DiagramService from '../../services/DiagramService';
-let xmlParser = require('xml2json-light');
+import queryString from 'query-string';
+import vnetIcon from '../../assets/azure_icons/Networking Service Color/Virtual Network (Classic).svg';
 
  export default class DiagramEditor extends Component {
   constructor(props) {
@@ -28,7 +31,9 @@ let xmlParser = require('xml2json-light');
         showShareDiagramPopup: false,
         shareLink: '',
         shareLinkInputbox: null,
-        showSpinner: false
+        showSpinner: false,
+
+        queryString: this.props.queryString
     }
   }
 
@@ -48,7 +53,7 @@ let xmlParser = require('xml2json-light');
     this.addCtrlCCtrlVCopyPasteVertices();
     this.addDragOverEventForVMOverSubnetHighlight();
 
-    this.importXmlAsDiagram();
+    this.loadSharedDiagram();
 
     //create refs
     this.vmPropPanel = React.createRef();
@@ -152,7 +157,7 @@ addDragOverEventForVMOverSubnetHighlight() {
     //Installs a popupmenu handler using local function (see below).
     this.graph.popupMenuHandler.factoryMethod = function(menu, cell, evt)
     {
-      if(cell == null || cell.value == null | cell.value.GraphModel == null)
+      if(cell == null || cell.value == null) // | cell.value.GraphModel == null)
         return;
     
       menu.addItem('Bring to Front', '', function()
@@ -165,8 +170,10 @@ addDragOverEventForVMOverSubnetHighlight() {
           thisComponent.graph.orderCells(true); 
         });
 
+        var userObj = JSON.parse(cell.value);
+
         //for vnet
-        if(cell.value.resourceType == "vnet")
+        if(userObj.resourceType == "vnet")
         {
           menu.addSeparator();
           
@@ -266,9 +273,9 @@ addDragOverEventForVMOverSubnetHighlight() {
 
         var randomId = this.shortUID.randomUUID(6);
         var cell = new mxCell(randomId, new mxGeometry(dropContext.x, dropContext.y, 50, 50), 'elbowedgestyle');
-        cell.getGeometry().setTerminalPoint(new mxPoint(dropContext.x + 30, dropContext.y + 30), true);
-        cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
-        cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
+        //cell.getGeometry().setTerminalPoint(new mxPoint(dropContext.x + 30, dropContext.y + 30), true);
+        //cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
+        //cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
         cell.geometry.relative = true;
         cell.edge = true;
         this.graph.addCell(cell, parent);
@@ -300,12 +307,6 @@ addDragOverEventForVMOverSubnetHighlight() {
     //mxgraph examples
     https://jgraph.github.io/mxgraph/javascript/index.html
 
-      var vnetModel = new VNet();
-      vnetModel.resourceType = "vnet"
-      vnetModel.GraphModel.Id = this.shortUID.randomUUID(6);
-      vnetModel.ProvisionContext.Name = 'vnet_' + vnetModel.GraphModel.Id;
-      vnetModel.GraphModel.DisplayName = vnetModel.ProvisionContext.Name;
-      
       this.graphManager.graph.getModel().beginUpdate();
       try
       {
@@ -313,42 +314,41 @@ addDragOverEventForVMOverSubnetHighlight() {
           https://stackoverflow.com/questions/45708656/drag-event-on-mxgraph-overlay
           // Creates a new overlay with an image and a tooltip
           var vnetIconOverlay = new mxCellOverlay(
-            new mxImage(require('../../assets/azure_icons/Networking Service Color/Virtual Network (Classic).svg'),25, 25),
+            new mxImage(window.location.origin + require('../../assets/azure_icons/Networking Service Color/Virtual Network (Classic).svg'),25, 25),
             null,  mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP
           );
 
-          var vnetCell = this.graph.insertVertex(
-            this.graph.getDefaultParent(),
-            null,
-            vnetModel,
-            dropContext.x,
-            dropContext.y,
-            300,
-            400,
-            "vnetstyle" //"rounded=1;editable=0;verticalLabelPosition=top;verticalAlign=bottom;align=right;STYLE_STROKEWIDTH=2"
-          );
-        
-          
-        //this.graph.addCellOverlay(vnetCell, vnetIconOverlay);
+          var vnetModel = new VNet();
+              vnetModel.resourceType = "vnet"
+              vnetModel.GraphModel.Id = this.shortUID.randomUUID(6);
+              vnetModel.ProvisionContext.Name = 'vnet_' + vnetModel.GraphModel.Id;
+              vnetModel.GraphModel.DisplayName = vnetModel.ProvisionContext.Name;
+              var jsonstrVnet = JSON.stringify(vnetModel);
+
+          var vnetVertex = this.graph.insertVertex(
+                this.graph.getDefaultParent(),
+                vnetModel.GraphModel.Id,
+                jsonstrVnet,
+                dropContext.x,
+                dropContext.y,
+                300,
+                400,
+                "vnetstyle"
+              );
+
+          this.graph.addCellOverlay(vnetVertex, vnetIconOverlay);
     }
     finally
     {
       // Updates the display
       this.graphManager.graph.getModel().endUpdate();
     }
-  }
 
-  addSubnet = (vnetCell) => {
-      //var vnetCell = this.graph.getCell(vnetVertexId);
+    return vnetVertex;;
+}
 
-      var subnet = new Subnet();
-      subnet.GraphModel.Id = this.shortUID.randomUUID(6);
-      subnet.ProvisionContext.Name = "subnet_" + subnet.GraphModel.Id;
-      subnet.GraphModel.DisplayName = subnet.ProvisionContext.Name
+  addSubnet = (vnetCell, loadContext) => {
 
-      this.graphManager.graph.getModel().beginUpdate();
-      try 
-      {
         var nsgOverlay = new mxCellOverlay(
           new mxImage(require('../../assets/azure_icons/Networking Service Color/NSG.png'),20, 20),
           null,  mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP
@@ -356,39 +356,75 @@ addDragOverEventForVMOverSubnetHighlight() {
 
         var subnetLogoOverlay = new mxCellOverlay(
           new mxImage(require('../../assets/azure_icons/Networking Service Color/Subnet.png'),15, 15),
-          null,  mxConstants.ALIGN_Right, mxConstants.ALIGN_TOP
+          'Subnet',  mxConstants.ALIGN_Right, mxConstants.ALIGN_TOP
         );
 
-        var subnetVertex = this.graph.insertVertex(
-          vnetCell,
-          subnet.GraphModel.Id,
-          subnet,
-          ((vnetCell.getGeometry().x /2) / 2) - 15,
-          vnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
-          vnetCell.getGeometry().width - 90,
-          100,
-          'subnetstyle' //"editable=0;verticalLabelPosition=top;verticalAlign=bottom;align=right"
-        );
+        var subnetVertex;
+
+        if(loadContext == undefined){
+
+          var subnet = new Subnet();
+          subnet.GraphModel.Id = this.shortUID.randomUUID(6);
+          subnet.ProvisionContext.Name = "subnet_" + subnet.GraphModel.Id;
+          subnet.GraphModel.DisplayName = subnet.ProvisionContext.Name
+          var jsonstrSubnet = JSON.stringify(subnet);
+
+          subnetVertex = this.graph.insertVertex(
+            vnetCell,
+            subnet.GraphModel.Id,
+            jsonstrSubnet,
+            ((vnetCell.getGeometry().x /2) / 2) - 15,
+            vnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
+            vnetCell.getGeometry().width - 90,
+            100,
+            'subnetstyle' //"editable=0;verticalLabelPosition=top;verticalAlign=bottom;align=right"
+          );
+        }
+        else {
+
+            var vnet = this.graph.getModel().getCell(loadContext.parent.id);
+            // var geo = this.graph.getModel().getGeometry(vnet);
+            
+            
+            // subnetVertex = this.graph.insertVertex(
+            //   vnet,
+            //   '',//subnet.GraphModel.Id,'',
+            //   loadContext.UserObject,
+            //   vnet.getGeometry().x,
+            //   vnet.getGeometry().y,
+            //   vnet.getGeometry(),
+            //   100,
+            //   'subnetstyle', //"editable=0;verticalLabelPosition=top;verticalAlign=bottom;align=right"
+            //   true
+            //   );
+
+            // // subnetVertex = this.graph.insertVertex(
+            // //   vnetCell,
+            // //     loadContext.id,
+            // //     loadContext.UserObject,
+            // //     loadContext.x,
+            // //     loadContext.y,
+            // //     loadContext.width,
+            // //     loadContext.height,
+            // //     loadContext.style, //"editable=0;verticalLabelPosition=top;verticalAlign=bottom;align=right"
+            // //     true
+            // //   );
+        }
  
         this.graph.addCellOverlay(subnetVertex, subnetLogoOverlay);
         this.graph.addCellOverlay(subnetVertex, nsgOverlay);
-      }
-      finally
-      {
-        // Updates the display
-        this.graphManager.graph.getModel().endUpdate();
-      }
+      
   }
 
   addVM = (dropContext, vmType) => {
     
-    var cell = this.graph.getCellAt(dropContext.x, dropContext.y);
-    
     if(dropContext.resourceType == "vmWindows" ||
         dropContext.resourceType == "vmLinux")
     {
-      if(cell == null || cell.value.GraphModel.ResourceType != "subnet")
-        {
+      var cell = this.graph.getCellAt(dropContext.x, dropContext.y);
+
+      if(cell == null || JSON.parse(cell.value).GraphModel.ResourceType != "subnet")
+      {
           Toaster.create({
             position: Position.TOP,
             autoFocus: false,
@@ -396,7 +432,6 @@ addDragOverEventForVMOverSubnetHighlight() {
           }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.VMInSubnet()});
           return;
         }
-      
     }
 
      var vmModel = new VM();
@@ -404,6 +439,7 @@ addDragOverEventForVMOverSubnetHighlight() {
      vmModel.GraphModel.IconId = this.shortUID.randomUUID(6);
      vmModel.ProvisionContext.Name = "vm_" + vmModel.GraphModel.IconId;
      vmModel.GraphModel.DisplayName = vmModel.ProvisionContext.Name;
+     var userObj = JSON.stringify(vmModel);
 
     var iconByOS;
     if(vmType == 'vmWindows')
@@ -417,7 +453,7 @@ addDragOverEventForVMOverSubnetHighlight() {
      try
      {
         var vm = this.graph.insertVertex
-          (cell, vmModel.GraphModel.IconId ,vmModel , cell.getGeometry().x, cell.getGeometry().x, 40, 40,
+          (cell, vmModel.GraphModel.IconId ,userObj, cell.getGeometry().x, cell.getGeometry().x, 40, 40,
           "editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + iconByOS);
     }
      finally
@@ -445,12 +481,13 @@ addDragOverEventForVMOverSubnetHighlight() {
      vmssModel.GraphModel.IconId = this.shortUID.randomUUID(6);
      vmssModel.ProvisionContext.Name = "vmss_" + vmssModel.GraphModel.IconId;
      vmssModel.GraphModel.DisplayName = vmssModel.ProvisionContext.Name;
+     var userObj = JSON.stringify(vmssModel);
 
      this.graphManager.graph.getModel().beginUpdate();
      try
      {
         var vm = this.graph.insertVertex
-          (cell, vmssModel.GraphModel.IconId ,vmssModel , cell.getGeometry().x, cell.getGeometry().x, 40, 40,
+          (cell, vmssModel.GraphModel.IconId ,userObj, cell.getGeometry().x, cell.getGeometry().x, 40, 40,
           "editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + this.azureIcons.VMSS());
     }
      finally
@@ -521,19 +558,231 @@ addDragOverEventForVMOverSubnetHighlight() {
   }
 
   loadSharedDiagram = (diagramId) => {
-      var thisComp = this;
-      this.diagramService.loadAnonymousDiagram(diagramId,
-        function(anonyDiagramContext) {
-          thisComp.importXmlAsDiagram(anonyDiagramContext.DiagramXml);
-        },
-        function (error){
-          Toaster.create({
-            position: Position.TOP,
-            autoFocus: false,
-            canEscapeKeyClear: true
-          }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.SharedDiagramLoadError()});
+      var parsedQS =  queryString.parse(this.state.queryString)
+      if(parsedQS == undefined || parsedQS.id == undefined)
           return;
+
+      var thisComp = this;
+
+      this.diagramService.loadAnonymousDiagram(parsedQS.id)
+      .then(function (response) {
+          var adc = new AnonymousDiagramContext();
+          adc.UID = response.data.UID;
+          adc.DiagramName = response.data.DiagramName;
+          adc.DiagramXml = response.data.DiagramXml;
+          adc.SharedLink = response.data.SharedLink;
+          thisComp.importXmlAsDiagram(adc);
+        })
+        .catch(function (error) {
+          console.log(error);
+        })
+        .finally(function () {
         });
+  }
+
+  importXmlAsDiagram = (anonymousDiagramContext ) => {
+
+    //last resort, manually create
+    //https://stackoverflow.com/questions/56408568/unable-to-create-an-mxgraph-from-the-xml-provided
+
+    if(anonymousDiagramContext == undefined ||
+       anonymousDiagramContext.DiagramXml == undefined)
+      return;
+
+      window['mxImage'] = mxImage;   
+      window['mxCellOverlay'] = mxCellOverlay;  
+      window['mxCell'] = mxCell;
+      window['mxCellPath'] = mxCellPath;
+      window['mxGeometry'] = mxGeometry;
+      window['mxCodec'] = mxCodec;
+      window['mxEditor'] = mxEditor;
+      window['mxGeometry'] = mxGeometry;
+      window['mxDefaultKeyHandler'] = mxDefaultKeyHandler;
+      window['mxDefaultPopupMenu'] = mxDefaultPopupMenu;
+      window['mxGraph'] = mxGraph;
+      window['mxStylesheet'] = mxStylesheet;
+      window['mxDefaultToolbar'] = mxDefaultToolbar;
+      window['mxGraphModel'] = mxGraphModel;
+      window['mxGraphModel'] = mxGraphModel;
+      window['mxGraphModel'] = mxGraphModel;
+    
+      var doc = mxUtils.parseXml(anonymousDiagramContext.DiagramXml);
+      var codec = new mxCodec(doc);
+      codec.decode(doc.documentElement, this.graph.getModel());
+
+      var cells =
+        this.graph.getChildVertices(this.graph.getDefaultParent());
+      
+        if(cells != undefined)
+        {
+            cells.map(cell => {
+
+              if(JSON.parse(cell.value).GraphModel.ResourceType == 'vnet')
+              {
+                this.graph.removeCellOverlays(cell);
+
+                var vnetIconOverlay = new mxCellOverlay(
+                  new mxImage(window.location.origin + require('../../assets/azure_icons/Networking Service Color/Virtual Network (Classic).svg'),25, 25),
+                  null,  mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP
+                );
+
+                this.graph.addCellOverlay(cell, vnetIconOverlay);
+
+                var childSubnets =
+                   this.graph.getChildVertices(cell);
+                
+                if(childSubnets != null)
+                {
+                  childSubnets.map(subnet => {
+                    this.graph.removeCellOverlays(subnet);
+
+                    var nsgOverlay = new mxCellOverlay(
+                      new mxImage(require('../../assets/azure_icons/Networking Service Color/NSG.png'),20, 20),
+                      null,  mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP
+                    );
+            
+                    var subnetLogoOverlay = new mxCellOverlay(
+                      new mxImage(require('../../assets/azure_icons/Networking Service Color/Subnet.png'),15, 15),
+                      'Subnet',  mxConstants.ALIGN_Right, mxConstants.ALIGN_TOP
+                    );
+    
+                    this.graph.addCellOverlay(subnet, nsgOverlay);
+                    this.graph.addCellOverlay(subnet, subnetLogoOverlay);
+
+                  })
+                }
+                
+              }
+            });
+        }
+
+
+    // var xmlDoc = mxUtils.parseXml(anonymousDiagramContext.DiagramXml);
+    // let decoder = new mxCodec(xmlDoc);
+    // var cells = xmlDoc.documentElement.firstElementChild.children;
+    // var edges = [];
+
+    // for (let i = 0; i < cells.length; i++) 
+    // {
+    //   var mxcell = decoder.decodeCell(cells[i], true);
+
+    //   if(mxcell.geometry != undefined)
+    //   {
+    //     var id = mxcell.id;
+    //     var userObjJsonString = mxcell.value; //user obj in vertex is always json string
+    //     var xmldocGeometry = decoder.decode(mxcell.geometry);
+    //     var x = xmldocGeometry.getAttribute('x');
+    //     var y = xmldocGeometry.getAttribute('y');
+    //     var width = xmldocGeometry.getAttribute('width');
+    //     var height = xmldocGeometry.getAttribute('height');
+
+    //     var userObj = Utils.isJson(mxcell.value) ? JSON.parse(mxcell.value) : null;
+
+    //     if(mxcell.isEdge()){
+    //       edges.push(mxcell); //add edges later after all vertex added
+    //     }
+    //     else if(userObj != undefined && userObj.GraphModel.ResourceType == 'vnet')
+    //     {
+    //         var vnetLoadContext = new LoadAnonyDiagramContext();
+    //         vnetLoadContext.id = id;
+    //         vnetLoadContext.UserObject = userObjJsonString;
+    //         vnetLoadContext.x = x;
+    //         vnetLoadContext.y = y;
+    //         vnetLoadContext.width = width;
+    //         vnetLoadContext.height = height;
+    //         vnetLoadContext.style = mxcell.style;
+
+    //         var vnetVertex = this.addVNet(null, vnetLoadContext);
+
+    //         mxcell.children.map(subnet => {
+
+    //           var subnetLoadContext = new LoadAnonyDiagramContext();
+    //           subnetLoadContext.id = subnet.id;
+    //           subnetLoadContext.UserObject = subnet.value;
+    //           var subnetGeo = decoder.decode(subnet.geometry);
+    //           subnetLoadContext.x = subnetGeo.getAttribute('x');
+    //           subnetLoadContext.y = subnetGeo.getAttribute('y');
+    //           subnetLoadContext.width = subnetGeo.getAttribute('width');
+    //           subnetLoadContext.height = subnetGeo.getAttribute('height');
+    //           subnetLoadContext.style = subnet.style;
+
+    //           var subnetCell = this.addSubnet(vnetVertex, subnetLoadContext)
+              
+    //           subnet.children.map(rscInSubnet => {
+
+    //             var rscInSubnetLoadContext = new LoadAnonyDiagramContext();
+    //             rscInSubnetLoadContext.id = rscInSubnet.id;
+    //             rscInSubnetLoadContext.UserObject = rscInSubnet.value;
+    //             var rscGeo = decoder.decode(rscInSubnet.geometry);
+    //             rscInSubnetLoadContext.x = rscGeo.getAttribute('x');
+    //             rscInSubnetLoadContext.y = rscGeo.getAttribute('y');
+    //             rscInSubnetLoadContext.width = rscGeo.getAttribute('width');
+    //             rscInSubnetLoadContext.height = rscGeo.getAttribute('height');
+    //             rscInSubnetLoadContext.style = rscInSubnet.style;
+
+    //             this.graph.insertVertex
+    //             (subnetCell, rscInSubnetLoadContext.id, rscInSubnetLoadContext.UserObject,
+    //               rscInSubnetLoadContext.x, rscInSubnetLoadContext.y, rscInSubnetLoadContext.width,
+    //               rscInSubnetLoadContext.height, rscInSubnetLoadContext.style);
+
+    //           })
+    //         });
+            
+    //     }
+    //     // else if (userObj != undefined && userObj.GraphModel.ResourceType  == 'subnet')
+    //     // {
+    //     //   var vnetCell; 
+
+    //     //   if(!this.graph.getModel().getCell(mxcell.parent.id)){
+
+    //     //     var vnetCell = mxcell.parent;
+    //     //     var vnetLoadContext = new LoadAnonyDiagramContext();
+    //     //     vnetLoadContext.id = vnetCell.id;
+    //     //     vnetLoadContext.UserObject = vnetCell.value;
+    //     //     var vnetGeo = decoder.decode(vnetCell.geometry);
+    //     //     vnetLoadContext.x = vnetGeo.getAttribute('x');
+    //     //     vnetLoadContext.y = vnetGeo.getAttribute('y');
+    //     //     vnetLoadContext.width =  vnetGeo.getAttribute('width');
+    //     //     vnetLoadContext.height =  vnetGeo.getAttribute('height');
+    //     //     vnetLoadContext.style = vnetCell.style;
+
+    //     //       //check if vnet is added before
+    //     //       vnetCell = this.addVNet(null, vnetLoadContext)
+    //     //   } 
+
+    //     //   var loadContext = new LoadAnonyDiagramContext();
+    //     //   loadContext.id = id;
+    //     //   loadContext.cell = mxcell;
+    //     //   loadContext.parent = mxcell.parent;
+    //     //   loadContext.UserObject = userObjJsonString;
+    //     //   loadContext.x = x;
+    //     //   loadContext.y = y;
+    //     //   loadContext.width = width;
+    //     //   loadContext.height = height;
+    //     //   loadContext.style = mxcell.style;
+
+    //     //   this.addSubnet(vnetCell, loadContext);
+    //     // }
+    //     //
+    //     else if(userObj != undefined && userObj.GraphModel.ResourceType != 'vnet')
+    //     {
+    //       var parent;
+
+    //       //this.addVNet({x: 50, y: 50, resourceType: 'vnet'});
+    //       if(mxcell.parent.value == undefined && mxcell.parent.geometry == undefined)
+    //         parent = this.graph.getDefaultParent();
+    //       else
+    //         parent = mxcell.parent;
+
+    //       this.graph.insertVertex
+    //         (parent, mxcell.id, userObjJsonString, x, y, width, height, mxcell.style);
+    //     }
+    //   }
+    // }
+
+    // if(edges.length > 0){
+    //   this.graph.addCells(edges);
+    // }
   }
 
   shareDiagram(){
@@ -593,70 +842,12 @@ addDragOverEventForVMOverSubnetHighlight() {
 
   getDiagramAsXml(){
     var encoder = new mxCodec();
-    var node = encoder.encode(this.graph.getModel());
 
-    var bodyTagInNode = node.getElementsByTagName('body')[0];
-    node.getElementsByTagName('root')[0].removeChild(bodyTagInNode);
+    var node = encoder.encode(this.graph.getModel());
 
     var diagramInXml = mxUtils.getXml(node, true);
     return diagramInXml;
   }
 
-  importXmlAsDiagram = (xml) => {
-      var doc = mxUtils.parseXml(xml);
-      var decoder = new mxCodec(doc);
-      decoder.decode(doc.documentElement, this.graph.model);
-      this.graph.refresh();
-
-      // var doc = mxUtils.parseXml(xml);
-      // var codec = new mxCodec(doc);
-      // var elt = doc.documentElement.firstChild;
-      // var cells = [];
-      // while (elt != null){                
-      //   cells.push(codec.decodeCell(elt));
-      //     this.graph.refresh();
-      //   elt = elt.nextSibling;
-      // }
-
-      // this.graph.addCells(cells);
-
-        // let doc = mxUtils.parseXml(xml);
-        // let codec = new mxCodec(doc);
-        // codec.decode(doc.documentElement, this.graph.getModel());
-        // let elt = doc.documentElement.firstChild;
-        // let cells = [];
-        // while (elt != null)
-        // {
-        //     let cell = codec.decode(elt)
-        //     if(cell != undefined){
-        //         if(cell.id != undefined && cell.parent != undefined && (cell.id == cell.parent)){
-        //             elt = elt.nextSibling;
-        //             continue;
-        //         }   
-        //         cells.push(cell);
-        //     }
-        //     elt = elt.nextSibling;
-        // }
-        // this.graph.addCells(cells);
-
-
-    // myEditor.editor.setGraphXml(doc.documentElement);
-
-
-    // var doc = mxUtils.parseXml(xml);
-    // var codec = new mxCodec(doc);
-    // var elt = doc.documentElement.firstChild;
-    // var cells = [];
-    // while (elt != null){                
-    //   cells.push(codec.decodeCell(elt));
-    //   this.graph.refresh();
-    //   elt = elt.nextSibling;
-    // }
-
-    // this.graph.addCells(cells);
-
-  }
-
   closeShareDiagramPopup = () => this.setState({ showShareDiagramPopup: false, useTallContent: false });
-
 }

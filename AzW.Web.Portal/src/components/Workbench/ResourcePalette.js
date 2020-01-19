@@ -1,5 +1,5 @@
 import React, { Component, useRef } from "react";
-import { Collapse } from "@blueprintjs/core";
+import { Collapse, H5, Position, Classes, Popover } from "@blueprintjs/core";
 import { ReactComponent as Circle } from "../../assets/azure_icons/shape-circle.svg";
 import { ReactComponent as User } from "../../assets/azure_icons/shape-user.svg";
 import { ReactComponent as SQLDatabase } from "../../assets/azure_icons/Databases Service Color/SQL Databases.svg";
@@ -127,8 +127,14 @@ export default class ResourcePalette extends Component {
         <h3 class="collapse-header" onClick={this.shapePanelHeaderClick}>Shapes</h3>
         <Collapse isOpen={this.state.isShapeOpen} accordion={true} keepChildrenMounted={true} >
           <div class="tile-panel" ref={this.straightArrow}>
-            <img src={require('../../assets/azure_icons/straight-connector.png')} width="25" height="25" />
-            <div class="tile-text">Straight Connector</div>
+                <Popover
+                    interactionKind='hover'
+                    content={<H5>Straight Arrow</H5>}
+                    position={Position.AUTO}
+                    popoverClassName={Classes.POPOVER_CONTENT_SIZING}
+                >
+                    <img src={require('../../assets/azure_icons/straight-connector.png')} width="25" height="25" />
+                </Popover>
           </div>
           <div class="tile-panel" ref={this.elbowArrow}>
             <img src={require('../../assets/azure_icons/round-connector.png')} width="25" height="25" />

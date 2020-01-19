@@ -14,7 +14,8 @@ export default class Workbench extends Component {
     super(props);
 
     this.state = {
-      renderResourcePalette: false
+      renderResourcePalette: false,
+      queryString: this.props.queryString
     }
     
     this.DiagramEditor = React.createRef();
@@ -44,44 +45,17 @@ export default class Workbench extends Component {
   }
 
   //called at index/MainWorkbench when navigated to shared diagram link
-  loadSharedDiagram = (diagramId) => {
-    return this.DiagramEditor.current.loadSharedDiagram(diagramId);
-  }
+  // loadSharedDiagram = (diagramId) => {
+  //   return this.DiagramEditor.current.loadSharedDiagram(diagramId);
+  // }
 
   render = () => {
     const { renderResourcePalette } = this.state
     return (
-      
       <div className="workbench-container">
         { renderResourcePalette ? <ResourcePalette mxgraphManager={this.graphManager}  addResourceToDiagramEditor={this.addResourceToDiagramEditor} /> : '' }
-        <DiagramEditor ref={this.DiagramEditor} mxgraphManagerReadyCallback={this.mxgraphManagerReadyCallback} />
+        <DiagramEditor queryString={this.state.queryString} ref={this.DiagramEditor} mxgraphManagerReadyCallback={this.mxgraphManagerReadyCallback} />
       </div>
     );
-
-
   }
-
-  
-
-  // makeResourceIconDraggable(){
-  //     var _ = this;
-
-  //     $('#azpanel-icon-vm').draggable({
-  //       cancel: "a.ui-icon", // clicking an icon won't initiate dragging
-  //       //revert: "invalid", // when not dropped, the item will revert back to its initial position
-  //       revert: true, // bounce back when dropped
-  //       helper: "clone", // create "copy" with original properties, but not a true clone
-  //       cursor: "move",
-  //       revertDuration: 0 // immediate snap
-  //     });
-
-  //     $('#diagramEditor').droppable({
-  //       drop: function( event, ui ) {
-  //         // clone item to retain in original "list"
-  //         var $item = ui.draggable.clone();
-
-  //         _.addResourceToDiagramEditor($item);
-  //       }
-  //     });
-  // }
 }

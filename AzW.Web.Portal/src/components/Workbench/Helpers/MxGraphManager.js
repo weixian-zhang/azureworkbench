@@ -1,6 +1,6 @@
 import {
     mxGraph,
-    mxGuide,
+    mxGeometry,
     mxEdgeHandler,
     mxGraphHandler,
     mxConstants,
@@ -14,7 +14,18 @@ import {
     mxConnectionConstraint,
     mxConstraintHandler,
     mxCellEditor,
-    mxConnectionHandler
+    mxConnectionHandler,
+    mxCodecRegistry,
+    mxCell,
+    mxObjectCodec,
+    mxEditor,
+    mxDefaultKeyHandler,
+    mxStylesheet,
+    mxDefaultPopupMenu,
+    mxDefaultToolbar,
+    mxGraphModel,
+    mxCellPath,
+    mxCellOverlay
   } from "mxgraph-js";
 
 export default class MxGraphManager
@@ -41,7 +52,7 @@ export default class MxGraphManager
         this.initGraphBehavior();
 
         this.initGraphStyle();
-        
+
         return this.graph;
     }
 
@@ -76,7 +87,7 @@ export default class MxGraphManager
         mxGraphHandler.prototype.removeCellsFromParent = false
         
         // // Enables guides
-        //mxGraphHandler.prototype.guidesEnabled = true;
+        mxGraphHandler.prototype.guidesEnabled = true;
     
         // Enables snapping waypoints to terminals
         //mxEdgeHandler.prototype.snapToTerminals = true;
@@ -89,14 +100,41 @@ export default class MxGraphManager
         this.graph.htmlLabels = false;
         this.graph.autoSizeCellsOnAdd = true;
 
-        // Overrides method to provide ProvisionContext.Name as label
+        // remove overlays from exclude list for mxCellCodec so that overlays are encoded into XML
+        var cellCodec = mxCodecRegistry.getCodec(mxCell);
+        var excludes = cellCodec.exclude;
+        excludes.splice(excludes.indexOf('overlays'), 1);
+        excludes.splice(excludes.indexOf('children'), 1);
+        excludes.splice(excludes.indexOf('parent'), 1);
+        excludes.splice(excludes.indexOf('source'), 1);
+        excludes.splice(excludes.indexOf('target'), 1);
+        excludes.splice(excludes.indexOf('edges'), 1);
+        excludes.splice(excludes.indexOf('mxTransient'), 1);
+        // set flag to allow expressions (function) to be encoded
+        cellCodec.allowEval = true;
+        // set flag to allow expressions (function) to be decoded
+        mxObjectCodec.allowEval = true;
+
+        try {
+        // Overrides method to provide ProvisionContext.Name as label to vertex
         this.graph.convertValueToString = function(cell)
         {
-            if(cell.value != null && cell.value.ProvisionContext != null)
-                return cell.value.GraphModel.DisplayName;
+            if(cell.isEdge())
+            return;
+            
+            if(cell.value != null)
+            {
+                //return cell.value.GraphModel.DisplayName;
+                var usrObj = JSON.parse(cell.value);
+                return  usrObj.ProvisionContext.Name; //cell.value.GraphModel.DisplayName;
+            }
             else
                 return cell.value;
         };
+        }
+        catch(error){
+            
+        }
     }
 
     initGraphStyle(){

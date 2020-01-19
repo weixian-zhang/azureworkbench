@@ -27,27 +27,28 @@ export default class DiagramService
       if(anonyDiagramId == null)
         return;
 
+      var sharedAnonyDiagramContext;
+
       //axios.defaults.headers.common['Authorization'] = token.accessToken;
-      axios.get('api/dia/anony/shareload',{
+      return axios.get('api/dia/anony/shareload',{
           params: {
             anonyDiagramId: anonyDiagramId
           }
-        })
-        .then(function (response) {
-          console.log(response.data);
-          var adc = new AnonymousDiagramContext();
-          adc.UID = response.data.UID;
-          adc.DiagramName = response.data.DiagramName;
-          adc.DiagramXml = response.data.DiagramXml;
-          adc.SharedLink = response.data.SharedLink;
-          responseCallback(adc);
-        })
-        .catch(function (error) {
-          console.log(error);
-          errorCallback(error);
-        })
-        .finally(function () {
-          // always executed
-        });  
+        });
+        // .then(function (response) {
+        //   var adc = new AnonymousDiagramContext();
+        //   adc.UID = response.data.UID;
+        //   adc.DiagramName = response.data.DiagramName;
+        //   adc.DiagramXml = response.data.DiagramXml;
+        //   adc.SharedLink = response.data.SharedLink;
+        //   sharedAnonyDiagramContext = adc;
+        // })
+        // .catch(function (error) {
+        //   console.log(error);
+        //   errorCallback(error);
+        // })
+        // .finally(function () {
+        //   responseCallback(sharedAnonyDiagramContext);
+        // });   
       }
 }
