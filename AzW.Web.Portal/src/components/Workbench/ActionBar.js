@@ -18,7 +18,7 @@ export default class ActionBar extends Component {
                         <span className="bp3-navbar-divider"></span>
                         <Menu>
                             <MenuItem text="File">
-                                <MenuItem text="Save Draft In-Browser" onClick={this.shareDiagram}/>
+                                <MenuItem text="Save draft on browser" onClick={this.shareDiagram}/>
                                 <MenuItem text="Share" onClick={this.shareDiagram}/>
                                 <MenuItem text="Export as SVG" onClick={this.saveToWorkspace} />
                                 <MenuItem text="Export as PNG" onClick={this.saveToWorkspace} />

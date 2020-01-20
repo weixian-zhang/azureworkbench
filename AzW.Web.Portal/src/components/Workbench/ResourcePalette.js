@@ -33,6 +33,7 @@ export default class ResourcePalette extends Component {
     this.graphManager = this.props.mxgraphManager;
 
     this.straightArrow = React.createRef();
+    this.dashedArrow = React.createRef();
     this.elbowArrow = React.createRef();
     this.label = React.createRef();
     this.rectangle = React.createRef();
@@ -134,6 +135,16 @@ export default class ResourcePalette extends Component {
                     popoverClassName={Classes.POPOVER_CONTENT_SIZING}
                 >
                     <img src={require('../../assets/azure_icons/straight-connector.png')} width="25" height="25" />
+                </Popover>
+          </div>
+          <div class="tile-panel" ref={this.dashedArrow}>
+                <Popover
+                    interactionKind='hover'
+                    content={<H5>Dashed Arrow</H5>}
+                    position={Position.AUTO}
+                    popoverClassName={Classes.POPOVER_CONTENT_SIZING}
+                >
+                    <img src={require('../../assets/azure_icons/shape-dasharrow.png')} width="25" height="25" />
                 </Popover>
           </div>
           <div class="tile-panel" ref={this.elbowArrow}>
@@ -277,6 +288,7 @@ export default class ResourcePalette extends Component {
     var thisComponent = this;
 
     this.graphManager.makeIconDraggable(this.straightArrow.current, "straightarrow", thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.dashedArrow.current, "dashedarrow", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.elbowArrow.current, "elbowarrow", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.label.current, "label", thisComponent.props.addResourceToDiagramEditor);
     

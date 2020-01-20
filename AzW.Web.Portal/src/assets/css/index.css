@@ -64,3 +64,8 @@ div.mxRubberband {
   border: 1px solid #e7e7e7;
   padding: 1px;
 }
+/*vnet & subnet radius*/
+rect  {
+  rx: 11px;
+  ry: 11px;
+}

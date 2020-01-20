@@ -144,7 +144,7 @@ export default class MxGraphManager
         mxConstants.HANDLE_STROKECOLOR = '#0088cf';
         mxConstants.VERTEX_SELECTION_COLOR = '#00a8ff';
                 
-        //default vertex style
+        //vnet style
         var vnetCellStyle  = new Object();
         vnetCellStyle[mxConstants.STYLE_STROKECOLOR] = 'darkblue';
         vnetCellStyle[mxConstants.SHAPE_RECTANGLE] = 'rectangle';
@@ -155,7 +155,8 @@ export default class MxGraphManager
         vnetCellStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
         vnetCellStyle[mxConstants.STYLE_FONTSIZE] = '12';
         vnetCellStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
-        vnetCellStyle[mxConstants.STYLE_ROUNDED] = '0';
+        // vnetCellStyle[mxConstants.STYLE_ROUNDED] = '1';
+        // vnetCellStyle[mxConstants.RECTANGLE_ROUNDING_FACTOR] = '0.3';
         vnetCellStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "TOP";
         vnetCellStyle[mxConstants.STYLE_LABEL_POSITION] = "ALIGN_RIGHT";
         vnetCellStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "TOP";
@@ -171,7 +172,7 @@ export default class MxGraphManager
         subnetCellStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
         subnetCellStyle[mxConstants.STYLE_FONTSIZE] = '12';
         subnetCellStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
-        subnetCellStyle[mxConstants.STYLE_ROUNDED] = '1';
+        //subnetCellStyle[mxConstants.STYLE_ROUNDED] = '1';
         subnetCellStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "ALIGN_TOP,";
         subnetCellStyle[mxConstants.STYLE_LABEL_POSITION] = "ALIGN_RIGHT";
         subnetCellStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "TOP";
@@ -192,6 +193,15 @@ export default class MxGraphManager
         straightEdgeStyle[mxConstants.STYLE_ROUNDED] = false;
         straightEdgeStyle[mxConstants.CURSOR_MOVABLE_EDGE] = "move";
         this.graph.getStylesheet().putCellStyle('straightedgestyle', straightEdgeStyle);
+
+        // dashed edges
+        var dashedEdgeStyle = new Object();
+        dashedEdgeStyle[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = '#FFFFFF';
+        dashedEdgeStyle[mxConstants.STYLE_STROKEWIDTH] = '1.5';
+        dashedEdgeStyle[mxConstants.STYLE_ROUNDED] = false;
+        dashedEdgeStyle[mxConstants.CURSOR_MOVABLE_EDGE] = "move";
+        dashedEdgeStyle[mxConstants.STYLE_DASHED] = "1";
+        this.graph.getStylesheet().putCellStyle('dashededgestyle', dashedEdgeStyle);
     }
 
 

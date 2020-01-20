@@ -201,6 +201,9 @@ addDragOverEventForVMOverSubnetHighlight() {
       case 'straightarrow':
         this.addStraightArrow(dropContext);
         break;
+      case 'dashedarrow':
+        this.addDashedArrow(dropContext);
+        break;
       case 'label':
         this.addLabel(dropContext);
         break;
@@ -214,7 +217,6 @@ addDragOverEventForVMOverSubnetHighlight() {
       case 'vmss':
         this.addVMSS(dropContext, 'vmss');
         break;
-
       case 'vnet':
         this.addVNet(dropContext);
         break;
@@ -262,6 +264,27 @@ addDragOverEventForVMOverSubnetHighlight() {
         // Updates the display
         this.graphManager.graph.getModel().endUpdate();
       }
+  }
+
+  addDashedArrow(dropContext){
+    this.graphManager.graph.getModel().beginUpdate();
+    try
+    {
+      var parent = this.graph.getDefaultParent();
+      var randomId = this.shortUID.randomUUID(6);
+      var cell = new mxCell(randomId, new mxGeometry(dropContext.x, dropContext.y, 50, 50), 'dashededgestyle'); //curved=0;endArrow=classic;html=1;
+      cell.geometry.setTerminalPoint(new mxPoint(dropContext.x, dropContext.y), true);
+      cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
+      cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
+      cell.geometry.relative = true;
+      cell.edge = true;
+      this.graph.addCell(cell, parent);
+    }
+    finally
+    {
+      // Updates the display
+      this.graphManager.graph.getModel().endUpdate();
+    }
   }
 
   addElbowArrow(dropContext){
@@ -557,11 +580,22 @@ addDragOverEventForVMOverSubnetHighlight() {
     this.setState({showSpinner: false});
   }
 
-  loadSharedDiagram = (diagramId) => {
+  saveDiagramLocalBrowser = () => {
+      var anonyDiagramContext = new AnonymousDiagramContext();
+
+  }
+
+  getDiagramLocalBrowser = () => {
+
+  }
+
+  loadSharedDiagram = () => {
       var parsedQS =  queryString.parse(this.state.queryString)
       if(parsedQS == undefined || parsedQS.id == undefined)
           return;
-
+      
+      //f(thisgetDiagramLocalBrowser() != null)
+      
       var thisComp = this;
 
       this.diagramService.loadAnonymousDiagram(parsedQS.id)
@@ -581,9 +615,6 @@ addDragOverEventForVMOverSubnetHighlight() {
   }
 
   importXmlAsDiagram = (anonymousDiagramContext ) => {
-
-    //last resort, manually create
-    //https://stackoverflow.com/questions/56408568/unable-to-create-an-mxgraph-from-the-xml-provided
 
     if(anonymousDiagramContext == undefined ||
        anonymousDiagramContext.DiagramXml == undefined)
@@ -651,144 +682,12 @@ addDragOverEventForVMOverSubnetHighlight() {
 
                   })
                 }
-                
               }
             });
         }
-
-
-    // var xmlDoc = mxUtils.parseXml(anonymousDiagramContext.DiagramXml);
-    // let decoder = new mxCodec(xmlDoc);
-    // var cells = xmlDoc.documentElement.firstElementChild.children;
-    // var edges = [];
-
-    // for (let i = 0; i < cells.length; i++) 
-    // {
-    //   var mxcell = decoder.decodeCell(cells[i], true);
-
-    //   if(mxcell.geometry != undefined)
-    //   {
-    //     var id = mxcell.id;
-    //     var userObjJsonString = mxcell.value; //user obj in vertex is always json string
-    //     var xmldocGeometry = decoder.decode(mxcell.geometry);
-    //     var x = xmldocGeometry.getAttribute('x');
-    //     var y = xmldocGeometry.getAttribute('y');
-    //     var width = xmldocGeometry.getAttribute('width');
-    //     var height = xmldocGeometry.getAttribute('height');
-
-    //     var userObj = Utils.isJson(mxcell.value) ? JSON.parse(mxcell.value) : null;
-
-    //     if(mxcell.isEdge()){
-    //       edges.push(mxcell); //add edges later after all vertex added
-    //     }
-    //     else if(userObj != undefined && userObj.GraphModel.ResourceType == 'vnet')
-    //     {
-    //         var vnetLoadContext = new LoadAnonyDiagramContext();
-    //         vnetLoadContext.id = id;
-    //         vnetLoadContext.UserObject = userObjJsonString;
-    //         vnetLoadContext.x = x;
-    //         vnetLoadContext.y = y;
-    //         vnetLoadContext.width = width;
-    //         vnetLoadContext.height = height;
-    //         vnetLoadContext.style = mxcell.style;
-
-    //         var vnetVertex = this.addVNet(null, vnetLoadContext);
-
-    //         mxcell.children.map(subnet => {
-
-    //           var subnetLoadContext = new LoadAnonyDiagramContext();
-    //           subnetLoadContext.id = subnet.id;
-    //           subnetLoadContext.UserObject = subnet.value;
-    //           var subnetGeo = decoder.decode(subnet.geometry);
-    //           subnetLoadContext.x = subnetGeo.getAttribute('x');
-    //           subnetLoadContext.y = subnetGeo.getAttribute('y');
-    //           subnetLoadContext.width = subnetGeo.getAttribute('width');
-    //           subnetLoadContext.height = subnetGeo.getAttribute('height');
-    //           subnetLoadContext.style = subnet.style;
-
-    //           var subnetCell = this.addSubnet(vnetVertex, subnetLoadContext)
-              
-    //           subnet.children.map(rscInSubnet => {
-
-    //             var rscInSubnetLoadContext = new LoadAnonyDiagramContext();
-    //             rscInSubnetLoadContext.id = rscInSubnet.id;
-    //             rscInSubnetLoadContext.UserObject = rscInSubnet.value;
-    //             var rscGeo = decoder.decode(rscInSubnet.geometry);
-    //             rscInSubnetLoadContext.x = rscGeo.getAttribute('x');
-    //             rscInSubnetLoadContext.y = rscGeo.getAttribute('y');
-    //             rscInSubnetLoadContext.width = rscGeo.getAttribute('width');
-    //             rscInSubnetLoadContext.height = rscGeo.getAttribute('height');
-    //             rscInSubnetLoadContext.style = rscInSubnet.style;
-
-    //             this.graph.insertVertex
-    //             (subnetCell, rscInSubnetLoadContext.id, rscInSubnetLoadContext.UserObject,
-    //               rscInSubnetLoadContext.x, rscInSubnetLoadContext.y, rscInSubnetLoadContext.width,
-    //               rscInSubnetLoadContext.height, rscInSubnetLoadContext.style);
-
-    //           })
-    //         });
-            
-    //     }
-    //     // else if (userObj != undefined && userObj.GraphModel.ResourceType  == 'subnet')
-    //     // {
-    //     //   var vnetCell; 
-
-    //     //   if(!this.graph.getModel().getCell(mxcell.parent.id)){
-
-    //     //     var vnetCell = mxcell.parent;
-    //     //     var vnetLoadContext = new LoadAnonyDiagramContext();
-    //     //     vnetLoadContext.id = vnetCell.id;
-    //     //     vnetLoadContext.UserObject = vnetCell.value;
-    //     //     var vnetGeo = decoder.decode(vnetCell.geometry);
-    //     //     vnetLoadContext.x = vnetGeo.getAttribute('x');
-    //     //     vnetLoadContext.y = vnetGeo.getAttribute('y');
-    //     //     vnetLoadContext.width =  vnetGeo.getAttribute('width');
-    //     //     vnetLoadContext.height =  vnetGeo.getAttribute('height');
-    //     //     vnetLoadContext.style = vnetCell.style;
-
-    //     //       //check if vnet is added before
-    //     //       vnetCell = this.addVNet(null, vnetLoadContext)
-    //     //   } 
-
-    //     //   var loadContext = new LoadAnonyDiagramContext();
-    //     //   loadContext.id = id;
-    //     //   loadContext.cell = mxcell;
-    //     //   loadContext.parent = mxcell.parent;
-    //     //   loadContext.UserObject = userObjJsonString;
-    //     //   loadContext.x = x;
-    //     //   loadContext.y = y;
-    //     //   loadContext.width = width;
-    //     //   loadContext.height = height;
-    //     //   loadContext.style = mxcell.style;
-
-    //     //   this.addSubnet(vnetCell, loadContext);
-    //     // }
-    //     //
-    //     else if(userObj != undefined && userObj.GraphModel.ResourceType != 'vnet')
-    //     {
-    //       var parent;
-
-    //       //this.addVNet({x: 50, y: 50, resourceType: 'vnet'});
-    //       if(mxcell.parent.value == undefined && mxcell.parent.geometry == undefined)
-    //         parent = this.graph.getDefaultParent();
-    //       else
-    //         parent = mxcell.parent;
-
-    //       this.graph.insertVertex
-    //         (parent, mxcell.id, userObjJsonString, x, y, width, height, mxcell.style);
-    //     }
-    //   }
-    // }
-
-    // if(edges.length > 0){
-    //   this.graph.addCells(edges);
-    // }
   }
 
   shareDiagram(){
-    // this.setState({showShareDiagramPopup: true});
-    // return;
-    //check if there are nodes in graph, if not return
     if(!this.graphManager.isCellExist())
       {
         Toaster.create({
