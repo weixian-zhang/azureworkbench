@@ -2,22 +2,31 @@
 import React, { Component } from "react";
 import {Spinner, InputGroup, Classes, Button, Intent, Overlay, Toaster, Position} from "@blueprintjs/core";
 import VMPropPanel from "./PropPanel/VMPropPanel";
+import SubnetPropPanel from "./PropPanel/SubnetPropPanel";
 import VNetPropPanel from "./PropPanel/VNetPropPanel";
+import NLBPropPanel from "./PropPanel/NLBPropPanel";
+import AppGwPropPanel from "./PropPanel/AppGwPropPanel";
+import DNSPrivateZonePropPanel from "./PropPanel/DNSPrivateZone";
+
 import VM from "../../models/VM";
 import VMSS from "../../models/VMSS";
 import VNet from "../../models/VNet";
+import NLB from "../../models/NLB";
+import DNSPrivateZone from "../../models/DNSPrivateZone";
+import AppGateway from "../../models/AppGateway";
+import ResourceType from '../../models/ResourceType';
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext"; 
 import ShortUniqueId from 'short-unique-id';
 import AzureIcons from "./Helpers/AzureIcons";
 import Messages from "./Helpers/Messages";
 import Utils from "./Helpers/Utils";
 import MxGraphManager from './Helpers/MxGraphManager';
-import { mxCellPath, mxDefaultToolbar, mxDefaultPopupMenu, mxDefaultKeyHandler, mxStylesheet, mxGraphModel, mxClipboard, mxCodec, mxPoint, mxGeometry, mxCellOverlay, mxImage, mxKeyHandler, mxConstants, mxEvent, mxUtils,mxPopupMenuHandler, mxDragSource, mxUndoManager, mxCell, mxEditor, mxGraph } from "mxgraph-js";
+import { mxCellPath, mxDefaultToolbar, mxDefaultPopupMenu, mxDefaultKeyHandler, mxStylesheet, mxGraphModel, mxClipboard, mxCodec, mxPoint, mxGeometry, mxCellOverlay, mxImage, mxKeyHandler, mxConstants, mxEvent, mxUtils,mxPopupMenuHandler, mxDragSource, mxUndoManager, mxCell, mxEditor, mxGraph, mxElbowEdgeHandler, mxLabel } from "mxgraph-js";
 import Subnet from "../../models/Subnet";
 import LoadAnonyDiagramContext from "../../models/LoadAnonyDiagramContext";
 import DiagramService from '../../services/DiagramService';
 import queryString from 'query-string';
-import vnetIcon from '../../assets/azure_icons/Networking Service Color/Virtual Network (Classic).svg';
+import AzureValidator from './Helpers/AzureValidator';
 
  export default class DiagramEditor extends Component {
   constructor(props) {
@@ -41,11 +50,13 @@ import vnetIcon from '../../assets/azure_icons/Networking Service Color/Virtual 
     this.graphManager = new MxGraphManager(document.getElementById("diagramEditor"));
     this.graphManager.initGraph();
     this.graph = this.graphManager.graph;
+    this.azureValidator = new AzureValidator(this.graph);
     this.props.mxgraphManagerReadyCallback(this.graphManager);
 
     //services
     this.diagramService = new DiagramService();
 
+    //this.onCellAdded();
     this.addDblClickEventToOpenPropPanel();
     this.addDeleteKeyEventToDeleteVertex();
     this.addContextMenu();
@@ -55,16 +66,18 @@ import vnetIcon from '../../assets/azure_icons/Networking Service Color/Virtual 
 
     this.loadSharedDiagram();
 
-    //create refs
-    this.vmPropPanel = React.createRef();
-    this.vnetPropPanel = React.createRef();
-  } 
+    this.initPropPanelRef();
+  }
 
   render() {
     return (
       <div id="diagramEditor" className="workbenchgrid-container">
-        <VMPropPanel ref={this.vmPropPanel} saveVMModelToDiagramEditor={this.fromVMPropPanelSaveModel} />
+        <VMPropPanel ref={this.vmPropPanel} />
         <VNetPropPanel ref={this.vnetPropPanel} />
+        <SubnetPropPanel ref={this.subnetPropPanel} />
+        <NLBPropPanel ref={this.nlbPropPanel} />
+        <AppGwPropPanel ref={this.appgwPropPanel} />
+        <DNSPrivateZonePropPanel ref={this.dnsPrivateZonePropPanel} />
         <Overlay isOpen={this.state.showShareDiagramPopup} onClose={this.closeShareDiagramPopup} >
           <div className={[Classes.CARD, Classes.ELEVATION_4, "login-overlay"]}>
           <InputGroup
@@ -80,8 +93,16 @@ import vnetIcon from '../../assets/azure_icons/Networking Service Color/Virtual 
         </Overlay>
         {this.state.showSpinner ? <Spinner intent={Intent.PRIMARY} size={Spinner.SIZE_STANDARD} value={0.6} /> : '' }
       </div>
-      
     );
+  }
+
+  initPropPanelRef() {
+    this.vmPropPanel = React.createRef();
+    this.vnetPropPanel = React.createRef();
+    this.subnetPropPanel = React.createRef();
+    this.nlbPropPanel = React.createRef();
+    this.appgwPropPanel = React.createRef();
+    this.dnsPrivateZonePropPanel = React.createRef();
   }
   
   addDblClickEventToOpenPropPanel(){
@@ -89,13 +110,15 @@ import vnetIcon from '../../assets/azure_icons/Networking Service Color/Virtual 
         {
           var cell = evt.getProperty('cell');
 
-          if(cell.value == null || cell.value.GraphModel == null)
+          if(cell.value == null)
             return;
+          
+          var result = Utils.TryParseUserObject(cell.value);
 
-          let iconId = cell.value.GraphModel.IconId;
-          let resourceType = cell.value.ResourceType;
+          if(!result.isUserObject)
+              return;
 
-          this.determineResourcePropertyPanelToShow(resourceType, cell.value);
+          this.determineResourcePropertyPanelToShow(cell, result.userObject);
         });  
   }
 
@@ -147,7 +170,7 @@ addDragOverEventForVMOverSubnetHighlight() {
 						evt.preventDefault();
 					}
 				});
-}
+  }
 
   addContextMenu(){
     this.graph.popupMenuHandler.autoExpand = true;
@@ -181,20 +204,13 @@ addDragOverEventForVMOverSubnetHighlight() {
           {
             thisComponent.addSubnet(cell); // is vnetCell
           });
-    
-          menu.addItem('Add Peering', '', function()
-          {
-            mxUtils.alert('MenuItem1');
-          });
         }
     };
-      
   }
 
   addResourceToEditorFromPalette = (dropContext) => {
 
     switch(dropContext.resourceType) {
-
       case 'elbowarrow':
         this.addElbowArrow(dropContext);
         break;
@@ -207,12 +223,30 @@ addDragOverEventForVMOverSubnetHighlight() {
       case 'label':
         this.addLabel(dropContext);
         break;
-     
+      case 'rectangle':
+        this.addRectangle(dropContext);
+        break;
+      case 'triangle':
+        this.addTriangle(dropContext);
+        break;
+      case 'circle':
+        this.addCircle(dropContext);
+        break;
+      case 'user':
+        this.addUser(dropContext);
+        break;
+      case 'datacenter':
+        this.addOnpremDC(dropContext);
+        break;
+      case 'internet':
+        this.addInternet(dropContext);
+        break;
+        
       case 'vmWindows':
         this.addVM(dropContext, 'vmWindows');
         break;
       case 'vmLinux':
-        this.addVM(dropContext, 'vmWindows');
+        this.addVM(dropContext, 'vmLinux');
         break;
       case 'vmss':
         this.addVMSS(dropContext, 'vmss');
@@ -220,24 +254,62 @@ addDragOverEventForVMOverSubnetHighlight() {
       case 'vnet':
         this.addVNet(dropContext);
         break;
+      case 'nlb':
+        this.addNLB(dropContext);
+        break;
+      case 'appgw':
+        this.addAppGw(dropContext);
+        break;
+      case 'dnsprivatezone':
+        this.addDNSPrivateZone(dropContext);
+        break;
+        
 
       default:
-        return null;
+        break;
     }
+    this.graph.clearSelection();
   }
 
-  determineResourcePropertyPanelToShow = (resourceType, resourceModel) => {
-    switch (resourceType) {
-      case "vmWindows":
-        this.vmPropPanel.current.setResourceModelFromDiagramEditor(resourceModel);
-        this.vmPropPanel.current.show(true);
+  determineResourcePropertyPanelToShow = (cell, userObject) => {
+
+    let thisComp = this;
+
+    switch (userObject.GraphModel.ResourceType) {
+      case ResourceType.WindowsVM():
+        this.vmPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
         break;
-      case "vmLinux":
-        this.vmPropPanel.current.setResourceModelFromDiagramEditor(resourceModel);
-        this.vmPropPanel.current.show(true);
+      case ResourceType.LinuxVM():
+        this.vmPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
         break;
-      case "vnet":
-        this.vnetPropPanel.current.show(true);
+      case ResourceType.VNet():
+        this.vnetPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.Subnet():
+          this.subnetPropPanel.current.show(userObject, function(savedUserObject){
+            thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+          });
+          break;
+      case ResourceType.NLB():
+        this.nlbPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.AppGw():
+        this.appgwPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.DNSPrivateZone():
+        this.dnsPrivateZonePropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
         break;
       default:
         break;
@@ -296,9 +368,9 @@ addDragOverEventForVMOverSubnetHighlight() {
 
         var randomId = this.shortUID.randomUUID(6);
         var cell = new mxCell(randomId, new mxGeometry(dropContext.x, dropContext.y, 50, 50), 'elbowedgestyle');
-        //cell.getGeometry().setTerminalPoint(new mxPoint(dropContext.x + 30, dropContext.y + 30), true);
-        //cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
-        //cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
+        cell.getGeometry().setTerminalPoint(new mxPoint(dropContext.x + 30, dropContext.y + 30), true);
+        cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
+        cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
         cell.geometry.relative = true;
         cell.edge = true;
         this.graph.addCell(cell, parent);
@@ -315,14 +387,79 @@ addDragOverEventForVMOverSubnetHighlight() {
     try
     {
       var randomId = this.shortUID.randomUUID(6);
+
       this.graph.insertVertex
-        (this.graph.getDefaultParent(),randomId, 'Text', dropContext.x, dropContext.y, 0, 0, 'strokeColor=none;fillColor=none;resizable=0;autosize=1;');
+        (this.graph.getDefaultParent(), null, 'text', dropContext.x, dropContext.y, 80, 30,
+        'strokeColor=none;fillColor=none;resizable=0;autosize=0;fontSize=15;fontFamily=Segoe UI;');
+
+      // this.graph.insertVertex
+      //   (this.graph.getDefaultParent(),randomId, 'Text', dropContext.x, dropContext.y, 50, 30, 'labelstyle'); //'strokeColor=none;fillColor=none;resizable=0;autosize=1;fontsize=14');
     }
     finally
     {
       // Updates the display
       this.graphManager.graph.getModel().endUpdate();
     }
+  }
+
+  addRectangle = (dropContext) => {
+    var vnetVertex = this.graph.insertVertex(
+      this.graph.getDefaultParent(),
+      null,
+      'rectangle',
+      dropContext.x,
+      dropContext.y,
+      150,
+      100,
+      "verticalLabelPosition=bottom;verticalAlign=top;strokeColor=darkblue;fillColor=none;resizable=1;fontSize=15;fontFamily=Segoe UI;editable=1"
+    );
+  }
+
+  addTriangle = (dropContext) => {
+    var vnetVertex = this.graph.insertVertex(
+      this.graph.getDefaultParent(),
+      null,
+      'triangle',
+      dropContext.x,
+      dropContext.y,
+      100,
+      100,
+      "shape=triangle;rotatable=1;perimeter=trianglePerimeter;verticalLabelPosition=bottom;verticalAlign=top;strokeColor=darkblue;fillColor=none;resizable=1;fontSize=15;fontFamily=Segoe UI;editable=1"
+    );
+  }
+
+  addCircle = (dropContext) => {
+    this.graph.insertVertex(
+      this.graph.getDefaultParent(),
+      null,
+      'circle',
+      dropContext.x,
+      dropContext.y,
+      100,
+      100,
+      "shape=ellipse;rotatable=1;verticalLabelPosition=bottom;verticalAlign=top;strokeColor=darkblue;fillColor=none;resizable=1;fontSize=15;fontFamily=Segoe UI;editable=1"
+    );
+  }
+
+  addUser = (dropContext) => {
+    this.graph.insertVertex
+          (this.graph.getDefaultParent(), null, 'user', dropContext.x, dropContext.x, 50, 50,
+          "editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+          this.azureIcons.User());
+  }
+
+  addOnpremDC = (dropContext) => {
+    this.graph.insertVertex
+          (this.graph.getDefaultParent(), null, 'datacenter', dropContext.x, dropContext.x, 50, 50,
+          "fontSize=13;editable=1;verticalLabelPosition=bottom;shape=image;image=" +
+          require('../../assets/azure_icons/shape-dc.png'));
+  }
+
+  addInternet = (dropContext) => {
+    this.graph.insertVertex
+    (this.graph.getDefaultParent(), null, 'internet', dropContext.x, dropContext.x, 55, 55,
+    "editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+      this.azureIcons.Internet());
   }
 
   addVNet = (dropContext) => {
@@ -354,8 +491,8 @@ addDragOverEventForVMOverSubnetHighlight() {
                 jsonstrVnet,
                 dropContext.x,
                 dropContext.y,
-                300,
                 400,
+                300,
                 "vnetstyle"
               );
 
@@ -392,6 +529,8 @@ addDragOverEventForVMOverSubnetHighlight() {
           subnet.GraphModel.DisplayName = subnet.ProvisionContext.Name
           var jsonstrSubnet = JSON.stringify(subnet);
 
+          this.graphManager.translateToParentGeometryPoint(vnetCell)
+
           subnetVertex = this.graph.insertVertex(
             vnetCell,
             subnet.GraphModel.Id,
@@ -400,53 +539,111 @@ addDragOverEventForVMOverSubnetHighlight() {
             vnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
             vnetCell.getGeometry().width - 90,
             100,
-            'subnetstyle' //"editable=0;verticalLabelPosition=top;verticalAlign=bottom;align=right"
+            'subnetstyle'
           );
         }
         else {
-
-            var vnet = this.graph.getModel().getCell(loadContext.parent.id);
-            // var geo = this.graph.getModel().getGeometry(vnet);
-            
-            
-            // subnetVertex = this.graph.insertVertex(
-            //   vnet,
-            //   '',//subnet.GraphModel.Id,'',
-            //   loadContext.UserObject,
-            //   vnet.getGeometry().x,
-            //   vnet.getGeometry().y,
-            //   vnet.getGeometry(),
-            //   100,
-            //   'subnetstyle', //"editable=0;verticalLabelPosition=top;verticalAlign=bottom;align=right"
-            //   true
-            //   );
-
-            // // subnetVertex = this.graph.insertVertex(
-            // //   vnetCell,
-            // //     loadContext.id,
-            // //     loadContext.UserObject,
-            // //     loadContext.x,
-            // //     loadContext.y,
-            // //     loadContext.width,
-            // //     loadContext.height,
-            // //     loadContext.style, //"editable=0;verticalLabelPosition=top;verticalAlign=bottom;align=right"
-            // //     true
-            // //   );
+            this.graph.getModel().getCell(loadContext.parent.id);
         }
  
         this.graph.addCellOverlay(subnetVertex, subnetLogoOverlay);
         this.graph.addCellOverlay(subnetVertex, nsgOverlay);
+  }
+
+  addNLB = (dropContext) => {
       
+      var parent = this.graph.getDefaultParent();
+      var parentCell = this.graph.getCellAt(dropContext.x, dropContext.y);
+
+      if(parentCell != null){
+        var cellType = JSON.parse(parentCell.value).GraphModel.ResourceType;
+        if(cellType == 'subnet')
+            parent = parentCell;
+      }
+      
+      var dropContext =
+          this.graphManager.translateToParentGeometryPoint(dropContext, parent);
+
+      var nlb = new NLB();
+        nlb.GraphModel.ResourceType = 'nlb';
+        nlb.GraphModel.Id = this.shortUID.randomUUID(6);
+        nlb.ProvisionContext.Name = "azlb_" + nlb.GraphModel.Id;
+        nlb.GraphModel.DisplayName = 'azure load balancer'
+        var nlbJsonString = JSON.stringify(nlb);
+
+      this.graph.insertVertex
+        (parent, nlb.GraphModel.IconId ,nlbJsonString, dropContext.x, dropContext.y, 30, 30,
+        "editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+          this.azureIcons.NLB());
+  }
+
+  addAppGw = (dropContext) => {
+
+      var result =
+        this.azureValidator.isResourceDropinSubnet(dropContext.x, dropContext.y);
+      
+      if(!result.isInSubnet)
+      {
+          Toaster.create({
+            position: Position.TOP,
+            autoFocus: false,
+            canEscapeKeyClear: true
+          }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.AppGatewayNotInSubnetError()});
+          return;
+      }
+
+      if(!this.azureValidator.isResourceinDedicatedSubnet(result.subnetCell))
+      {
+        Toaster.create({
+            position: Position.TOP,
+            autoFocus: false,
+            canEscapeKeyClear: true
+          }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.AppGatewayNotInSubnetError()});
+          return;
+      }
+
+      var dropContext =
+          this.graphManager.translateToParentGeometryPoint(dropContext, result.subnetCell);
+
+      var appgw = new AppGateway();
+        appgw.GraphModel.Id = this.shortUID.randomUUID(6);
+        appgw.ProvisionContext.Name = ResourceType.AppGw() + "_" + appgw.GraphModel.Id;
+        appgw.GraphModel.DisplayName = 'app gateway'
+        var appgwJsonString = JSON.stringify(appgw);
+
+      this.graph.insertVertex
+        (result.subnetCell, appgw.GraphModel.IconId ,appgwJsonString, dropContext.x, dropContext.y, 30, 30,
+        "editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+          this.azureIcons.AppGateway());
+  }
+
+  addDNSPrivateZone = (dropContext) => {
+      var parent = this.graph.getDefaultParent();
+      var dropContext =
+          this.graphManager.translateToParentGeometryPoint(dropContext, parent);
+
+      var dnsPrivateZone = new DNSPrivateZone();
+        dnsPrivateZone.GraphModel.ResourceType = 'dnsprivatezone';
+        dnsPrivateZone.GraphModel.Id = this.shortUID.randomUUID(6);
+        dnsPrivateZone.ProvisionContext.Name = "azlb_" + dnsPrivateZone.GraphModel.Id;
+        dnsPrivateZone.GraphModel.DisplayName = 'azure DNS Private Zone'
+        var dnsPrivateZoneJsonString = JSON.stringify(dnsPrivateZone);
+
+      this.graph.insertVertex
+        (parent, dnsPrivateZone.GraphModel.IconId ,dnsPrivateZoneJsonString, dropContext.x, dropContext.y, 30, 30,
+        "editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+          this.azureIcons.DNSPrivateZone());
   }
 
   addVM = (dropContext, vmType) => {
     
-    if(dropContext.resourceType == "vmWindows" ||
-        dropContext.resourceType == "vmLinux")
+    if(dropContext.resourceType == ResourceType.WindowsVM() ||
+        dropContext.resourceType == ResourceType.LinuxVM())
     {
-      var cell = this.graph.getCellAt(dropContext.x, dropContext.y);
+      var result =
+        this.azureValidator.isResourceDropinSubnet(dropContext.x, dropContext.y);
 
-      if(cell == null || JSON.parse(cell.value).GraphModel.ResourceType != "subnet")
+      if(!result.isInSubnet)
       {
           Toaster.create({
             position: Position.TOP,
@@ -454,29 +651,36 @@ addDragOverEventForVMOverSubnetHighlight() {
             canEscapeKeyClear: true
           }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.VMInSubnet()});
           return;
-        }
+      }
     }
 
      var vmModel = new VM();
-     vmModel.ResourceType = vmType;
      vmModel.GraphModel.IconId = this.shortUID.randomUUID(6);
      vmModel.ProvisionContext.Name = "vm_" + vmModel.GraphModel.IconId;
      vmModel.GraphModel.DisplayName = vmModel.ProvisionContext.Name;
-     var userObj = JSON.stringify(vmModel);
 
     var iconByOS;
-    if(vmType == 'vmWindows')
+    if(vmType == ResourceType.WindowsVM())
+    {
       iconByOS = this.azureIcons.VirtualMachineWindows();
-    else if(vmType == 'vmLinux')
-      iconByOS = this.azureIcons.VirtualMachineWindows();
+      vmModel.GraphModel.ResourceType = ResourceType.WindowsVM();
+    }
+    else if(vmType == ResourceType.LinuxVM())
+    {
+      iconByOS = this.azureIcons.VirtualMachineLinux();
+      vmModel.GraphModel.ResourceType = ResourceType.LinuxVM();
+    }
     else
       iconByOS = this.azureIcons.VMSS();
 
      this.graphManager.graph.getModel().beginUpdate();
      try
      {
+        var dropContext =
+          this.graphManager.translateToParentGeometryPoint(dropContext, result.subnetCell);
+
         var vm = this.graph.insertVertex
-          (cell, vmModel.GraphModel.IconId ,userObj, cell.getGeometry().x, cell.getGeometry().x, 40, 40,
+          (result.subnetCell, vmModel.GraphModel.IconId, JSON.stringify(vmModel), dropContext.x, dropContext.y, 30, 30,
           "editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + iconByOS);
     }
      finally
@@ -487,18 +691,19 @@ addDragOverEventForVMOverSubnetHighlight() {
   }
 
   addVMSS = (dropContext) => {
-    var cell = this.graph.getCellAt(dropContext.x, dropContext.y); //subnet cell
-    
-    if(dropContext.resourceType == "vmss" &&
-       cell == null || cell.value.GraphModel.ResourceType != "subnet")
-        {
+
+    var result =
+      this.azureValidator.isResourceDropinSubnet(dropContext.x, dropContext.y);
+
+    if(dropContext.resourceType == ResourceType.VMSS() && !result.isInSubnet)
+       {
           Toaster.create({
             position: Position.TOP,
             autoFocus: false,
             canEscapeKeyClear: true
           }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.VMInSubnet()});
           return;
-        }
+       }
 
      var vmssModel = new VMSS();
      vmssModel.GraphModel.IconId = this.shortUID.randomUUID(6);
@@ -509,13 +714,16 @@ addDragOverEventForVMOverSubnetHighlight() {
      this.graphManager.graph.getModel().beginUpdate();
      try
      {
-        var vm = this.graph.insertVertex
-          (cell, vmssModel.GraphModel.IconId ,userObj, cell.getGeometry().x, cell.getGeometry().x, 40, 40,
+       var dropContext =
+          this.graphManager.translateToParentGeometryPoint(dropContext, result.subnetCell);
+
+        var vmss = this.graph.insertVertex
+          (result.subnetCell, vmssModel.GraphModel.IconId ,userObj,
+           dropContext.x, dropContext.y, 40, 40,
           "editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + this.azureIcons.VMSS());
     }
      finally
      {
-       // Updates the display
        this.graphManager.graph.getModel().endUpdate();
      }
   }

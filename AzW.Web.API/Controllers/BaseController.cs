@@ -14,6 +14,8 @@ namespace AzW.Web.API
         {
             if(User == null || User.Identities == null)
                 return null;
+            if(UserIdentity != null)
+                return UserIdentity;
 
             foreach(var identity in User.Identities)
             {

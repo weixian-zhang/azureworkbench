@@ -1,30 +1,25 @@
 import ResourceType from './ResourceType'
-export default class VMSS
+export default class NLB
 {
     constructor (){
         this.GraphModel = {
-            ResourceType: ResourceType.VMSS(),
+            ResourceType: ResourceType.NLB(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
             Name: '',
             Location: '',
-            RootUsername: '',
-            RootPassword: '',
+            PublicIP: false,
+            IsInternal: false,
             Tags: [],
             Depends: {
                 VNet: {
                     VNetAddress: '',
                     SubnetName: ''
                 }
-            },
-            SkuSpec: {
-                VMPublisher: '',
-                VMOffer: '',
-                VMSKU: '',
             }
-        };
+        }; 
         this.CalculatorContext = {
             IsFree: false,
             Tier: ''

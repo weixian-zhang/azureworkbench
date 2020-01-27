@@ -1,15 +1,15 @@
 import React, { Component } from "react";
-import VNet from '../../../models/VNet';
+import NLB from '../../../models/NLB';
 import { FormGroup, InputGroup, Drawer, Tooltip, Intent, Button } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
 
-export default class VNetPropPanel extends Component {
+export default class NLBPropPanel extends Component {
   constructor(props) {
       super(props);
 
       this.state ={
         isOpen: false,
-        userObject: new VNet(),
+        userObject: new NLB(),
         saveCallback: function () {},
       }
   }
@@ -17,7 +17,7 @@ export default class VNetPropPanel extends Component {
   render = () => {
     return (
       <Drawer
-          title="Virtual Network Properties"
+          title="Load Balancer Properties"
           autoFocus= {true}
           canEscapeKeyClose= {true}
           canOutsideClickClose= {true}

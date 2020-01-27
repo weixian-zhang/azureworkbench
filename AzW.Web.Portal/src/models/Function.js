@@ -1,15 +1,16 @@
 import ResourceType from './ResourceType'
-export default class AppService
+export default class Function
 {
     constructor (){
         this.GraphModel = {
-            ResourceType: ResourceType.AppService(),
+            ResourceType: ResourceType.Function(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
             Name: '',
-            Location: '',
+            CIDR: '',
+            NSG: []
         };
         this.CalculatorContext = {
             IsFree: false,

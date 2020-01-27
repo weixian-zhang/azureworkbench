@@ -1,11 +1,16 @@
 export default class Utils
 {
-    static isJson(str) {
+    static TryParseUserObject(str) {
+        
         try {
-            JSON.parse(str);
-        } catch (e) {
-            return false;
+            if(str == null)
+              return {isUserObject: false, userObject: null};
+
+            var usrObj = JSON.parse(str);
+            return {isUserObject: true, userObject: usrObj};
+        } 
+        catch (e) {
+            return {isUserObject: false, userObject: null};
         }
-        return true;
     };
 }

@@ -13,8 +13,11 @@ class Header extends Component {
     this.authService = new AuthService();
 
     this.state = {
-        isLogin: false
+        isLogin: this.authService.isUserLogin(),
+        userProfile: this.authService.getUserProfile()
     }
+
+
   }
   
   render() {
@@ -33,21 +36,18 @@ class Header extends Component {
             href="https://github.com/Code-Norris/azureworkbench"
             target="_blank"
           /> */}
-          <Popover content={ this.props.account != null ?
-            (
-              <Menu className={Classes.ELEVATION_1}>
-                {this.state.isLogin == true ? <MenuItem labelElement={<Icon icon="log-out" />} text="Logout" onClick={this.logout} /> : ''}
-              </Menu>
-            ) : (
-              <Menu className={Classes.ELEVATION_1}>
-                 {this.state.isLogin == false ? <MenuItem labelElement={<Icon icon="log-in" />} text="Login" onClick={this.login} /> : '' }
-              </Menu>
-            )
-          } position={Position.BOTTOM}>
+            <Popover content=
+            { 
+                <Menu className={Classes.ELEVATION_1}>
+                  {this.state.isLogin == true ? <MenuItem labelElement={<Icon icon="log-out" />} text="Logout" onClick={this.logout} /> : ''}
+                  {this.state.isLogin == false ? <MenuItem labelElement={<Icon icon="log-in" />} text="Login" onClick={this.login} /> : '' }
+                </Menu>
+            }
+            position={Position.BOTTOM}>
             <Button
               className="bp3-minimal"
               icon="person"
-              text={this.props.account != null ? this.props.account.account.userName : null}
+              text={this.state.userProfile != null ? this.state.userProfile.UserName : ''}
             />
           </Popover>
         </Navbar.Group>
@@ -56,15 +56,17 @@ class Header extends Component {
   }
 
   login = () => {
-    this.authService.Login(function (loginResponse){
-      this.setState({isLogin: true})
+    var thisComp = this;
+    this.authService.login(function (userProfile){
+      thisComp.setState({isLogin: true, userProfile:  userProfile});
+      thisComp.props.ActionBar.current.getSubscriptions();
     });
-    
+   
   }
 
   logout = () => {
-    this.authService.Login();
-    this.setState({isLogin: false})
+    this.authService.logout();
+    this.setState({isLogin: false, userProfile: null})
   }
 
 }

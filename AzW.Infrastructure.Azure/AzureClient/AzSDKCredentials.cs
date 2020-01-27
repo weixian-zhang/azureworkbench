@@ -34,30 +34,7 @@ namespace AzW.Infrastructure.AzureServices
             {
                 //https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/on-behalf-of
 
-                IConfidentialClientApplication azwApi =
-                    ConfidentialClientApplicationBuilder.Create(_clientId)
-                    .WithClientSecret(_clientSecret)
-                    .WithTenantId(_tenantId)
-                    .Build();
-                
-                var userAssertion =
-                    new UserAssertion(_delegatedUserContextAccessToken, "urn:ietf:params:oauth:grant-type:jwt-bearer");
-                
-                IEnumerable<string> requestedScopes = new List<string>()
-                {
-                    {"https://management.azure.com/.default"}
-                };
-
-                AuthenticationResult result = azwApi
-                    .AcquireTokenOnBehalfOf(requestedScopes, userAssertion)
-                    .ExecuteAsync()
-                    .GetAwaiter()
-                    .GetResult();
-
-                if (result == null)
-                    throw new InvalidOperationException("Failed to obtain the JWT token");
-
-                AuthenticationToken = result.AccessToken;
+                AuthenticationToken = GetAccessTokenOnbehalfFlow();
             }
             catch(Exception ex)
             {
@@ -74,7 +51,9 @@ namespace AzW.Infrastructure.AzureServices
 
             if (AuthenticationToken == null)
             {
-                throw new InvalidOperationException("Access Token Cannot Be Null");
+                AuthenticationToken = GetAccessTokenOnbehalfFlow();
+
+                //throw new InvalidOperationException("Access Token Cannot Be Null");
             }
 
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", AuthenticationToken);
@@ -82,6 +61,40 @@ namespace AzW.Infrastructure.AzureServices
             
             await base.ProcessHttpRequestAsync(request, cancellationToken);
 
+        }
+
+        private string GetAccessTokenOnbehalfFlow()
+        {
+            //https://blogs.aaddevsup.xyz/2019/08/understanding-azure-ads-on-behalf-of-flow-aka-obo-flow/
+
+            try {
+            IConfidentialClientApplication azwApi =
+                    ConfidentialClientApplicationBuilder.Create(_clientId)
+                    .WithClientSecret(_clientSecret)
+                    .WithTenantId("common")
+                    .Build();
+                
+                var userAssertion =
+                    new UserAssertion(_delegatedUserContextAccessToken,
+                    "urn:ietf:params:oauth:grant-type:jwt-bearer");
+                
+                IEnumerable<string> requestedScopes = new List<string>()
+                {
+                    {"https://management.azure.com/.default"}
+                };
+
+                AuthenticationResult result = azwApi
+                    .AcquireTokenOnBehalfOf(requestedScopes, userAssertion)
+                    .ExecuteAsync()
+                    .GetAwaiter()
+                    .GetResult();
+                
+                return result.AccessToken;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
         private string _delegatedUserContextAccessToken;
         

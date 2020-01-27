@@ -1,11 +1,25 @@
 import React, { Component } from "react";
-import { MenuItem, Menu, Toaster, Position, Intent } from "@blueprintjs/core";
+import { Classes, Popover,Button, MenuItem, Menu, Toaster, Position, Intent } from "@blueprintjs/core";
 import "@blueprintjs/core/lib/css/blueprint.css";
+import {Select } from "@blueprintjs/select";
+import Subscription from "../../models/services/Subscription";
+import SessionStorage from '../../services/SessionStorage';
+import ARMService from '../../services/ARMService';
+import AuthService from '../../services/AuthService';
 
 export default class ActionBar extends Component {
 
     constructor(props) {
       super(props);
+
+      this.state = {
+        subscriptions: [],
+        resourceGroups: []
+      };
+
+      this.authService = new AuthService();
+
+      this.getSubscriptions();
     }
 
     render() {
@@ -14,23 +28,38 @@ export default class ActionBar extends Component {
                 <div style={{margin: "0 auto", width: "100%"}}>
                     <div className="bp3-navbar-group bp3-align-left">
                         <button className="bp3-button" onClick={this.deploy}>Deploy</button>
-                        
                         <span className="bp3-navbar-divider"></span>
-                        <Menu>
-                            <MenuItem text="File">
-                                <MenuItem text="Save draft on browser" onClick={this.shareDiagram}/>
-                                <MenuItem text="Share" onClick={this.shareDiagram}/>
-                                <MenuItem text="Export as SVG" onClick={this.saveToWorkspace} />
-                                <MenuItem text="Export as PNG" onClick={this.saveToWorkspace} />
-                            </MenuItem>
-                        </Menu>
+                        <button className="bp3-button" onClick={this.shareDiagram}>Share</button>
                         <span className="bp3-navbar-divider"></span>
-                        <button className="bp3-button bp3-intent-success" onClick={this.calculate}>$USD 0.00</button>
+                        <Popover content=
+                            {
+                                <Menu>
+                                    <MenuItem icon="saved" text="Save Draft" />
+                                    <MenuItem icon="history" text="Save to Workspace" onClick={this.savetoWorkspace} />
+                                    <MenuItem icon="export" text="Export as PDF" />
+                                    <MenuItem icon="export" text="Export as PNG" />
+                                </Menu>
+                            } position={Position.RIGHT}>
+                            <Button icon="share" text="File" />
+                        </Popover>                     
                     </div>
                     <div className="bp3-navbar-group bp3-align-right">
-                        <span className="bp3-navbar-divider"></span>
-                        <span>Subscriptions</span>
-                        <span className="bp3-navbar-divider"></span>
+                        <span>
+                            <button className="bp3-button bp3-intent-success" onClick={this.calculate}>$USD 0.00</button>
+                            <span className="bp3-navbar-divider"></span>
+                            <Select
+                                items={this.state.subscriptions}
+                                itemRenderer={this.renderSubscription}
+                                noResults={<MenuItem disabled={true}
+                                text={this.authService.isUserLogin() ? "Can't find any subscriptions" : "Login first..."} />}
+                                onItemSelect={this.setCurrentSubscription}
+                                filterable={false}
+                            >
+                                {/* children become the popover target; render value here */}
+                                <Button text='Subscriptions' rightIcon="double-caret-vertical" />
+                            </Select>
+                        </span>
+                        
                         <span>Resource Groups</span>
                     </div>
                 </div>
@@ -42,12 +71,16 @@ export default class ActionBar extends Component {
         this.props.shareDiagram();
     }
 
+    savetoWorkspace (){
+
+    }
+
     calculate(){
         Toaster.create({
             position: Position.TOP,
             autoFocus: false,
             canEscapeKeyClear: true
-          }).show({intent: Intent.SUCCESS, timeout: 3000, message: 'Coming Soon..only Share is released'});
+          }).show({intent: Intent.SUCCESS, timeout: 3000, message: 'In the roadmap...'});
           return;
     }
 
@@ -56,7 +89,7 @@ export default class ActionBar extends Component {
             position: Position.TOP,
             autoFocus: false,
             canEscapeKeyClear: true
-          }).show({intent: Intent.SUCCESS, timeout: 3000, message: 'Coming Soon..only Share is released'});
+          }).show({intent: Intent.SUCCESS, timeout: 3000, message: 'In the roadmap...'});
           return;
     }
 
@@ -67,5 +100,36 @@ export default class ActionBar extends Component {
             canEscapeKeyClear: true
           }).show({intent: Intent.SUCCESS, timeout: 3000, message: 'Coming Soon..only Share is released'});
           return;
+    }
+
+    setCurrentSubscription(item, event) {
+        SessionStorage.set(SessionStorage.KeyNames.CurrentSubscription, item);
+    }
+
+    renderSubscription({ handleClick, isActive, item: sub }) {
+        // const classes = classNames({
+        //     [Classes.ACTIVE]: isActive,
+        //     [Classes.INTENT_PRIMARY]: isActive,
+        // });
+        return (
+            <MenuItem
+                //className={classes}
+                label={sub.Name}
+                key={sub.SubscriptionId}
+                onClick={this.setCurrentSubscription}
+                text={sub.Name} //{`${film.rank}. ${film.title}`}
+            />
+        );
+    }
+
+    getSubscriptions(){
+        if(this.authService.isUserLogin())
+        {
+            var userProfile = this.authService.getUserProfile();
+            ARMService.getSubscriptions(userProfile.AccessToken, function(subscriptions){
+                this.setState({subscriptions: subscriptions});
+            });
+        }
+        
     }
 }

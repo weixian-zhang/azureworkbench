@@ -1,15 +1,15 @@
 import React, { Component } from "react";
-import VNet from '../../../models/VNet';
+import AppGateway from '../../../models/AppGateway';
 import { FormGroup, InputGroup, Drawer, Tooltip, Intent, Button } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
 
-export default class VNetPropPanel extends Component {
+export default class AppGwPropPanel extends Component {
   constructor(props) {
       super(props);
 
       this.state ={
         isOpen: false,
-        userObject: new VNet(),
+        userObject: new AppGateway(),
         saveCallback: function () {},
       }
   }
@@ -17,7 +17,7 @@ export default class VNetPropPanel extends Component {
   render = () => {
     return (
       <Drawer
-          title="Virtual Network Properties"
+          title="Application Gateway Properties"
           autoFocus= {true}
           canEscapeKeyClose= {true}
           canOutsideClickClose= {true}

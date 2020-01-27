@@ -8,6 +8,7 @@ export default class MainWorkbench extends Component {
   constructor(props){
     super(props);
     this.workbench = React.createRef();
+    this.actionBar = React.createRef();
   }
 
   componentDidMount(){
@@ -17,8 +18,8 @@ export default class MainWorkbench extends Component {
   render() {
     return (
       <div className="container">
-        <Header/>
-        <ActionBar shareDiagram={this.shareDiagram} />
+        <Header ActionBar={this.actionBar}/>
+        <ActionBar ref={this.actionBar} shareDiagram={this.shareDiagram} />
         <Workbench queryString={this.props.location.search} ref={this.workbench}/>
       </div>
     );

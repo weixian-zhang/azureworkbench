@@ -1,3 +1,4 @@
+import ResourceType from './ResourceType'
 export default class VM
 {
     constructor (){
@@ -24,6 +25,10 @@ export default class VM
                 VMOffer: '',
                 VMSKU: '',
             }
-        }; 
+        };
+        this.CalculatorContext = {
+            IsFree: false,
+            Tier: ''
+        }
     }
 }

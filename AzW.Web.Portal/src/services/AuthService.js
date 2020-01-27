@@ -1,4 +1,6 @@
 import { UserAgentApplication } from "msal";
+import UserProfile from '../models/UserProfile';
+import SessionStorage from './SessionStorage';
 
 export default class AuthService 
 {
@@ -26,68 +28,76 @@ export default class AuthService
             cache: {
               cacheLocation: "sessionStorage",
               storeAuthStateInCookie: isIE()
-            },
-            system: {
-              navigateFrameWait: 0,
-              logger: {
-                error: console.error,
-                errorPii: console.error,
-                info: console.log,
-                infoPii: console.log,
-                verbose: console.log,
-                verbosePii: console.log,
-                warning: console.warn,
-                warningPii: console.warn
-              }
-            },
-            logger: {
-              //https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-logging?tabs=dotnet
             }
           });
     }
 
-    Login(loginResponseCallback) {
-        const accessTokenRequest = {
+    login = (loginResponseCallback) => {
+
+        const loginRequest = {
             scopes: ["api://16afdc21-ffd3-4cf8-aeae-63bebf9e327e/azworkbench-portal-deploy"]
-        }
+          }
 
-        this.msalApp.acquireTokenPopup(accessTokenRequest).then(
-            function(accessTokenResponse) {
-            // Acquire token silent success
-            // call API with token
-            let accessToken = accessTokenResponse.accessToken;
-            let account = accessTokenResponse.account;
+        this.msalApp.loginPopup(loginRequest)
+        .then(response => 
+        {
+            var tokenRequest = {
+              //scopes: ["api://16afdc21-ffd3-4cf8-aeae-63bebf9e327e/azworkbench-portal-deploy"]
+              scopes: ["api://3b606e44-5ceb-4473-84c6-5f9b1119a2fc/Api.All.ReadWrite"],
+              prompt: 'consent'
+            };
 
-            loginResponseCallback(accessTokenResponse);
-             
-        }).catch(function (error) {
-            //Acquire token silent failure, send an interactive request.
-            if (error.errorMessage.indexOf("interaction_required") !== -1) {
-              this.msalApp.acquireTokenPopup(accessTokenRequest).then(function(accessTokenResponse) {
-                    // Acquire token interactive success
-                }).catch(function(error) {
-                    // Acquire token interactive failure
-                    console.log(error);
-                });
-            }
-            console.log(error);
+            this.msalApp.acquireTokenSilent(tokenRequest)
+            .then(response => 
+            {
+              var userProfile = new UserProfile();
+              userProfile.TenantId = response.tenantId;
+              userProfile.AccessToken = response.accessToken;
+              userProfile.UserName = response.account.userName;
+              userProfile.Name = response.account.name;
+              userProfile.AccessTokenExpiresOn = response.expiresOn;
+              userProfile.Environment = response.account.environment;
+
+              SessionStorage.set(SessionStorage.KeyNames.UserProfile, JSON.stringify(userProfile));
+
+              loginResponseCallback(userProfile);
+            })
+            .catch(error => {
+                // could also check if err instance of InteractionRequiredAuthError if you can import the class.
+                if (error.name === "InteractionRequiredAuthError") {
+                    return this.msalApp.acquireTokenPopup(tokenRequest)
+                        .then(response => {
+                            // get access token from response
+                            // response.accessToken
+                        })
+                        .catch(err => {
+                            // handle error
+                        });
+                }
+            });
+        })
+        .catch(error => 
+        {
+          console.log(error);
+            // handle error
         });
     }
 
-    Logout(){
-        this.msalApp.logout();
+    getUserProfile(){
+      var userJsonStr = SessionStorage.get(SessionStorage.KeyNames.UserProfile);
+      return JSON.parse(userJsonStr);
     }
 
-    IsUserLogin(){
-        this.msalApp.acquireTokenSilent(this.applicationConfig.graphScopes).then(
-            accessToken => {
-              return true;
-            },
-            error => {
-              return false;
-            }
-        
-        )
+    logout(){
+        this.msalApp.logout();
+        SessionStorage.remove(SessionStorage.KeyNames.UserProfile);
+    }
+
+    isUserLogin(){
+      if (this.msalApp.getAccount() != null)
+        return true;
+      else
+        return false;
     }
     
 }

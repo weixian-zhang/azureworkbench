@@ -58,13 +58,23 @@ namespace AzW.Web.API
 
         private void ConfigureAzureAdAuth(IServiceCollection services)
         {
+            //services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
             services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
-            .AddAzureADBearer(options => Configuration.Bind("AzureAd", options));
-            
+
+            .AddAzureADBearer(options => {
+                //https://docs.microsoft.com/bs-latn-ba/azure/active-directory/develop/scenario-protected-web-api-app-configuration
+                options.Instance = "https://login.microsoftonline.com";
+                options.TenantId = "common";
+                options.ClientId = "16afdc21-ffd3-4cf8-aeae-63bebf9e327e"; //3b606e44-5ceb-4473-84c6-5f9b1119a2fc";
+                //"3b606e44-5ceb-4473-84c6-5f9b1119a2fc";
+            });
+            Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
+
             services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
             {
                 // This is a Microsoft identity platform web API.
                 options.Authority += "/v2.0";
+                options.Audience = "3b606e44-5ceb-4473-84c6-5f9b1119a2fc"; //"16afdc21-ffd3-4cf8-aeae-63bebf9e327e";
 
                 // The web API accepts as audiences both the Client ID (options.Audience) and api://{ClientID}.
                 options.TokenValidationParameters.ValidAudiences = new []
@@ -72,36 +82,47 @@ namespace AzW.Web.API
                     options.Audience,
                     $"api://{options.Audience}"
                 };
-                options.TokenValidationParameters.ValidateIssuer = false;
+
                 options.SaveToken = true;
+                options.TokenValidationParameters.ValidateLifetime = true;
+                options.TokenValidationParameters.ValidateIssuer = false;
+                options.TokenValidationParameters.SignatureValidator =
+                    delegate(string token, TokenValidationParameters parameters)
+                    {
+                        var jwt = new JwtSecurityToken(token);
+
+                        return jwt;
+                    };
+                
                 options.Events = new JwtBearerEvents
                 {
+                    OnChallenge = context => {
+                        return Task.CompletedTask;
+                    },
+                    OnAuthenticationFailed = failContext => {
+                        return Task.CompletedTask;
+                    },
                     OnTokenValidated = context =>
                     {
                         var jwtToken = context.SecurityToken as JwtSecurityToken;
-                        string accessToken = jwtToken.RawData;
-
-                        var ui = new UserIdentity()
+                        var ui = new UserIdentity();
+                        ui.AccessToken = jwtToken.RawData;
+                        ui.ValidFrom = jwtToken.ValidFrom;
+                        ui.ValidTo = jwtToken.ValidTo;
+                        foreach(var claim in jwtToken.Claims)
                         {
-                            AccessToken = accessToken
-                        };
+                            if(claim.Type == "upn")
+                                ui.Email = claim.Value;
+                            if(claim.Type == "aud")
+                                ui.Audience = claim.Value;
+                            if(claim.Type == "name")
+                                ui.Name = claim.Value;
+                            if(claim.Type == "ipaddr")
+                                ui.ClientIP = claim.Value;
+                        }
 
                         context.Principal.AddIdentity(ui);
                         
-
-                        //log to DB signin info
-                        // Add the access_token as a claim, as we may actually need it
-
-
-                        // if (accessToken != null)
-                        // {
-                        //     ClaimsIdentity identity = context.Ticket.Principal.Identity as ClaimsIdentity;
-                        //     if (identity != null)
-                        //     {
-                        //         identity.AddClaim(new Claim("access_token", accessToken.RawData));
-                        //     }
-                        // }
-
                         return Task.CompletedTask;
                     }
                 };

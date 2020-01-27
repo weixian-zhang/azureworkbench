@@ -44,11 +44,6 @@ export default class Workbench extends Component {
     this.DiagramEditor.current.shareDiagram();
   }
 
-  //called at index/MainWorkbench when navigated to shared diagram link
-  // loadSharedDiagram = (diagramId) => {
-  //   return this.DiagramEditor.current.loadSharedDiagram(diagramId);
-  // }
-
   render = () => {
     const { renderResourcePalette } = this.state
     return (

@@ -1,8 +1,9 @@
+import ResourceType from './ResourceType'
 export default class Subnet
 {
     constructor (){
         this.GraphModel = {
-            ResourceType: 'subnet',
+            ResourceType: ResourceType.Subnet(),
             DisplayName: ''
         };
 
@@ -11,5 +12,9 @@ export default class Subnet
             CIDR: '',
             NSG: []
         };
+        this.CalculatorContext = {
+            IsFree: true,
+            Tier: ''
+        }
     }
 }

@@ -1,6 +1,6 @@
 import {
     mxGraph,
-    mxGeometry,
+    mxGeomemxVertexHandlertry,
     mxEdgeHandler,
     mxGraphHandler,
     mxConstants,
@@ -9,7 +9,7 @@ import {
     mxUtils,
     mxEvent,
     mxImage,
-    mxCodec,
+    mxVertexHandler,
     mxPoint,
     mxConnectionConstraint,
     mxConstraintHandler,
@@ -18,15 +18,9 @@ import {
     mxCodecRegistry,
     mxCell,
     mxObjectCodec,
-    mxEditor,
-    mxDefaultKeyHandler,
-    mxStylesheet,
-    mxDefaultPopupMenu,
-    mxDefaultToolbar,
-    mxGraphModel,
-    mxCellPath,
-    mxCellOverlay
+    mxDragSource
   } from "mxgraph-js";
+  import Utils from '../Helpers/Utils';
 
 export default class MxGraphManager
 {
@@ -59,25 +53,17 @@ export default class MxGraphManager
     initGraphBehavior(){
 
         // Enables rubberband selection
-		new mxRubberband(this.graph);
+        new mxRubberband(this.graph);
+        
+        //vertex rotatable
+        mxVertexHandler.prototype.rotationEnabled = true;
 
         // Disables built-in context menu
         mxEvent.disableContextMenu(this.container);
         
         this.graph.setConnectable(true);
 
-        this.graph.cellEditor.getEditorBounds = function(state)
-        {
-          var result = mxCellEditor.prototype.getEditorBounds.apply(this, arguments);
-        
-          if (this.graph.getModel().isEdge(state.cell))
-          {
-            result.x = state.getCenterX() - result.width / 2;
-            result.y = state.getCenterY() - result.height / 2;
-          }
-        
-          return result;
-        };
+        this.initGraphMouseEvents();
         
         this.initLabelBehaviour();
 
@@ -93,12 +79,43 @@ export default class MxGraphManager
         //mxEdgeHandler.prototype.snapToTerminals = true;
     }
 
-    initLabelBehaviour(){
+    initGraphMouseEvents() {
+        // this.graph.addMouseListener(
+        // {
+        // // mouseDown: function(sender, evt)
+        // // {
+        // //     mxLog.debug('mouseDown');
+        // // },
+        // mouseMove: function(sender, evt)
+        // {
+        //     var event = evt;
+        // },
+        // // mouseUp: function(sender, evt)
+        // // {
+        // //     mxLog.debug('mouseUp');
+        // // }
+        // });
+    }
 
+    initLabelBehaviour(){
+        
         //this.graph.htmlLabels = true;
         this.graph.setHtmlLabels(false);
         this.graph.htmlLabels = false;
         this.graph.autoSizeCellsOnAdd = true;
+
+        this.renderLabelFromUserObject();
+
+        //whell up/down zoom in/out
+        mxEvent.addMouseWheelListener(function (evt, up) {
+                if (evt.shiftKey && up) {
+                    //this.graph.zoomIn();
+                    mxEvent.consume(evt);
+                } else if (evt.ctrlKey) {
+                    //this.graph.zoomOut();
+                    mxEvent.consume(evt);
+                }
+            });
 
         // remove overlays from exclude list for mxCellCodec so that overlays are encoded into XML
         var cellCodec = mxCodecRegistry.getCodec(mxCell);
@@ -114,23 +131,25 @@ export default class MxGraphManager
         cellCodec.allowEval = true;
         // set flag to allow expressions (function) to be decoded
         mxObjectCodec.allowEval = true;
+    }
 
+    renderLabelFromUserObject(){
         try {
-        // Overrides method to provide ProvisionContext.Name as label to vertex
-        this.graph.convertValueToString = function(cell)
-        {
-            if(cell.isEdge())
-            return;
-            
-            if(cell.value != null)
+            // Overrides method to provide GraphModel.DisplayName as label to vertex
+            this.graph.convertValueToString = function(cell)
             {
-                //return cell.value.GraphModel.DisplayName;
-                var usrObj = JSON.parse(cell.value);
-                return  usrObj.ProvisionContext.Name; //cell.value.GraphModel.DisplayName;
+                if(cell.isEdge())
+                return;
+
+                var result = Utils.TryParseUserObject(cell.value);
+
+                if(result.isUserObject)
+                {
+                    return  result.userObject.GraphModel.DisplayName;
+                }
+                else
+                    return cell.value;
             }
-            else
-                return cell.value;
-        };
         }
         catch(error){
             
@@ -155,11 +174,10 @@ export default class MxGraphManager
         vnetCellStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
         vnetCellStyle[mxConstants.STYLE_FONTSIZE] = '12';
         vnetCellStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
-        // vnetCellStyle[mxConstants.STYLE_ROUNDED] = '1';
-        // vnetCellStyle[mxConstants.RECTANGLE_ROUNDING_FACTOR] = '0.3';
         vnetCellStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "TOP";
-        vnetCellStyle[mxConstants.STYLE_LABEL_POSITION] = "ALIGN_RIGHT";
+        vnetCellStyle[mxConstants.STYLE_ALIGN] = "ALIGN_LEFT";
         vnetCellStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "TOP";
+        vnetCellStyle[mxConstants.STYLE_EDITABLE] = '0';
         this.graph.getStylesheet().putCellStyle('vnetstyle', vnetCellStyle);
 
         var subnetCellStyle  = new Object();
@@ -172,10 +190,11 @@ export default class MxGraphManager
         subnetCellStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
         subnetCellStyle[mxConstants.STYLE_FONTSIZE] = '12';
         subnetCellStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
-        //subnetCellStyle[mxConstants.STYLE_ROUNDED] = '1';
-        subnetCellStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "ALIGN_TOP,";
-        subnetCellStyle[mxConstants.STYLE_LABEL_POSITION] = "ALIGN_RIGHT";
-        subnetCellStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "TOP";
+        subnetCellStyle[mxConstants.STYLE_EDITABLE] = '0';
+        subnetCellStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "ALIGN_BOTTOM";
+        subnetCellStyle[mxConstants.STYLE_ALIGN] = "ALIGN_LEFT";
+        subnetCellStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "ALIGN_TOP";
+       
         this.graph.getStylesheet().putCellStyle('subnetstyle', subnetCellStyle);
 
         //elbow edge style
@@ -183,6 +202,7 @@ export default class MxGraphManager
         elbowEdgeStyle[mxConstants.STYLE_ROUNDED] = true;
         elbowEdgeStyle[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
         elbowEdgeStyle[mxConstants.CURSOR_MOVABLE_EDGE] = "move";
+        elbowEdgeStyle[mxConstants.STYLE_EDITABLE] = '0';
         this.graph.alternateEdgeStyle = 'elbow=vertical';
         this.graph.getStylesheet().putCellStyle('elbowedgestyle', elbowEdgeStyle);
             
@@ -192,6 +212,7 @@ export default class MxGraphManager
         straightEdgeStyle[mxConstants.STYLE_STROKEWIDTH] = '1.5';
         straightEdgeStyle[mxConstants.STYLE_ROUNDED] = false;
         straightEdgeStyle[mxConstants.CURSOR_MOVABLE_EDGE] = "move";
+        straightEdgeStyle[mxConstants.STYLE_EDITABLE] = '0';
         this.graph.getStylesheet().putCellStyle('straightedgestyle', straightEdgeStyle);
 
         // dashed edges
@@ -200,24 +221,40 @@ export default class MxGraphManager
         dashedEdgeStyle[mxConstants.STYLE_STROKEWIDTH] = '1.5';
         dashedEdgeStyle[mxConstants.STYLE_ROUNDED] = false;
         dashedEdgeStyle[mxConstants.CURSOR_MOVABLE_EDGE] = "move";
-        dashedEdgeStyle[mxConstants.STYLE_DASHED] = "1";
+        dashedEdgeStyle[mxConstants.STYLE_DASHED] = '1';
+        dashedEdgeStyle[mxConstants.STYLE_EDITABLE] = '0';
         this.graph.getStylesheet().putCellStyle('dashededgestyle', dashedEdgeStyle);
-    }
 
+        // label/text
+        var labelStyle = new Object();
+        labelStyle[mxConstants.DEFAULT_FONTSIZE] = '14';
+        labelStyle[mxConstants.DEFAULT_FONTFAMILY] = 'Segoe UI';
+        labelStyle[mxConstants.HANDLE_FILLCOLOR] = '0';
+        labelStyle[mxConstants.HANDLE_STROKECOLOR] = '0';
+        labelStyle[mxConstants.STYLE_EDITABLE] = '1';
+        labelStyle[mxConstants.STYLE_AUTOSIZE] = '0';
+        labelStyle[mxConstants.STYLE_RESIZABLE] = '0';
+        
+        this.graph.getStylesheet().putCellStyle('labelstyle', labelStyle);
+    }
 
     makeIconDraggable(htmlElement, resourceTypeName, onDropCallback) {
         var thisComp = this;
-
-        var vmss = mxUtils.makeDraggable(htmlElement, this.graph,
+        
+        //https://stackoverflow.com/questions/18107231/jgraphx-how-can-i-get-a-vertex-by-mouse-coordinates-mousemoved-method
+        
+        mxUtils.makeDraggable(htmlElement, this.graph,
             function(graph, evt, target, x, y,)
             {
+                var evtPoint = graph.getPointForEvent(evt);
+
                 var dropContext = {
-                    x: x,
-                    y: y,
+                    x: evtPoint.x,
+                    y: evtPoint.y,
                     resourceType: resourceTypeName
                 };
                 onDropCallback(dropContext);
-            }, null);        
+            }, null,null, this.graph.autoscroll, true);        
     }
 
     addConnectablePortsToAllAddedVertex(){
@@ -312,6 +349,20 @@ export default class MxGraphManager
 
                 return null;
             };
+    }
+
+    translateToParentGeometryPoint(dropContext, parentCellToAdd) {
+        
+        var targetState = this.graph.getView().getState(parentCellToAdd);
+        if(targetState != null)
+        {
+            var scale = this.graph.getView().scale;
+
+            dropContext.x -= targetState.origin.x * scale;
+            dropContext.y -= targetState.origin.y * scale;
+        }
+        
+        return dropContext;
     }
 
     isCellExist() {

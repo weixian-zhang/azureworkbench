@@ -27,13 +27,13 @@ namespace AzW.Web.API
             _secret = secret;
         }
 
-        [HttpGet("sub")]
+        [HttpGet("subs")]
         public async Task<IEnumerable<AzSubscription>> GetSubscriptions()
         {   
-            var rmsvc = new ARMLogic(
-                new ARMRService(
-                    new AzSDKCredentials(GetUserIdentity().AccessToken,
-                    _secret.TenantId, _secret.ClientId, _secret.ClientSecret)));
+            var accessToken = GetUserIdentity().AccessToken;
+
+            var rmsvc = new ARMLogic(new AzSDKCredentials(accessToken,
+                    _secret.TenantId, _secret.ClientId, _secret.ClientSecret), _secret);
 
             var subscriptions = await rmsvc.GetSubscriptions();
 

@@ -3,8 +3,6 @@ import AnonymousDiagramContext from '../models/services/AnonymousDiagramContext'
 
 export default class DiagramService
 {
-    constructor(){}
-
     async saveAnonymousDiagram(anonyDiagramContext, respCallback, errCallback){
         if(anonyDiagramContext == null || anonyDiagramContext.DiagramXml == null)
             return;

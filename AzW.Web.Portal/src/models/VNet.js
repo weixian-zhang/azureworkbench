@@ -1,8 +1,9 @@
+import ResourceType from './ResourceType'
 export default class VNet
 {
     constructor (){
         this.GraphModel = {
-            ResourceType: 'vnet',
+            ResourceType: ResourceType.VNet(),
             DisplayName: ''
         };
 
@@ -12,5 +13,9 @@ export default class VNet
             AddressSpace: false,
             Subnets: []
         }; 
+        this.CalculatorContext = {
+            IsFree: true,
+            Tier: ''
+        }
     }
 }

@@ -4,16 +4,20 @@ using AzW.Infrastructure;
 using AzW.Infrastructure.AzureServices;
 using AzW.Model;
 using AzW.Secret;
+using Microsoft.Azure.Management.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
 using Microsoft.Azure.Management.ResourceManager.Models;
+using static Microsoft.Azure.Management.Fluent.Azure;
 
 namespace AzW.Application
 {
     public class ARMLogic : IAzureInfoService
     {
-        public ARMLogic(IResourceManagerService azRscManager)
+        public ARMLogic(AzSDKCredentials azSdkCred, WorkbenchSecret secret)
         {
-            _azRscManager = azRscManager;
+            _azSdkCred = azSdkCred;
+            _secret = secret;
         }
 
         public Task<IEnumerable<AzLocation>> GetLocations()
@@ -28,7 +32,13 @@ namespace AzW.Application
 
         public async Task<IEnumerable<AzSubscription>> GetSubscriptions()
         {
-           var subs = await _azRscManager.GetSubscriptions();
+           //var subs = await _azRscManager.GetSubscriptions();
+
+           var azureCreds = new AzureCredentials
+                (_azSdkCred, _azSdkCred, _secret.TenantId, AzureEnvironment.AzureGlobalCloud);
+
+            IAuthenticated azAuthClient = Azure.Configure().Authenticate(azureCreds);
+            var subs = await azAuthClient.WithDefaultSubscription().Subscriptions.ListAsync();
 
            var azSubs = ObjectMapper.Mapper.Map
             <IEnumerable<ISubscription>, IEnumerable<AzSubscription>>(subs);
@@ -36,6 +46,7 @@ namespace AzW.Application
             return azSubs;
         }
 
-        private IResourceManagerService _azRscManager;
+        private AzSDKCredentials _azSdkCred;
+        private WorkbenchSecret _secret;
     }
 }
