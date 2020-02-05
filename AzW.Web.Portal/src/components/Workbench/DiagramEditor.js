@@ -1,6 +1,9 @@
 
 import React, { Component } from "react";
+import Workspace from './Workspace';
+import OverlaySaveToWorkspace from './OverlaySaveToWorkspace';
 import {Spinner, InputGroup, Classes, Button, Intent, Overlay, Toaster, Position} from "@blueprintjs/core";
+
 import VMPropPanel from "./PropPanel/VMPropPanel";
 import SubnetPropPanel from "./PropPanel/SubnetPropPanel";
 import VNetPropPanel from "./PropPanel/VNetPropPanel";
@@ -27,6 +30,8 @@ import LoadAnonyDiagramContext from "../../models/LoadAnonyDiagramContext";
 import DiagramService from '../../services/DiagramService';
 import queryString from 'query-string';
 import AzureValidator from './Helpers/AzureValidator';
+import LocalStorage from '../../services/LocalStorage';
+import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramContext";
 
  export default class DiagramEditor extends Component {
   constructor(props) {
@@ -61,17 +66,20 @@ import AzureValidator from './Helpers/AzureValidator';
     this.addDeleteKeyEventToDeleteVertex();
     this.addContextMenu();
     this.addCtrlZEventToUndo();
+    this.addShiftSEventSaveLocalStorage();
     this.addCtrlCCtrlVCopyPasteVertices();
     this.addDragOverEventForVMOverSubnetHighlight();
 
     this.loadSharedDiagram();
 
-    this.initPropPanelRef();
+    this.initRef();
   }
 
   render() {
     return (
       <div id="diagramEditor" className="workbenchgrid-container">
+        <OverlaySaveToWorkspace ref={this.overlaySaveToWorkspace} DiagramEditor={this} />
+        <Workspace ref={this.workspace} DiagramEditor={this} />
         <VMPropPanel ref={this.vmPropPanel} />
         <VNetPropPanel ref={this.vnetPropPanel} />
         <SubnetPropPanel ref={this.subnetPropPanel} />
@@ -91,12 +99,16 @@ import AzureValidator from './Helpers/AzureValidator';
             <Button className="bp3-button bp3-intent-success" icon="tick" onClick={this.copySharedLink}>Copy</Button>
           </div>
         </Overlay>
-        {this.state.showSpinner ? <Spinner intent={Intent.PRIMARY} size={Spinner.SIZE_STANDARD} value={0.6} /> : '' }
+        <Overlay isOpen={this.state.showSpinner} onClose={this.handleSpinnerClose}>
+          <Spinner intent={Intent.PRIMARY} size={Spinner.SIZE_STANDARD} value={0.6} />
+        </Overlay>
       </div>
     );
   }
 
-  initPropPanelRef() {
+  initRef() {
+    this.overlaySaveToWorkspace = React.createRef();
+    this.workspace = React.createRef();
     this.vmPropPanel = React.createRef();
     this.vnetPropPanel = React.createRef();
     this.subnetPropPanel = React.createRef();
@@ -110,7 +122,7 @@ import AzureValidator from './Helpers/AzureValidator';
         {
           var cell = evt.getProperty('cell');
 
-          if(cell.value == null)
+          if(cell.value != undefined || cell.value == null)
             return;
           
           var result = Utils.TryParseUserObject(cell.value);
@@ -148,6 +160,18 @@ import AzureValidator from './Helpers/AzureValidator';
           undoManager.undo();
       }
     }
+}
+
+addShiftSEventSaveLocalStorage = () => {
+
+  var keyHandler = new mxKeyHandler(this.graph);
+
+  keyHandler.getFunction = function(evt) {
+    if (evt != null && evt.shiftKey == true && evt.key == 's')
+    {
+       this.saveDiagramToBrowser();
+    }
+  }
 }
 
 addCtrlCCtrlVCopyPasteVertices() {
@@ -411,7 +435,7 @@ addDragOverEventForVMOverSubnetHighlight() {
       dropContext.y,
       150,
       100,
-      "verticalLabelPosition=bottom;verticalAlign=top;strokeColor=darkblue;fillColor=none;resizable=1;fontSize=15;fontFamily=Segoe UI;editable=1"
+      "strokeColor=darkblue;fillColor=none;resizable=1;fontSize=15;fontFamily=Segoe UI;editable=1"
     );
   }
 
@@ -424,7 +448,7 @@ addDragOverEventForVMOverSubnetHighlight() {
       dropContext.y,
       100,
       100,
-      "shape=triangle;rotatable=1;perimeter=trianglePerimeter;verticalLabelPosition=bottom;verticalAlign=top;strokeColor=darkblue;fillColor=none;resizable=1;fontSize=15;fontFamily=Segoe UI;editable=1"
+      "shape=triangle;rotatable=1;perimeter=trianglePerimeter;strokeColor=darkblue;fillColor=none;resizable=1;fontSize=15;fontFamily=Segoe UI;editable=1"
     );
   }
 
@@ -437,7 +461,7 @@ addDragOverEventForVMOverSubnetHighlight() {
       dropContext.y,
       100,
       100,
-      "shape=ellipse;rotatable=1;verticalLabelPosition=bottom;verticalAlign=top;strokeColor=darkblue;fillColor=none;resizable=1;fontSize=15;fontFamily=Segoe UI;editable=1"
+      "shape=ellipse;rotatable=1;strokeColor=darkblue;fillColor=none;resizable=1;fontSize=15;fontFamily=Segoe UI;editable=1"
     );
   }
 
@@ -788,9 +812,35 @@ addDragOverEventForVMOverSubnetHighlight() {
     this.setState({showSpinner: false});
   }
 
-  saveDiagramLocalBrowser = () => {
-      var anonyDiagramContext = new AnonymousDiagramContext();
+  saveDiagramToBrowser = () => {
+    if(!this.graphManager.isCellExist())
+    {
+      Toaster.create({
+        position: Position.TOP,
+        autoFocus: false,
+        canEscapeKeyClear: true
+      }).show({intent: Intent.WARNING, timeout: 2000, message: Messages.NoCellOnGraph()});
+      return;
+    }
 
+    var anonyDiagramContext = new AnonymousDiagramContext();
+    anonyDiagramContext.DiagramXml = this.getDiagramAsXml();
+    anonyDiagramContext.DateTimeSaved = new Date();
+    LocalStorage.set
+      (LocalStorage.KeyNames.TempLocalDiagram, JSON.stringify(anonyDiagramContext));
+
+      Toaster.create({
+        position: Position.TOP,
+        autoFocus: false,
+        canEscapeKeyClear: true
+      }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.DiagramSavedInBrowser()});
+      return;
+  }
+
+  loadDraftDiagramFromBrowser = () => {
+      var jsonStr = LocalStorage.get(LocalStorage.KeyNames.TempLocalDiagram);
+      var anonyDiagramContext = JSON.parse(jsonStr);
+      this.importXmlAsDiagram(anonyDiagramContext);
   }
 
   getDiagramLocalBrowser = () => {
@@ -802,24 +852,35 @@ addDragOverEventForVMOverSubnetHighlight() {
       if(parsedQS == undefined || parsedQS.id == undefined)
           return;
       
-      //f(thisgetDiagramLocalBrowser() != null)
-      
       var thisComp = this;
 
       this.diagramService.loadAnonymousDiagram(parsedQS.id)
-      .then(function (response) {
-          var adc = new AnonymousDiagramContext();
-          adc.UID = response.data.UID;
-          adc.DiagramName = response.data.DiagramName;
-          adc.DiagramXml = response.data.DiagramXml;
-          adc.SharedLink = response.data.SharedLink;
-          thisComp.importXmlAsDiagram(adc);
+        .then(function (response) {
+            var adc = new AnonymousDiagramContext();
+            adc.UID = response.data.UID;
+            adc.DiagramName = response.data.DiagramName;
+            adc.DiagramXml = response.data.DiagramXml;
+            adc.SharedLink = response.data.SharedLink;
+            thisComp.importXmlAsDiagram(adc);
         })
         .catch(function (error) {
           console.log(error);
         })
         .finally(function () {
+          
         });
+        
+        // function successCallback(responseData){
+        //   var adc = new AnonymousDiagramContext();
+        //   adc.UID = responseData.UID;
+        //   adc.DiagramName = responseData.DiagramName;
+        //   adc.DiagramXml = responseData.DiagramXml;
+        //   adc.SharedLink = responseData.SharedLink;
+        //   thisComp.importXmlAsDiagram(adc);
+        // },
+        // function errorCallback(){
+
+        // });
   }
 
   importXmlAsDiagram = (anonymousDiagramContext ) => {
@@ -849,6 +910,7 @@ addDragOverEventForVMOverSubnetHighlight() {
       var codec = new mxCodec(doc);
       codec.decode(doc.documentElement, this.graph.getModel());
 
+      //re-add cell overlays
       var cells =
         this.graph.getChildVertices(this.graph.getDefaultParent());
       
@@ -902,7 +964,7 @@ addDragOverEventForVMOverSubnetHighlight() {
           position: Position.TOP,
           autoFocus: false,
           canEscapeKeyClear: true
-        }).show({intent: Intent.WARNING, timeout: 3000, message: Messages.SharedDiagramNoCellOnGraph()});
+        }).show({intent: Intent.WARNING, timeout: 3000, message: Messages.NoCellOnGraph()});
         return;
       }
     
@@ -928,6 +990,8 @@ addDragOverEventForVMOverSubnetHighlight() {
             canEscapeKeyClear: true
           }).show({intent: Intent.DANGER, timeout: 3000, message: error.message});
         });
+
+        this.showSpinner(false);
   }
 
   copySharedLink = () => {
@@ -956,5 +1020,51 @@ addDragOverEventForVMOverSubnetHighlight() {
     return diagramInXml;
   }
 
+  saveDiagramToWorkspace(collectionName, diagramName) {
+    if(!this.graphManager.isCellExist())
+    {
+      Toaster.create({
+        position: Position.TOP,
+        autoFocus: false,
+        canEscapeKeyClear: true
+      }).show({intent: Intent.WARNING, timeout: 3000, message: Messages.NoCellOnGraph()});
+      return;
+    }
+
+    var diagramContext = new WorkspaceDiagramContext();
+    diagramContext.CollectionName = collectionName;
+    diagramContext.UID = this.shortUID.randomUUID(6);;
+    diagramContext.DiagramName = diagramName;
+    diagramContext.DiagramXml = this.getDiagramAsXml();
+    diagramContext.DateTimeSaved = Date.now();
+
+    this.diagramService.saveDiagramToWorkspace(diagramContext,
+      function onSuccess() {
+        Toaster.create({
+          position: Position.TOP,
+          autoFocus: false,
+          canEscapeKeyClear: true
+        }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.SavedSuccessfully()});
+        return;
+      },
+      function  onError() {
+        Toaster.create({
+          position: Position.TOP,
+          autoFocus: false,
+          canEscapeKeyClear: true
+        }).show({intent: Intent.DANGER, timeout: 2000, message: Messages.Error()});
+        return;
+      });
+  } 
+
+  showWorkspace () {
+      this.workspace.current.show();
+  }
+
+  showOverlaySavetoWorkspace = () => {
+     this.overlaySaveToWorkspace.current.show();
+  }
+
+  handleSpinnerClose = () => this.setState({ showSpinner: false });
   closeShareDiagramPopup = () => this.setState({ showShareDiagramPopup: false, useTallContent: false });
 }

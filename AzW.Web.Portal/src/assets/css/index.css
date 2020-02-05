@@ -41,6 +41,33 @@ inline {
   margin: 0px;
 }
 
+.workspace-overlay-box {
+  background-color: #fff;
+  border: 1px solid #000;
+  text-align:center;
+  height: 700px;/*height needs to be set*/
+  width: 900px;
+  margin: auto;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  }
+.saveto-workspace-overlay-box {
+    background-color: #fff;
+    border: 1px solid #000;
+    text-align:center;
+    height: 200px;/*height needs to be set*/
+    width: 400px;
+    margin: auto;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    }
+
 
 /*required for popupMenuHandler*/
 div.mxPopupMenu {

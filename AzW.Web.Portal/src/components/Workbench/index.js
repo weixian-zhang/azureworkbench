@@ -12,17 +12,20 @@ export default class MainWorkbench extends Component {
   }
 
   componentDidMount(){
-    //this.loadSharedDiagramIfExist();
   }
 
   render() {
     return (
       <div className="container">
-        <Header ActionBar={this.actionBar}/>
-        <ActionBar ref={this.actionBar} shareDiagram={this.shareDiagram} />
-        <Workbench queryString={this.props.location.search} ref={this.workbench}/>
+        <Header ActionBar={this.actionBar} Workbench={this.workbench} />
+        <ActionBar ref={this.actionBar} Workbench={this.workbench} />
+        <Workbench queryString={this.props.location.search} ref={this.workbench} />
       </div>
     );
+  }
+
+  getDiagramEditor = () => {
+    return this.workbench.current.getDiagramEditor();
   }
 
   shareDiagram = () => {

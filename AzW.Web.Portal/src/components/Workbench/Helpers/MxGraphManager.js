@@ -365,6 +365,14 @@ export default class MxGraphManager
         return dropContext;
     }
 
+    pasteInImageFromClipboard () {
+        //https://github.com/jgraph/mxgraph/blob/master/javascript/examples/images.html
+
+        //https://github.com/jgraph/mxgraph/blob/master/javascript/examples/images.html
+
+        //http://jsfiddle.net/viliusl/xq2aLj4b/5/
+    }
+
     isCellExist() {
         var cells = this.graph.getChildVertices(this.graph.getDefaultParent());
         if(cells.length > 0)

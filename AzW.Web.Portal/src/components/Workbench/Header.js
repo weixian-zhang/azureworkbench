@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import { Navbar, Button, Alignment, AnchorButton, Popover, Menu, Position, MenuItem, Classes, Icon } from "@blueprintjs/core";
+import { Tooltip, Navbar, Button, Alignment, AnchorButton, Popover, Menu, Position, MenuItem, Classes, Icon } from "@blueprintjs/core";
 import { connect } from "react-redux";
 import { msalLoginAsync, msalLogout } from "../../redux/actions";
 import AuthService from '../../services/AuthService';
 
-class Header extends Component {
+export default class Header extends Component {
 
   constructor(props) {
 
@@ -16,8 +16,6 @@ class Header extends Component {
         isLogin: this.authService.isUserLogin(),
         userProfile: this.authService.getUserProfile()
     }
-
-
   }
   
   render() {
@@ -30,25 +28,20 @@ class Header extends Component {
           </Navbar.Heading>
         </Navbar.Group>
         <Navbar.Group align={Alignment.RIGHT}>
-          {/* <AnchorButton 
-            className="bp3-minimal"
-            icon="git-new-branch"
-            href="https://github.com/Code-Norris/azureworkbench"
-            target="_blank"
-          /> */}
             <Popover content=
             { 
                 <Menu className={Classes.ELEVATION_1}>
                   {this.state.isLogin == true ? <MenuItem labelElement={<Icon icon="log-out" />} text="Logout" onClick={this.logout} /> : ''}
                   {this.state.isLogin == false ? <MenuItem labelElement={<Icon icon="log-in" />} text="Login" onClick={this.login} /> : '' }
+                  <MenuItem  text="Feedback" onClick={this.showFeedbackOverlay} />
+                  <MenuItem  text="About Azure Workbench" onClick={this.showAboutOverlay} />
                 </Menu>
-            }
-            position={Position.BOTTOM}>
+            } position={Position.BOTTOM}>
+             
             <Button
               className="bp3-minimal"
               icon="person"
-              text={this.state.userProfile != null ? this.state.userProfile.UserName : ''}
-            />
+              text={this.state.userProfile != null ? this.state.userProfile.UserName : ''}/>
           </Popover>
         </Navbar.Group>
       </Navbar>
@@ -69,18 +62,27 @@ class Header extends Component {
     this.setState({isLogin: false, userProfile: null})
   }
 
+  showAboutOverlay = () => {
+
+  }
+
+  showFeedbackOverlay = () => {
+    
+  }
 }
 
-function mapStateToProps(state) {
-  const { account } = state.msal;
-  return { account };
-}
 
-function mapDispatchToProps (dispatch) {
-  return {
-    login: () => dispatch(msalLoginAsync()),
-    logout: () => dispatch(msalLogout())
-  };
-}
 
-export default connect(mapStateToProps, mapDispatchToProps)(Header);
+// function mapStateToProps(state) {
+//   const { account } = state.msal;
+//   return { account };
+// }
+
+// function mapDispatchToProps (dispatch) {
+//   return {
+//     login: () => dispatch(msalLoginAsync()),
+//     logout: () => dispatch(msalLogout())
+//   };
+// }
+
+// export default connect(mapStateToProps, mapDispatchToProps)(Header);

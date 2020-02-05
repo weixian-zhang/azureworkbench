@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AzW.Model;
 using AzW.Secret;
@@ -42,6 +44,97 @@ namespace AzW.Infrastructure.Data
             {
                 throw ex;
             }
+        }
+
+        public async Task SaveDiagramToWorkspace(WorkspaceDiagramContext context)
+        {
+            var db = CosmosDbHelper.GetDatabase(_secret);
+
+            var coll = db.GetCollection<WorkspaceDiagramContext>(CollectionName.Workspace);
+            await coll.InsertOneAsync(context);
+        }
+
+        public async Task<IEnumerable<WorkspaceDiagramContextResult>>
+            GetDiagramsFromWorkspace(string emailId)
+        {
+            var db = CosmosDbHelper.GetDatabase(_secret);
+
+            var contextResult = new List<WorkspaceDiagramContextResult>();
+
+            var coll = db.GetCollection<WorkspaceDiagramContext>(CollectionName.Workspace);
+            var filter =
+                Builders<WorkspaceDiagramContext>.Filter
+                    .Eq(x => x.EmailId, emailId);
+            
+              using (IAsyncCursor<WorkspaceDiagramContext> cursor =
+                await coll.FindAsync(x => x.EmailId == emailId))
+            {
+                while (await cursor.MoveNextAsync())
+                {
+                    IEnumerable<WorkspaceDiagramContext> batch = cursor.Current;
+                    foreach (WorkspaceDiagramContext context in batch)
+                    {
+                       contextResult.Add(new WorkspaceDiagramContextResult()
+                       {
+                           EmailId = context.EmailId,
+                           Id = context.Id,
+                           UID = context.UID,
+                           CollectionName = context.CollectionName,
+                           DiagramName = context.DiagramName,
+                           DateTimeSaved = context.DateTimeSaved
+                       });
+                    }
+                }
+            }
+            
+            return contextResult;
+        }
+
+        public async Task<IEnumerable<string>> GetCollectionFromWorkspaceAsync(string emailId)
+        {
+            var db = CosmosDbHelper.GetDatabase(_secret);
+
+            var coll = db.GetCollection<WorkspaceDiagramContext>(CollectionName.Workspace);
+            var filter =
+                Builders<WorkspaceDiagramContext>.Filter.Eq(x => x.EmailId, emailId);
+            
+            var collectionNames = await coll.Find(filter)
+                .Project(x => x.CollectionName).ToListAsync();
+            
+            return collectionNames;
+        }
+
+        public async Task<string> LoadDiagramFromWorkspace
+            (string emailId, string collectionName, string UID)
+        {
+            var db = CosmosDbHelper.GetDatabase(_secret);
+
+            var coll = db.GetCollection<WorkspaceDiagramContext>(CollectionName.Workspace);
+
+            var diagramContext = await coll.Find<WorkspaceDiagramContext>
+                (x => x.EmailId == emailId && x.CollectionName == collectionName && x.UID ==  UID)
+                .SingleOrDefaultAsync();
+
+            return diagramContext.DiagramXml;
+        }
+
+        public async Task<bool> deleteDiagramFromWorkspace
+            (string emailId, string collectionName, string UID)
+        {
+            var db = CosmosDbHelper.GetDatabase(_secret);
+
+            var coll = db.GetCollection<WorkspaceDiagramContext>(CollectionName.Workspace);
+
+            var result = await coll.DeleteOneAsync<WorkspaceDiagramContext>
+                (x => x.EmailId == emailId && x.CollectionName == collectionName && x.UID ==  UID);
+        
+            if(result.DeletedCount != 1)
+            {
+                //log record not found, not deleted
+                return false;
+            }
+
+            return true;
         }
 
         private WorkbenchSecret _secret;

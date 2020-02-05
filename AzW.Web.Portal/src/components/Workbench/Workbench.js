@@ -3,6 +3,7 @@ import React, { Component } from "react";
 
 import ResourcePalette from "./ResourcePalette";
 import DiagramEditor from "./DiagramEditor";
+import AuthService from '../../services/AuthService';
 
 import "../../assets/css/Panel.css";
 import "../../assets/css/Workbench.css";
@@ -27,23 +28,6 @@ export default class Workbench extends Component {
     
   }
 
-  addResourceToDiagramEditor = (dropContext) => {
-      this.DiagramEditor.current.addResourceToEditorFromPalette(dropContext);
-  }
-
-  mxgraphManagerReadyCallback = (mxgraphManager) => {
-      this.graphManager = mxgraphManager;
-
-      this.setState({
-        renderResourcePalette: true
-      })
-  }
-
-  //called at ActionBar Share button
-  shareDiagram() {
-    this.DiagramEditor.current.shareDiagram();
-  }
-
   render = () => {
     const { renderResourcePalette } = this.state
     return (
@@ -53,4 +37,25 @@ export default class Workbench extends Component {
       </div>
     );
   }
+
+addResourceToDiagramEditor = (dropContext) => {
+    this.DiagramEditor.current.addResourceToEditorFromPalette(dropContext);
+}
+
+getDiagramEditor = () => {
+  return this.DiagramEditor.current;
+}
+
+mxgraphManagerReadyCallback = (mxgraphManager) => {
+    this.graphManager = mxgraphManager;
+
+    this.setState({
+      renderResourcePalette: true
+    })
+}
+
+//called at ActionBar Share button
+shareDiagram() {
+  this.DiagramEditor.current.shareDiagram();
+}
 }

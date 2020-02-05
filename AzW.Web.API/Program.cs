@@ -20,6 +20,7 @@ namespace AzW.Web.API
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.UseUrls("http://*:8089");
                     webBuilder.UseStartup<Startup>();
                 });
     }

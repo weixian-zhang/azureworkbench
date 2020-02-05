@@ -37,11 +37,16 @@ namespace AzW.Web.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options => options.AddPolicy("ApiCorsPolicy", builder =>
+            {
+                builder
+                    .AllowAnyOrigin()//builder.WithOrigins("http://localhost:8090")
+                    .AllowAnyMethod().AllowAnyHeader();
+            }));
+
             services.AddControllers();
 
             services.AddSwaggerGen();
-
-            services.AddCors();
 
             InitSecrets();
 
@@ -169,7 +174,8 @@ namespace AzW.Web.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors("CORSPolicy");
+            //app.UseCorsMiddleware();           
+            app.UseCors("ApiCorsPolicy");
             
             app.UseAuthentication();
 

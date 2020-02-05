@@ -1,8 +1,14 @@
 import axios from "axios";
 import AnonymousDiagramContext from '../models/services/AnonymousDiagramContext';
+import WorkspaceDiagramContext from '../models/services/WorkspaceDiagramContext';
+import AuthService from './AuthService';
 
 export default class DiagramService
 {
+    constructor(){
+      this.authService = new AuthService();
+    }
+
     async saveAnonymousDiagram(anonyDiagramContext, respCallback, errCallback){
         if(anonyDiagramContext == null || anonyDiagramContext.DiagramXml == null)
             return;
@@ -25,28 +31,149 @@ export default class DiagramService
       if(anonyDiagramId == null)
         return;
 
-      var sharedAnonyDiagramContext;
-
-      //axios.defaults.headers.common['Authorization'] = token.accessToken;
       return axios.get('api/dia/anony/shareload',{
           params: {
             anonyDiagramId: anonyDiagramId
           }
         });
-        // .then(function (response) {
-        //   var adc = new AnonymousDiagramContext();
-        //   adc.UID = response.data.UID;
-        //   adc.DiagramName = response.data.DiagramName;
-        //   adc.DiagramXml = response.data.DiagramXml;
-        //   adc.SharedLink = response.data.SharedLink;
-        //   sharedAnonyDiagramContext = adc;
-        // })
-        // .catch(function (error) {
-        //   console.log(error);
-        //   errorCallback(error);
-        // })
-        // .finally(function () {
-        //   responseCallback(sharedAnonyDiagramContext);
-        // });   
       }
+    
+    async saveDiagramToWorkspace
+      (workspaceDiagramContext, successCallback, errorCallback)
+      {
+        var user = this.authService.getUserProfile();
+
+        axios.post('api/wrkspace/dia/save', 
+        {
+          UID: workspaceDiagramContext.UID,
+          CollectionName: workspaceDiagramContext.CollectionName,
+          DiagramName: workspaceDiagramContext.DiagramName,
+          DiagramXml: workspaceDiagramContext.DiagramXml
+        }, 
+        {
+          headers: {
+
+              'Authorization': 'Bearer ' + user.AccessToken,
+              'Content-Type': 'application/json'
+          }
+        })
+        .then(function (response) {
+          successCallback(response.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+          errorCallback(error);
+        })
+        .finally(function () {
+          
+        });
+      }
+
+      async getCollectionFromWorkspace(successCallback, errorCallback)
+      {
+        var user = this.authService.getUserProfile();
+
+        axios.get('api/wrkspace/colls', 
+        {
+          params: {
+            emailId: user.UserName
+          },
+          headers: {
+
+            'Authorization': 'Bearer ' + user.AccessToken,
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(function (response) {
+          successCallback(response.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+          errorCallback(error);
+        })
+        .finally(function () {
+          
+        });
+      }
+    
+    async getDiagramsFromWorkspace(successCallback, errorCallback)
+    {
+      var user = this.authService.getUserProfile();
+
+      axios.get('api/wrkspace/diagrams', 
+      {
+        params: {
+          emailId: user.UserName
+        },
+        headers: {
+
+          'Authorization': 'Bearer ' + user.AccessToken,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(function (response) {
+        successCallback(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+        errorCallback(error);
+      })
+      .finally(function () {
+      });
+    }
+
+    async loadDiagramFromWorkspace(diagramContext, successCallback, errorCallback)
+    {
+        var user = this.authService.getUserProfile();
+
+        axios.get('api/wrkspace/dia/load', 
+        {
+          params: {
+            emailId: diagramContext.emailId,
+            collectionName: diagramContext.collectionName,
+            uid: diagramContext.uid
+          },
+          headers: {
+            'Authorization': 'Bearer ' + user.AccessToken,
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(function (response) {
+          successCallback(response.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+          errorCallback(error);
+        })
+        .finally(function () {
+        });
+    }
+
+    async deleteDiagramFromWorkspace(diagramContext, successCallback, errorCallback)
+    {
+        var user = this.authService.getUserProfile();
+
+        axios.delete('api/wrkspace/dia/del', 
+        {
+          params: {
+            emailId: diagramContext.emailId,
+            collectionName: diagramContext.collectionName,
+            uid: diagramContext.uid
+          },
+          headers: {
+
+            'Authorization': 'Bearer ' + user.AccessToken,
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(function (response) {
+          successCallback(response.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+          errorCallback(error);
+        })
+        .finally(function () {
+        });
+    }
 }

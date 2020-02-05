@@ -9,7 +9,5 @@ namespace AzW.Application
 
         Task<AnonyDiagramShareContext> GetSharedDiagramAsync(string anonymousDiagramId);
 
-        Task SaveDiagram();
-
     }
 }

@@ -36,11 +36,6 @@ namespace AzW.Application
             return await _diagramRepo.GetSharedDiagramAsync(anonymousDiagramId);
         }
 
-        public Task SaveDiagram()
-        {
-            throw new System.NotImplementedException();
-        }
-
         private IDiagramRepository _diagramRepo;
         private WorkbenchSecret _secret;
     }

@@ -20,6 +20,12 @@ export default class ActionBar extends Component {
       this.authService = new AuthService();
 
       this.getSubscriptions();
+
+      this.diagramEditor = this.props.Workbench.current;
+    }
+
+    componentWillMount() {
+        this.diagramEditor = this.props.Workbench.current;
     }
 
     render() {
@@ -27,17 +33,19 @@ export default class ActionBar extends Component {
             <nav className="bp3-navbar bp3-light">
                 <div style={{margin: "0 auto", width: "100%"}}>
                     <div className="bp3-navbar-group bp3-align-left">
-                        <button className="bp3-button" onClick={this.deploy}>Deploy</button>
+                        <Button className="bp3-button" icon="delta" onClick={this.deploy}>Deploy</Button>
                         <span className="bp3-navbar-divider"></span>
-                        <button className="bp3-button" onClick={this.shareDiagram}>Share</button>
+                        <Button className="bp3-button" icon='document-share' onClick={this.shareDiagram}>Share</Button>
+                        <span className="bp3-navbar-divider"></span>
+                        <Button className="bp3-button" icon='draw' onClick={this.showWorkspace}>My Workspace</Button>
                         <span className="bp3-navbar-divider"></span>
                         <Popover content=
                             {
                                 <Menu>
-                                    <MenuItem icon="saved" text="Save Draft" />
+                                    <MenuItem icon="saved" text="Save Draft in Browser" onClick={this.saveToLocal} />
                                     <MenuItem icon="history" text="Save to Workspace" onClick={this.savetoWorkspace} />
                                     <MenuItem icon="export" text="Export as PDF" />
-                                    <MenuItem icon="export" text="Export as PNG" />
+                                    <MenuItem icon="image-rotate-left" text="Export as PNG" />
                                 </Menu>
                             } position={Position.RIGHT}>
                             <Button icon="share" text="File" />
@@ -67,12 +75,24 @@ export default class ActionBar extends Component {
         );
     };
 
-    shareDiagram = () => {
-        this.props.shareDiagram();
+    showWorkspace = () => {
+       var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
+       diagramEditor.showWorkspace();
     }
 
-    savetoWorkspace (){
+    shareDiagram = () => {
+        var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
+        diagramEditor.shareDiagram();
+    }
 
+    savetoWorkspace = () => {
+        var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
+        diagramEditor.showOverlaySavetoWorkspace();
+    }
+
+    saveToLocal = () => {
+       var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
+       diagramEditor.saveDiagramToBrowser();
     }
 
     calculate(){
@@ -107,10 +127,6 @@ export default class ActionBar extends Component {
     }
 
     renderSubscription({ handleClick, isActive, item: sub }) {
-        // const classes = classNames({
-        //     [Classes.ACTIVE]: isActive,
-        //     [Classes.INTENT_PRIMARY]: isActive,
-        // });
         return (
             <MenuItem
                 //className={classes}
