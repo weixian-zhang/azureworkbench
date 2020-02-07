@@ -26,6 +26,8 @@ export default class Workspace extends Component {
       this.state = {
         isOpen: false,
         isAuthenticated: this.authService.isUserLogin(),
+        isDeleteConfirmationDialogOpen: false,
+        selectedDiagramContextForDelete: null,
         collections: [],
         diagrams: []
       }
@@ -46,8 +48,9 @@ export default class Workspace extends Component {
       const classes = tableStyle;
 
         return (
+          <div>
             <Overlay isOpen={this.state.isOpen} onClose={this.handleClose}>
-                <Card className='workspace-overlay-box ' interactive={false} elevation={Elevation.ONE}>
+                <Card className='workspace-overlay-box' interactive={false} elevation={Elevation.TWO}>
                     <H4 align={Alignment.LEFT}>Draft Diagram in Browser</H4> 
                     {
                     (!this.isLocalDraftDiagramExist()) ? 
@@ -104,7 +107,7 @@ export default class Workspace extends Component {
                                     <Button text="" icon="cloud-download" onClick={() => this.loadDiagramFromWorkspace(diagram)} /> 
                                   </TableCell>
                                   <TableCell align="left">
-                                    {/* <Button text="" icon="delete" onClick={this.deleteDiagramInWorkspace(diagram)} /> */}
+                                    <Button text="" icon="delete" onClick={() => this.openDeleteConfirmDialog(diagram)} />
                                   </TableCell>
                                 </TableRow>
                             ))}
@@ -114,7 +117,22 @@ export default class Workspace extends Component {
                       </span>
                     }
                 </Card>
+                <Overlay isOpen={this.state.isDeleteConfirmationDialogOpen}  onClose={this.handleDeletConfirmClose}>
+                  <Card className='workspace-deletediagramdialog-overlay-box'  elevation={Elevation.TWO}>
+                    <Label>
+                      Are you sure you want to delete diagram?
+                    </Label>
+                    <Button text="Confirm" icon="delete" onClick={() => this.confirmDeleteDiagramInWorkspace()} />
+                    <span className="bp3-navbar-divider"></span>
+                    <Button text="Cancel" onClick={() => 
+                        this.setState({
+                          isDeleteConfirmationDialogOpen: false,
+                          selectedDiagramContextForDelete: null
+                          })} />
+                  </Card>
+                </Overlay>
             </Overlay>
+          </div>
         );
       }
 
@@ -215,26 +233,41 @@ export default class Workspace extends Component {
             );
     }
 
-    deleteDiagramInWorkspace = (diagramContext) => {
-        this.diagramService.deleteDiagramFromWorkspace
-          (diagramContext,
-            function onSuccess(isDeleted){
-              Toaster.create({
-                position: Position.TOP,
-                autoFocus: false,
-                canEscapeKeyClear: true
-              }).show({intent: Intent.DANGER, timeout: 2000, message: Messages.DeleteDiagramFromWorkspaceTrue()});
-              return;
-            },
-            function onError(err){
-              Toaster.create({
-                position: Position.TOP,
-                autoFocus: false,
-                canEscapeKeyClear: true
-              }).show({intent: Intent.DANGER, timeout: 2000, message: Messages.DeleteDiagramFromWorkspaceIsFalse()});
-              return;
-            }
-          );
+    openDeleteConfirmDialog = (diagramContext) => {
+      this.setState({
+        isDeleteConfirmationDialogOpen: true,
+        selectedDiagramContextForDelete: diagramContext 
+      });
+    }
+
+    confirmDeleteDiagramInWorkspace = () => {
+
+      if(this.state.selectedDiagramContextForDelete == null)
+        return;
+
+      this.diagramService.deleteDiagramFromWorkspace
+        (this.state.selectedDiagramContextForDelete,
+          function onSuccess(isDeleted){
+            this.setState({
+              isDeleteConfirmationDialogOpen: false,
+              selectedDiagramContextForDelete: null 
+            });
+            Toaster.create({
+              position: Position.TOP,
+              autoFocus: false,
+              canEscapeKeyClear: true
+            }).show({intent: Intent.DANGER, timeout: 2000, message: Messages.DeleteDiagramFromWorkspaceTrue()});
+            return;
+          },
+          function onError(err){
+            Toaster.create({
+              position: Position.TOP,
+              autoFocus: false,
+              canEscapeKeyClear: true
+            }).show({intent: Intent.DANGER, timeout: 2000, message: Messages.DeleteDiagramFromWorkspaceIsFalse()});
+            return;
+          }
+        );
     }
 
     refreshCollectionDiagrams = () => {
@@ -257,5 +290,6 @@ export default class Workspace extends Component {
       }
     }
     
-    handleClose = () => this.setState({ isOpen: false, useTallContent: false });
+    handleClose = () => this.setState({ isOpen: false });
+    handleDeletConfirmClose  = () => this.setState({ isDeleteConfirmationDialogOpen: false });
 }

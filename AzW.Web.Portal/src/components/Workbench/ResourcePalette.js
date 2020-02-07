@@ -100,6 +100,8 @@ export default class ResourcePalette extends Component {
       isStorageOpen: false,
       isDatabaseOpen: false,
       isIdentityOpen: false,
+      isIoTOpen : false,
+      isDataOpen: false,
       graphContainer: null
     }
   }
@@ -112,6 +114,20 @@ export default class ResourcePalette extends Component {
     this.setState(
       { 
         isShapeOpen: !this.state.isShapeOpen
+      }) 
+  }
+
+  iotPanelHeaderClick = () => {
+    this.setState(
+      { 
+        isIoTOpen: !this.state.isIoTOpen
+      }) 
+  }
+
+  dataPanelHeaderClick = () => {
+    this.setState(
+      { 
+        isDataOpen: !this.state.isDataOpen
       }) 
   }
 
@@ -376,6 +392,15 @@ export default class ResourcePalette extends Component {
             </Tippy>
           </div>
         </Collapse>
+      
+      <h3 class="collapse-header" onClick={this.dataPanelHeaderClick}>Data</h3>
+      <Collapse isOpen={this.state.isDataOpen} accordion={true} keepChildrenMounted={true}>
+        <div class="tile-panel" ref={this.internet}>
+            <Tippy content="Internet" followCursor={true} placement="bottom">
+              <Internet class="azure-rsc-icon" />
+            </Tippy>
+          </div>
+      </Collapse>
      
       <h3 class="collapse-header" onClick={this.containerPanelHeaderClick}>Container</h3>
       <Collapse isOpen={this.state.isContainerOpen} accordion={true} keepChildrenMounted={true} >
@@ -425,7 +450,16 @@ export default class ResourcePalette extends Component {
         </div>
       </Collapse>
 
-      <h3 class="collapse-header" onClick={this.securityPanelHeaderClick}>Azure Security</h3>
+      <h3 class="collapse-header" onClick={this.iotPanelHeaderClick}>IoT</h3>
+      <Collapse isOpen={this.state.isIoTOpen} accordion={true} keepChildrenMounted={true}>
+        <div class="tile-panel" ref={this.internet}>
+            <Tippy content="Internet" followCursor={true} placement="bottom">
+              <Internet class="azure-rsc-icon" />
+            </Tippy>
+        </div>
+      </Collapse>
+
+      <h3 class="collapse-header" onClick={this.securityPanelHeaderClick}>Security</h3>
       <Collapse isOpen={this.state.isSecurityOpen} accordion={true} keepChildrenMounted={true} >
         <div class="tile-panel" ref={this.azfwIcon}>
           <Tippy content="Firewall" followCursor={true} placement="bottom">

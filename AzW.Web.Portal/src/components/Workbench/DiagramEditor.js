@@ -69,8 +69,8 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
     this.addShiftSEventSaveLocalStorage();
     this.addCtrlCCtrlVCopyPasteVertices();
     this.addDragOverEventForVMOverSubnetHighlight();
-
     this.loadSharedDiagram();
+    this.initPasteImageFromBrowserClipboard();
 
     this.initRef();
   }
@@ -805,6 +805,118 @@ addDragOverEventForVMOverSubnetHighlight() {
         this.graph.setSelectionCells(cells);
       }
   }
+
+  //create vertex from browser clipboard image
+  initPasteImageFromBrowserClipboard = () => {
+        
+        var thisComp = this;
+        window.addEventListener("paste", function(e){
+
+            // Handle the event
+            thisComp.retrieveImageFromClipboardAsBase64(e, function(imageDataBase64){
+                // If there's an image, open it in the browser as a new window :)
+                if(imageDataBase64){
+
+                  thisComp.createVertexFromBrowserClipboard(imageDataBase64);
+                    // data:image/png;base64,iVBORw0KGgoAAAAN......
+                }
+            });
+        }, false);
+    }
+
+     retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
+        if(pasteEvent.clipboardData == false){
+            if(typeof(callback) == "function"){
+                callback(undefined);
+            }
+        };
+    
+        var items = pasteEvent.clipboardData.items;
+    
+        if(items == undefined){
+            if(typeof(callback) == "function"){
+                callback(undefined);
+            }
+        };
+
+        var clipboardResult = {
+            imageBase64: '',
+            imageFormat: ''
+        }
+        var thisComp = this;
+    
+        for (var i = 0; i < items.length; i++) {
+            // Skip content if not image
+            if (items[i].type.indexOf("image") == -1) continue;
+            // Retrieve image on clipboard as blob
+            var blob = items[i].getAsFile();
+    
+            // Create an abstract canvas and get context
+            var mycanvas = document.createElement("canvas");
+            var ctx = mycanvas.getContext('2d');
+            
+            // Create an image
+            var img = new Image();
+    
+            // Once the image loads, render the img on the canvas
+            img.onload = function(){
+                // Update dimensions of the canvas with the dimensions of the image
+                mycanvas.width = this.width;
+                mycanvas.height = this.height;
+    
+                // Draw the image
+                ctx.drawImage(img, 0, 0);
+    
+                // Execute callback with the base64 URI of the image
+                if(typeof(callback) == "function"){
+                  var dataUrl = mycanvas.toDataURL();
+                  var imageFormat = thisComp.getImageFormatFromBrowserClipboard(dataUrl);
+                  var base64Image = dataUrl.split(',')[1];
+
+                  clipboardResult.imageBase64 = base64Image;
+                  clipboardResult.imageFormat = imageFormat;
+
+                  callback(clipboardResult);
+                    // callback(mycanvas.toDataURL(
+                    //     (imageFormat || "image/png")
+                    // ));
+                }
+            };
+    
+            // Crossbrowser support for URL
+            var URLObj = window.URL || window.webkitURL;
+    
+            // Creates a DOMString containing a URL representing the object given in the parameter
+            // namely the original Blob
+            img.src = URLObj.createObjectURL(blob);
+        }
+    }
+
+  getImageFormatFromBrowserClipboard(imageUrl) {
+      var getSlashIndex = imageUrl.indexOf('/') + 1
+      var getSemiColonIndex = imageUrl.indexOf(';')
+      var imageFormat = imageUrl.slice(getSlashIndex, getSemiColonIndex);
+      return imageFormat;
+
+      //sample//data:image/png;base64,iVBORw0KGgoAA
+    }
+
+  createVertexFromBrowserClipboard(clipboardResult) {
+
+    this.graphManager.graph.getModel().beginUpdate();
+      var style = 'editable=1;verticalLabelPosition=bottom;shape=image;image=';
+      
+      if(clipboardResult.imageFormat == 'png')
+        style += 'data:image/png,' + clipboardResult.imageBase64;
+
+      this.graph.insertVertex
+      (this.graph.getDefaultParent(), '', 'image',
+      MouseEvent.clientX, MouseEvent.clientY, 60, 60, //native javascript MouseEvent 
+      style);
+      //data:image/svg+xml,
+      this.graphManager.graph.getModel().endUpdate();
+  }
+
   showSpinner(toShow) {
     if(toShow)
       this.setState({showSpinner: true});

@@ -41,6 +41,13 @@ inline {
   margin: 0px;
 }
 
+/* position:relative;;width:321px;height:241px;background:url('editors/images/grid.gif'); */
+.workbenchgrid-container{
+  position: relative;
+  overflow:auto;
+  background: url('../azure_icons/shape-grid.gif');
+}
+
 .workspace-overlay-box {
   background-color: #fff;
   border: 1px solid #000;
@@ -66,7 +73,20 @@ inline {
     right: 0;
     bottom: 0;
     left: 0;
-    }
+  }
+  .workspace-deletediagramdialog-overlay-box {
+    background-color: #fff;
+    border: 1px solid #000;
+    text-align:center;
+    height: 100px;/*height needs to be set*/
+    width: 350px;
+    margin: auto;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
 
 
 /*required for popupMenuHandler*/

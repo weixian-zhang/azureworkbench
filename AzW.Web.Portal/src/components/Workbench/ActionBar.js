@@ -33,8 +33,7 @@ export default class ActionBar extends Component {
             <nav className="bp3-navbar bp3-light">
                 <div style={{margin: "0 auto", width: "100%"}}>
                     <div className="bp3-navbar-group bp3-align-left">
-                        <Button className="bp3-button" icon="delta" onClick={this.deploy}>Deploy</Button>
-                        <span className="bp3-navbar-divider"></span>
+                       
                         <Button className="bp3-button" icon='document-share' onClick={this.shareDiagram}>Share</Button>
                         <span className="bp3-navbar-divider"></span>
                         <Button className="bp3-button" icon='draw' onClick={this.showWorkspace}>My Workspace</Button>
@@ -42,6 +41,7 @@ export default class ActionBar extends Component {
                         <Popover content=
                             {
                                 <Menu>
+                                    {/* <button className="bp3-button bp3-intent-success" onClick={this.calculate}>$USD 0.00</button> */}
                                     <MenuItem icon="saved" text="Save Draft in Browser" onClick={this.saveToLocal} />
                                     <MenuItem icon="history" text="Save to Workspace" onClick={this.savetoWorkspace} />
                                     <MenuItem icon="export" text="Export as PDF" />
@@ -51,29 +51,31 @@ export default class ActionBar extends Component {
                             <Button icon="share" text="File" />
                         </Popover>                     
                     </div>
-                    <div className="bp3-navbar-group bp3-align-right">
-                        <span>
-                            <button className="bp3-button bp3-intent-success" onClick={this.calculate}>$USD 0.00</button>
-                            <span className="bp3-navbar-divider"></span>
-                            <Select
-                                items={this.state.subscriptions}
-                                itemRenderer={this.renderSubscription}
-                                noResults={<MenuItem disabled={true}
-                                text={this.authService.isUserLogin() ? "Can't find any subscriptions" : "Login first..."} />}
-                                onItemSelect={this.setCurrentSubscription}
-                                filterable={false}
-                            >
-                                {/* children become the popover target; render value here */}
-                                <Button text='Subscriptions' rightIcon="double-caret-vertical" />
-                            </Select>
-                        </span>
-                        
-                        <span>Resource Groups</span>
-                    </div>
                 </div>
             </nav>
         );
     };
+
+    // <div className="bp3-navbar-group bp3-align-right">
+    //                     <span>
+    //                         <Button className="bp3-button" icon="delta" onClick={this.deploy}>Deploy</Button>
+    //                         <span className="bp3-navbar-divider"></span>
+                            
+    //                         <span className="bp3-navbar-divider"></span>
+    //                         <Select
+    //                             items={this.state.subscriptions}
+    //                             itemRenderer={this.renderSubscription}
+    //                             noResults={<MenuItem disabled={true}
+    //                             text={this.authService.isUserLogin() ? "Can't find any subscriptions" : "Login first..."} />}
+    //                             onItemSelect={this.setCurrentSubscription}
+    //                             filterable={false}
+    //                         >
+    //                             {/* children become the popover target; render value here */}
+    //                             <Button text='Subscriptions' rightIcon="double-caret-vertical" />
+    //                         </Select>
+    //                     </span>
+    //                     <span>Resource Groups</span>
+    //                 </div>
 
     showWorkspace = () => {
        var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
