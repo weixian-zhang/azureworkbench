@@ -4,6 +4,7 @@ import Workspace from './Workspace';
 import OverlaySaveToWorkspace from './OverlaySaveToWorkspace';
 import {Spinner, InputGroup, Classes, Button, Intent, Overlay, Toaster, Position} from "@blueprintjs/core";
 
+import StylePropPanel from './PropPanel/StylePropPanel';
 import VMPropPanel from "./PropPanel/VMPropPanel";
 import SubnetPropPanel from "./PropPanel/SubnetPropPanel";
 import VNetPropPanel from "./PropPanel/VNetPropPanel";
@@ -78,6 +79,7 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
   render() {
     return (
       <div id="diagramEditor" className="workbenchgrid-container">
+        <StylePropPanel ref={this.stylePanel} DiagramEditor={this} />
         <OverlaySaveToWorkspace ref={this.overlaySaveToWorkspace} DiagramEditor={this} />
         <Workspace ref={this.workspace} DiagramEditor={this} />
         <VMPropPanel ref={this.vmPropPanel} />
@@ -107,6 +109,7 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
   }
 
   initRef() {
+    this.stylePanel = React.createRef();
     this.overlaySaveToWorkspace = React.createRef();
     this.workspace = React.createRef();
     this.vmPropPanel = React.createRef();
@@ -212,11 +215,13 @@ addDragOverEventForVMOverSubnetHighlight() {
           thisComponent.graph.orderCells(false); 
         });
 
-        menu.addItem('Send To Back', '', function()
-        {
-          thisComponent.graph.orderCells(true); 
-        });
+      menu.addItem('Send To Back', '', function()
+      {
+        thisComponent.graph.orderCells(true); 
+      });
 
+      var result = Utils.TryParseUserObject(cell.value);
+      if(result.isUserObject){
         var userObj = JSON.parse(cell.value);
 
         //for vnet
@@ -229,6 +234,18 @@ addDragOverEventForVMOverSubnetHighlight() {
             thisComponent.addSubnet(cell); // is vnetCell
           });
         }
+     }
+
+      //style for shapes only
+      if(cell.isEdge() || thisComponent.graphManager.isRect(cell) || 
+      thisComponent.graphManager.isEllipse(cell) || thisComponent.graphManager.isTriangle(cell))
+      {
+        menu.addSeparator();
+        menu.addItem('Style', '', function()
+        {
+          thisComponent.openStylePanel(cell);
+        });
+      }
     };
   }
 
@@ -295,6 +312,16 @@ addDragOverEventForVMOverSubnetHighlight() {
     this.graph.clearSelection();
   }
 
+  openStylePanel = (cell) => {
+      var thisComp = this;
+      this.stylePanel.current.show(cell, function(styleName, hexCode){
+        if(hexCode != '' || hexCode != null)
+        {
+          thisComp.graphManager.changeCellStyle(cell, styleName, hexCode );
+        }
+      })
+  }
+
   determineResourcePropertyPanelToShow = (cell, userObject) => {
 
     let thisComp = this;
@@ -347,7 +374,7 @@ addDragOverEventForVMOverSubnetHighlight() {
       {
         var parent = this.graph.getDefaultParent();
         var randomId = this.shortUID.randomUUID(6);
-        var cell = new mxCell(randomId, new mxGeometry(dropContext.x, dropContext.y, 50, 50), 'straightedgestyle'); //curved=0;endArrow=classic;html=1;
+        var cell = new mxCell(randomId, new mxGeometry(dropContext.x, dropContext.y, 50, 50), 'straightedgestyle');
         cell.geometry.setTerminalPoint(new mxPoint(dropContext.x, dropContext.y), true);
         cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
         cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
@@ -368,7 +395,7 @@ addDragOverEventForVMOverSubnetHighlight() {
     {
       var parent = this.graph.getDefaultParent();
       var randomId = this.shortUID.randomUUID(6);
-      var cell = new mxCell(randomId, new mxGeometry(dropContext.x, dropContext.y, 50, 50), 'dashededgestyle'); //curved=0;endArrow=classic;html=1;
+      var cell = new mxCell(randomId, new mxGeometry(dropContext.x, dropContext.y, 50, 50), 'dashededgestyle');
       cell.geometry.setTerminalPoint(new mxPoint(dropContext.x, dropContext.y), true);
       cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
       cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
@@ -413,11 +440,8 @@ addDragOverEventForVMOverSubnetHighlight() {
       var randomId = this.shortUID.randomUUID(6);
 
       this.graph.insertVertex
-        (this.graph.getDefaultParent(), null, 'text', dropContext.x, dropContext.y, 80, 30,
-        'strokeColor=none;fillColor=none;resizable=0;autosize=0;fontSize=15;fontFamily=Segoe UI;');
-
-      // this.graph.insertVertex
-      //   (this.graph.getDefaultParent(),randomId, 'Text', dropContext.x, dropContext.y, 50, 30, 'labelstyle'); //'strokeColor=none;fillColor=none;resizable=0;autosize=1;fontsize=14');
+        (this.graph.getDefaultParent(), null, 'text', dropContext.x, dropContext.y, 80, 30, 'textstyle');
+        //strokeColor=none;fillColor=none;resizable=0;autosize=0;fontSize=15;fontFamily=Segoe UI;'
     }
     finally
     {
@@ -435,7 +459,7 @@ addDragOverEventForVMOverSubnetHighlight() {
       dropContext.y,
       150,
       100,
-      "strokeColor=darkblue;fillColor=none;resizable=1;fontSize=15;fontFamily=Segoe UI;editable=1"
+      'rectstyle'
     );
   }
 
@@ -448,12 +472,12 @@ addDragOverEventForVMOverSubnetHighlight() {
       dropContext.y,
       100,
       100,
-      "shape=triangle;rotatable=1;perimeter=trianglePerimeter;strokeColor=darkblue;fillColor=none;resizable=1;fontSize=15;fontFamily=Segoe UI;editable=1"
+      "trianglestyle"
     );
   }
 
   addCircle = (dropContext) => {
-    this.graph.insertVertex(
+    var cell = this.graph.insertVertex(
       this.graph.getDefaultParent(),
       null,
       'circle',
@@ -461,7 +485,7 @@ addDragOverEventForVMOverSubnetHighlight() {
       dropContext.y,
       100,
       100,
-      "shape=ellipse;rotatable=1;strokeColor=darkblue;fillColor=none;resizable=1;fontSize=15;fontFamily=Segoe UI;editable=1"
+      "ellipsestyle"
     );
   }
 

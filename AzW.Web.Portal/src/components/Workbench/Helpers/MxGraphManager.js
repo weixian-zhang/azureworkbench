@@ -319,7 +319,57 @@ export default class MxGraphManager
         mxConstants.HANDLE_FILLCOLOR = '#99ccff';
         mxConstants.HANDLE_STROKECOLOR = '#0088cf';
         mxConstants.VERTEX_SELECTION_COLOR = '#00a8ff';
-                
+
+        //text label style
+        var textStyle = new Object();
+        textStyle[mxConstants.STYLE_STROKECOLOR] = 'none';
+        textStyle[mxConstants.STYLE_FILLCOLOR] = 'none';
+        textStyle[mxConstants.STYLE_RESIZABLE] = '0';
+        textStyle[mxConstants.STYLE_AUTOSIZE] = '0';
+        textStyle[mxConstants.STYLE_FONTSIZE] = '15';
+        textStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
+        textStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
+        this.graph.getStylesheet().putCellStyle('textstyle', textStyle);
+
+        //rectangle style
+        var rectStyle = new Object();
+        rectStyle[mxConstants.STYLE_STROKECOLOR] = 'darkblue';
+        rectStyle[mxConstants.STYLE_FILLCOLOR] = 'none';
+        rectStyle[mxConstants.STYLE_RESIZABLE] = '1';
+        rectStyle[mxConstants.STYLE_EDITABLE] = '1';
+        rectStyle[mxConstants.STYLE_AUTOSIZE] = '0';
+        rectStyle[mxConstants.STYLE_FONTSIZE] = '15';
+        rectStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
+        rectStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
+        rectStyle['shape'] = 'rectangle';
+        this.graph.getStylesheet().putCellStyle('rectstyle', rectStyle);
+
+        //triangle style
+        var triangleStyle = new Object();
+        triangleStyle[mxConstants.STYLE_STROKECOLOR] = 'darkblue';
+        triangleStyle[mxConstants.STYLE_FILLCOLOR] = 'none';
+        triangleStyle[mxConstants.STYLE_RESIZABLE] = '1';
+        triangleStyle[mxConstants.STYLE_EDITABLE] = '1';
+        triangleStyle[mxConstants.STYLE_AUTOSIZE] = '0';
+        triangleStyle[mxConstants.STYLE_FONTSIZE] = '15';
+        triangleStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
+        triangleStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
+        triangleStyle['shape'] = 'triangle';
+        this.graph.getStylesheet().putCellStyle('trianglestyle', triangleStyle);
+
+        //ellipse style
+        var ellipseStyle = new Object();
+        ellipseStyle[mxConstants.STYLE_STROKECOLOR] = 'darkblue';
+        ellipseStyle[mxConstants.STYLE_FILLCOLOR] = 'none';
+        ellipseStyle[mxConstants.STYLE_RESIZABLE] = '1';
+        ellipseStyle[mxConstants.STYLE_EDITABLE] = '1';
+        ellipseStyle[mxConstants.STYLE_AUTOSIZE] = '0';
+        ellipseStyle[mxConstants.STYLE_FONTSIZE] = '15';
+        ellipseStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
+        ellipseStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
+        ellipseStyle['shape'] = 'ellipse';
+        this.graph.getStylesheet().putCellStyle('ellipsestyle', ellipseStyle);
+
         //vnet style
         var vnetCellStyle  = new Object();
         vnetCellStyle[mxConstants.STYLE_STROKECOLOR] = 'darkblue';
@@ -536,5 +586,68 @@ export default class MxGraphManager
             return true;
         else
             return false;
+    }
+
+    isRect(cell) {
+        if(cell == null)
+        return;
+
+        var styles = this.graph.getStylesheet().getCellStyle(cell.style);
+        
+        if(styles.shape != undefined || styles.shape != null)
+        {
+            if(styles.shape == 'rectangle')
+                return true;
+        }
+        return false;
+    }
+
+    isEllipse(cell) {
+        if(cell == null)
+        return;
+
+        var styles = this.graph.getStylesheet().getCellStyle(cell.style);
+        
+        if(styles.shape != undefined || styles.shape != null)
+        {
+            if(styles.shape == 'ellipse')
+                return true;
+        }
+        return false;
+    }
+
+    isTriangle(cell) {
+        if(cell == null)
+        return;
+
+        var styles = this.graph.getStylesheet().getCellStyle(cell.style);
+        
+        if(styles.shape != undefined || styles.shape != null)
+        {
+            if(styles.shape == 'triangle')
+                return true;
+        }
+        return false;
+    }
+    
+
+    changeCellStyle(cell, styleName, value) {
+
+        if(cell == null)
+            return;
+        
+        this.graph.getModel().beginUpdate();
+
+        var styles = this.graph.getStylesheet().getCellStyle(cell.style);
+    
+        styles[styleName] = value;
+
+        this.graph.getStylesheet().putCellStyle(cell.style, styles);
+
+        this.graph.getModel().setStyle(cell, cell.style);
+
+        this.graph.getModel().endUpdate();
+
+        this.graph.refresh();
     }
 }

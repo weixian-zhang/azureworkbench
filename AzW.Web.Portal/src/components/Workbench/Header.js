@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Tooltip, Navbar, Button, Alignment, AnchorButton, Popover, Menu, Position, MenuItem, Classes, Icon } from "@blueprintjs/core";
+import { Overlay,Card, Navbar, Button, Alignment, AnchorButton, Popover, Menu, Position, MenuItem, Classes, Icon } from "@blueprintjs/core";
 import { connect } from "react-redux";
 import { msalLoginAsync, msalLogout } from "../../redux/actions";
 import AuthService from '../../services/AuthService';
@@ -14,37 +14,58 @@ export default class Header extends Component {
 
     this.state = {
         isLogin: this.authService.isUserLogin(),
-        userProfile: this.authService.getUserProfile()
+        userProfile: this.authService.getUserProfile(),
+        isTutorialOpen: false,
+        isFeedbackOpen: false,
+        isAboutOpen: false
     }
   }
   
   render() {
     return (
-      <Navbar>
-        <Navbar.Group align={Alignment.LEFT}>
-          <Navbar.Heading>
-            <div style={{display: 'inline'}}><img src ={require('../../assets/azure_icons/azure-logo.svg')} alt="" style={{width : 25, height : 25, marginRight: 3}} /></div>
-            <div style={{display: 'inline'}}>Azure Workbench</div>
-          </Navbar.Heading>
-        </Navbar.Group>
-        <Navbar.Group align={Alignment.RIGHT}>
-            <Popover content=
-            { 
-                <Menu className={Classes.ELEVATION_1}>
-                  {this.state.isLogin == true ? <MenuItem labelElement={<Icon icon="log-out" />} text="Logout" onClick={this.logout} /> : ''}
-                  {this.state.isLogin == false ? <MenuItem labelElement={<Icon icon="log-in" />} text="Login" onClick={this.login} /> : '' }
-                  <MenuItem  text="Feedback" onClick={this.showFeedbackOverlay} />
-                  <MenuItem  text="About Azure Workbench" onClick={this.showAboutOverlay} />
-                </Menu>
-            } position={Position.BOTTOM}>
-             
-            <Button
-              className="bp3-minimal"
-              icon="person"
-              text={this.state.userProfile != null ? this.state.userProfile.UserName : ''}/>
-          </Popover>
-        </Navbar.Group>
-      </Navbar>
+      <div>
+        <Navbar>
+          <Navbar.Group align={Alignment.LEFT}>
+            <Navbar.Heading>
+              <div style={{display: 'inline'}}><img src ={require('../../assets/azure_icons/azure-logo.svg')} alt="" style={{width : 25, height : 25, marginRight: 3}} /></div>
+              <div style={{display: 'inline'}}>Azure Workbench</div>
+            </Navbar.Heading>
+          </Navbar.Group>
+          <Navbar.Group align={Alignment.RIGHT}>
+              <Popover content=
+              { 
+                  <Menu className={Classes.ELEVATION_1}>
+                    {this.state.isLogin == true ? <MenuItem labelElement={<Icon icon="log-out" />} text="Logout" onClick={this.logout} /> : ''}
+                    {this.state.isLogin == false ? <MenuItem labelElement={<Icon icon="log-in" />} text="Login" onClick={this.login} /> : '' }
+                    <MenuItem  text="Quick Tutorial" onClick={this.showFeedbackOverlay} />
+                    <MenuItem  text="Feedback" onClick={this.showFeedbackOverlay} />
+                    <MenuItem  text="About Azure Workbench" onClick={this.showAboutOverlay} />
+                  </Menu>
+              } position={Position.BOTTOM}>
+              
+              <Button
+                className="bp3-minimal"
+                icon="person"
+                text={this.state.userProfile != null ? this.state.userProfile.UserName : ''}/>
+            </Popover>
+          </Navbar.Group>
+        </Navbar>
+        <Overlay isOpen={this.state.isTutorialOpen} onClose={this.handleTutorialClose}>
+          <Card>
+              
+          </Card>
+        </Overlay>
+        <Overlay isOpen={this.state.isFeedbackOpen} onClose={this.handleFeedbackClose}>
+          <Card>
+              
+          </Card>
+        </Overlay>
+        <Overlay isOpen={this.state.isAboutOpen} onClose={this.handleAboutClose}>
+          <Card>
+              
+          </Card>
+        </Overlay>
+      </div>
     );
   }
 
@@ -62,13 +83,21 @@ export default class Header extends Component {
     this.setState({isLogin: false, userProfile: null})
   }
 
-  showAboutOverlay = () => {
+  showTutorialOverlay = () => {
+    this.setState({ isTutorialOpen: true });
+  }
 
+  showAboutOverlay = () => {
+    this.setState({ isAboutOpen: true });
   }
 
   showFeedbackOverlay = () => {
-    
+    this.setState({ isFeedbackOpen: true });
   }
+
+  handleTutorialClose = () => this.setState({ isTutorialOpen: false });
+  handleFeedbackClose = () => this.setState({ isFeedbackOpen: false });
+  handleAboutClose = () => this.setState({ isAboutOpen: false });
 }
 
 
