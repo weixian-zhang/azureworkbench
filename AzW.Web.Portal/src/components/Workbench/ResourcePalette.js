@@ -63,6 +63,7 @@ export default class ResourcePalette extends Component {
     this.straightArrow = React.createRef();
     this.dashedArrow = React.createRef();
     this.elbowArrow = React.createRef();
+    this.curveArrow = React.createRef();
     this.label = React.createRef();
     this.rectangle = React.createRef();
     this.circle = React.createRef();
@@ -224,6 +225,11 @@ export default class ResourcePalette extends Component {
           <div class="tile-panel" ref={this.elbowArrow}>
             <Tippy content="Elbow Arrow" followCursor={true} placement="bottom">
               <img src={require('../../assets/azure_icons/round-connector.png')} width="30" height="30" />
+            </Tippy>
+          </div>
+          <div class="tile-panel" ref={this.curveArrow}>
+            <Tippy content="Curved Arrow" followCursor={true} placement="bottom">
+              <img src={require('../../assets/azure_icons/shape-curvearrow.png')} width="30" height="30" />
             </Tippy>
           </div>
           <div class="tile-panel" ref={this.label}>
@@ -541,6 +547,8 @@ export default class ResourcePalette extends Component {
     this.graphManager.makeIconDraggable(this.straightArrow.current, "straightarrow", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.dashedArrow.current, "dashedarrow", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.elbowArrow.current, "elbowarrow", thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.curveArrow.current, "curvearrow", thisComponent.props.addResourceToDiagramEditor);
+    
     this.graphManager.makeIconDraggable(this.label.current, "label", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.rectangle.current, "rectangle", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.triangle.current, "triangle", thisComponent.props.addResourceToDiagramEditor);

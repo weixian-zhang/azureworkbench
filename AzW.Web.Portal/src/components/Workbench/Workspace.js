@@ -9,6 +9,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import Badge from '@material-ui/core/Badge';
 
 import Collection from '../../models/services/Collection';
 import Messages from './Helpers/Messages';
@@ -58,10 +59,16 @@ export default class Workspace extends Component {
                     You do not have any draft diagram saved locally in browser                         
                     </Label> :
                     <div>
-                        <Button text="Load draft diagram from browser" icon="import"
-                        onClick={this.loadDraftDiagramFromBrowser} />
+                          <Badge
+                            badgeContent={1}
+                            color='primary'
+                            badgeStyle={{top: 12, right: 12}}
+                          >
+                          <Button text="Load draft diagram from browser" icon="import"
+                          onClick={this.loadDraftDiagramFromBrowser} />
+                        </Badge>
                         <span className="bp3-navbar-divider"></span>
-                        <Button text="Delete Draft Diagram" icon="import"
+                        <Button text="Delete draft diagram from browser" icon="delete"
                         onClick={this.deleteDraftDiagramFromBrowser} />
                      </div>
                     }
@@ -144,8 +151,8 @@ export default class Workspace extends Component {
       }
 
       loadDraftDiagramFromBrowser = () => {
-          this.props.DiagramEditor.loadDraftDiagramFromBrowser();
           this.setState({ isOpen: false, useTallContent: false });
+          this.props.DiagramEditor.loadDraftDiagramFromBrowser();
       }
 
       deleteDraftDiagramFromBrowser = () => {

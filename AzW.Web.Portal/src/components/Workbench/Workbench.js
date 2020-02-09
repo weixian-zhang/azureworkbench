@@ -3,7 +3,6 @@ import React, { Component } from "react";
 
 import ResourcePalette from "./ResourcePalette";
 import DiagramEditor from "./DiagramEditor";
-import AuthService from '../../services/AuthService';
 
 import "../../assets/css/Panel.css";
 import "../../assets/css/Workbench.css";

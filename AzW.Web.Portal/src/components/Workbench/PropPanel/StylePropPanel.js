@@ -1,7 +1,9 @@
 import React, { Component } from "react";
-import { FormGroup, InputGroup, Drawer, Tooltip, Intent, Button } from "@blueprintjs/core";
+import { NumericInput, InputGroup, Drawer, Tooltip, Intent, Button } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
-import { SketchPicker } from 'react-color';
+import { CirclePicker } from 'react-color';
+import Grid from '@material-ui/core/Grid';
+import { mxConstants } from "mxgraph-js";
 
 export default class StylePropPanel extends Component {
   constructor(props) {
@@ -10,9 +12,18 @@ export default class StylePropPanel extends Component {
       this.state ={
         isOpen: false,
         cell: null,
-        strokeColor: '',
+        stroke: {
+          key: mxConstants.STYLE_STROKECOLOR,
+          value: ''
+        },
+        fill: {
+          key: mxConstants.STYLE_FILLCOLOR,
+          value: ''
+        },
         fillColor: '',
-        saveCallback: null
+        saveCallback: null,
+
+        colors: ["transparent", "#000000 ","#ffffff", "#f44336", "#e91e63", "#9c27b0", "#673ab7", "#3f51b5", "#2196f3", "#03a9f4", "#00bcd4", "#009688", "#4caf50", "#8bc34a", "#cddc39", "#ffeb3b", "#ffc107", "#ff9800", "#ff5722", "#795548", "#607d8b"]
       }
   }
 
@@ -29,45 +40,68 @@ export default class StylePropPanel extends Component {
           isOpen= {this.state.isOpen}
           position= {POSITION_RIGHT}
           usePortal= {true}
-          size= {Drawer.SIZE_SMALL}>
-          
-        {
-            (this.state.cell != null && this.state.cell.isEdge()) ?
-                <div>
+          size= {Drawer.SIZE_SMALL}
+          className='proppanel'>
+          <Grid
+            container
+            direction="row"
+            justify="center"
+            alignContent="center">
+              {
+                  
+                   (this.state.cell != null && this.state.cell.isEdge()) ?
+                    <div>
+                      <h3>Stroke Color</h3>
+                      <CirclePicker colors={this.state.colors} onChangeComplete={this.onstrokeColorChange} />
+                      </div>
+               :
+                  <div>
                     <h3>Stroke Color</h3>
-                    <SketchPicker onChangeComplete={this.onstrokeColorChange} />
-                </div>
-            :
-                <div>
-                    <h3>Stroke Color</h3>
-                    <SketchPicker onChangeComplete={this.onstrokeColorChange} />
+                    <CirclePicker colors={this.state.colors} onChangeComplete={this.onstrokeColorChange} />
                     <h3>Background Color</h3>
-                    <SketchPicker onChangeComplete={this.onfillColorChange} />
-                </div>
-        }
-          
-          <a class="bp3-button Alignment.CENTER" role="button" onClick={this.saveStyle}>Save</a>
-
+                    <CirclePicker colors={this.state.colors} onChangeComplete={this.onfillColorChange} />
+                  </div>
+              }
+         </Grid>
+         <Grid
+          container
+          direction="row"
+          justify="center"
+          alignContent="center">
+            <Grid item md={12}>
+              <br />
+            </Grid>
+            <Grid item md={12}>
+              <Button alignText="center" className="buttonStretch" text="Save" onClick={this.saveStyle} />
+            </Grid>
+          </Grid>
       </Drawer>
     );
   }
 
   show = (cell, saveCallback) => {
-    this.setState({ isOpen: true, cell: cell, saveCallback: saveCallback });
+    this.setState({ 
+      isOpen: true, 
+      cell: cell,
+      saveCallback: saveCallback });
   }
 
   onstrokeColorChange = (color, event) => {
-    this.setState({ strokeColor: color.hex });
+    var stroke = this.state.stroke;
+    stroke.value = color.hex;
+    this.setState({ stroke: stroke });
   }
 
   onfillColorChange = (color, event) => {
-    this.setState({ fillColor: color.hex });
+    var fill = this.state.fill;
+    fill.value = color.hex;
+    this.setState({ fill: fill });
   }
 
   saveStyle = () => {
       var style = {
-          strokeColor: this.state.strokeColor,
-          fillColor: this.state.fillColor
+          stroke: this.state.stroke,
+          fill: this.state.fill
       }
       this.state.saveCallback(style);
       this.drawerClose();

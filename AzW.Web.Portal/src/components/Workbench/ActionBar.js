@@ -33,10 +33,9 @@ export default class ActionBar extends Component {
             <nav className="bp3-navbar bp3-light">
                 <div style={{margin: "0 auto", width: "100%"}}>
                     <div className="bp3-navbar-group bp3-align-left">
-                       
-                        <Button className="bp3-button" icon='document-share' onClick={this.shareDiagram}>Share</Button>
-                        <span className="bp3-navbar-divider"></span>
                         <Button className="bp3-button" icon='draw' onClick={this.showWorkspace}>My Workspace</Button>
+                        <span className="bp3-navbar-divider"></span>
+                        <Button className="bp3-button" icon='document-share' onClick={this.shareDiagram}>Share</Button>
                         <span className="bp3-navbar-divider"></span>
                         <Popover content=
                             {
@@ -46,6 +45,7 @@ export default class ActionBar extends Component {
                                     <MenuItem icon="history" text="Save to Workspace" onClick={this.savetoWorkspace} />
                                     <MenuItem icon="export" text="Export as PDF" />
                                     <MenuItem icon="image-rotate-left" text="Export as PNG" />
+                                    <MenuItem icon="new-drawing" text="New Diagram" onClick={this.clearGraph} />
                                 </Menu>
                             } position={Position.RIGHT}>
                             <Button icon="share" text="File" />
@@ -95,6 +95,11 @@ export default class ActionBar extends Component {
     saveToLocal = () => {
        var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
        diagramEditor.saveDiagramToBrowser();
+    }
+
+    clearGraph = () => {
+        var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
+       diagramEditor.clearGraph();
     }
 
     calculate(){

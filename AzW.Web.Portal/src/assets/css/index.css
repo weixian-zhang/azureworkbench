@@ -117,3 +117,13 @@ rect  {
   rx: 11px;
   ry: 11px;
 }
+
+.proppanel {
+  background-color:antiquewhite;
+}
+
+/*blueprintjs button*/
+.buttonStretch {
+  width: 100%;
+  flex-grow: 1;
+}
