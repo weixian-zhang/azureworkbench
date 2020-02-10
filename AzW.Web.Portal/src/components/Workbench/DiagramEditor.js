@@ -68,6 +68,7 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
     this.addCtrlZEventToUndo();
     this.addShiftSEventSaveLocalStorage();
     this.addCtrlCCtrlVCopyPasteVertices();
+    this.addUpDownLeftRightArrowToMoveCells();
     this.addDragOverEventForVMOverSubnetHighlight();
     this.loadSharedDiagram();
     this.initPasteImageFromBrowserClipboard();
@@ -187,6 +188,58 @@ addCtrlCCtrlVCopyPasteVertices() {
   }
 }
 
+addUpDownLeftRightArrowToMoveCells() {
+  var keyHandler = new mxKeyHandler(this.graph);
+  var thisComp = this;
+  keyHandler.getFunction = function(evt) {
+
+    if (evt != null && evt.key == 'ArrowUp')
+    {
+        var geo = getSelectedCellGeo();
+        var newY = geo.y - 2;
+        moveCell(geo.x, newY);
+    }
+
+    if (evt != null && evt.key == 'ArrowDown')
+    {
+        var geo = getSelectedCellGeo();
+        var newY = geo.y + 2;
+        moveCell(geo.x, newY);
+    }
+
+    if (evt != null && evt.key == 'ArrowLeft')
+    {
+        var geo = getSelectedCellGeo();
+        var newX = geo.x - 2;
+        moveCell(newX, geo.y);
+    }
+      
+    if (evt != null && evt.key == 'ArrowRight')
+    {
+        var geo = getSelectedCellGeo();
+        var newX = geo.x + 2;
+        moveCell(newX, geo.y);
+    }
+      
+  }
+
+  var getSelectedCellGeo = function() {
+    var selectedCell = thisComp.graph.getSelectionCell();
+    return thisComp.graph.getCellGeometry(selectedCell).clone();
+  }
+
+  var moveCell = function (x,y) {
+    var selectedCell = thisComp.graph.getSelectionCell();
+    if(selectedCell != null){
+      var geo = thisComp.graph.getCellGeometry(selectedCell).clone();
+      geo.x = x;
+      geo.y = y;
+      thisComp.graph.model.setGeometry(selectedCell, geo);
+      thisComp.graph.refresh();
+    }
+  }
+}
+
 addDragOverEventForVMOverSubnetHighlight() {
   mxEvent.addListener(this.graphManager.container, 'dragover', function(evt)
 				{
@@ -203,7 +256,6 @@ addDragOverEventForVMOverSubnetHighlight() {
 
     var thisComponent = this;
 
-    //Installs a popupmenu handler using local function (see below).
     this.graph.popupMenuHandler.factoryMethod = function(menu, cell, evt)
     {
       if(cell == null || cell.value == null) // | cell.value.GraphModel == null)
@@ -219,26 +271,27 @@ addDragOverEventForVMOverSubnetHighlight() {
         thisComponent.graph.orderCells(true); 
       });
 
-      menu.addItem('Group', '', function()
-      {
-        thisComponent.groupIcons(); 
-      });
-
-      var result = Utils.TryParseUserObject(cell.value);
-      if(result.isUserObject){
-        var userObj = JSON.parse(cell.value);
-
-        //for vnet
-        if(userObj.resourceType == "vnet")
+      if(Utils.IsNonAzureResource(cell)){
+        menu.addItem('Group', '', function()
         {
-          menu.addSeparator();
-          
-          menu.addItem('Add Subnet', '', function()
-          {
-            thisComponent.addSubnet(cell); // is vnetCell
-          });
-        }
-     }
+          thisComponent.groupCells(); 
+        });
+        menu.addItem('Ungroup', '', function()
+        {
+          thisComponent.unGroupCells(); 
+        });
+      }
+
+      //for vnet
+      if(Utils.IsVNet(cell))
+      {
+        menu.addSeparator();
+        
+        menu.addItem('Add Subnet', '', function()
+        {
+          thisComponent.addSubnet(cell); // is vnetCell
+        });
+      }
 
       //style for shapes only
       if(cell.isEdge() || thisComponent.graphManager.isRect(cell) || 
@@ -585,7 +638,7 @@ addDragOverEventForVMOverSubnetHighlight() {
           );
 
           var vnetModel = new VNet();
-              vnetModel.resourceType = "vnet"
+              vnetModel.resourceType = ResourceType.VNet();
               vnetModel.GraphModel.Id = this.shortUID.randomUUID(6);
               vnetModel.ProvisionContext.Name = 'vnet_' + vnetModel.GraphModel.Id;
               vnetModel.GraphModel.DisplayName = vnetModel.ProvisionContext.Name;
@@ -679,7 +732,7 @@ addDragOverEventForVMOverSubnetHighlight() {
 
       this.graph.insertVertex
         (parent, nlb.GraphModel.IconId ,nlbJsonString, dropContext.x, dropContext.y, 30, 30,
-        "editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+        "fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
           this.azureIcons.NLB());
   }
 
@@ -718,8 +771,8 @@ addDragOverEventForVMOverSubnetHighlight() {
         var appgwJsonString = JSON.stringify(appgw);
 
       this.graph.insertVertex
-        (result.subnetCell, appgw.GraphModel.IconId ,appgwJsonString, dropContext.x, dropContext.y, 30, 30,
-        "editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+        (result.subnetCell, appgw.GraphModel.IconId ,appgwJsonString, dropContext.x, dropContext.y, 35, 35,
+        "fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
           this.azureIcons.AppGateway());
   }
 
@@ -736,8 +789,8 @@ addDragOverEventForVMOverSubnetHighlight() {
         var dnsPrivateZoneJsonString = JSON.stringify(dnsPrivateZone);
 
       this.graph.insertVertex
-        (parent, dnsPrivateZone.GraphModel.IconId ,dnsPrivateZoneJsonString, dropContext.x, dropContext.y, 30, 30,
-        "editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+        (parent, dnsPrivateZone.GraphModel.IconId ,dnsPrivateZoneJsonString, dropContext.x, dropContext.y, 35, 35,
+        "fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
           this.azureIcons.DNSPrivateZone());
   }
 
@@ -840,9 +893,34 @@ addDragOverEventForVMOverSubnetHighlight() {
       vmCell.value.ProvisionContext = vmModel.ProvisionContext; 
   }
 
-  groupIcons(){
+  groupCells(){
     var selectedCells = this.graph.getSelectionCell();
-    this.graph.createGroupCell(selectedCells);
+    this.graph.groupCells(selectedCells);
+  }
+
+  
+  unGroupCells(){
+    var selectedCell = this.graph.getSelectionCell();
+    
+    if(selectedCell != null)
+    {
+      //presebt subnet being ungroup out of VNet
+      var result = Utils.TryParseUserObject(selectedCell.value);
+      if(result.isUserObject && result.userObject.GraphModel.ResourceType == ResourceType.Subnet())
+      {
+        Toaster.create({
+          position: Position.TOP,
+          autoFocus: false,
+          canEscapeKeyClear: true
+        }).show({intent: Intent.WARNING, timeout: 2000, message: Messages.SubnetUngroupVNetNotAllowed()});
+        return;
+      }
+      else{
+        var cellParentsParent = selectedCell.parent.parent;
+          if(cellParentsParent != null)
+            this.graph.getModel().add(cellParentsParent, selectedCell);
+      }
+    }
   }
 
   copyToClipboard =() => {

@@ -10,5 +10,6 @@ export default class Messages {
     static GetDiagramFromWorkspaceError() {return "An error occurred when retrieving diagrams from your workspace";}
     static LoadDiagramFromWorkspaceError() {return "An error occurred when loading diagram from your workspace";}
     static DeleteDiagramFromWorkspaceIsFalse() {return "An error occurred when deleting diagram";}
-    static DeleteDiagramFromWorkspaceTrue() {"Diagram deleted successfully"};
+    static DeleteDiagramFromWorkspaceTrue() {return "Diagram deleted successfully"};
+    static SubnetUngroupVNetNotAllowed() {return "Subnet must be in a Virtual Network"};
 }

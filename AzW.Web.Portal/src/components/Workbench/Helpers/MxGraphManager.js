@@ -54,18 +54,10 @@ export default class MxGraphManager
         // Enables rubberband selection
         new mxRubberband(this.graph);
 
-        this.graph.setAllowDanglingEdges(true);
-
-        this.graph.setPanning(true);
-        this.graph.panningHandler.seLeftButtonForPanning = true;
-
-        this.graph.centerZoom = false;
-        this.graph.model.ignoreRelativeEdgeParent = true;
-        this.graph.model.maintainEdgeParent = false;
-        this.graph.setConnectable(true);
-
         //vertex rotatable
         mxVertexHandler.prototype.rotationEnabled = true;
+
+        this.initGlobalSettings();
 
         this.initKeyMouseEvents();
 				
@@ -83,6 +75,19 @@ export default class MxGraphManager
         
         // // Enables guides
         mxGraphHandler.prototype.guidesEnabled = true;    
+    }
+
+    initGlobalSettings(){
+        //global settings
+        this.graph.setAllowDanglingEdges(true);
+        this.graph.setPanning(true);
+        this.graph.panningHandler.seLeftButtonForPanning = true;
+        this.graph.centerZoom = false;
+        this.graph.model.ignoreRelativeEdgeParent = true;
+        this.graph.model.maintainEdgeParent = false;
+        this.graph.setConnectable(true);
+        this.graph.extendParentsOnAdd = false;
+		this.graph.extendParents = false;
     }
 
     initExtendCanvas(){
@@ -438,15 +443,16 @@ export default class MxGraphManager
         vnetCellStyle[mxConstants.SHAPE_RECTANGLE] = 'rectangle';
         vnetCellStyle[mxConstants.RECTANGLE_ROUNDING_FACTOR] = '0.0';
         vnetCellStyle[mxConstants.STYLE_SHADOW] = false;
-        vnetCellStyle[mxConstants.STYLE_FILLCOLOR] = 'white';
-        vnetCellStyle[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
+        vnetCellStyle[mxConstants.STYLE_FILLCOLOR] = 'none';
+        vnetCellStyle[mxConstants.STYLE_GRADIENTCOLOR] = 'none';
         vnetCellStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
         vnetCellStyle[mxConstants.STYLE_FONTSIZE] = '12';
         vnetCellStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
         vnetCellStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "TOP";
-        vnetCellStyle[mxConstants.STYLE_ALIGN] = "ALIGN_LEFT";
+        vnetCellStyle[mxConstants.STYLE_ALIGN] = "right";
         vnetCellStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "TOP";
         vnetCellStyle[mxConstants.STYLE_EDITABLE] = '0';
+        vnetCellStyle[mxConstants.STYLE_FOLDABLE] = '1';
         this.graph.getStylesheet().putCellStyle('vnetstyle', vnetCellStyle);
 
         var subnetCellStyle  = new Object();
@@ -454,8 +460,8 @@ export default class MxGraphManager
         subnetCellStyle[mxConstants.SHAPE_RECTANGLE] = 'rectangle';
         subnetCellStyle[mxConstants.RECTANGLE_ROUNDING_FACTOR] = '0.0';
         subnetCellStyle[mxConstants.STYLE_SHADOW] = false;
-        subnetCellStyle[mxConstants.STYLE_FILLCOLOR] = 'white';
-        subnetCellStyle[mxConstants.STYLE_GRADIENTCOLOR] = 'white';
+        subnetCellStyle[mxConstants.STYLE_FILLCOLOR] = '#e5f4fe';
+        //subnetCellStyle[mxConstants.STYLE_GRADIENTCOLOR] = '#87cefa';
         subnetCellStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
         subnetCellStyle[mxConstants.STYLE_FONTSIZE] = '12';
         subnetCellStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
