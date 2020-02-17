@@ -78,6 +78,19 @@
                 }
             },
             "problemMatcher": []
+        },
+        {
+            "label": "Run Portal",
+            "command": "npm run start",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/AzW.Web.Portal",
+                "env": {
+                    "env": "dev"
+                }
+            },
+            "problemMatcher": []
         }
     ]
 }

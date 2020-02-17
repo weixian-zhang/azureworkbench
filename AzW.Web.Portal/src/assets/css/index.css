@@ -130,10 +130,12 @@ rect  {
   overflow: auto;
 }
 .sidebar {
-  flex: 1;
+  /* flex: 1; */
   min-height: 50px;
   position: relative;
-  flex: 0 0 18%;
+  flex-grow: 0;
+  width: 250px;
+  /* flex: 0 0 18%; */
 }
 .resourcePalette {
   overflow-y: auto;

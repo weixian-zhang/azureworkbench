@@ -17,7 +17,8 @@ import {
     mxCodecRegistry,
     mxCell,
     mxObjectCodec,
-    mxPanningHandler
+    mxGeometry,
+    mxEventObject
   } from "mxgraph-js";
   import Utils from '../Helpers/Utils';
 
@@ -59,7 +60,7 @@ export default class MxGraphManager
 
         this.initGlobalSettings();
 
-        this.initKeyMouseEvents();
+        this.initMouseEvent();
 				
         // Disables built-in context menu
         mxEvent.disableContextMenu(this.container);
@@ -69,18 +70,17 @@ export default class MxGraphManager
         this.initLabelBehaviour();
 
         this.addConnectablePortsToAllAddedVertex();
-         
+      }
+
+    initGlobalSettings(){
+        //global settings
         //contrain drag boundary of child within parent
         mxGraphHandler.prototype.removeCellsFromParent = false
         
         // // Enables guides
         mxGraphHandler.prototype.guidesEnabled = true;    
-    }
-
-    initGlobalSettings(){
-        //global settings
         this.graph.setAllowDanglingEdges(true);
-        
+        this.graph.setConnectable(false); //prevent creating edge when vertex is dragged
         this.graph.centerZoom = false;
         this.graph.model.ignoreRelativeEdgeParent = true;
         this.graph.model.maintainEdgeParent = false;
@@ -102,8 +102,6 @@ export default class MxGraphManager
         });
         
         this.initGlobalPanningSettings();
-
-        this.initKeyMouseEvents();
     }
 
     initGlobalPanningSettings(){
@@ -116,6 +114,26 @@ export default class MxGraphManager
 
         this.graph.panningHandler.addListener(mxEvent.PAN_END, 
             function() { this.graph.container.style.cursor = 'default'; });
+    }
+
+    initMouseEvent(){
+        this.graph.addMouseListener(
+            {
+              mouseDown: function(sender, evt)
+              {
+                //disable connectable ports to prevent accidental drag that creates
+                //edges
+                mxConstraintHandler.prototype.setEnabled(false);
+              },
+              mouseMove: function(sender, evt)
+              {
+
+              },
+              mouseUp: function(sender, evt)
+              {
+                mxConstraintHandler.prototype.setEnabled(true);
+              }
+            });
     }
 
     initExtendCanvas(){
@@ -330,34 +348,6 @@ export default class MxGraphManager
         }
     }
 
-    initKeyMouseEvents(){
-                //whell up/down zoom in/out
-                // mxEvent.addMouseWheelListener(function (evt, up) {
-                //     if (evt.shiftKey && up) {
-                //         //this.graph.zoomIn();
-                //         mxEvent.consume(evt);
-                //     } else if (evt.ctrlKey) {
-                //         //this.graph.zoomOut();
-                //         mxEvent.consume(evt);
-                //     }
-                // });
-
-        // mxEvent.addMouseWheelListener(mxUtils.bind(this, function(evt, up)
-        // {
-        //         var cursorPosition = new mxPoint(mxEvent.getClientX(evt), mxEvent.getClientY(evt));
-        //         this.graph.lazyZoom(up);
-        //         mxEvent.consume(evt);
-        // }), {
-        //     target: this.graph.container,
-        //     filter: mxUtils.bind(this, function(evt)
-        //     {
-        //         return (mxEvent.isAltDown(evt) || (mxEvent.isControlDown(evt) && !mxClient.IS_MAC) ||
-        //         this.graph.panningHandler.isActive()) && (this.dialogs == null || this.dialogs.length == 0);
-        //     }),
-        //     preventDefault: true
-        // });
-    }
-
     initGraphStyle(){
         
         //rubberband selection style
@@ -366,15 +356,15 @@ export default class MxGraphManager
         mxConstants.VERTEX_SELECTION_COLOR = '#00a8ff';
 
         var elbowEdgeStyle = new Object();
-        elbowEdgeStyle[mxConstants.STYLE_ROUNDED] = true;
+        //elbowEdgeStyle[mxConstants.STYLE_ROUNDED] = true;
         elbowEdgeStyle[mxConstants.STYLE_STROKEWIDTH] = 1;
-        elbowEdgeStyle[mxConstants.STYLE_EXIT_X] = 0.5; // center
-        elbowEdgeStyle[mxConstants.STYLE_EXIT_Y] = 1.0; // bottom
-        elbowEdgeStyle[mxConstants.STYLE_EXIT_PERIMETER] = 0; // disabled
-        elbowEdgeStyle[mxConstants.STYLE_ENTRY_X] = 0.5; // center
-        elbowEdgeStyle[mxConstants.STYLE_ENTRY_Y] = 0; // top
-        elbowEdgeStyle[mxConstants.STYLE_ENTRY_PERIMETER] = 0; // disabled
-        elbowEdgeStyle[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+        // elbowEdgeStyle[mxConstants.STYLE_EXIT_X] = 0.5; // center
+        // elbowEdgeStyle[mxConstants.STYLE_EXIT_Y] = 1.0; // bottom
+        // elbowEdgeStyle[mxConstants.STYLE_EXIT_PERIMETER] = 0; // disabled
+        // elbowEdgeStyle[mxConstants.STYLE_ENTRY_X] = 0.5; // center
+        // elbowEdgeStyle[mxConstants.STYLE_ENTRY_Y] = 0; // top
+        // elbowEdgeStyle[mxConstants.STYLE_ENTRY_PERIMETER] = 0; // disabled
+        elbowEdgeStyle[mxConstants.STYLE_EDGE] = mxEdgeStyle.OrthConnector;
         this.graph.getStylesheet().putCellStyle('elbowedgestyle', elbowEdgeStyle);
 
         var curvedEdgeStyle = new Object();
@@ -533,13 +523,10 @@ export default class MxGraphManager
     }
 
     addConnectablePortsToAllAddedVertex(){
-
-        //http://jgraph.github.io/mxgraph/javascript/examples/portrefs.html
-        //http://jgraph.github.io/mxgraph/javascript/examples/fixedpoints.html
         
         // Replaces the port image
         mxConstraintHandler.prototype.pointImage =
-            new mxImage(require('../../../assets/azure_icons/vertex-port.png'), 20, 20);
+            new mxImage(require('../../../assets/azure_icons/vertex-port.gif'), 5, 5);
         
         var graph = this.graph;
         
@@ -603,6 +590,7 @@ export default class MxGraphManager
             mxConnectionHandlerUpdateEdgeState.apply(this, arguments);
         };
 
+        var thisComp = this;
         graph.getAllConnectionConstraints = function(terminal)
             {
                 //do not put port constriants when cell is selected,
@@ -613,12 +601,20 @@ export default class MxGraphManager
 
                 if (terminal != null && this.model.isVertex(terminal.cell))
                 {
-                    return [
+                     var ports = [
                         new mxConnectionConstraint(new mxPoint(0.5, 0), true),
                         new mxConnectionConstraint(new mxPoint(0, 0.5), true),
                         new mxConnectionConstraint(new mxPoint(1, 0.5), true),
                         new mxConnectionConstraint(new mxPoint(0.5, 1), true),
+                        new mxConnectionConstraint(new mxPoint(0.5, 1.7), false)
                     ];
+
+                    // add port below label
+                    // if(!thisComp.isNonAzureShape(terminal.cell) && terminal.cell.value != null){
+                    //     ports.push(new mxConnectionConstraint(new mxPoint(0.5, 1), true));
+                    // }
+
+                    return ports;
                 }
 
                 return null;
@@ -653,6 +649,14 @@ export default class MxGraphManager
         //     (this.graph.getModel(), this.graph.getDefaultParent(), true, true);
         //this.graph.getChildVertices(this.graph.getDefaultParent());
         if(cells.length > 0)
+            return true;
+        else
+            return false;
+    }
+
+    isNonAzureShape(cell){
+        if(this.isRect(cell) || this.isEllipse(cell) || this.isTriangle(cell) ||
+            this.isText(cell) || cell.isEdge())
             return true;
         else
             return false;
@@ -829,36 +833,4 @@ export default class MxGraphManager
         var style = this.graph.getStylesheet().getCellStyle('curvededgestyle');
         return this.convertStyleObjectAsString(style);
     }
-
-    
-
-    // dashed edges
-    // var dashedEdgeStyle = new Object();
-    // dashedEdgeStyle[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = '#FFFFFF';
-    // dashedEdgeStyle[mxConstants.STYLE_STROKEWIDTH] = '1.5';
-    // dashedEdgeStyle[mxConstants.STYLE_ROUNDED] = false;
-    // dashedEdgeStyle[mxConstants.CURSOR_MOVABLE_EDGE] = "move";
-    // dashedEdgeStyle[mxConstants.STYLE_DASHED] = '1';
-    // dashedEdgeStyle[mxConstants.STYLE_EDITABLE] = '0';
-    // this.graph.getStylesheet().putCellStyle('dashededgestyle', dashedEdgeStyle);
-        
-    // Creates the default style for edges
-    // var straightEdgeStyle = new Object();
-    // straightEdgeStyle[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = '#FFFFFF';
-    // straightEdgeStyle[mxConstants.STYLE_STROKEWIDTH] = '1.5';
-    // straightEdgeStyle[mxConstants.STYLE_ROUNDED] = false;
-    // straightEdgeStyle[mxConstants.CURSOR_MOVABLE_EDGE] = "move";
-    // straightEdgeStyle[mxConstants.STYLE_EDITABLE] = '0';
-    // this.graph.getStylesheet().putCellStyle('straightedgestyle', straightEdgeStyle);
-
-    //elbow edge style
-    // var elbowEdgeStyle = new Object();
-    // elbowEdgeStyle[mxConstants.STYLE_ROUNDED] = true;
-    // elbowEdgeStyle[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
-    // elbowEdgeStyle[mxConstants.CURSOR_MOVABLE_EDGE] = "move";
-    // elbowEdgeStyle[mxConstants.STYLE_EDITABLE] = '0';
-    // this.graph.alternateEdgeStyle = 'elbow=vertical';
-    // this.graph.getStylesheet().putCellStyle('elbowedgestyle', elbowEdgeStyle);
-
-    
 }

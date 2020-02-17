@@ -34,6 +34,7 @@ import queryString from 'query-string';
 import AzureValidator from './Helpers/AzureValidator';
 import LocalStorage from '../../services/LocalStorage';
 import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramContext";
+import mxClientOverrides from './Helpers/mxClientOverrides';
 
  export default class DiagramEditor extends Component {
   constructor(props) {
@@ -59,6 +60,7 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
     this.graph = this.graphManager.graph;
     this.azureValidator = new AzureValidator(this.graph);
     this.props.mxgraphManagerReadyCallback(this.graphManager);
+    this.mxClientOverrides = new mxClientOverrides(this.graph);
 
     //services
     this.diagramService = new DiagramService();
@@ -142,11 +144,12 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
   }
 
   addDeleteKeyEventToDeleteVertex(){
+      var thisComp = this;
       // delete key remove vertex
       var keyHandler = new mxKeyHandler(this.graph);
       keyHandler.bindKey(46, (evt) =>
         { 
-            this.graph.removeCells();
+          thisComp.graph.removeCells();
         });
   }
 
@@ -298,16 +301,15 @@ addUpDownLeftRightArrowToMoveCells() {
         thisComponent.graph.removeCells(); 
       });
       
-      if(Utils.IsNonAzureResource(cell)){
-        menu.addItem('Group', '', function()
-        {
-          thisComponent.groupCells(); 
-        });
-        menu.addItem('Ungroup', '', function()
-        {
-          thisComponent.unGroupCells(); 
-        });
-      }
+      menu.addSeparator();
+      menu.addItem('Group', '', function()
+      {
+        thisComponent.groupCells(); 
+      });
+      menu.addItem('Ungroup', '', function()
+      {
+        thisComponent.unGroupCells(); 
+      });
 
       //for vnet
       if(Utils.IsVNet(cell))
@@ -584,7 +586,7 @@ addUpDownLeftRightArrowToMoveCells() {
   }
 
   addRectangle = (dropContext) => {
-    var vnetVertex = this.graph.insertVertex(
+    var rect = this.graph.insertVertex(
       this.graph.getDefaultParent(),
       null,
       'rectangle',
@@ -921,8 +923,18 @@ addUpDownLeftRightArrowToMoveCells() {
   }
 
   groupCells(){
-    var selectedCells = this.graph.getSelectionCell();
-    this.graph.groupCells(selectedCells);
+    //http://jgraph.github.io/mxgraph/docs/js-api/files/view/mxGraph-js.html#mxGraph.groupCells
+
+    if (this.graph.getSelectionCount() == 1)
+		{
+			this.graph.setCellStyles('container', '1');
+		}
+		else
+		{
+			this.graph.setSelectionCell(this.mxClientOverrides.groupCells(null, 0));
+		}
+    //var dropContext =
+    //this.graphManager.translateToParentGeometryPoint(dropContext, result.subnetCell);
   }
 
   
@@ -943,9 +955,7 @@ addUpDownLeftRightArrowToMoveCells() {
         return;
       }
       else{
-        var cellParentsParent = selectedCell.parent.parent;
-          if(cellParentsParent != null)
-            this.graph.getModel().add(cellParentsParent, selectedCell);
+       this.graph.ungroupCells();
       }
     }
   }
