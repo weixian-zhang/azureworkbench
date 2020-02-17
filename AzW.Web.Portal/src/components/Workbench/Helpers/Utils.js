@@ -40,4 +40,11 @@ export default class Utils
         }
         return false;
     }
+
+    static IsNullOrUndefine(obj){
+        if(obj == null || obj == undefined)
+            return true;
+        else
+            return false;
+    }
 }

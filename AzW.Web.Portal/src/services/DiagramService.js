@@ -2,6 +2,7 @@ import axios from "axios";
 import AnonymousDiagramContext from '../models/services/AnonymousDiagramContext';
 import WorkspaceDiagramContext from '../models/services/WorkspaceDiagramContext';
 import AuthService from './AuthService';
+import { isWidthDown } from "@material-ui/core";
 
 export default class DiagramService
 {
@@ -41,6 +42,12 @@ export default class DiagramService
     async saveDiagramToWorkspace
       (workspaceDiagramContext, successCallback, errorCallback)
       {
+        if(!this.authService.isUserLogin())
+        {
+          errorCallback('User login required')
+          return;
+        }
+
         var user = this.authService.getUserProfile();
 
         axios.post('api/wrkspace/dia/save', 
@@ -71,6 +78,12 @@ export default class DiagramService
 
       async getCollectionFromWorkspace(successCallback, errorCallback)
       {
+        if(!this.authService.isUserLogin())
+        {
+          errorCallback('User login required')
+          return;
+        }
+
         var user = this.authService.getUserProfile();
 
         axios.get('api/wrkspace/colls', 
@@ -98,6 +111,12 @@ export default class DiagramService
     
     async getDiagramsFromWorkspace(successCallback, errorCallback)
     {
+      if(!this.authService.isUserLogin())
+      {
+        errorCallback('User login required')
+        return;
+      }
+
       var user = this.authService.getUserProfile();
 
       axios.get('api/wrkspace/diagrams', 
@@ -124,6 +143,12 @@ export default class DiagramService
 
     async loadDiagramFromWorkspace(diagramContext, successCallback, errorCallback)
     {
+        if(!this.authService.isUserLogin())
+        {
+          errorCallback('User login required')
+          return;
+        }
+
         var user = this.authService.getUserProfile();
 
         axios.get('api/wrkspace/dia/load', 
@@ -151,6 +176,12 @@ export default class DiagramService
 
     async deleteDiagramFromWorkspace(diagramContext, successCallback, errorCallback)
     {
+        if(!this.authService.isUserLogin())
+        {
+          errorCallback('User login required')
+          return;
+        }
+
         var user = this.authService.getUserProfile();
 
         axios.delete('api/wrkspace/dia/del', 
@@ -176,4 +207,31 @@ export default class DiagramService
         .finally(function () {
         });
     }
+
+    async exportDiagramAsPNG(svgbase64,  successCallback, errorCallback)
+      {
+        // const params = {
+        //   svgbase64: svgbase64
+        // };
+
+        
+        axios.post('api/export/pdf', JSON.stringify(svgbase64),
+        {
+          headers: {
+            'Accept': 'application/octet-stream'
+            //'Content-Type': 'application/json'
+          },
+          responseType: 'blob',
+        })
+        .then(function (response) {
+          successCallback(response.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+          errorCallback(error);
+        })
+        .finally(function () {
+          
+        });
+      }
 }

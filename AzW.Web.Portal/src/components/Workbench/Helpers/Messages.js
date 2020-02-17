@@ -12,4 +12,6 @@ export default class Messages {
     static DeleteDiagramFromWorkspaceIsFalse() {return "An error occurred when deleting diagram";}
     static DeleteDiagramFromWorkspaceTrue() {return "Diagram deleted successfully"};
     static SubnetUngroupVNetNotAllowed() {return "Subnet must be in a Virtual Network"};
+    static SaveWorkspaceFieldNotEmpty() {return "Collection and diagram name cannot be empty"};
+    static PDFDownloaded() {return "PDF downloaded"};
 }

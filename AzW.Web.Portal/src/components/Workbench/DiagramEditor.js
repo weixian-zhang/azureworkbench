@@ -10,6 +10,8 @@ import VNetPropPanel from "./PropPanel/VNetPropPanel";
 import NLBPropPanel from "./PropPanel/NLBPropPanel";
 import AppGwPropPanel from "./PropPanel/AppGwPropPanel";
 import DNSPrivateZonePropPanel from "./PropPanel/DNSPrivateZone";
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 
 import VM from "../../models/VM";
 import VMSS from "../../models/VMSS";
@@ -24,7 +26,7 @@ import AzureIcons from "./Helpers/AzureIcons";
 import Messages from "./Helpers/Messages";
 import Utils from "./Helpers/Utils";
 import MxGraphManager from './Helpers/MxGraphManager';
-import { mxCellPath, mxDefaultToolbar, mxDefaultPopupMenu, mxDefaultKeyHandler, mxStylesheet, mxGraphModel, mxClipboard, mxCodec, mxPoint, mxGeometry, mxCellOverlay, mxImage, mxKeyHandler, mxConstants, mxEvent, mxUtils,mxPopupMenuHandler, mxDragSource, mxUndoManager, mxCell, mxEditor, mxGraph, mxElbowEdgeHandler, mxLabel, mxEventObject } from "mxgraph-js";
+import { mxXmlCanvas2D,mxXmlRequest, mxImageExport, mxCellPath, mxDefaultToolbar, mxDefaultPopupMenu, mxDefaultKeyHandler, mxStylesheet, mxGraphModel, mxClipboard, mxCodec, mxPoint, mxGeometry, mxCellOverlay, mxImage, mxKeyHandler, mxConstants, mxEvent, mxUtils,mxPopupMenuHandler, mxDragSource, mxUndoManager, mxCell, mxEditor, mxGraph, mxElbowEdgeHandler, mxLabel, mxEventObject } from "mxgraph-js";
 import Subnet from "../../models/Subnet";
 import LoadAnonyDiagramContext from "../../models/LoadAnonyDiagramContext";
 import DiagramService from '../../services/DiagramService';
@@ -45,7 +47,7 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
         showShareDiagramPopup: false,
         shareLink: '',
         shareLinkInputbox: null,
-        showSpinner: false,
+        isLoading: false,
 
         queryString: this.props.queryString
     }
@@ -69,16 +71,16 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
     this.addShiftSEventSaveLocalStorage();
     this.addCtrlCCtrlVCopyPasteVertices();
     this.addUpDownLeftRightArrowToMoveCells();
-    this.addDragOverEventForVMOverSubnetHighlight();
     this.loadSharedDiagram();
     this.initPasteImageFromBrowserClipboard();
-
+    this.addCtrlSSave();
+    //    this.addDragOverEventForVMOverSubnetHighlight();
     this.initRef();
   }
 
   render() {
     return (
-      <div id="diagramEditor" className="workbenchgrid-container">
+      <div id="diagramEditor" className="diagramEditor">
         <StylePropPanel ref={this.stylePanel} DiagramEditor={this} />
         <OverlaySaveToWorkspace ref={this.overlaySaveToWorkspace} DiagramEditor={this} />
         <Workspace ref={this.workspace} DiagramEditor={this} />
@@ -89,8 +91,9 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
         <AppGwPropPanel ref={this.appgwPropPanel} />
         <DNSPrivateZonePropPanel ref={this.dnsPrivateZonePropPanel} />
         <Overlay isOpen={this.state.showShareDiagramPopup} onClose={this.closeShareDiagramPopup} >
-          <div className={[Classes.CARD, Classes.ELEVATION_4, "login-overlay"]}>
+          <div style={{width: '100%'}} className={[Classes.CARD, Classes.ELEVATION_4, "login-overlay"]}>
           <InputGroup
+                    style={{float: 'left'}}
                     disabled={true}
                     value={this.state.shareLink}
                     inputRef={(input) => {
@@ -98,12 +101,13 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
                         this.setState({shareLinkInputbox: input})
                   }}
                 />
-            <Button className="bp3-button bp3-intent-success" icon="tick" onClick={this.copySharedLink}>Copy</Button>
+            <Button style={{float: '15%'}} className="bp3-button bp3-intent-success" icon="tick" onClick={this.copySharedLink}>Copy</Button>
           </div>
         </Overlay>
         <Overlay isOpen={this.state.showSpinner} onClose={this.handleSpinnerClose}>
           <Spinner intent={Intent.PRIMARY} size={Spinner.SIZE_STANDARD} value={0.6} />
         </Overlay>
+        {(this.state.isLoading) ? <CircularProgress className="loader" /> : ''}
       </div>
     );
   }
@@ -125,7 +129,7 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
         {
           var cell = evt.getProperty('cell');
 
-          if(cell.value != undefined || cell.value == null)
+          if(Utils.IsNullOrUndefine(cell) || Utils.IsNullOrUndefine(cell.value))
             return;
           
           var result = Utils.TryParseUserObject(cell.value);
@@ -141,7 +145,7 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
       // delete key remove vertex
       var keyHandler = new mxKeyHandler(this.graph);
       keyHandler.bindKey(46, (evt) =>
-        {
+        { 
             this.graph.removeCells();
         });
   }
@@ -188,6 +192,18 @@ addCtrlCCtrlVCopyPasteVertices() {
   }
 }
 
+addCtrlSSave() {
+  var keyHandler = new mxKeyHandler(this.graph);
+  var thisComp = this;
+  keyHandler.getFunction = function(evt) {
+    if (evt != null && evt.ctrlKey == true && evt.key == 's')
+    {
+      evt.preventDefault();
+      thisComp.saveDiagramToBrowser();
+    }
+  }
+}
+
 addUpDownLeftRightArrowToMoveCells() {
   var keyHandler = new mxKeyHandler(this.graph);
   var thisComp = this;
@@ -196,6 +212,7 @@ addUpDownLeftRightArrowToMoveCells() {
     if (evt != null && evt.key == 'ArrowUp')
     {
         var geo = getSelectedCellGeo();
+        if(geo == null) return;
         var newY = geo.y - 2;
         moveCell(geo.x, newY);
     }
@@ -203,6 +220,7 @@ addUpDownLeftRightArrowToMoveCells() {
     if (evt != null && evt.key == 'ArrowDown')
     {
         var geo = getSelectedCellGeo();
+        if(geo == null) return;
         var newY = geo.y + 2;
         moveCell(geo.x, newY);
     }
@@ -210,6 +228,7 @@ addUpDownLeftRightArrowToMoveCells() {
     if (evt != null && evt.key == 'ArrowLeft')
     {
         var geo = getSelectedCellGeo();
+        if(geo == null) return;
         var newX = geo.x - 2;
         moveCell(newX, geo.y);
     }
@@ -217,6 +236,7 @@ addUpDownLeftRightArrowToMoveCells() {
     if (evt != null && evt.key == 'ArrowRight')
     {
         var geo = getSelectedCellGeo();
+        if(geo == null) return;
         var newX = geo.x + 2;
         moveCell(newX, geo.y);
     }
@@ -225,6 +245,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
   var getSelectedCellGeo = function() {
     var selectedCell = thisComp.graph.getSelectionCell();
+    if(selectedCell == null)return;
     return thisComp.graph.getCellGeometry(selectedCell).clone();
   }
 
@@ -240,16 +261,16 @@ addUpDownLeftRightArrowToMoveCells() {
   }
 }
 
-addDragOverEventForVMOverSubnetHighlight() {
-  mxEvent.addListener(this.graphManager.container, 'dragover', function(evt)
-				{
-					if (this.graph.isEnabled())
-					{
-						evt.stopPropagation();
-						evt.preventDefault();
-					}
-				});
-  }
+// addDragOverEventForVMOverSubnetHighlight() {
+//   mxEvent.addListener(this.graphManager.container, 'dragover', function(evt)
+// 				{
+// 					if (this.graph.isEnabled())
+// 					{
+// 						evt.stopPropagation();
+// 						evt.preventDefault();
+// 					}
+// 				});
+//   }
 
   addContextMenu(){
     this.graph.popupMenuHandler.autoExpand = true;
@@ -271,6 +292,12 @@ addDragOverEventForVMOverSubnetHighlight() {
         thisComponent.graph.orderCells(true); 
       });
 
+      menu.addSeparator();
+      menu.addItem('Delete', '', function()
+      {
+        thisComponent.graph.removeCells(); 
+      });
+      
       if(Utils.IsNonAzureResource(cell)){
         menu.addItem('Group', '', function()
         {
@@ -616,7 +643,7 @@ addDragOverEventForVMOverSubnetHighlight() {
 
   addInternet = (dropContext) => {
     this.graph.insertVertex
-    (this.graph.getDefaultParent(), null, 'internet', dropContext.x, dropContext.x, 55, 55,
+    (this.graph.getDefaultParent(), null, 'internet', dropContext.x, dropContext.x, 60, 60,
     "editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
       this.azureIcons.Internet());
   }
@@ -1172,32 +1199,6 @@ addDragOverEventForVMOverSubnetHighlight() {
       
       codec.decode(doc.documentElement, this.graph.getModel());
 
-      //re-set dangling edge geometry
-      //re-add cell overlays
-      // var edges =
-      //   this.graph.getChildEdges(this.graph.getDefaultParent());
-
-      // var thisComp = this;
-
-      //   edges.map(edge => {
-
-      //     if(edge.source == null && edge.target == null)// not connected
-      //     {
-      //         var edgeXmlNode = codec.getElementById(edge.id);
-
-      //         var srcX = edgeXmlNode.firstElementChild.children[0].getAttribute('x');
-      //         var srcY = edgeXmlNode.firstElementChild.children[0].getAttribute('y');
-      //         var tarX = edgeXmlNode.firstElementChild.children[1].getAttribute('x');
-      //         var tarY = edgeXmlNode.firstElementChild.children[1].getAttribute('y');
-
-      //         // edge.getGeometry().setTerminalPoint(new mxPoint(50, 100), true);
-      //         // edge.getGeometry().setTerminalPoint(new mxPoint(100, 50), false);
-      //         edge.getGeometry().setTerminalPoint(new mxPoint(srcX, srcY), true);
-      //         edge.getGeometry().setTerminalPoint(new mxPoint(tarX, tarY), false);
-      //         edge.geometry.relative = true;
-      //     }
-      //   });
-
       //re-add cell overlays
       var cells =
         this.graph.getChildVertices(this.graph.getDefaultParent());
@@ -1346,12 +1347,69 @@ addDragOverEventForVMOverSubnetHighlight() {
       });
   } 
 
+  exportDiagramAsPDF(){
+
+    if(!this.graphManager.isCellExist())
+    {
+      Toaster.create({
+        position: Position.TOP,
+        autoFocus: false,
+        canEscapeKeyClear: true
+      }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.NoCellOnGraph()});
+      return;
+    }
+
+    this.graph.getSelectionModel().clear();
+
+    this.showLoading(true);
+    
+    var svg = this.getDiagramSvg();
+
+    // get svg data
+    var svgXmlString = new XMLSerializer().serializeToString(svg);
+    var svgXmlBase64 = window.btoa(svgXmlString);
+
+    var thisComp = this;
+    this.diagramService.exportDiagramAsPNG(svgXmlBase64,
+      function onSuccess(pdfByteArray)
+      {
+        thisComp.showLoading(true);
+
+        const url = window.URL.createObjectURL(new Blob([pdfByteArray]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', 'diagram.pdf');
+          document.body.appendChild(link);
+          link.click();
+
+        Toaster.create({
+          position: Position.TOP,
+          autoFocus: false,
+          canEscapeKeyClear: true
+        }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.PDFDownloaded()});
+        return;
+      },
+      function onError(error){
+        thisComp.showLoading(true);
+        console.log(error);
+      });
+  }
+
+  getDiagramSvg(){
+    return document.getElementById('diagramEditor').lastChild;
+  }
+  
+  showLoading(toShow){
+    this.setState({isLoading: toShow});
+  }
+
+
   showWorkspace () {
-      this.workspace.current.show();
+    this.workspace.current.show();
   }
 
   showOverlaySavetoWorkspace = () => {
-     this.overlaySaveToWorkspace.current.show();
+    this.overlaySaveToWorkspace.current.show();
   }
 
   clearGraph() {

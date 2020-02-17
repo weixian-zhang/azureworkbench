@@ -43,7 +43,8 @@ export default class AuthService
         {
             var tokenRequest = {
               //scopes: ["api://16afdc21-ffd3-4cf8-aeae-63bebf9e327e/azworkbench-portal-deploy"]
-              scopes: ["api://3b606e44-5ceb-4473-84c6-5f9b1119a2fc/Api.All.ReadWrite"],
+              //scopes: ["api://3b606e44-5ceb-4473-84c6-5f9b1119a2fc/Api.All.ReadWrite"],
+              scopes: ["api://3b606e44-5ceb-4473-84c6-5f9b1119a2fc/.default"],
               prompt: 'consent'
             };
 

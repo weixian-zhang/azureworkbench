@@ -17,7 +17,7 @@ import {
     mxCodecRegistry,
     mxCell,
     mxObjectCodec,
-    mxClient
+    mxPanningHandler
   } from "mxgraph-js";
   import Utils from '../Helpers/Utils';
 
@@ -80,14 +80,42 @@ export default class MxGraphManager
     initGlobalSettings(){
         //global settings
         this.graph.setAllowDanglingEdges(true);
-        this.graph.setPanning(true);
-        this.graph.panningHandler.seLeftButtonForPanning = true;
+        
         this.graph.centerZoom = false;
         this.graph.model.ignoreRelativeEdgeParent = true;
         this.graph.model.maintainEdgeParent = false;
         this.graph.setConnectable(true);
         this.graph.extendParentsOnAdd = false;
-		this.graph.extendParents = false;
+        this.graph.extendParents = false;
+
+        var thisComp = this;
+        window.addEventListener("wheel", function(e) {
+            var dir = Math.sign(e.deltaY);
+            if(e.shiftKey == true && dir == -1){ //up
+                thisComp.graph.zoomIn();
+            }
+            else if(e.shiftKey == true && dir == 1)
+            {
+                //e.preventDefault()
+                thisComp.graph.zoomOut();
+            }
+        });
+        
+        this.initGlobalPanningSettings();
+
+        this.initKeyMouseEvents();
+    }
+
+    initGlobalPanningSettings(){
+        this.graph.setPanning(true);
+        this.graph.panningHandler.useLeftButtonForPanning = false;
+        this.graph.panningHandler.ignoreCell = false;
+        
+        this.graph.panningHandler.addListener(mxEvent.PAN_START, 
+            function() { this.graph.container.style.cursor = 'pointer'; });
+
+        this.graph.panningHandler.addListener(mxEvent.PAN_END, 
+            function() { this.graph.container.style.cursor = 'default'; });
     }
 
     initExtendCanvas(){

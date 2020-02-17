@@ -7,7 +7,6 @@ using AzW.Secret;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
@@ -15,9 +14,9 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
+
 namespace AzW.Web.API
 {
-    [EnableCors("ApiCorsPolicy")]
     [Authorize(AuthenticationSchemes = AzureADDefaults.BearerAuthenticationScheme)]
     [Route("api/arm")]
     public class ARMInfoController : BaseController

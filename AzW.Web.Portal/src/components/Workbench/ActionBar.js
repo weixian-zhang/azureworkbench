@@ -24,10 +24,6 @@ export default class ActionBar extends Component {
       this.diagramEditor = this.props.Workbench.current;
     }
 
-    componentWillMount() {
-        this.diagramEditor = this.props.Workbench.current;
-    }
-
     render() {
         return (
             <nav className="bp3-navbar bp3-light">
@@ -77,82 +73,5 @@ export default class ActionBar extends Component {
     //                     <span>Resource Groups</span>
     //                 </div>
 
-    showWorkspace = () => {
-       var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
-       diagramEditor.showWorkspace();
-    }
-
-    shareDiagram = () => {
-        var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
-        diagramEditor.shareDiagram();
-    }
-
-    savetoWorkspace = () => {
-        var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
-        diagramEditor.showOverlaySavetoWorkspace();
-    }
-
-    saveToLocal = () => {
-       var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
-       diagramEditor.saveDiagramToBrowser();
-    }
-
-    clearGraph = () => {
-        var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
-       diagramEditor.clearGraph();
-    }
-
-    calculate(){
-        Toaster.create({
-            position: Position.TOP,
-            autoFocus: false,
-            canEscapeKeyClear: true
-          }).show({intent: Intent.SUCCESS, timeout: 3000, message: 'In the roadmap...'});
-          return;
-    }
-
-    deploy(){
-        Toaster.create({
-            position: Position.TOP,
-            autoFocus: false,
-            canEscapeKeyClear: true
-          }).show({intent: Intent.SUCCESS, timeout: 3000, message: 'In the roadmap...'});
-          return;
-    }
-
-    saveToWorkspace(){
-        Toaster.create({
-            position: Position.TOP,
-            autoFocus: false,
-            canEscapeKeyClear: true
-          }).show({intent: Intent.SUCCESS, timeout: 3000, message: 'Coming Soon..only Share is released'});
-          return;
-    }
-
-    setCurrentSubscription(item, event) {
-        SessionStorage.set(SessionStorage.KeyNames.CurrentSubscription, item);
-    }
-
-    renderSubscription({ handleClick, isActive, item: sub }) {
-        return (
-            <MenuItem
-                //className={classes}
-                label={sub.Name}
-                key={sub.SubscriptionId}
-                onClick={this.setCurrentSubscription}
-                text={sub.Name} //{`${film.rank}. ${film.title}`}
-            />
-        );
-    }
-
-    getSubscriptions(){
-        if(this.authService.isUserLogin())
-        {
-            var userProfile = this.authService.getUserProfile();
-            ARMService.getSubscriptions(userProfile.AccessToken, function(subscriptions){
-                this.setState({subscriptions: subscriptions});
-            });
-        }
-        
-    }
+    
 }

@@ -24,6 +24,8 @@ namespace AzW.Web.API
 {
     public class Startup
     {
+        readonly string AllowAllOriginsPolicy = "_myAllowSpecificOrigins";
+
         public Startup(IConfiguration configuration)
         {
             var builder = new ConfigurationBuilder()
@@ -37,12 +39,16 @@ namespace AzW.Web.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(options => options.AddPolicy("ApiCorsPolicy", builder =>
+            // Add CORS policy
+            services.AddCors(options =>
             {
-                builder
-                    .AllowAnyOrigin()//builder.WithOrigins("http://localhost:8090")
-                    .AllowAnyMethod().AllowAnyHeader();
-            }));
+                options.AddPolicy(AllowAllOriginsPolicy, // I introduced a string constant just as a label "AllowAllOriginsPolicy"
+                builder =>
+                {
+                    builder.AllowAnyOrigin();
+                });
+            });
+ 
 
             services.AddControllers();
 
@@ -53,12 +59,39 @@ namespace AzW.Web.API
             ConfigureAzureAdAuth(services);
 
             ConfigureDependencies(services);
+        }
 
-            //https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/wiki/How-ASP.NET-Core-uses-Microsoft.IdentityModel-extensions-for-.NET
 
-            //https://docs.microsoft.com/en-us/azure/active-directory/develop/scenario-protected-web-api-app-configuration
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+           
+
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
             
+            app.UseAuthentication();
+
+            app.UseSwagger();
+
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
+            app.UseHttpsRedirection();
+
             
+
+            app.UseRouting();
+
+            app.UseCors(AllowAllOriginsPolicy);
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
 
         private void ConfigureAzureAdAuth(IServiceCollection services)
@@ -140,21 +173,7 @@ namespace AzW.Web.API
 
         private void ConfigureDependencies(IServiceCollection services)
         {          
-            services.AddCors(o => o.AddPolicy("CORSPolicy", builder =>
-            {
-                builder.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
-            }));
-
             services.AddSingleton<WorkbenchSecret>(sp => {return _secrets ;} );
-
-            // var _azSdkCred = new AzSDKCredentials
-            //     (_secrets.AccessToken, _secrets.TenantId, _secrets.ClientId, _secrets.ClientSecret);
-
-            // services.AddTransient<IAzArmService>(sp => {
-            //     return new AzArmService(_azSdkCred);
-            // });
 
             services.AddTransient<IDiagramLogic, DiagramLogic>();
             services.AddTransient<IDiagramRepository, DiagramRepository>();
@@ -164,35 +183,6 @@ namespace AzW.Web.API
         private void InitSecrets()
         {
             _secrets = SecretManagerFactory.Create().GetSecret<WorkbenchSecret>();
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            //app.UseCorsMiddleware();           
-            app.UseCors("ApiCorsPolicy");
-            
-            app.UseAuthentication();
-
-            app.UseSwagger();
-
-            app.UseHttpsRedirection();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-
-            
         }
 
         private WorkbenchSecret _secrets;

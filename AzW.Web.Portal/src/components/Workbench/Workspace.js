@@ -10,6 +10,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Badge from '@material-ui/core/Badge';
+import Skeleton from '@material-ui/lab/Skeleton';
 
 import Collection from '../../models/services/Collection';
 import Messages from './Helpers/Messages';
@@ -38,7 +39,6 @@ export default class Workspace extends Component {
       this.diagramService = new DiagramService();
     }
 
-//https://codesandbox.io/s/y086e
     render = () => {
       const tableStyle = makeStyles({
         table: {
@@ -59,7 +59,7 @@ export default class Workspace extends Component {
                     You do not have any draft diagram saved locally in browser                         
                     </Label> :
                     <div>
-                          <Badge
+                        <Badge
                             badgeContent={1}
                             color='primary'
                             badgeStyle={{top: 12, right: 12}}

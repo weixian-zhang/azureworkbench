@@ -2,20 +2,26 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using AzW.Application;
 using AzW.Infrastructure.Data;
 using AzW.Model;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+
+using Svg;
 
 namespace AzW.Web.API
 {
-    [EnableCors("ApiCorsPolicy")]
     [Route("api")]
     public class DiagramController : BaseController
     {
@@ -104,7 +110,76 @@ namespace AzW.Web.API
            return collList;
         }
 
+        [AllowAnonymous()]
+        [HttpPost("export/pdf")]
+        public FileContentResult GeneratePNGFromSvg([FromBody] string svgbase64)
+        {
+            if(string.IsNullOrEmpty(svgbase64))
+                return null;
+
+            try
+            {
+                string path = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+                var byteArray = Convert.FromBase64String(svgbase64);
+                using (var stream = new MemoryStream(byteArray))
+                {
+                    var svgDocument = SvgDocument.Open<SvgDocument>(stream);
+                    var bitmap = svgDocument.Draw();
+
+                    using(var ms = new MemoryStream())
+                    {  
+                        bitmap.Save(ms, ImageFormat.Png);
+
+                        var SigBase64=
+                            Convert.ToBase64String(ms.GetBuffer()); //Get Base64
+
+                         string dataUrl = "data:image/png;base64," + SigBase64;
+
+                         var htmlDoc = new HtmlToPdfDocument()
+                            {
+                                GlobalSettings = {
+                                    ColorMode = DinkToPdf.ColorMode.Color,
+                                    PaperSize = PaperKind.A4,
+                                    Orientation = Orientation.Landscape,
+                                    //Margins = new MarginSettings() { Top = 5 },
+                                    //Out = Path.Combine(path, "testpdf.pdf")
+                                },
+                                Objects = {
+                                    new DinkToPdf.ObjectSettings()
+                                    {
+                                        
+                                        HtmlContent =
+                                            $"<html><body><img src='{dataUrl}' /></body></html>"
+                                    }
+                                }
+                            };
+                        
+                        var converter = new SynchronizedConverter(new PdfTools());
+                        
+                        byte[] pdf = converter.Convert(htmlDoc);
+
+                        return new FileContentResult(pdf, "application/octet-stream");
+                    }
+
+                }              
+                
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private readonly IConverter _pdfConverter;
         private IDiagramLogic _diagramLogic;
         private IDiagramRepository _diagramRepo;
+    }
+
+    public class ExportPngParam
+    {
+        public string DiagramSvg { get; set; }
+        public int Width { get; set; }
+         public int Height { get; set; }
     }
 }

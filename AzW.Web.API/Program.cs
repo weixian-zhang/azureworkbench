@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -13,6 +15,11 @@ namespace AzW.Web.API
     {
         public static void Main(string[] args)
         {
+            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var loader = 
+            new CustomAssemblyLoadContext()
+                .LoadUnmanagedLibrary($"{path}/libwkhtmltox.dll");
+
             CreateHostBuilder(args).Build().Run();
         }
 

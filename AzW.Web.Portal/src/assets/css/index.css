@@ -41,12 +41,7 @@ inline {
   margin: 0px;
 }
 
-/* position:relative;;width:321px;height:241px;background:url('editors/images/grid.gif'); */
-.workbenchgrid-container{
-  position: relative;
-  overflow:auto;
-  background: url('../azure_icons/shape-grid.gif');
-}
+
 
 .workspace-overlay-box {
   background-color: #fff;
@@ -126,4 +121,30 @@ rect  {
 .buttonStretch {
   width: 100%;
   flex-grow: 1;
+}
+
+/*workbench, diagramEditor and resourcepalette*/
+/* position:relative;;width:321px;height:241px;background:url('editors/images/grid.gif'); */
+.workbenchgrid-container{
+  display: flex;
+  overflow: auto;
+}
+.resourcePalette {
+  flex: 0 0 18%;
+  max-height: 720px;
+  overflow-y: auto;
+}
+.diagramEditor{
+  flex: 1;
+  height: 100%;
+  background: url('../azure_icons/shape-grid.gif');
+}
+
+/* centers circular progress */
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: inherit;
+  background-color: white;
 }

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import {Card,Elevation, FormGroup, InputGroup, Button, Overlay, Intent} from "@blueprintjs/core";
+import {Toaster, Card,Elevation,Position, FormGroup, InputGroup, Button, Overlay, Intent} from "@blueprintjs/core";
 import AuthService from '../../services/AuthService';
+import Messages from './Helpers/Messages';
 
 export default class OverlaySaveToWorkspace extends Component {
     constructor(props) {
@@ -47,6 +48,17 @@ export default class OverlaySaveToWorkspace extends Component {
     }
 
     saveToWorkspace = () => {
+        if(this.state.collectionName == null ||
+            this.state.diagramName)
+            {
+                Toaster.create({
+                    position: Position.TOP,
+                    autoFocus: false,
+                    canEscapeKeyClear: true
+                  }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.SaveWorkspaceFieldNotEmpty()});
+                  return;
+            }
+
         this.props.DiagramEditor
             .saveDiagramToWorkspace(this.state.collectionName, this.state.diagramName)
         this.setState({ isOpen: false });

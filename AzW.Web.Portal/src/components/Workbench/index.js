@@ -18,7 +18,7 @@ export default class MainWorkbench extends Component {
     return (
       <div className="container">
         <Header ActionBar={this.actionBar} Workbench={this.workbench} />
-        <ActionBar ref={this.actionBar} Workbench={this.workbench} />
+        {/* <ActionBar ref={this.actionBar} Workbench={this.workbench} /> */}
         <Workbench queryString={this.props.location.search} ref={this.workbench} />
       </div>
     );
