@@ -265,7 +265,8 @@ export default class ResourcePalette extends Component {
     
 
     return (
-      <div className='resourcePalette'>
+      <div className='sidebar'>
+        <div className="resourcePalette">
         <ExpansionPanel>
           <ExpansionPanelSummary
             expandIcon={<ExpandMoreIcon />}
@@ -807,7 +808,8 @@ export default class ResourcePalette extends Component {
               </Typography>
             </ExpansionPanelDetails>
           </ExpansionPanel>
-        </div>
+          </div>
+      </div>
     );
   };
 
