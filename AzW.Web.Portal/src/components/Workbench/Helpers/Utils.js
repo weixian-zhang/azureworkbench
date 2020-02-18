@@ -41,10 +41,18 @@ export default class Utils
         return false;
     }
 
+    getCenterOfSubnet(cell){
+        
+    }
+
     static IsNullOrUndefine(obj){
+
         if(obj == null || obj == undefined)
             return true;
-        else
-            return false;
+        
+        if(Array.isArray(obj) && obj.length <= 0)
+            return true;
+        
+        return false;
     }
 }

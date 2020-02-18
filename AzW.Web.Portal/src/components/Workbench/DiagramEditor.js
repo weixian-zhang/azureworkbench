@@ -149,7 +149,7 @@ import mxClientOverrides from './Helpers/mxClientOverrides';
       var keyHandler = new mxKeyHandler(this.graph);
       keyHandler.bindKey(46, (evt) =>
         { 
-          thisComp.graph.removeCells();
+          thisComp.graph.removeCells(null, false);
         });
   }
 
@@ -208,61 +208,72 @@ addCtrlSSave() {
 }
 
 addUpDownLeftRightArrowToMoveCells() {
-  var keyHandler = new mxKeyHandler(this.graph);
-  var thisComp = this;
-  keyHandler.getFunction = function(evt) {
+    var keyHandler = new mxKeyHandler(this.graph);
+    var thisComp = this;
+    keyHandler.getFunction = function(evt) {
 
-    if (evt != null && evt.key == 'ArrowUp')
-    {
-        var geo = getSelectedCellGeo();
-        if(geo == null) return;
-        var newY = geo.y - 2;
-        moveCell(geo.x, newY);
+      var cells = thisComp.graph.getSelectionCells();
+
+      if(!Utils.IsNullOrUndefine(cells))
+      {
+          cells.map(cell => {
+
+              var geo = getSelectedCellGeo(cell);
+
+              if (evt != null && evt.key == 'ArrowUp')
+              {
+                  if(Utils.IsNullOrUndefine(geo))
+                    return;
+                  var newY = geo.y - 2;
+                  moveCell(cell, geo, geo.x, newY);
+              }
+          
+              if (evt != null && evt.key == 'ArrowDown')
+              {
+                if(Utils.IsNullOrUndefine(geo))
+                  return;
+                var newY = geo.y + 2;
+                moveCell(cell, geo, geo.x, newY);
+              }
+          
+              if (evt != null && evt.key == 'ArrowLeft')
+              {
+                if(Utils.IsNullOrUndefine(geo))
+                  return;
+                var newX = geo.x - 2;
+                moveCell(cell, geo, newX, geo.y);
+              }
+                
+              if (evt != null && evt.key == 'ArrowRight')
+              {
+                if(Utils.IsNullOrUndefine(geo))
+                  return;
+                var newX = geo.x + 2;
+                moveCell(cell, geo, newX, geo.y);
+              }
+          })
+      }
+    }
+    
+    var getSelectedCellGeo = function(cell) {
+      return thisComp.graph.getCellGeometry(cell).clone();
+    }
+  
+    var moveCell = function (cell, geo, x, y) {
+  
+       //var geo = thisComp.graph.getCellGeometry(selectedCell).clone();
+       geo.x = x;
+       geo.y = y;
+       thisComp.graph.model.setGeometry(cell, geo);
+       thisComp.graph.refresh();
+  
+      // var selectedCell = thisComp.graph.getSelectionCell();
+      // if(selectedCell != null){
+       
+      // }
     }
 
-    if (evt != null && evt.key == 'ArrowDown')
-    {
-        var geo = getSelectedCellGeo();
-        if(geo == null) return;
-        var newY = geo.y + 2;
-        moveCell(geo.x, newY);
-    }
-
-    if (evt != null && evt.key == 'ArrowLeft')
-    {
-        var geo = getSelectedCellGeo();
-        if(geo == null) return;
-        var newX = geo.x - 2;
-        moveCell(newX, geo.y);
-    }
-      
-    if (evt != null && evt.key == 'ArrowRight')
-    {
-        var geo = getSelectedCellGeo();
-        if(geo == null) return;
-        var newX = geo.x + 2;
-        moveCell(newX, geo.y);
-    }
-      
   }
-
-  var getSelectedCellGeo = function() {
-    var selectedCell = thisComp.graph.getSelectionCell();
-    if(selectedCell == null)return;
-    return thisComp.graph.getCellGeometry(selectedCell).clone();
-  }
-
-  var moveCell = function (x,y) {
-    var selectedCell = thisComp.graph.getSelectionCell();
-    if(selectedCell != null){
-      var geo = thisComp.graph.getCellGeometry(selectedCell).clone();
-      geo.x = x;
-      geo.y = y;
-      thisComp.graph.model.setGeometry(selectedCell, geo);
-      thisComp.graph.refresh();
-    }
-  }
-}
 
 // addDragOverEventForVMOverSubnetHighlight() {
 //   mxEvent.addListener(this.graphManager.container, 'dragover', function(evt)
@@ -394,7 +405,6 @@ addUpDownLeftRightArrowToMoveCells() {
         this.addDNSPrivateZone(dropContext);
         break;
         
-
       default:
         break;
     }
@@ -469,22 +479,23 @@ addUpDownLeftRightArrowToMoveCells() {
         var parent = this.graph.getDefaultParent();
         var randomId = this.shortUID.randomUUID(6);
 
-        var style =
-          this.graphManager.getDefaultStraightEdgeStyleString();
+        // var style =
+        //   this.graphManager.getDefaultStraightEdgeStyleString();
 
-        var straightArrowCell =
-          this.graph.insertEdge(parent, null, null, null, null, style);
+        // var straightArrowCell =
+        //   this.graph.insertEdge(parent, null, null, null, null, style);
 
-        // var cell = new mxCell(randomId,
-        //   new mxGeometry(dropContext.x, dropContext.y, 50, 50),
-        //   'straightedgestyle'); //this.graphManager.getDefaultStraightEdgeStyleString());
-        straightArrowCell.geometry.setTerminalPoint(new mxPoint(dropContext.x, dropContext.y), true);
-        straightArrowCell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
-        //straightArrowCell.geometry.points =  [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
-        straightArrowCell.geometry.relative = true;
-        // cell.edge = true;
-        //this.graph.addCell(cell, parent);
+        var cell = new mxCell(randomId,
+          new mxGeometry(dropContext.x, dropContext.y, 50, 50),
+          'straightedgestyle');
+          cell.geometry.setTerminalPoint(new mxPoint(dropContext.x, dropContext.y), true);
+          cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
+          cell.geometry.points =  [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
+          cell.geometry.relative = true;
+          cell.edge = true;
+        var straigthArrow= this.graph.addCell(cell, parent);
 
+        this.graph.scrollCellToVisible(straigthArrow);
         //this.graph.fireEvent(new mxEventObject('cellsInserted', 'cells', [addedCell]));
       }
       finally
@@ -508,7 +519,9 @@ addUpDownLeftRightArrowToMoveCells() {
       cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
       cell.geometry.relative = true;
       cell.edge = true;
-      this.graph.addCell(cell, parent);
+      var dashArrow = this.graph.addCell(cell, parent);
+
+      this.graph.scrollCellToVisible(dashArrow);
     }
     finally
     {
@@ -517,29 +530,31 @@ addUpDownLeftRightArrowToMoveCells() {
     }
   }
 
-  addCurvedArrow(dropContext) {
-    this.graphManager.graph.getModel().beginUpdate();
-    try
-    {
-      var parent = this.graph.getDefaultParent();
-      var randomId = this.shortUID.randomUUID(6);
-      var cell = new mxCell(randomId,
-        new mxGeometry(dropContext.x, dropContext.y, 50, 50),
-        this.graphManager.getDefaultCurvedEdgeStyleString());
+  // addCurvedArrow(dropContext) {
+  //   this.graphManager.graph.getModel().beginUpdate();
+  //   try
+  //   {
+  //     var parent = this.graph.getDefaultParent();
+  //     var randomId = this.shortUID.randomUUID(6);
+  //     var cell = new mxCell(randomId,
+  //       new mxGeometry(dropContext.x, dropContext.y, 50, 50),
+  //       this.graphManager.getDefaultCurvedEdgeStyleString());
 
-      cell.geometry.setTerminalPoint(new mxPoint(dropContext.x, dropContext.y), true);
-      cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
-      cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
-      cell.geometry.relative = true;
-      cell.edge = true;
-      this.graph.addCell(cell, parent);
-    }
-    finally
-    {
-      // Updates the display
-      this.graphManager.graph.getModel().endUpdate();
-    }
-  }
+  //     cell.geometry.setTerminalPoint(new mxPoint(dropContext.x, dropContext.y), true);
+  //     cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
+  //     cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
+  //     cell.geometry.relative = true;
+  //     cell.edge = true;
+  //     this.graph.addCell(cell, parent);
+
+  //     this.graph.scrollCellToVisible(elbowArrow);
+  //   }
+  //   finally
+  //   {
+  //     // Updates the display
+  //     this.graphManager.graph.getModel().endUpdate();
+  //   }
+  // }
 
   addElbowArrow(dropContext){
 
@@ -557,7 +572,9 @@ addUpDownLeftRightArrowToMoveCells() {
         cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
         cell.geometry.relative = true;
         cell.edge = true;
-        this.graph.addCell(cell, parent);
+        var elbowArrow = this.graph.addCell(cell, parent);
+
+        this.graph.scrollCellToVisible(elbowArrow);
       }
       finally
       {
@@ -572,11 +589,12 @@ addUpDownLeftRightArrowToMoveCells() {
     {
       var randomId = this.shortUID.randomUUID(6);
 
-      this.graph.insertVertex
+      var label = this.graph.insertVertex
         (this.graph.getDefaultParent(), null, 'text',
           dropContext.x, dropContext.y, 80, 30,
           this.graphManager.getDefaultTextStyleString());
-        //strokeColor=none;fillColor=none;resizable=0;autosize=0;fontSize=15;fontFamily=Segoe UI;'
+
+      this.graph.scrollCellToVisible(label);
     }
     finally
     {
@@ -596,6 +614,7 @@ addUpDownLeftRightArrowToMoveCells() {
       100,
       this.graphManager.getDefaultRectStyleString()
     );
+    this.graph.scrollCellToVisible(rect);
   }
 
   addTriangle = (dropContext) => {
@@ -612,6 +631,7 @@ addUpDownLeftRightArrowToMoveCells() {
       100,
       style
     );
+    this.graph.scrollCellToVisible(triangle);
   }
 
   addCircle = (dropContext) => {

@@ -10,6 +10,8 @@ export default class AppService
         this.ProvisionContext = {
             Name: '',
             Location: '',
+            ResourceType: ResourceType.AppService(),
+            Tags: []
         };
         this.CalculatorContext = {
             IsFree: false,

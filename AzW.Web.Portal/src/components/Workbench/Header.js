@@ -7,16 +7,11 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import MenuIcon from '@material-ui/icons/Menu';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import SaveIcon from '@material-ui/icons/Save';
-import WorkIcon from '@material-ui/icons/Work';
+import CloudIcon from '@material-ui/icons/Cloud';
 import ShareIcon from '@material-ui/icons/Share';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
 import HelpIcon from '@material-ui/icons/Help';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import LockIcon from '@material-ui/icons/Lock';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 
 import Tippy from '@tippy.js/react';
 import 'tippy.js/dist/tippy.css';
@@ -68,13 +63,13 @@ export default class Header extends Component {
         <AppBar position="static" style={{ background: '#2E3B55' }}>
           <Toolbar variant='dense'>
             <Typography color="inherit">
-              <img src ={require('../../assets/azure_icons/azure-logo.svg')} alt="" style={{width : 25, height : 25, marginRight: 3}} />
+              <img src ={require('../../assets/azure_icons/azworkbench-logo.png')} alt="" style={{width : 25, height : 25, marginRight: 3}} />
               Azure Workbench
             </Typography>
             <section style={this.style.rightToolbar}>
               <IconButton color="inherit" aria-label="Edit">
                 <Tippy content="My Workspace" followCursor={true} placement="bottom">
-                  <WorkIcon onClick={this.showWorkspace} />
+                  <CloudIcon onClick={this.showWorkspace} />
                 </Tippy>
               </IconButton>
               <IconButton color="inherit" aria-label="Save">

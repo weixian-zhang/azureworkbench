@@ -49,6 +49,10 @@ import { ReactComponent as ExpressRoute } from "../../assets/azure_icons/Network
 import { ReactComponent as NetworkWatcher } from "../../assets/azure_icons/Networking Service Color/Network Watcher.svg";
 import { ReactComponent as TrafficManager } from "../../assets/azure_icons/Networking Service Color/Traffic Manager Profiles.svg";
 import { ReactComponent as VPNGateway } from "../../assets/azure_icons/Networking Service Color/Virtual Network Gateways.svg";
+import { ReactComponent as CDN } from "../../assets/azure_icons/Networking Service Color/CDN Profiles.svg";
+import { ReactComponent as ASG } from "../../assets/azure_icons/Networking Service Color/Application Security Groups.svg";
+
+
 
 import { ReactComponent as Storage } from "../../assets/azure_icons/Storage Service Color/Blob Storage.svg";
 import { ReactComponent as Databox } from "../../assets/azure_icons/Storage Service Color/Data Box.svg";
@@ -69,6 +73,7 @@ import { ReactComponent as ServiceBus } from "../../assets/azure_icons/Integrati
 import { ReactComponent as LogicApp } from "../../assets/azure_icons/Integration Service Color/Logic Apps.svg";
 import { ReactComponent as EventGridTopic } from "../../assets/azure_icons/Integration Service Color/Event Grid Subscriptions.svg";
 import { ReactComponent as EventGridSubscription } from "../../assets/azure_icons/Integration Service Color/Event Grid Topics.svg";
+import { ReactComponent as SendGrid } from "../../assets/azure_icons/Integration Service Color/SendGrid Accounts.svg";
 
 import { ReactComponent as Sentinel } from "../../assets/azure_icons/Security Service Color/Azure Sentinel.svg";
 import { ReactComponent as KeyVault } from "../../assets/azure_icons/Security Service Color/Key Vaults.svg";
@@ -472,6 +477,16 @@ export default class ResourcePalette extends Component {
                   <VPNGateway class="azure-rsc-icon" />
                 </Tippy>
               </div>
+              <div class="tile-panel" ref={this.cdnIcon}>
+                <Tippy content="Azure CDN" followCursor={true} placement="bottom">
+                  <CDN class="azure-rsc-icon" />
+                </Tippy>
+              </div>
+              <div class="tile-panel" ref={this.vpngatewayIcon}>
+                <Tippy content="Application Security Group" followCursor={true} placement="bottom">
+                  <ASG class="azure-rsc-icon" />
+                </Tippy>
+              </div>
             </Typography>
           </ExpansionPanelDetails>
         </ExpansionPanel>
@@ -677,6 +692,17 @@ export default class ResourcePalette extends Component {
                   <EventGridSubscription class="azure-rsc-icon" />
                 </Tippy>
               </div>
+              <div class="tile-panel" ref={this.streamanalyticsIcon}>
+                <Tippy content="Stream Analytics" followCursor={true} placement="bottom">
+                  <img src={require('../../assets/azure_icons/\Integration Service Color/Stream-Analytics.png')} width="25" height="25" />
+                </Tippy>
+              </div>
+              <div class="tile-panel" ref={this.sendgridSubIcon}>
+                <Tippy content="SendGrid (Email-as-a-Service)" followCursor={true} placement="bottom">
+                  <SendGrid class="azure-rsc-icon" />
+                </Tippy>
+              </div>
+              
             </Typography>
           </ExpansionPanelDetails>
         </ExpansionPanel>
@@ -715,7 +741,7 @@ export default class ResourcePalette extends Component {
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.bastionIcon}>
-                <Tippy content="Azure Bastion" followCursor={true} placement="bottom">
+                <Tippy content="Bastion" followCursor={true} placement="bottom">
                   <img src={require('../../assets/azure_icons/Security Service Color/azure-bastion-icon.png')} width="25" height="25" />
                 </Tippy>
               </div>

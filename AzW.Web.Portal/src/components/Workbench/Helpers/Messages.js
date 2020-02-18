@@ -1,5 +1,5 @@
 export default class Messages {
-    static VMInSubnet() {return "A VM or VM Scale Sets must be in a subnet";}
+    static VMInSubnet() {return "A VM or VM Scale Sets must be in a subnet, select the subnet then drag VM onto canvas";}
     static SharedDiagramLoadError() {return "Unable to load shared diagram";}
     static NoCellOnGraph() {return "There is no resource on canvas";}
     static SharedDiagramLinkCopied() {return "Link copied";}

@@ -1,12 +1,14 @@
+import Utils from './Utils';
+
 export default class AzureValidator {
     constructor(graph){
         this.graph = graph;
     }
     
     isResourceDropinSubnet(dropx, dropy) {
-         var cell = this.graph.getCellAt(dropx, dropy);
+         var cell = this.graph.getSelectionCell(); //this.graph.getCellAt(dropx, dropy);
 
-         if(cell == null ||
+         if(Utils.IsNullOrUndefine(cell) ||
             JSON.parse(cell.value).GraphModel.ResourceType != "subnet")
             return {isInSubnet: false, subnetCell: cell};
          else

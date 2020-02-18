@@ -10,13 +10,10 @@ export default class AppGateway
         this.ProvisionContext = {
             Name: '',
             Location: '',
+            ResourceType: ResourceType.AppGw(),
             Tags: [],
-            Depends: {
-                VNet: {
-                    VNetAddress: '',
-                    SubnetName: ''
-                }
-            }
+            VNetAddress: '',
+            SubnetName: ''
         };
         this.CalculatorContext = {
             IsFree: false,

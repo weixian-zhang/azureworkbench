@@ -60,7 +60,7 @@ export default class MxGraphManager
 
         this.initGlobalSettings();
 
-        this.initMouseEvent();
+        //this.initMouseEvent();
 				
         // Disables built-in context menu
         mxEvent.disableContextMenu(this.container);
@@ -76,15 +76,26 @@ export default class MxGraphManager
         //global settings
         //contrain drag boundary of child within parent
         mxGraphHandler.prototype.removeCellsFromParent = false
-        
+
+        //adds page break on vertex move
+        this.graph.view.setScale(0.70); //initial zoomed out degree
+        this.graph.pageBreaksVisible = false;
+        this.graph.pageBreakDashed = true;
+        this.graph.preferPageSize = true;
+        this.graph.centerZoom = false;
+        // Takes zoom into account for moving cells
+        this.graph.graphHandler.scaleGrid = true;
+
+        var headerSize = 100;
+        var footerSize = 100;
+        // Removes header and footer from page height
+        this.graph.pageFormat.height -= headerSize + footerSize;
+
         // // Enables guides
         mxGraphHandler.prototype.guidesEnabled = true;    
         this.graph.setAllowDanglingEdges(true);
-        this.graph.setConnectable(false); //prevent creating edge when vertex is dragged
-        this.graph.centerZoom = false;
         this.graph.model.ignoreRelativeEdgeParent = true;
         this.graph.model.maintainEdgeParent = false;
-        this.graph.setConnectable(true);
         this.graph.extendParentsOnAdd = false;
         this.graph.extendParents = false;
 
@@ -110,7 +121,7 @@ export default class MxGraphManager
         this.graph.panningHandler.ignoreCell = false;
         
         this.graph.panningHandler.addListener(mxEvent.PAN_START, 
-            function() { this.graph.container.style.cursor = 'pointer'; });
+            function() { this.graph.container.style.cursor = 'grab'; });
 
         this.graph.panningHandler.addListener(mxEvent.PAN_END, 
             function() { this.graph.container.style.cursor = 'default'; });
@@ -123,7 +134,7 @@ export default class MxGraphManager
               {
                 //disable connectable ports to prevent accidental drag that creates
                 //edges
-                mxConstraintHandler.prototype.setEnabled(false);
+                //mxConstraintHandler.prototype.setEnabled(false);
               },
               mouseMove: function(sender, evt)
               {
@@ -131,7 +142,7 @@ export default class MxGraphManager
               },
               mouseUp: function(sender, evt)
               {
-                mxConstraintHandler.prototype.setEnabled(true);
+                //mxConstraintHandler.prototype.setEnabled(true);
               }
             });
     }
@@ -275,9 +286,6 @@ export default class MxGraphManager
                     this.view.x0 = pages.x;
                     this.view.y0 = pages.y;
 
-                    // NOTE: THIS INVOKES THIS METHOD AGAIN. UNFORTUNATELY THERE IS NO WAY AROUND THIS SINCE THE
-                    // BOUNDS ARE KNOWN AFTER THE VALIDATION AND SETTING THE TRANSLATE TRIGGERS A REVALIDATION.
-                    // SHOULD MOVE TRANSLATE/SCALE TO VIEW.
                     var tx = thisComp.graph.view.translate.x;
                     var ty = thisComp.graph.view.translate.y;
 
@@ -475,11 +483,11 @@ export default class MxGraphManager
 
         var subnetCellStyle  = new Object();
         subnetCellStyle[mxConstants.STYLE_STROKECOLOR] = 'black';
+        subnetCellStyle[mxConstants.STYLE_STROKEWIDTH] = '0.5';
         subnetCellStyle[mxConstants.SHAPE_RECTANGLE] = 'rectangle';
         subnetCellStyle[mxConstants.RECTANGLE_ROUNDING_FACTOR] = '0.0';
         subnetCellStyle[mxConstants.STYLE_SHADOW] = false;
-        subnetCellStyle[mxConstants.STYLE_FILLCOLOR] = '#e5f4fe';
-        //subnetCellStyle[mxConstants.STYLE_GRADIENTCOLOR] = '#87cefa';
+        subnetCellStyle[mxConstants.STYLE_FILLCOLOR] = '#f9f9f9';
         subnetCellStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
         subnetCellStyle[mxConstants.STYLE_FONTSIZE] = '12';
         subnetCellStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
@@ -488,19 +496,6 @@ export default class MxGraphManager
         subnetCellStyle[mxConstants.STYLE_ALIGN] = "ALIGN_LEFT";
         subnetCellStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "ALIGN_TOP";
         this.graph.getStylesheet().putCellStyle('subnetstyle', subnetCellStyle);
-
-        
-
-        // label/text
-        // var labelStyle = new Object();
-        // labelStyle[mxConstants.DEFAULT_FONTSIZE] = '14';
-        // labelStyle[mxConstants.DEFAULT_FONTFAMILY] = 'Segoe UI';
-        // labelStyle[mxConstants.HANDLE_FILLCOLOR] = '0';
-        // labelStyle[mxConstants.HANDLE_STROKECOLOR] = '0';
-        // labelStyle[mxConstants.STYLE_EDITABLE] = '1';
-        // labelStyle[mxConstants.STYLE_AUTOSIZE] = '0';
-        // labelStyle[mxConstants.STYLE_RESIZABLE] = '0';
-        // this.graph.getStylesheet().putCellStyle('labelstyle', labelStyle);
     }
 
     makeIconDraggable(htmlElement, resourceTypeName, onDropCallback) {
@@ -511,6 +506,9 @@ export default class MxGraphManager
         mxUtils.makeDraggable(htmlElement, this.graph,
             function(graph, evt, target, x, y,)
             {
+                var x = mxEvent.getClientX(evt);
+                var y = mxEvent.getClientY(evt);
+
                 var evtPoint = graph.getPointForEvent(evt);
 
                 var dropContext = {
@@ -606,13 +604,7 @@ export default class MxGraphManager
                         new mxConnectionConstraint(new mxPoint(0, 0.5), true),
                         new mxConnectionConstraint(new mxPoint(1, 0.5), true),
                         new mxConnectionConstraint(new mxPoint(0.5, 1), true),
-                        new mxConnectionConstraint(new mxPoint(0.5, 1.7), false)
                     ];
-
-                    // add port below label
-                    // if(!thisComp.isNonAzureShape(terminal.cell) && terminal.cell.value != null){
-                    //     ports.push(new mxConnectionConstraint(new mxPoint(0.5, 1), true));
-                    // }
 
                     return ports;
                 }

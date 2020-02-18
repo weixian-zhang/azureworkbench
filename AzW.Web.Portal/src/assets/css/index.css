@@ -127,6 +127,8 @@ rect  {
 /* position:relative;;width:321px;height:241px;background:url('editors/images/grid.gif'); */
 .workbenchgrid-container{
   display: flex;
+  height: 100%;
+  width: 100%;
   overflow: auto;
 }
 .sidebar {
@@ -134,8 +136,7 @@ rect  {
   min-height: 50px;
   position: relative;
   flex-grow: 0;
-  width: 250px;
-  /* flex: 0 0 18%; */
+  width: 310px;
 }
 .resourcePalette {
   overflow-y: auto;
@@ -146,11 +147,15 @@ rect  {
   right: 0;
 }
 .diagramEditor{
-  flex: 1;
-  height: 100%;
-  overflow: auto;
-  background-color: #f2f2f2;
-  /* background: url('../azure_icons/shape-grid.gif'); */
+  /* !important */
+  overflow:hidden;
+  position:relative;
+  width:100%;
+  height:100%;
+  background-color: #fff;
+  background-image:
+  linear-gradient(#eee .1em, transparent .1em);
+  background-size: 100% 1.2em;
 }
 
 /* centers circular progress */
