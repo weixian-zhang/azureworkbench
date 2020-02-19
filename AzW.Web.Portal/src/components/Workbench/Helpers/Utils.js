@@ -41,11 +41,7 @@ export default class Utils
         return false;
     }
 
-    getCenterOfSubnet(cell){
-        
-    }
-
-    static IsNullOrUndefine(obj){
+    static IsNullOrUndefine(obj) {
 
         if(obj == null || obj == undefined)
             return true;
@@ -54,5 +50,16 @@ export default class Utils
             return true;
         
         return false;
+    }
+
+    
+    static getCellCenterPoint(cell){
+        var geo = cell.geometry;
+        var x = (geo.width / 2) - 20;
+        var y = (geo.height / 2) - 20;
+        return {
+            x: x,
+            y: y
+        };
     }
 }

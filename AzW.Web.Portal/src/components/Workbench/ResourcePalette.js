@@ -51,6 +51,7 @@ import { ReactComponent as TrafficManager } from "../../assets/azure_icons/Netwo
 import { ReactComponent as VPNGateway } from "../../assets/azure_icons/Networking Service Color/Virtual Network Gateways.svg";
 import { ReactComponent as CDN } from "../../assets/azure_icons/Networking Service Color/CDN Profiles.svg";
 import { ReactComponent as ASG } from "../../assets/azure_icons/Networking Service Color/Application Security Groups.svg";
+import { ReactComponent as UDR } from "../../assets/azure_icons/Networking Service Color/Route Tables.svg";
 
 
 
@@ -482,9 +483,14 @@ export default class ResourcePalette extends Component {
                   <CDN class="azure-rsc-icon" />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.vpngatewayIcon}>
+              <div class="tile-panel" ref={this.asgIcon}>
                 <Tippy content="Application Security Group" followCursor={true} placement="bottom">
                   <ASG class="azure-rsc-icon" />
+                </Tippy>
+              </div>
+              <div class="tile-panel" ref={this.udrIcon}>
+                <Tippy content="Route Table/User Defined Route" followCursor={true} placement="bottom">
+                  <UDR class="azure-rsc-icon" />
                 </Tippy>
               </div>
             </Typography>

@@ -266,25 +266,9 @@ addUpDownLeftRightArrowToMoveCells() {
        geo.y = y;
        thisComp.graph.model.setGeometry(cell, geo);
        thisComp.graph.refresh();
-  
-      // var selectedCell = thisComp.graph.getSelectionCell();
-      // if(selectedCell != null){
-       
-      // }
     }
 
   }
-
-// addDragOverEventForVMOverSubnetHighlight() {
-//   mxEvent.addListener(this.graphManager.container, 'dragover', function(evt)
-// 				{
-// 					if (this.graph.isEnabled())
-// 					{
-// 						evt.stopPropagation();
-// 						evt.preventDefault();
-// 					}
-// 				});
-//   }
 
   addContextMenu(){
     this.graph.popupMenuHandler.autoExpand = true;
@@ -293,9 +277,29 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.popupMenuHandler.factoryMethod = function(menu, cell, evt)
     {
-      if(cell == null || cell.value == null) // | cell.value.GraphModel == null)
-        return;
-    
+            //for vnet
+      if(Utils.IsVNet(cell))
+      {
+        menu.addItem('Add Subnet', '', function()
+        {
+          thisComponent.addSubnet(cell); // is vnetCell
+        });
+        menu.addSeparator();
+      }
+
+      if(cell == null || cell.value == null){
+        if(!mxClipboard.isEmpty())
+        {
+          menu.addItem('Paste', '', function()
+          {
+            thisComponent.pasteFromClipboard(); 
+          });
+          return;
+        }
+        else
+            return;
+      }
+        
       menu.addItem('Bring to Front', '', function()
         {
           thisComponent.graph.orderCells(false); 
@@ -322,14 +326,20 @@ addUpDownLeftRightArrowToMoveCells() {
         thisComponent.unGroupCells(); 
       });
 
-      //for vnet
-      if(Utils.IsVNet(cell))
+      if(!Utils.IsNullOrUndefine(this.graph.getSelectionCells()))
       {
         menu.addSeparator();
-        
-        menu.addItem('Add Subnet', '', function()
+        menu.addItem('Copy', '', function()
         {
-          thisComponent.addSubnet(cell); // is vnetCell
+          thisComponent.copyToClipboard(); 
+        });
+      }
+
+      if(!mxClipboard.isEmpty())
+      {
+        menu.addItem('Paste', '', function()
+        {
+          thisComponent.pasteFromClipboard(); 
         });
       }
 
@@ -651,21 +661,21 @@ addUpDownLeftRightArrowToMoveCells() {
 
   addUser = (dropContext) => {
     this.graph.insertVertex
-          (this.graph.getDefaultParent(), null, 'user', dropContext.x, dropContext.x, 50, 50,
+          (this.graph.getDefaultParent(), null, 'user', dropContext.x, dropContext.y, 50, 50,
           "editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
           this.azureIcons.User());
   }
 
   addOnpremDC = (dropContext) => {
     this.graph.insertVertex
-          (this.graph.getDefaultParent(), null, 'datacenter', dropContext.x, dropContext.x, 50, 50,
+          (this.graph.getDefaultParent(), null, 'datacenter', dropContext.x, dropContext.y, 50, 50,
           "fontSize=13;editable=1;verticalLabelPosition=bottom;shape=image;image=" +
           require('../../assets/azure_icons/shape-dc.png'));
   }
 
   addInternet = (dropContext) => {
     this.graph.insertVertex
-    (this.graph.getDefaultParent(), null, 'internet', dropContext.x, dropContext.x, 60, 60,
+    (this.graph.getDefaultParent(), null, 'internet', dropContext.x, dropContext.y, 60, 60,
     "editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
       this.azureIcons.Internet());
   }
@@ -769,8 +779,7 @@ addUpDownLeftRightArrowToMoveCells() {
             parent = parentCell;
       }
       
-      var dropContext =
-          this.graphManager.translateToParentGeometryPoint(dropContext, parent);
+      var dropContext = this.graphManager.translateToParentGeometryPoint(dropContext, parent);
 
       var nlb = new NLB();
         nlb.GraphModel.ResourceType = 'nlb';
@@ -787,8 +796,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
   addAppGw = (dropContext) => {
 
-      var result =
-        this.azureValidator.isResourceDropinSubnet(dropContext.x, dropContext.y);
+      var result = this.azureValidator.isResourceDropinSubnet();
       
       if(!result.isInSubnet)
       {
@@ -810,14 +818,15 @@ addUpDownLeftRightArrowToMoveCells() {
           return;
       }
 
-      var dropContext =
-          this.graphManager.translateToParentGeometryPoint(dropContext, result.subnetCell);
+      var dropContext = Utils.getCellCenterPoint(result.subnetCell);
 
       var appgw = new AppGateway();
         appgw.GraphModel.Id = this.shortUID.randomUUID(6);
         appgw.ProvisionContext.Name = ResourceType.AppGw() + "_" + appgw.GraphModel.Id;
         appgw.GraphModel.DisplayName = 'app gateway'
         var appgwJsonString = JSON.stringify(appgw);
+
+      
 
       this.graph.insertVertex
         (result.subnetCell, appgw.GraphModel.IconId ,appgwJsonString, dropContext.x, dropContext.y, 35, 35,
@@ -827,8 +836,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
   addDNSPrivateZone = (dropContext) => {
       var parent = this.graph.getDefaultParent();
-      var dropContext =
-          this.graphManager.translateToParentGeometryPoint(dropContext, parent);
+      var dropContext = this.graphManager.translateToParentGeometryPoint(dropContext, parent);
 
       var dnsPrivateZone = new DNSPrivateZone();
         dnsPrivateZone.GraphModel.ResourceType = 'dnsprivatezone';
@@ -848,8 +856,7 @@ addUpDownLeftRightArrowToMoveCells() {
     if(dropContext.resourceType == ResourceType.WindowsVM() ||
         dropContext.resourceType == ResourceType.LinuxVM())
     {
-      var result =
-        this.azureValidator.isResourceDropinSubnet(dropContext.x, dropContext.y);
+      var result = this.azureValidator.isResourceDropinSubnet();
 
       if(!result.isInSubnet)
       {
@@ -884,11 +891,10 @@ addUpDownLeftRightArrowToMoveCells() {
      this.graphManager.graph.getModel().beginUpdate();
      try
      {
-        var dropContext =
-          this.graphManager.translateToParentGeometryPoint(dropContext, result.subnetCell);
+        var subnetCenterPt = Utils.getCellCenterPoint(result.subnetCell);
 
         var vm = this.graph.insertVertex
-          (result.subnetCell, vmModel.GraphModel.IconId, JSON.stringify(vmModel), dropContext.x, dropContext.y, 30, 30,
+          (result.subnetCell, vmModel.GraphModel.IconId, JSON.stringify(vmModel), subnetCenterPt.x, subnetCenterPt.y, 30, 30,
           "editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + iconByOS);
     }
      finally
@@ -900,8 +906,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
   addVMSS = (dropContext) => {
 
-    var result =
-      this.azureValidator.isResourceDropinSubnet(dropContext.x, dropContext.y);
+    var result = this.azureValidator.isResourceDropinSubnet();
 
     if(dropContext.resourceType == ResourceType.VMSS() && !result.isInSubnet)
        {
@@ -922,12 +927,11 @@ addUpDownLeftRightArrowToMoveCells() {
      this.graphManager.graph.getModel().beginUpdate();
      try
      {
-       var dropContext =
-          this.graphManager.translateToParentGeometryPoint(dropContext, result.subnetCell);
+      var subnetCenterPt = Utils.getCellCenterPoint(result.subnetCell);
 
         var vmss = this.graph.insertVertex
           (result.subnetCell, vmssModel.GraphModel.IconId ,userObj,
-           dropContext.x, dropContext.y, 40, 40,
+           subnetCenterPt.x, subnetCenterPt.y, 40, 40,
           "editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + this.azureIcons.VMSS());
     }
      finally
@@ -953,8 +957,6 @@ addUpDownLeftRightArrowToMoveCells() {
 		{
 			this.graph.setSelectionCell(this.mxClientOverrides.groupCells(null, 0));
 		}
-    //var dropContext =
-    //this.graphManager.translateToParentGeometryPoint(dropContext, result.subnetCell);
   }
 
   
@@ -1012,9 +1014,39 @@ addUpDownLeftRightArrowToMoveCells() {
         {
           for (var i = 0; i < cells.length; i++)
           {
+            if(this.azureValidator.isVM(cells[i]))
+            {
+                var selectedCell = this.graph.getSelectionCell();
+
+                if(!this.azureValidator.isSubnet(selectedCell))
+                {
+                    Toaster.create({
+                      position: Position.TOP,
+                      autoFocus: false,
+                      canEscapeKeyClear: true
+                    }).show({intent: Intent.WARNING, timeout: 2000, message: Messages.VMInSubnet()});
+                    return;
+                }
+                else{
+                  mxClipboard.parents[i] = selectedCell;
+                }
+            }
+            
+            if(this.azureValidator.isAppGateway(cells[i]) &&
+               !this.azureValidator.isResourceinDedicatedSubnet(mxClipboard.parents[i]))
+            {
+                Toaster.create({
+                  position: Position.TOP,
+                  autoFocus: false,
+                  canEscapeKeyClear: true
+                }).show({intent: Intent.DANGER, timeout: 2000, message: Messages.AppGatewayNotInSubnetError()});
+                return;
+            }
+
             var tmp = (mxClipboard.parents != null && this.graph.model.contains(mxClipboard.parents[i])) ?
-                 mxClipboard.parents[i] : parent;
+                mxClipboard.parents[i] : parent;
             cells[i] = this.graph.importCells([cells[i]], delta, delta, tmp)[0];
+            
           }
         }
         finally

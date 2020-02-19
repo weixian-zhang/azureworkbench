@@ -506,9 +506,6 @@ export default class MxGraphManager
         mxUtils.makeDraggable(htmlElement, this.graph,
             function(graph, evt, target, x, y,)
             {
-                var x = mxEvent.getClientX(evt);
-                var y = mxEvent.getClientY(evt);
-
                 var evtPoint = graph.getPointForEvent(evt);
 
                 var dropContext = {

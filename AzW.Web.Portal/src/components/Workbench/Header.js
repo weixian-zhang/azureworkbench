@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Toaster,Intent, Popover, Menu, Position, MenuItem, Classes, Icon } from "@blueprintjs/core";
+import { Toaster,Intent, Popover, Menu, Position, MenuItem,MenuDivider, Classes, Icon } from "@blueprintjs/core";
 
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -9,6 +9,7 @@ import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import SaveIcon from '@material-ui/icons/Save';
 import CloudIcon from '@material-ui/icons/Cloud';
+import FolderIcon from '@material-ui/icons/Folder';
 import ShareIcon from '@material-ui/icons/Share';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
 import HelpIcon from '@material-ui/icons/Help';
@@ -68,42 +69,42 @@ export default class Header extends Component {
             </Typography>
             <section style={this.style.rightToolbar}>
               <IconButton color="inherit" aria-label="Edit">
-                <Tippy content="My Workspace" followCursor={true} placement="bottom">
+                <Tippy content="My Space" followCursor={true} placement="bottom">
                   <CloudIcon onClick={this.showWorkspace} />
                 </Tippy>
               </IconButton>
+
+              <Popover content=
+               { 
+                   <Menu className={Classes.ELEVATION_1}>
+                     <MenuItem  text="Save in Browser" onClick={this.saveToLocal} />
+                     <MenuItem  text="Save to Workspace" onClick={this.savetoWorkspace} />
+                     <MenuDivider />
+                     <MenuItem  text="Export as PDF" onClick={this.exportDiagramAsPDF} />
+                     <MenuItem  text="Export as Workbench File" />
+                     <MenuDivider />
+                     <MenuItem  text="Import Workbench File" />
+                   </Menu>
+               } position={Position.BOTTOM}>
+                <IconButton color="inherit" aria-label="Edit">
+                  <Tippy content="File" followCursor={true} placement="bottom">
+                    <FolderIcon  />
+                  </Tippy>
+                </IconButton>
+              </Popover>
+              
               <IconButton color="inherit" aria-label="Save">
                 <Tippy content="Share" followCursor={true} placement="bottom">
                   <ShareIcon onClick={this.shareDiagram} />
                 </Tippy>
               </IconButton>
-
+        
               <IconButton color="inherit" aria-label="Save">
-                  <Tippy content="Export as PDF" followCursor={true} placement="bottom">
-                    <ImportExportIcon onClick={this.exportDiagramAsPDF} />
-                  </Tippy>
+                <Tippy content="Help" followCursor={true} placement="bottom">
+                  <HelpIcon />
+                </Tippy>
               </IconButton>
-              
-              <Popover content=
-               { 
-                   <Menu className={Classes.ELEVATION_1}>
-                     <MenuItem  text="Save to Browser" onClick={this.saveToLocal} />
-                     <MenuItem  text="Save to Workspace" onClick={this.savetoWorkspace} />
-                   </Menu>
-               } position={Position.BOTTOM}>
-                <IconButton color="inherit" aria-label="Save">
-                  <Tippy content="Save to..." followCursor={true} placement="bottom">
-                    <SaveIcon />
-                  </Tippy>
-                </IconButton>
-              </Popover>
-         
-                <IconButton color="inherit" aria-label="Save">
-                  <Tippy content="Help" followCursor={true} placement="bottom">
-                    <HelpIcon />
-                  </Tippy>
-                </IconButton>
-              
+            
                 <Popover content=
                { 
                    <Menu className={Classes.ELEVATION_1}>

@@ -1,18 +1,23 @@
 import Utils from './Utils';
+import ResourceType from '../../../models/ResourceType';
 
 export default class AzureValidator {
     constructor(graph){
         this.graph = graph;
     }
     
-    isResourceDropinSubnet(dropx, dropy) {
-         var cell = this.graph.getSelectionCell(); //this.graph.getCellAt(dropx, dropy);
+    isResourceDropinSubnet(droppedCell) {
+        var cell = null;
 
-         if(Utils.IsNullOrUndefine(cell) ||
-            JSON.parse(cell.value).GraphModel.ResourceType != "subnet")
-            return {isInSubnet: false, subnetCell: cell};
-         else
+        if(!Utils.IsNullOrUndefine(droppedCell))
+            cell = droppedCell;
+        else
+            cell = this.graph.getSelectionCell();
+
+         if(this.isSubnet(cell))
             return {isInSubnet: true, subnetCell: cell};
+         else
+            return {isInSubnet: false, subnetCell: cell};
     }
 
     isResourceinDedicatedSubnet(subnetCell) {
@@ -28,5 +33,58 @@ export default class AzureValidator {
         }
         else
             return false;
+    }
+
+    isVM(cell) {
+        
+        if(Utils.IsNullOrUndefine(cell))
+            return false;
+
+        var obj = Utils.TryParseUserObject(cell.value);
+
+        if(Utils.IsNullOrUndefine(obj))
+            return false;
+        
+        if(obj.isUserObject &&
+           obj.userObject.GraphModel.ResourceType == ResourceType.WindowsVM() ||
+           obj.userObject.GraphModel.ResourceType == ResourceType.LinuxVM())
+            return true;
+        else
+            return false;
+
+    }
+
+    isAppGateway(cell){
+        if(Utils.IsNullOrUndefine(cell))
+        return false;
+
+        var obj = Utils.TryParseUserObject(cell.value);
+
+        if(Utils.IsNullOrUndefine(obj))
+            return false;
+        
+        if(obj.isUserObject && obj.userObject.GraphModel.ResourceType == ResourceType.AppGw())
+            return true;
+        else
+            return false;
+    }
+
+    isSubnet(cell){
+        if(Utils.IsNullOrUndefine(cell))
+        return false;
+
+        var obj = Utils.TryParseUserObject(cell.value);
+
+        if(Utils.IsNullOrUndefine(obj))
+            return false;
+        
+        if(obj.isUserObject && obj.userObject.GraphModel.ResourceType == ResourceType.Subnet())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }
