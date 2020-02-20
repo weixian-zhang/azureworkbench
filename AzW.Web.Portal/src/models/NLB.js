@@ -8,17 +8,18 @@ export default class NLB
         };
 
         this.ProvisionContext = {
+            ResourceType: ResourceType.NLB(),
+            Deployable: true,
+            HighCost: false,
+            
             Name: '',
             Location: '',
+            Tags: [],
+
             PublicIP: false,
             IsInternal: false,
-            Tags: [],
-            Depends: {
-                VNet: {
-                    VNetAddress: '',
-                    SubnetName: ''
-                }
-            }
+            VNetAddress: '',
+            SubnetName: ''
         }; 
         this.CalculatorContext = {
             IsFree: false,

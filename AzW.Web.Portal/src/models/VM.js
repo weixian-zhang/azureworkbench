@@ -8,23 +8,22 @@ export default class VM
         };
 
         this.ProvisionContext = {
+            ResourceType: ResourceType.VM(),
+            Deployable: true,
+            HighCost: false,
+            
             Name: '',
             Location: '',
+            Tags: [],
+
             PublicIP: false,
             RootUsername: '',
             RootPassword: '',
-            Tags: [],
-            Depends: {
-                VNet: {
-                    VNetAddress: '',
-                    SubnetName: ''
-                }
-            },
-            SkuSpec: {
-                VMPublisher: '',
-                VMOffer: '',
-                VMSKU: '',
-            }
+            VNetAddress: '',
+            SubnetName: '',
+            VMPublisher: '',
+            VMOffer: '',
+            VMSKU: ''
         };
         this.CalculatorContext = {
             IsFree: false,

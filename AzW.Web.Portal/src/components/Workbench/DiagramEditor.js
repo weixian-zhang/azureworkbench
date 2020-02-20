@@ -368,8 +368,11 @@ addUpDownLeftRightArrowToMoveCells() {
       case 'dashedarrow':
         this.addDashedArrow(dropContext);
         break;
-      case 'curvearrow':
-        this.addCurvedArrow(dropContext);
+      case 'cylinder':
+        this.addCylinder(dropContext);
+        break;
+      case 'hexagon':
+        this.addHexagon(dropContext);
         break;
       case 'label':
         this.addLabel(dropContext);
@@ -489,12 +492,6 @@ addUpDownLeftRightArrowToMoveCells() {
         var parent = this.graph.getDefaultParent();
         var randomId = this.shortUID.randomUUID(6);
 
-        // var style =
-        //   this.graphManager.getDefaultStraightEdgeStyleString();
-
-        // var straightArrowCell =
-        //   this.graph.insertEdge(parent, null, null, null, null, style);
-
         var cell = new mxCell(randomId,
           new mxGeometry(dropContext.x, dropContext.y, 50, 50),
           'straightedgestyle');
@@ -506,7 +503,6 @@ addUpDownLeftRightArrowToMoveCells() {
         var straigthArrow= this.graph.addCell(cell, parent);
 
         this.graph.scrollCellToVisible(straigthArrow);
-        //this.graph.fireEvent(new mxEventObject('cellsInserted', 'cells', [addedCell]));
       }
       finally
       {
@@ -540,39 +536,12 @@ addUpDownLeftRightArrowToMoveCells() {
     }
   }
 
-  // addCurvedArrow(dropContext) {
-  //   this.graphManager.graph.getModel().beginUpdate();
-  //   try
-  //   {
-  //     var parent = this.graph.getDefaultParent();
-  //     var randomId = this.shortUID.randomUUID(6);
-  //     var cell = new mxCell(randomId,
-  //       new mxGeometry(dropContext.x, dropContext.y, 50, 50),
-  //       this.graphManager.getDefaultCurvedEdgeStyleString());
-
-  //     cell.geometry.setTerminalPoint(new mxPoint(dropContext.x, dropContext.y), true);
-  //     cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
-  //     cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
-  //     cell.geometry.relative = true;
-  //     cell.edge = true;
-  //     this.graph.addCell(cell, parent);
-
-  //     this.graph.scrollCellToVisible(elbowArrow);
-  //   }
-  //   finally
-  //   {
-  //     // Updates the display
-  //     this.graphManager.graph.getModel().endUpdate();
-  //   }
-  // }
-
   addElbowArrow(dropContext){
 
       this.graphManager.graph.getModel().beginUpdate();
       try
       {
         var parent = this.graph.getDefaultParent();
-        //var edgeStyle= this.graphManager.getDefaultElbowEdgeStyleString();
 
         var randomId = this.shortUID.randomUUID(6);
         var cell = new mxCell(randomId,
@@ -591,6 +560,38 @@ addUpDownLeftRightArrowToMoveCells() {
         // Updates the display
         this.graphManager.graph.getModel().endUpdate();
       }
+  }
+
+  addCylinder(dropContext){
+    var style = this.graphManager.getDefaultCylinderStyleString();
+
+    var triangle = this.graph.insertVertex(
+      this.graph.getDefaultParent(),
+      null,
+      'cylinder',
+      dropContext.x,
+      dropContext.y,
+      100,
+      100,
+      style
+    );
+    this.graph.scrollCellToVisible(triangle);
+  }
+
+  addHexagon(dropContext){
+    var style = this.graphManager.getDefaultHexagonStyleString();
+
+    var triangle = this.graph.insertVertex(
+      this.graph.getDefaultParent(),
+      null,
+      'hexagon',
+      dropContext.x,
+      dropContext.y,
+      100,
+      100,
+      style
+    );
+    this.graph.scrollCellToVisible(triangle);
   }
 
   addLabel = (dropContext) => {
@@ -668,7 +669,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
   addOnpremDC = (dropContext) => {
     this.graph.insertVertex
-          (this.graph.getDefaultParent(), null, 'datacenter', dropContext.x, dropContext.y, 50, 50,
+          (this.graph.getDefaultParent(), null, '<p style="margin: 0px auto">datacenter</p>', dropContext.x, dropContext.y, 50, 50,
           "fontSize=13;editable=1;verticalLabelPosition=bottom;shape=image;image=" +
           require('../../assets/azure_icons/shape-dc.png'));
   }

@@ -81,9 +81,6 @@ export default class Header extends Component {
                      <MenuItem  text="Save to Workspace" onClick={this.savetoWorkspace} />
                      <MenuDivider />
                      <MenuItem  text="Export as PDF" onClick={this.exportDiagramAsPDF} />
-                     <MenuItem  text="Export as Workbench File" />
-                     <MenuDivider />
-                     <MenuItem  text="Import Workbench File" />
                    </Menu>
                } position={Position.BOTTOM}>
                 <IconButton color="inherit" aria-label="Edit">

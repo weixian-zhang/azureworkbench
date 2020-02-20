@@ -8,8 +8,13 @@ export default class VNet
         };
 
         this.ProvisionContext = {
+            ResourceType: ResourceType.VM(),
+            Deployable: true,
+            HighCost: false,
+            
             Name: '',
             Location: '',
+            Tags: [],
             AddressSpace: false,
             Subnets: []
         }; 

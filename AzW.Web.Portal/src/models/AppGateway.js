@@ -8,10 +8,14 @@ export default class AppGateway
         };
 
         this.ProvisionContext = {
+            ResourceType: ResourceType.AppGw(),
+            Deployable: true,
+            HighCost: false,
+            
             Name: '',
             Location: '',
-            ResourceType: ResourceType.AppGw(),
             Tags: [],
+
             VNetAddress: '',
             SubnetName: ''
         };

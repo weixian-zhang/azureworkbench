@@ -8,9 +8,13 @@ export default class DNSPrivateZone
         };
 
         this.ProvisionContext = {
+            ResourceType: ResourceType.DNSPrivateZone(),
+            Deployable: true,
+            HighCost: false,
+            
             Name: '',
             Location: '',
-            Tags: []
+            Tags: [],
         };
         this.CalculatorContext = {
             IsFree: false,

@@ -8,8 +8,13 @@ export default class ASE
         };
 
         this.ProvisionContext = {
+            ResourceType: ResourceType.ASE(),
+            Deployable: true,
+            HighCost: false,
+            
             Name: '',
             Location: '',
+            Tags: [],
         };
         this.CalculatorContext = {
             IsFree: false,

@@ -2,6 +2,7 @@ export default class ResourceType
 {
     static WindowsVM() {return 'vmWindows'; }
     static LinuxVM() {return 'vmLinux'; }
+    static VM() {return 'vm'; }
     static VMSS() {return 'vmss'; }
     static AppService() {return 'appsvc'; }
     static ASE() {return 'ase'; }

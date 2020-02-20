@@ -8,7 +8,12 @@ export default class Subnet
         };
 
         this.ProvisionContext = {
+            ResourceType: ResourceType.Subnet(),
+            Deployable: true,
+            HighCost: false,
+            
             Name: '',
+            VNetName: '',
             CIDR: '',
             NSG: []
         };

@@ -113,6 +113,8 @@ export default class ResourcePalette extends Component {
     this.label = React.createRef();
     this.rectangle = React.createRef();
     this.circle = React.createRef();
+    this.cylinder = React.createRef();
+    this.hexagon = React.createRef();
     this.triangle = React.createRef();
     this.user = React.createRef();
     this.datacenter = React.createRef();
@@ -169,96 +171,96 @@ export default class ResourcePalette extends Component {
       
   }
 
-  shapePanelHeaderClick = () => { 
-    this.setState(
-      { 
-        isShapeOpen: !this.state.isShapeOpen
-      }) 
-  }
+  // shapePanelHeaderClick = () => { 
+  //   this.setState(
+  //     { 
+  //       isShapeOpen: !this.state.isShapeOpen
+  //     }) 
+  // }
 
-  iotPanelHeaderClick = () => {
-    this.setState(
-      { 
-        isIoTOpen: !this.state.isIoTOpen
-      }) 
-  }
+  // iotPanelHeaderClick = () => {
+  //   this.setState(
+  //     { 
+  //       isIoTOpen: !this.state.isIoTOpen
+  //     }) 
+  // }
 
-  dataPanelHeaderClick = () => {
-    this.setState(
-      { 
-        isDataOpen: !this.state.isDataOpen
-      }) 
-  }
+  // dataPanelHeaderClick = () => {
+  //   this.setState(
+  //     { 
+  //       isDataOpen: !this.state.isDataOpen
+  //     }) 
+  // }
 
-  serverPanelHeaderClick = () => {
-    this.setState(
-      { 
-        isServerOpen: !this.state.isServerOpen
-      }) 
-  }
+  // serverPanelHeaderClick = () => {
+  //   this.setState(
+  //     { 
+  //       isServerOpen: !this.state.isServerOpen
+  //     }) 
+  // }
 
-  storagePanelHeaderClick = () => { 
-    this.setState(
-      { 
-        isStorageOpen: !this.state.isStorageOpen
-      }) 
-  }  
+  // storagePanelHeaderClick = () => { 
+  //   this.setState(
+  //     { 
+  //       isStorageOpen: !this.state.isStorageOpen
+  //     }) 
+  // }  
 
-  computePanelHeaderClick = () => { 
-    this.setState(
-      { 
-        isComputeOpen: !this.state.isComputeOpen
-      }) 
-  }
+  // computePanelHeaderClick = () => { 
+  //   this.setState(
+  //     { 
+  //       isComputeOpen: !this.state.isComputeOpen
+  //     }) 
+  // }
 
-  networkingPanelHeaderClick = () => { 
-    this.setState(
-      { 
-        isNetworkingOpen: !this.state.isNetworkingOpen
-      }) 
-  }
+  // networkingPanelHeaderClick = () => { 
+  //   this.setState(
+  //     { 
+  //       isNetworkingOpen: !this.state.isNetworkingOpen
+  //     }) 
+  // }
 
-  containerPanelHeaderClick = () => {
-    this.setState(
-      { 
-        isContainerOpen: !this.state.isContainerOpen
-      })
-  }
+  // containerPanelHeaderClick = () => {
+  //   this.setState(
+  //     { 
+  //       isContainerOpen: !this.state.isContainerOpen
+  //     })
+  // }
 
-  integrationPanelHeaderClick = () => {
-    this.setState(
-      { 
-        isIntegrationOpen: !this.state.isIntegrationOpen
-      })
-  }
+  // integrationPanelHeaderClick = () => {
+  //   this.setState(
+  //     { 
+  //       isIntegrationOpen: !this.state.isIntegrationOpen
+  //     })
+  // }
 
-  managementPanelHeaderClick = () => {
-    this.setState(
-      { 
-        isManagementOpen: !this.state.isManagementOpen
-      })
-  }
+  // managementPanelHeaderClick = () => {
+  //   this.setState(
+  //     { 
+  //       isManagementOpen: !this.state.isManagementOpen
+  //     })
+  // }
 
-  identityPanelHeaderClick = () => {
-    this.setState(
-      { 
-        isIdentityOpen: !this.state.isIdentityOpen
-      })
-  }
+  // identityPanelHeaderClick = () => {
+  //   this.setState(
+  //     { 
+  //       isIdentityOpen: !this.state.isIdentityOpen
+  //     })
+  // }
 
-  databasePanelHeaderClick = () => {
-    this.setState(
-      { 
-        isDatabaseOpen: !this.state.isDatabaseOpen
-      })
-  }
+  // databasePanelHeaderClick = () => {
+  //   this.setState(
+  //     { 
+  //       isDatabaseOpen: !this.state.isDatabaseOpen
+  //     })
+  // }
 
-  securityPanelHeaderClick = () => {
-    this.setState(
-      { 
-        isSecurityOpen: !this.state.isSecurityOpen
-      })
-  }
+  // securityPanelHeaderClick = () => {
+  //   this.setState(
+  //     { 
+  //       isSecurityOpen: !this.state.isSecurityOpen
+  //     })
+  // }
 
   componentDidMount = () =>  
   {
@@ -297,11 +299,6 @@ export default class ResourcePalette extends Component {
                   <img src={require('../../assets/azure_icons/round-connector.png')} width="30" height="30" />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.curveArrow}>
-                <Tippy content="Curved Arrow" followCursor={true} placement="bottom">
-                  <img src={require('../../assets/azure_icons/shape-curvearrow.png')} width="30" height="30" />
-                </Tippy>
-              </div>
               <div class="tile-panel" ref={this.label}>
                 <Tippy content="Label" followCursor={true} placement="bottom">
                   <img src={require('../../assets/azure_icons/text.png')} width="30" height="30" />
@@ -309,7 +306,7 @@ export default class ResourcePalette extends Component {
               </div>
               <div class="tile-panel" ref={this.rectangle}>
                 <Tippy content="Rectangle" followCursor={true} placement="bottom">
-                  <img src={require('../../assets/azure_icons/shape-rectangle.png')} width="30" height="30" />
+                  <img src={require('../../assets/azure_icons/shape-rectangle.png')} width="25" height="25" />
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.triangle}>
@@ -320,6 +317,16 @@ export default class ResourcePalette extends Component {
               <div class="tile-panel" ref={this.circle}>
                 <Tippy content="Circle" followCursor={true} placement="bottom">
                   <Circle class="azure-rsc-icon" />
+                </Tippy>
+              </div>
+              <div class="tile-panel" ref={this.cylinder}>
+                <Tippy content="Cylinder" followCursor={true} placement="bottom">
+                  <img src={require('../../assets/azure_icons/shape-cylinder.png')} width="35" height="35" />
+                </Tippy>
+              </div>
+              <div class="tile-panel" ref={this.hexagon}>
+                <Tippy content="Hexagon" followCursor={true} placement="bottom">
+                  <img src={require('../../assets/azure_icons/shape-hexagon.png')} width="30" height="30" />
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.user}>
@@ -852,7 +859,8 @@ export default class ResourcePalette extends Component {
     this.graphManager.makeIconDraggable(this.straightArrow.current, "straightarrow", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.dashedArrow.current, "dashedarrow", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.elbowArrow.current, "elbowarrow", thisComponent.props.addResourceToDiagramEditor);
-    this.graphManager.makeIconDraggable(this.curveArrow.current, "curvearrow", thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.cylinder.current, "cylinder", thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.hexagon.current, "hexagon", thisComponent.props.addResourceToDiagramEditor);
     
     this.graphManager.makeIconDraggable(this.label.current, "label", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.rectangle.current, "rectangle", thisComponent.props.addResourceToDiagramEditor);

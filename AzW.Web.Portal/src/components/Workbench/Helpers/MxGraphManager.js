@@ -17,8 +17,7 @@ import {
     mxCodecRegistry,
     mxCell,
     mxObjectCodec,
-    mxGeometry,
-    mxEventObject
+    mxCellEditor
   } from "mxgraph-js";
   import Utils from '../Helpers/Utils';
 
@@ -126,6 +125,46 @@ export default class MxGraphManager
         this.graph.panningHandler.addListener(mxEvent.PAN_END, 
             function() { this.graph.container.style.cursor = 'default'; });
     }
+
+    initLabelBehaviour() {
+        this.graph.cellEditor.getEditorBounds = function(state)
+        {
+            var result = mxCellEditor.prototype.getEditorBounds.apply(this, arguments);
+
+            if (this.graph.getModel().isEdge(state.cell))
+            {
+                result.x = state.getCenterX() - result.width / 2;
+                result.y = state.getCenterY() - result.height / 2;
+            }
+
+            return result;
+        };
+        
+        this.graph.setHtmlLabels(true);
+        this.graph.autoSizeCellsOnAdd = true;
+
+        try {
+            // Overrides method to provide GraphModel.DisplayName as label to vertex
+            this.graph.convertValueToString = function(cell)
+            {
+                if(cell.isEdge())
+                return;
+
+                var result = Utils.TryParseUserObject(cell.value);
+
+                if(result.isUserObject)
+                {
+                    return  result.userObject.GraphModel.DisplayName;
+                }
+                else
+                    return cell.value;
+            }
+        }
+        catch(error){
+            
+        }
+    }
+
 
     initMouseEvent(){
         this.graph.addMouseListener(
@@ -303,17 +342,6 @@ export default class MxGraphManager
 
     }
 
-    initLabelBehaviour(){
-        
-        //this.graph.htmlLabels = true;
-        this.graph.setHtmlLabels(false);
-        this.graph.htmlLabels = false;
-        this.graph.autoSizeCellsOnAdd = true;
-
-        this.renderLabelFromUserObject();
-        
-    }
-
     initCodecBehaviour() {
         // remove overlays from exclude list for mxCellCodec so that overlays are encoded into XML
         var cellCodec = mxCodecRegistry.getCodec(mxCell);
@@ -333,29 +361,6 @@ export default class MxGraphManager
         mxObjectCodec.allowEval = true;
     }
 
-    renderLabelFromUserObject(){
-        try {
-            // Overrides method to provide GraphModel.DisplayName as label to vertex
-            this.graph.convertValueToString = function(cell)
-            {
-                if(cell.isEdge())
-                return;
-
-                var result = Utils.TryParseUserObject(cell.value);
-
-                if(result.isUserObject)
-                {
-                    return  result.userObject.GraphModel.DisplayName;
-                }
-                else
-                    return cell.value;
-            }
-        }
-        catch(error){
-            
-        }
-    }
-
     initGraphStyle(){
         
         //rubberband selection style
@@ -366,6 +371,7 @@ export default class MxGraphManager
         var elbowEdgeStyle = new Object();
         //elbowEdgeStyle[mxConstants.STYLE_ROUNDED] = true;
         elbowEdgeStyle[mxConstants.STYLE_STROKEWIDTH] = 1;
+        elbowEdgeStyle[mxConstants.STYLE_ENDARROW] = 'none';
         // elbowEdgeStyle[mxConstants.STYLE_EXIT_X] = 0.5; // center
         // elbowEdgeStyle[mxConstants.STYLE_EXIT_Y] = 1.0; // bottom
         // elbowEdgeStyle[mxConstants.STYLE_EXIT_PERIMETER] = 0; // disabled
@@ -392,6 +398,7 @@ export default class MxGraphManager
         var dashedEdgeStyle = new Object();
         dashedEdgeStyle[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = '#FFFFFF';
         dashedEdgeStyle[mxConstants.STYLE_STROKEWIDTH] = '1.0';
+        dashedEdgeStyle[mxConstants.STYLE_ENDARROW] = 'none';
         dashedEdgeStyle[mxConstants.STYLE_ROUNDED] = false;
         dashedEdgeStyle[mxConstants.CURSOR_MOVABLE_EDGE] = "move";
         dashedEdgeStyle[mxConstants.STYLE_DASHED] = '1';
@@ -400,7 +407,7 @@ export default class MxGraphManager
             
        // Creates the default style for edges
         var straightEdgeStyle = new Object();
-        //straightEdgeStyle[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = '#FFFFFF';
+        straightEdgeStyle[mxConstants.STYLE_ENDARROW] = 'none';
         straightEdgeStyle[mxConstants.STYLE_EXIT_X] = 0.5; // center
         straightEdgeStyle[mxConstants.STYLE_EXIT_Y] = 1.0; // bottom
         straightEdgeStyle[mxConstants.STYLE_EXIT_PERIMETER] = 0; // disabled
@@ -462,6 +469,32 @@ export default class MxGraphManager
         ellipseStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
         ellipseStyle['shape'] = 'ellipse';
         this.graph.getStylesheet().putCellStyle('ellipsestyle', ellipseStyle);
+
+        //cylinder
+        var cylinderStyle = new Object();
+        cylinderStyle[mxConstants.STYLE_STROKECOLOR] = 'darkblue';
+        cylinderStyle[mxConstants.STYLE_FILLCOLOR] = 'none';
+        cylinderStyle[mxConstants.STYLE_RESIZABLE] = '1';
+        cylinderStyle[mxConstants.STYLE_EDITABLE] = '1';
+        cylinderStyle[mxConstants.STYLE_AUTOSIZE] = '0';
+        cylinderStyle[mxConstants.STYLE_FONTSIZE] = '15';
+        cylinderStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
+        cylinderStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
+        cylinderStyle['shape'] = 'cylinder';
+        this.graph.getStylesheet().putCellStyle('cylinderstyle', cylinderStyle);
+
+        //hexagon
+        var hexagonStyle = new Object();
+        hexagonStyle[mxConstants.STYLE_STROKECOLOR] = 'darkblue';
+        hexagonStyle[mxConstants.STYLE_FILLCOLOR] = 'none';
+        hexagonStyle[mxConstants.STYLE_RESIZABLE] = '1';
+        hexagonStyle[mxConstants.STYLE_EDITABLE] = '1';
+        hexagonStyle[mxConstants.STYLE_AUTOSIZE] = '0';
+        hexagonStyle[mxConstants.STYLE_FONTSIZE] = '15';
+        hexagonStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
+        hexagonStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
+        hexagonStyle['shape'] = 'hexagon';
+        this.graph.getStylesheet().putCellStyle('hexagonstyle', hexagonStyle);
 
         //vnet style
         var vnetCellStyle  = new Object();
@@ -818,8 +851,13 @@ export default class MxGraphManager
         return this.convertStyleObjectAsString(style);
     }
 
-    getDefaultCurvedEdgeStyleString() {
-        var style = this.graph.getStylesheet().getCellStyle('curvededgestyle');
+    getDefaultCylinderStyleString() {
+        var style = this.graph.getStylesheet().getCellStyle('cylinderstyle');
+        return this.convertStyleObjectAsString(style);
+    }
+
+    getDefaultHexagonStyleString() {
+        var style = this.graph.getStylesheet().getCellStyle('hexagonstyle');
         return this.convertStyleObjectAsString(style);
     }
 }

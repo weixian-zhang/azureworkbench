@@ -8,10 +8,13 @@ export default class AppService
         };
 
         this.ProvisionContext = {
+            ResourceType: ResourceType.AppService(),
+            Deployable: true,
+            HighCost: false,
+            
             Name: '',
             Location: '',
-            ResourceType: ResourceType.AppService(),
-            Tags: []
+            Tags: [],
         };
         this.CalculatorContext = {
             IsFree: false,

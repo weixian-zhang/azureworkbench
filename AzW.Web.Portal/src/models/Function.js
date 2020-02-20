@@ -8,9 +8,13 @@ export default class Function
         };
 
         this.ProvisionContext = {
+            ResourceType: ResourceType.Function(),
+            Deployable: true,
+            HighCost: false,
+            
             Name: '',
-            CIDR: '',
-            NSG: []
+            Location: '',
+            Tags: []
         };
         this.CalculatorContext = {
             IsFree: false,
