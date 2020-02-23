@@ -3,6 +3,7 @@ export default class VMSS
 {
     constructor (){
         this.GraphModel = {
+            Id: '',
             ResourceType: ResourceType.VMSS(),
             DisplayName: ''
         };

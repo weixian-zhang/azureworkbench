@@ -3,6 +3,7 @@ export default class AppService
 {
     constructor (){
         this.GraphModel = {
+            Id: '',
             ResourceType: ResourceType.AppService(),
             DisplayName: ''
         };

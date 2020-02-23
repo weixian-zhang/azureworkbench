@@ -3,6 +3,7 @@ export default class AppGateway
 {
     constructor (){
         this.GraphModel = {
+            Id: '',
             ResourceType: ResourceType.AppGw(),
             DisplayName: ''
         };

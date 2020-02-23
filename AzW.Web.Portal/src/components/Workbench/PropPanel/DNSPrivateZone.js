@@ -27,30 +27,30 @@ export default class DNSPrivateZonePropPanel extends Component {
           isOpen= {this.state.isOpen}
           position= {POSITION_RIGHT}
           usePortal= {true}
-          size= {Drawer.SIZE_SMALL}>
+          size= {Drawer.SIZE_SMALL}
+          className="propPanel">
+          <div>
+            <h3>Diagram</h3>
+            <FormGroup
+                label="Icon Display Name"
+                labelFor="text-input"
+                labelInfo=""
+                inline={false}
+                intent={Intent.PRIMARY}>
 
-          <h3>Diagram</h3>
-          <FormGroup
-              label="Icon Display Name"
-              labelFor="text-input"
-              labelInfo="(required)"
-              inline={false}
-              intent={Intent.PRIMARY}>
+                <div class="bp3-input-group .modifier">
+                  <input type="text" class="bp3-input .modifier" placeholder="Display name"
+                  prop='DisplayName'
+                  value={this.state.userObject.GraphModel.DisplayName}
+                  onChange={this.onValueChange}
+                  />
+                </div>
+            </FormGroup>
+            {/* <h3>Deployment (in roadmap)</h3>
+            <h3>Calculator (in roadmap)</h3> */}
 
-              <div class="bp3-input-group .modifier">
-                <span class="bp3-icon bp3-icon-filter"></span>
-                <input type="text" class="bp3-input .modifier" placeholder="Display name"
-                 prop='DisplayName'
-                 value={this.state.userObject.GraphModel.DisplayName}
-                 onChange={this.onValueChange}
-                 />
-              </div>
-          </FormGroup>
-          <h3>Calculator</h3>
-          <h3>Deployment (in roadmap)</h3>
-                  
-          <a class="bp3-button Alignment.CENTER" role="button" onClick={this.saveForm}>Save</a>
-
+            <Button alignText="center" className="buttonStretch" text="Save" onClick={this.saveForm} />       
+          </div>
       </Drawer>
     );
   }

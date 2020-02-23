@@ -83,8 +83,21 @@ inline {
     left: 0;
   }
 
+  .preview-graph-overlay-box {
+    background-color: #fff;
+    height: 600px;/*height needs to be set*/
+    width: 800px;
+    margin: auto;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
 
-/*required for popupMenuHandler*/
+
+/* mxGraph css overrides */
+/* popupMenuHandler */
 div.mxPopupMenu {
   -webkit-box-shadow: 3px 3px 6px #C0C0C0;
   -moz-box-shadow: 3px 3px 6px #C0C0C0;
@@ -107,24 +120,14 @@ div.mxRubberband {
   border: 1px solid #e7e7e7;
   padding: 1px;
 }
-/*vnet & subnet radius*/
+/*vnet & subnet corner radius/roundness */
 rect  {
   rx: 11px;
   ry: 11px;
 }
-
-.proppanel {
-  background-color:antiquewhite;
-}
-
-/*blueprintjs button*/
-.buttonStretch {
-  width: 100%;
-  flex-grow: 1;
-}
+/*mxGraph Overrides end*/
 
 /*workbench, diagramEditor and resourcepalette*/
-/* position:relative;;width:321px;height:241px;background:url('editors/images/grid.gif'); */
 .workbenchgrid-container{
   display: flex;
   height: 100%;
@@ -156,6 +159,22 @@ rect  {
   background-image:
   linear-gradient(#eee .1em, transparent .1em);
   background-size: 100% 1.2em;
+}
+
+.stylePropPanel {
+  background-color: #FFF8E5;
+  text-align: center;
+  padding: 30px;
+}
+.propPanel {
+  background-color: #d1d3d4;
+  padding: 30px;
+}
+
+/*blueprintjs button*/
+.buttonStretch {
+  width: 100%;
+  flex-grow: 1;
 }
 
 /* centers circular progress */

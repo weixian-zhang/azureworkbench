@@ -3,6 +3,7 @@ export default class DNSPrivateZone
 {
     constructor (){
         this.GraphModel = {
+            Id: '',
             ResourceType: ResourceType.DNSPrivateZone(),
             DisplayName: ''
         };

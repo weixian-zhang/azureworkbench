@@ -1,5 +1,6 @@
 export default class Messages {
     static VMInSubnet() {return "A VM or VM Scale Sets must be in a subnet, select the subnet then drag VM onto canvas";}
+    static ASEInSubnet() {return "App Service Environment must be in a dedicated subnet, select the subnet then drag ASE onto canvas";}
     static SharedDiagramLoadError() {return "Unable to load shared diagram";}
     static NoCellOnGraph() {return "There is no resource on canvas";}
     static SharedDiagramLinkCopied() {return "Link copied";}

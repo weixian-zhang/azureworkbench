@@ -3,6 +3,7 @@ export default class Subnet
 {
     constructor (){
         this.GraphModel = {
+            Id: '',
             ResourceType: ResourceType.Subnet(),
             DisplayName: ''
         };

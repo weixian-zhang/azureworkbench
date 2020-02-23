@@ -3,6 +3,7 @@ export default class Function
 {
     constructor (){
         this.GraphModel = {
+            Id: '',
             ResourceType: ResourceType.Function(),
             DisplayName: ''
         };

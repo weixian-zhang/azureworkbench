@@ -42,7 +42,7 @@ export default class AzureValidator {
 
         var obj = Utils.TryParseUserObject(cell.value);
 
-        if(Utils.IsNullOrUndefine(obj))
+        if(!obj.isUserObject)
             return false;
         
         if(obj.isUserObject &&
@@ -60,7 +60,7 @@ export default class AzureValidator {
 
         var obj = Utils.TryParseUserObject(cell.value);
 
-        if(Utils.IsNullOrUndefine(obj))
+        if(!obj.isUserObject)
             return false;
         
         if(obj.isUserObject && obj.userObject.GraphModel.ResourceType == ResourceType.AppGw())

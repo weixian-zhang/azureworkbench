@@ -3,6 +3,7 @@ export default class ASE
 {
     constructor (){
         this.GraphModel = {
+            Id: '',
             ResourceType: ResourceType.ASE(),
             DisplayName: ''
         };

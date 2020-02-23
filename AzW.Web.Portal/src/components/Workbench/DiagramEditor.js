@@ -18,9 +18,12 @@ import VMSS from "../../models/VMSS";
 import VNet from "../../models/VNet";
 import NLB from "../../models/NLB";
 import DNSPrivateZone from "../../models/DNSPrivateZone";
+import AppService from "../../models/AppService";
 import AppGateway from "../../models/AppGateway";
 import ResourceType from '../../models/ResourceType';
+import ASE from "../../models/ASE";
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext"; 
+
 import ShortUniqueId from 'short-unique-id';
 import AzureIcons from "./Helpers/AzureIcons";
 import Messages from "./Helpers/Messages";
@@ -65,7 +68,6 @@ import mxClientOverrides from './Helpers/mxClientOverrides';
     //services
     this.diagramService = new DiagramService();
 
-    //this.onCellAdded();
     this.addDblClickEventToOpenPropPanel();
     this.addDeleteKeyEventToDeleteVertex();
     this.addContextMenu();
@@ -76,14 +78,14 @@ import mxClientOverrides from './Helpers/mxClientOverrides';
     this.loadSharedDiagram();
     this.initPasteImageFromBrowserClipboard();
     this.addCtrlSSave();
-    //    this.addDragOverEventForVMOverSubnetHighlight();
+
     this.initRef();
   }
 
   render() {
     return (
       <div id="diagramEditor" className="diagramEditor">
-        <StylePropPanel ref={this.stylePanel} DiagramEditor={this} />
+        <StylePropPanel ref={this.stylePanel} MxGraphManager={this.graphManager} />
         <OverlaySaveToWorkspace ref={this.overlaySaveToWorkspace} DiagramEditor={this} />
         <Workspace ref={this.workspace} DiagramEditor={this} />
         <VMPropPanel ref={this.vmPropPanel} />
@@ -287,6 +289,14 @@ addUpDownLeftRightArrowToMoveCells() {
         menu.addSeparator();
       }
 
+      if(thisComponent.graphManager.isCellExist())
+      {
+        menu.addItem('Preview Diagram', '', function()
+        {
+          thisComponent.previewGraph();
+        });
+      }
+
       if(cell == null || cell.value == null){
         if(!mxClipboard.isEmpty())
         {
@@ -344,8 +354,7 @@ addUpDownLeftRightArrowToMoveCells() {
       }
 
       //style for shapes only
-      if(cell.isEdge() || thisComponent.graphManager.isRect(cell) || 
-      thisComponent.graphManager.isEllipse(cell) || thisComponent.graphManager.isTriangle(cell))
+      if(thisComponent.graphManager.isNonAzureShape(cell))
       {
         menu.addSeparator();
         menu.addItem('Style', '', function()
@@ -395,7 +404,29 @@ addUpDownLeftRightArrowToMoveCells() {
       case 'internet':
         this.addInternet(dropContext);
         break;
+      case 'clientdevice':
+        this.addClientDevice(dropContext);
+        break;
+      case 'adfs':
+        this.addADFSDevice(dropContext);
+        break;
+      case 'andriod':
+        this.addAndriodDevice(dropContext);
+        break;
+      case 'iphone':
+        this.addiPhoneDevice(dropContext);
+        break;
+      case 'onpremdbserver':
+        this.addOnPremDBServerDevice(dropContext);
+        break;
         
+      case ResourceType.AppService():
+        this.addAppService(dropContext);
+        break;
+      case ResourceType.ASE():
+        this.addASE(dropContext);
+        break;
+
       case 'vmWindows':
         this.addVM(dropContext, 'vmWindows');
         break;
@@ -405,6 +436,7 @@ addUpDownLeftRightArrowToMoveCells() {
       case 'vmss':
         this.addVMSS(dropContext, 'vmss');
         break;
+
       case 'vnet':
         this.addVNet(dropContext);
         break;
@@ -425,17 +457,33 @@ addUpDownLeftRightArrowToMoveCells() {
   }
 
   openStylePanel = (cell) => {
+
       var thisComp = this;
       this.stylePanel.current.show(cell, function(style){
 
-        var stroke = Object.getOwnPropertyDescriptor(style, 'stroke');
-        var fill = Object.getOwnPropertyDescriptor(style, 'fill');
+      let  properties = Object.getOwnPropertyNames(style)
 
-        var newStyles = new Map();
-        newStyles.set(stroke.value.key, stroke.value.value);
-        newStyles.set(fill.value.key, fill.value.value);
+      var newStyles = new Map();
 
-        thisComp.graphManager.changeShapeOnlyCellStyle(cell, newStyles);      
+      properties.map(propName => {
+        let propDesc = Object.getOwnPropertyDescriptor(style, propName)
+        newStyles.set(propName, propDesc.value);
+      })
+
+      thisComp.graphManager.setNewStyleFromStylePropPanel(cell, newStyles);
+
+        // var newStyles = new Map();
+        // newStyles.set(style.stroke.key, style.stroke.value);
+        // newStyles.set(style.fill.key, style.fill.value);
+        // newStyles.set(style.arrowStrokeWidth.key, style.arrowStrokeWidth.value);
+        // newStyles.set(style.arrowDashed.key, style.arrowDashed.value);
+        // newStyles.set(style.arrowStartShow.key, style.arrowStartShow.value);
+        // newStyles.set(style.arrowEndShow.key, style.arrowEndShow.value);
+        // newStyles.set(style.fontColor.key, style.fontColor.value);
+        // newStyles.set(style.fontSize.key, style.fontSize.value);
+        // newStyles.set(style.shapeBorderDash.key, style.shapeBorderDash.value);
+
+        // thisComp.graphManager.setNewStyleFromStylePropPanel(cell, newStyles);      
       })
   }
 
@@ -492,13 +540,13 @@ addUpDownLeftRightArrowToMoveCells() {
         var parent = this.graph.getDefaultParent();
         var randomId = this.shortUID.randomUUID(6);
 
+        var styleString = this.graphManager.getDefaultStraightEdgeStyleString();
+
         var cell = new mxCell(randomId,
-          new mxGeometry(dropContext.x, dropContext.y, 50, 50),
-          'straightedgestyle');
-          cell.geometry.setTerminalPoint(new mxPoint(dropContext.x, dropContext.y), true);
-          cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
+          new mxGeometry(dropContext.x, dropContext.y, 50, 50), styleString);
+          cell.geometry.setTerminalPoint(new mxPoint(dropContext.x, dropContext.y), false);
+          cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), true);
           cell.geometry.points =  [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
-          cell.geometry.relative = true;
           cell.edge = true;
         var straigthArrow= this.graph.addCell(cell, parent);
 
@@ -511,31 +559,6 @@ addUpDownLeftRightArrowToMoveCells() {
       }
   }
 
-  addDashedArrow(dropContext){
-    this.graphManager.graph.getModel().beginUpdate();
-    try
-    {
-      var parent = this.graph.getDefaultParent();
-      var randomId = this.shortUID.randomUUID(6);
-      var cell = new mxCell(randomId,
-        new mxGeometry(dropContext.x, dropContext.y, 50, 50),
-        this.graphManager.getDefaultDashEdgeStyleString());
-      cell.geometry.setTerminalPoint(new mxPoint(dropContext.x, dropContext.y), true);
-      cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
-      cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
-      cell.geometry.relative = true;
-      cell.edge = true;
-      var dashArrow = this.graph.addCell(cell, parent);
-
-      this.graph.scrollCellToVisible(dashArrow);
-    }
-    finally
-    {
-      // Updates the display
-      this.graphManager.graph.getModel().endUpdate();
-    }
-  }
-
   addElbowArrow(dropContext){
 
       this.graphManager.graph.getModel().beginUpdate();
@@ -543,9 +566,11 @@ addUpDownLeftRightArrowToMoveCells() {
       {
         var parent = this.graph.getDefaultParent();
 
+        var styleString = this.graphManager.getDefaultElbowEdgeStyleString();
+
         var randomId = this.shortUID.randomUUID(6);
         var cell = new mxCell(randomId,
-          new mxGeometry(dropContext.x, dropContext.y, 50, 50), 'elbowedgestyle');
+          new mxGeometry(dropContext.x, dropContext.y, 50, 50), styleString);
         cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 30, dropContext.y + 30), true);
         cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
         cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
@@ -681,6 +706,43 @@ addUpDownLeftRightArrowToMoveCells() {
       this.azureIcons.Internet());
   }
 
+  addClientDevice = (dropContext) => {
+    this.graph.insertVertex
+    (this.graph.getDefaultParent(), null, 'laptop', dropContext.x, dropContext.y, 60, 60,
+    "editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+      this.azureIcons.ClientDevice());
+  }
+
+  addADFSDevice = (dropContext) => {
+    this.graph.insertVertex
+    (this.graph.getDefaultParent(), null, 'ADFS', dropContext.x, dropContext.y, 60, 60,
+    "editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      this.azureIcons.ADFS());
+  }
+
+  addAndriodDevice = (dropContext) => {
+    this.graph.insertVertex
+    (this.graph.getDefaultParent(), null, 'Andriod', dropContext.x, dropContext.y, 60, 60,
+    "editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      this.azureIcons.Andriod());
+  }
+
+  addiPhoneDevice = (dropContext) => {
+    this.graph.insertVertex
+    (this.graph.getDefaultParent(), null, 'iPhone', dropContext.x, dropContext.y, 60, 60,
+    "editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      this.azureIcons.iPhone());
+  }
+
+  addOnPremDBServerDevice = (dropContext) => {
+    this.graph.insertVertex
+    (this.graph.getDefaultParent(), null, 'On-Prem DB Server', dropContext.x, dropContext.y, 60, 60,
+    "editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      this.azureIcons.OnPremDBServer());
+  }
+  
+  
+
   addVNet = (dropContext) => {
 
     //mxgraph examples
@@ -693,7 +755,7 @@ addUpDownLeftRightArrowToMoveCells() {
           https://stackoverflow.com/questions/45708656/drag-event-on-mxgraph-overlay
           // Creates a new overlay with an image and a tooltip
           var vnetIconOverlay = new mxCellOverlay(
-            new mxImage(window.location.origin + require('../../assets/azure_icons/Networking Service Color/Virtual Network (Classic).svg'),25, 25),
+            new mxImage(require('../../assets/azure_icons/Networking Service Color/Virtual Networks.svg'),20, 20),
             null,  mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP
           );
 
@@ -729,12 +791,12 @@ addUpDownLeftRightArrowToMoveCells() {
   addSubnet = (vnetCell, loadContext) => {
 
         var nsgOverlay = new mxCellOverlay(
-          new mxImage(require('../../assets/azure_icons/Networking Service Color/NSG.png'),20, 20),
+          new mxImage(require('../../assets/azure_icons/Networking Service Color/Network Security Groups (Classic).svg'),20, 20),
           null,  mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP
         );
 
         var subnetLogoOverlay = new mxCellOverlay(
-          new mxImage(require('../../assets/azure_icons/Networking Service Color/Subnet.png'),15, 15),
+          new mxImage(require('../../assets/azure_icons/Networking Service Color/Subnet.svg'),15, 15),
           'Subnet',  mxConstants.ALIGN_Right, mxConstants.ALIGN_TOP
         );
 
@@ -840,11 +902,11 @@ addUpDownLeftRightArrowToMoveCells() {
       var dropContext = this.graphManager.translateToParentGeometryPoint(dropContext, parent);
 
       var dnsPrivateZone = new DNSPrivateZone();
-        dnsPrivateZone.GraphModel.ResourceType = 'dnsprivatezone';
-        dnsPrivateZone.GraphModel.Id = this.shortUID.randomUUID(6);
-        dnsPrivateZone.ProvisionContext.Name = "azlb_" + dnsPrivateZone.GraphModel.Id;
-        dnsPrivateZone.GraphModel.DisplayName = 'azure DNS Private Zone'
-        var dnsPrivateZoneJsonString = JSON.stringify(dnsPrivateZone);
+      dnsPrivateZone.GraphModel.Id = this.shortUID.randomUUID(6);
+      dnsPrivateZone.GraphModel.ResourceType = ResourceType.DNSPrivateZone();
+      dnsPrivateZone.GraphModel.DisplayName = 'DNS Private Zone';
+
+      var dnsPrivateZoneJsonString = JSON.stringify(dnsPrivateZone);
 
       this.graph.insertVertex
         (parent, dnsPrivateZone.GraphModel.IconId ,dnsPrivateZoneJsonString, dropContext.x, dropContext.y, 35, 35,
@@ -928,7 +990,7 @@ addUpDownLeftRightArrowToMoveCells() {
      this.graphManager.graph.getModel().beginUpdate();
      try
      {
-      var subnetCenterPt = Utils.getCellCenterPoint(result.subnetCell);
+        var subnetCenterPt = Utils.getCellCenterPoint(result.subnetCell);
 
         var vmss = this.graph.insertVertex
           (result.subnetCell, vmssModel.GraphModel.IconId ,userObj,
@@ -940,6 +1002,55 @@ addUpDownLeftRightArrowToMoveCells() {
        this.graphManager.graph.getModel().endUpdate();
      }
   }
+
+  addAppService = (dropContext) => {
+    var parent = this.graph.getDefaultParent();
+    var dropContext = this.graphManager.translateToParentGeometryPoint(dropContext, parent);
+
+    var appsvc = new AppService();
+    appsvc.GraphModel.Id = this.shortUID.randomUUID(6);
+    appsvc.GraphModel.ResourceType = ResourceType.AppService();
+    appsvc.GraphModel.DisplayName = 'App Service'
+      
+    var appsvcJsonString = JSON.stringify(appsvc);
+
+    this.graph.insertVertex
+      (parent, appsvc.GraphModel.IconId ,appsvcJsonString, dropContext.x, dropContext.y, 35, 35,
+      "fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.AppService());
+  }
+
+  addASE = (dropContext) => {
+
+    var result = this.azureValidator.isResourceDropinSubnet();
+
+    if(dropContext.resourceType == ResourceType.ASE() && !result.isInSubnet)
+       {
+          Toaster.create({
+            position: Position.TOP,
+            autoFocus: false,
+            canEscapeKeyClear: true
+          }).show({intent: Intent.DANGER, timeout: 3500, message: Messages.ASEInSubnet()});
+          return;
+       }
+
+    var subnetCenterPt = Utils.getCellCenterPoint(result.subnetCell);
+
+    var ase = new ASE();
+    ase.GraphModel.Id = this.shortUID.randomUUID(6);
+    ase.GraphModel.ResourceType = ResourceType.AppService();
+    ase.GraphModel.DisplayName = 'App Service Environment'
+
+    var aseJsonString = JSON.stringify(ase);
+
+    this.graph.insertVertex
+      (result.subnetCell, ase.GraphModel.IconId ,aseJsonString, subnetCenterPt.x, subnetCenterPt.y, 35, 35,
+      "fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.ASE());
+  }
+  
+
+  
 
   //callbacks from Ref components
   fromVMPropPanelSaveModel(vmModel) {
@@ -1290,12 +1401,12 @@ addUpDownLeftRightArrowToMoveCells() {
                     this.graph.removeCellOverlays(subnet);
 
                     var nsgOverlay = new mxCellOverlay(
-                      new mxImage(require('../../assets/azure_icons/Networking Service Color/NSG.png'),20, 20),
+                      new mxImage(require('../../assets/azure_icons/Networking Service Color/Network Security Groups (Classic).svg'),20, 20),
                       null,  mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP
                     );
             
                     var subnetLogoOverlay = new mxCellOverlay(
-                      new mxImage(require('../../assets/azure_icons/Networking Service Color/Subnet.png'),15, 15),
+                      new mxImage(require('../../assets/azure_icons/Networking Service Color/Subnet.svg'),15, 15),
                       'Subnet',  mxConstants.ALIGN_Right, mxConstants.ALIGN_TOP
                     );
     
@@ -1473,6 +1584,11 @@ addUpDownLeftRightArrowToMoveCells() {
 
   showOverlaySavetoWorkspace = () => {
     this.overlaySaveToWorkspace.current.show();
+  }
+
+  previewGraph = () => {
+    var bounds =  this.graph.getView().getGraphBounds()
+    mxUtils.show(this.graph, null, bounds.x, bounds.y , bounds.width, bounds.height);
   }
 
   clearGraph() {

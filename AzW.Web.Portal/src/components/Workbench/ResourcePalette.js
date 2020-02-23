@@ -33,11 +33,22 @@ import { ReactComponent as HDInsights } from "../../assets/azure_icons/Analytics
 import { ReactComponent as DataExplorer } from "../../assets/azure_icons/Analytics Service Color/Azure Data Explorer Clusters.svg";
 import { ReactComponent as DataLakeAnalytics } from "../../assets/azure_icons/Analytics Service Color/Data Lake Analytics.svg";
 
+//web
+import { ReactComponent as FunctionApp } from "../../assets/azure_icons/ComputeServiceColor/Function Apps.svg";
+import { ReactComponent as ASE } from "../../assets/azure_icons/Web Service Color/App Service Environments.svg";
+import { ReactComponent as AppService } from "../../assets/azure_icons/Web Service Color/App Services.svg";
+import { ReactComponent as AzureSearch } from "../../assets/azure_icons/Web Service Color/Azure Search.svg";
+import { ReactComponent as SignalR } from "../../assets/azure_icons/Web Service Color/SignalR.svg";
+import { ReactComponent as AppServiceCert } from "../../assets/azure_icons/Web Service Color/App Service Certificates.svg";
+import { ReactComponent as AppServiceDomain } from "../../assets/azure_icons/Web Service Color/App Service Domains.svg";
+
 //compute
 import { ReactComponent as VirtualMachine } from "../../assets/azure_icons/ComputeServiceColor/VM/VM-windows.svg";
 import { ReactComponent as LinuxVirtualMachine } from "../../assets/azure_icons/ComputeServiceColor/VM/VM-Linux.svg";
 import { ReactComponent as VMSS } from "../../assets/azure_icons/ComputeServiceColor/VM/VM Scale Sets.svg";
-import { ReactComponent as FunctionApp } from "../../assets/azure_icons/ComputeServiceColor/Function Apps.svg";
+import { ReactComponent as ServiceFabricMesh } from "../../assets/azure_icons/ComputeServiceColor/Mesh Applications.svg";
+import { ReactComponent as SIG } from "../../assets/azure_icons/ComputeServiceColor/Shared Image Galleries.svg";
+
 
 import { ReactComponent as VirtualNetwork } from "../../assets/azure_icons/Networking Service Color/Virtual Networks.svg";
 import { ReactComponent as AppGateway } from "../../assets/azure_icons/Networking Service Color/Application Gateway.svg";
@@ -52,8 +63,7 @@ import { ReactComponent as VPNGateway } from "../../assets/azure_icons/Networkin
 import { ReactComponent as CDN } from "../../assets/azure_icons/Networking Service Color/CDN Profiles.svg";
 import { ReactComponent as ASG } from "../../assets/azure_icons/Networking Service Color/Application Security Groups.svg";
 import { ReactComponent as UDR } from "../../assets/azure_icons/Networking Service Color/Route Tables.svg";
-
-
+import { ReactComponent as NIC } from "../../assets/azure_icons/Networking Service Color/Network Interfaces.svg";
 
 import { ReactComponent as Storage } from "../../assets/azure_icons/Storage Service Color/Blob Storage.svg";
 import { ReactComponent as Databox } from "../../assets/azure_icons/Storage Service Color/Data Box.svg";
@@ -66,8 +76,6 @@ import { ReactComponent as TableStorage } from "../../assets/azure_icons/Storage
 import { ReactComponent as ContainerInstance } from "../../assets/azure_icons/Container Service Color/Container Instances.svg";
 import { ReactComponent as ContainerRegistry } from "../../assets/azure_icons/Container Service Color/Container Registries.svg";
 import { ReactComponent as Kubernetes } from "../../assets/azure_icons/Container Service Color/Kubernetes Services.svg";
-import { ReactComponent as ASE } from "../../assets/azure_icons/Web Service Color/App Service Environments.svg";
-import { ReactComponent as AppService } from "../../assets/azure_icons/Web Service Color/App Services.svg";
 
 import { ReactComponent as APIM } from "../../assets/azure_icons/Integration Service Color/API Management Services.svg";
 import { ReactComponent as ServiceBus } from "../../assets/azure_icons/Integration Service Color/Azure Service Bus.svg";
@@ -98,6 +106,7 @@ import ResourceType from '../../models/ResourceType';
 import Tippy from '@tippy.js/react';
 import 'tippy.js/dist/tippy.css';
 
+//https://code.benco.io/icon-collection/official/
 
 export default class ResourcePalette extends Component {
  
@@ -119,6 +128,11 @@ export default class ResourcePalette extends Component {
     this.user = React.createRef();
     this.datacenter = React.createRef();
     this.internet = React.createRef();
+    this.clientIcon = React.createRef();
+    this.adfsIcon = React.createRef();
+    this.andriodIcon = React.createRef();
+    this.iphoneIcon = React.createRef();
+    this.onpremdbserverIcon = React.createRef();
 
     this.vmWindowsIcon = React.createRef();
     this.vmLinuxIcon = React.createRef();
@@ -140,17 +154,6 @@ export default class ResourcePalette extends Component {
     this.backupIcon = React.createRef();
 
     this.state = {
-      isShapeOpen: false,
-      isComputeOpen: false,
-      isNetworkingOpen: false,
-      isContainerOpen: false,
-      isIntegrationOpen: false,
-      isManagementOpen: false,
-      isStorageOpen: false,
-      isDatabaseOpen: false,
-      isIdentityOpen: false,
-      isIoTOpen : false,
-      isDataOpen: false,
       graphContainer: null
     }
   }
@@ -170,97 +173,6 @@ export default class ResourcePalette extends Component {
 
       
   }
-
-  // shapePanelHeaderClick = () => { 
-  //   this.setState(
-  //     { 
-  //       isShapeOpen: !this.state.isShapeOpen
-  //     }) 
-  // }
-
-  // iotPanelHeaderClick = () => {
-  //   this.setState(
-  //     { 
-  //       isIoTOpen: !this.state.isIoTOpen
-  //     }) 
-  // }
-
-  // dataPanelHeaderClick = () => {
-  //   this.setState(
-  //     { 
-  //       isDataOpen: !this.state.isDataOpen
-  //     }) 
-  // }
-
-  // serverPanelHeaderClick = () => {
-  //   this.setState(
-  //     { 
-  //       isServerOpen: !this.state.isServerOpen
-  //     }) 
-  // }
-
-  // storagePanelHeaderClick = () => { 
-  //   this.setState(
-  //     { 
-  //       isStorageOpen: !this.state.isStorageOpen
-  //     }) 
-  // }  
-
-  // computePanelHeaderClick = () => { 
-  //   this.setState(
-  //     { 
-  //       isComputeOpen: !this.state.isComputeOpen
-  //     }) 
-  // }
-
-  // networkingPanelHeaderClick = () => { 
-  //   this.setState(
-  //     { 
-  //       isNetworkingOpen: !this.state.isNetworkingOpen
-  //     }) 
-  // }
-
-  // containerPanelHeaderClick = () => {
-  //   this.setState(
-  //     { 
-  //       isContainerOpen: !this.state.isContainerOpen
-  //     })
-  // }
-
-  // integrationPanelHeaderClick = () => {
-  //   this.setState(
-  //     { 
-  //       isIntegrationOpen: !this.state.isIntegrationOpen
-  //     })
-  // }
-
-  // managementPanelHeaderClick = () => {
-  //   this.setState(
-  //     { 
-  //       isManagementOpen: !this.state.isManagementOpen
-  //     })
-  // }
-
-  // identityPanelHeaderClick = () => {
-  //   this.setState(
-  //     { 
-  //       isIdentityOpen: !this.state.isIdentityOpen
-  //     })
-  // }
-
-  // databasePanelHeaderClick = () => {
-  //   this.setState(
-  //     { 
-  //       isDatabaseOpen: !this.state.isDatabaseOpen
-  //     })
-  // }
-
-  // securityPanelHeaderClick = () => {
-  //   this.setState(
-  //     { 
-  //       isSecurityOpen: !this.state.isSecurityOpen
-  //     })
-  // }
 
   componentDidMount = () =>  
   {
@@ -287,11 +199,6 @@ export default class ResourcePalette extends Component {
             <div class="tile-panel" ref={this.straightArrow}>
                 <Tippy content="Straight Arrow" followCursor={true} placement="bottom">
                   <img src={require('../../assets/azure_icons/straight-connector.png')} width="30" height="30" />
-                </Tippy>
-              </div>
-              <div class="tile-panel" ref={this.dashedArrow}>
-                <Tippy content="Dashed Arrow" followCursor={true} placement="bottom">
-                  <img src={require('../../assets/azure_icons/shape-dasharrow.png')} width="30" height="30" />
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.elbowArrow}>
@@ -356,29 +263,76 @@ export default class ResourcePalette extends Component {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Typography component={'span'} variant={'body2'}>
-              <div class="tile-panel" ref={this.user}>
+              <div class="tile-panel" ref={this.clientIcon}>
                   <Tippy content="Client" followCursor={true} placement="bottom">
                     <ClientDevice class="azure-rsc-icon" style={{height: '55px', width:'55px'}} />
                   </Tippy>
               </div>
-              <div class="tile-panel" ref={this.user}>
+              <div class="tile-panel" ref={this.adfsIcon}>
                 <Tippy content="ADFS" followCursor={true} placement="bottom">
                   <ADFS class="azure-rsc-icon" style={{height: '55px', width:'55px'}} />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.user}>
+              <div class="tile-panel" ref={this.andriodIcon}>
                 <Tippy content="Andriod" followCursor={true} placement="bottom">
                   <img src={require('../../assets/azure_icons/shape-andriod.png')} width="30" height="30" />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.user}>
+              <div class="tile-panel" ref={this.iphoneIcon}>
                 <Tippy content="iPhone" followCursor={true} placement="bottom">
                   <img src={require('../../assets/azure_icons/shape-iphone.png')} width="35" height="35" />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.user}>
+              <div class="tile-panel" ref={this.onpremdbserverIcon}>
                 <Tippy content="On-Premise Database Server" followCursor={true} placement="bottom">
                   <OnPremDBServer class="azure-rsc-icon" style={{height: '55px', width:'55px'}} />
+                </Tippy>
+              </div>
+            </Typography>
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
+        <ExpansionPanel>
+          <ExpansionPanelSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel3a-content"
+            id="panel3a-header">
+            <Typography>Web</Typography>
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails>
+            <Typography component={'span'} variant={'body2'}>
+              <div class="tile-panel" ref={this.appsvcIcon}>
+                <Tippy content="App Service" followCursor={true} placement="bottom">
+                  <AppService class="azure-rsc-icon" />
+                </Tippy>
+              </div>
+              <div class="tile-panel" ref={this.aseIcon}>
+                <Tippy content="App Service Environment" followCursor={true} placement="bottom">
+                  <ASE class="azure-rsc-icon" />
+                </Tippy>
+              </div>
+              <div class="tile-panel" ref={this.funcIcon}>
+                <Tippy content="Function" followCursor={true} placement="bottom">
+                  <FunctionApp class="azure-rsc-icon" />
+                </Tippy>
+              </div>
+              <div class="tile-panel" ref={this.funcIcon}>
+                <Tippy content="Azure Search" followCursor={true} placement="bottom">
+                  <AzureSearch class="azure-rsc-icon" />
+                </Tippy>
+              </div>
+              <div class="tile-panel" ref={this.funcIcon}>
+                <Tippy content="Azure SignalR" followCursor={true} placement="bottom">
+                  <SignalR class="azure-rsc-icon" />
+                </Tippy>
+              </div>
+              <div class="tile-panel" ref={this.funcIcon}>
+                <Tippy content="App Service Certificate" followCursor={true} placement="bottom">
+                  <AppServiceCert class="azure-rsc-icon" />
+                </Tippy>
+              </div>
+              <div class="tile-panel" ref={this.funcIcon}>
+                <Tippy content="App Service Domain" followCursor={true} placement="bottom">
+                  <AppServiceDomain class="azure-rsc-icon" />
                 </Tippy>
               </div>
             </Typography>
@@ -408,19 +362,14 @@ export default class ResourcePalette extends Component {
                   <VMSS class="azure-rsc-icon" />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.appsvcIcon}>
-                <Tippy content="App Service" followCursor={true} placement="bottom">
-                  <AppService class="azure-rsc-icon" />
+              <div class="tile-panel" ref={this.servicefabricmeshIcon}>
+                <Tippy content="Service Fabric Mesh" followCursor={true} placement="bottom">
+                  <ServiceFabricMesh class="azure-rsc-icon" />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.aseIcon}>
-                <Tippy content="App Service Environment" followCursor={true} placement="bottom">
-                  <ASE class="azure-rsc-icon" />
-                </Tippy>
-              </div>
-              <div class="tile-panel" ref={this.funcIcon}>
-                <Tippy content="Function" followCursor={true} placement="bottom">
-                  <FunctionApp class="azure-rsc-icon" />
+              <div class="tile-panel" ref={this.sigIcon}>
+                <Tippy content="Shared Image Galleries" followCursor={true} placement="bottom">
+                  <SIG class="azure-rsc-icon" />
                 </Tippy>
               </div>
             </Typography>
@@ -498,6 +447,11 @@ export default class ResourcePalette extends Component {
               <div class="tile-panel" ref={this.udrIcon}>
                 <Tippy content="Route Table/User Defined Route" followCursor={true} placement="bottom">
                   <UDR class="azure-rsc-icon" />
+                </Tippy>
+              </div>
+              <div class="tile-panel" ref={this.nicIcon}>
+                <Tippy content="Network Interface Card" followCursor={true} placement="bottom">
+                  <NIC class="azure-rsc-icon" />
                 </Tippy>
               </div>
             </Typography>
@@ -592,6 +546,11 @@ export default class ResourcePalette extends Component {
               <div class="tile-panel" ref={this.azsqlmiIcon}>
                 <Tippy content="SQL Stretched DB" followCursor={true} placement="bottom">
                   <SQLStretchedDB class="azure-rsc-icon" />
+                </Tippy>
+              </div>
+              <div class="tile-panel" ref={this.redisIcon}>
+                <Tippy content="Redis" followCursor={true} placement="bottom">
+                  <RedisCache class="azure-rsc-icon" />
                 </Tippy>
               </div>
             </Typography>
@@ -857,7 +816,6 @@ export default class ResourcePalette extends Component {
     var thisComponent = this;
 
     this.graphManager.makeIconDraggable(this.straightArrow.current, "straightarrow", thisComponent.props.addResourceToDiagramEditor);
-    this.graphManager.makeIconDraggable(this.dashedArrow.current, "dashedarrow", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.elbowArrow.current, "elbowarrow", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.cylinder.current, "cylinder", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.hexagon.current, "hexagon", thisComponent.props.addResourceToDiagramEditor);
@@ -869,13 +827,19 @@ export default class ResourcePalette extends Component {
     this.graphManager.makeIconDraggable(this.user.current, "user", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.datacenter.current, "datacenter", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.internet.current, "internet", thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.clientIcon.current, "clientdevice", thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.adfsIcon.current, "adfs", thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.andriodIcon.current, "andriod", thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.iphoneIcon.current, "iphone", thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.onpremdbserverIcon.current, "onpremdbserver", thisComponent.props.addResourceToDiagramEditor);
+    
+    this.graphManager.makeIconDraggable(this.appsvcIcon.current, ResourceType.AppService(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.aseIcon.current, ResourceType.ASE(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.funcIcon.current, ResourceType.Function(), thisComponent.props.addResourceToDiagramEditor);
 
     this.graphManager.makeIconDraggable(this.vmWindowsIcon.current, ResourceType.WindowsVM(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.vmLinuxIcon.current, ResourceType.LinuxVM(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.vmssIcon.current, ResourceType.VMSS(), thisComponent.props.addResourceToDiagramEditor);
-    this.graphManager.makeIconDraggable(this.appsvcIcon.current, ResourceType.AppService(), thisComponent.props.addResourceToDiagramEditor);
-    this.graphManager.makeIconDraggable(this.aseIcon.current, ResourceType.ASE(), thisComponent.props.addResourceToDiagramEditor);
-    this.graphManager.makeIconDraggable(this.funcIcon.current, ResourceType.Function(), thisComponent.props.addResourceToDiagramEditor);
 
     this.graphManager.makeIconDraggable(this.vnetIcon.current, ResourceType.VNet(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.nlbIcon.current, ResourceType.NLB(), thisComponent.props.addResourceToDiagramEditor);

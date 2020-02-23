@@ -3,6 +3,7 @@ export default class NLB
 {
     constructor (){
         this.GraphModel = {
+            Id: '',
             ResourceType: ResourceType.NLB(),
             DisplayName: ''
         };

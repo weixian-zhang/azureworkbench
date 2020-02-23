@@ -3,6 +3,7 @@ export default class VNet
 {
     constructor (){
         this.GraphModel = {
+            Id: '',
             ResourceType: ResourceType.VNet(),
             DisplayName: ''
         };
