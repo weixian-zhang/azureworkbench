@@ -79,7 +79,7 @@ export default class MxGraphManager
         this.graph.setTooltips(true);
 
         //adds page break on vertex move
-        this.graph.view.setScale(0.85); //initial zoomed out degree
+        this.graph.view.setScale(1.0); //initial zoomed out degree
         this.graph.pageBreaksVisible = false;
         this.graph.pageBreakDashed = true;
         this.graph.preferPageSize = true;
@@ -129,6 +129,30 @@ export default class MxGraphManager
     }
 
     initLabelBehaviour() {
+        
+        // Truncates the label to the size of the vertex
+        // this.graph.getLabel = function(cell)
+        // {
+        //     var label = (this.labelsVisible) ? this.convertValueToString(cell) : '';
+        //     var geometry = this.model.getGeometry(cell);
+            
+        //     if (!this.model.isCollapsed(cell) && geometry != null && (geometry.offset == null ||
+        //         (geometry.offset.x == 0 && geometry.offset.y == 0)) && this.model.isVertex(cell) &&
+        //         geometry.width >= 2)
+        //     {
+        //         var style = this.getCellStyle(cell);
+        //         var fontSize = style[mxConstants.STYLE_FONTSIZE] || mxConstants.DEFAULT_FONTSIZE;
+        //         var max = geometry.width / (fontSize * 0.625);
+                
+        //         if (max < label.length)
+        //         {
+        //             return label.substring(0, max) + '...';
+        //         }
+        //     }
+            
+        //     return label;
+        // };
+        
         this.graph.cellEditor.getEditorBounds = function(state)
         {
             var result = mxCellEditor.prototype.getEditorBounds.apply(this, arguments);
@@ -616,10 +640,10 @@ export default class MxGraphManager
                 thisComp.isImage(terminal.cell))
                 {
                     return [
-                        new mxConnectionConstraint(new mxPoint(0, 0.5), true),//w
-                        new mxConnectionConstraint(new mxPoint(1, 0.5), true), //e
-                        new mxConnectionConstraint(new mxPoint(0.5, 0), true),//n
-                        new mxConnectionConstraint(new mxPoint(0.5, 1), true)]//s
+                        new mxConnectionConstraint(new mxPoint(0, 0.5), false, 'west', 1.3, 0.0),//w
+                        new mxConnectionConstraint(new mxPoint(0.95, 0.5), false, 'east', 0.0, 0.0), //e
+                        new mxConnectionConstraint(new mxPoint(0.5, 0), false, 'north', 0.0, 0.5),//n
+                        new mxConnectionConstraint(new mxPoint(0.5, 1), false, 'south', 0.0, 0.9)]//s
                         // new mxConnectionConstraint(new mxPoint(0.65, 0.5), false),//ne
                         // new mxConnectionConstraint(new mxPoint(0.15, 0.8), false), //sw
                         // new mxConnectionConstraint(new mxPoint(0.5, 0.5), false), //s

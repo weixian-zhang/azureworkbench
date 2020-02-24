@@ -910,7 +910,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
       this.graph.insertVertex
         (parent, dnsPrivateZone.GraphModel.IconId ,dnsPrivateZoneJsonString, dropContext.x, dropContext.y, 35, 35,
-        "fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+        "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
           this.azureIcons.DNSPrivateZone());
   }
 
@@ -958,7 +958,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
         var vm = this.graph.insertVertex
           (result.subnetCell, vmModel.GraphModel.IconId, JSON.stringify(vmModel), subnetCenterPt.x, subnetCenterPt.y, 30, 30,
-          "editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + iconByOS);
+          "verticalLabelPosition=bottom;verticalAlign=top;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + iconByOS);
     }
      finally
      {
@@ -995,7 +995,7 @@ addUpDownLeftRightArrowToMoveCells() {
         var vmss = this.graph.insertVertex
           (result.subnetCell, vmssModel.GraphModel.IconId ,userObj,
            subnetCenterPt.x, subnetCenterPt.y, 40, 40,
-          "editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + this.azureIcons.VMSS());
+          "verticalLabelPosition=bottom;verticalAlign=top;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + this.azureIcons.VMSS());
     }
      finally
      {
@@ -1016,7 +1016,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (parent, appsvc.GraphModel.IconId ,appsvcJsonString, dropContext.x, dropContext.y, 35, 35,
-      "fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AppService());
   }
 
