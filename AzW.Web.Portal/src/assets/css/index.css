@@ -127,7 +127,7 @@ rect  {
 }
 /*mxGraph Overrides end*/
 
-/*workbench, diagramEditor and resourcepalette*/
+/*workbench layout: header, diagramEditor and resourcepalette*/
 .workbenchgrid-container{
   display: flex;
   height: 100%;
@@ -166,15 +166,26 @@ rect  {
   text-align: center;
   padding: 30px;
 }
-.propPanel {
+.propPanelDrawer {
   background-color: #d1d3d4;
-  padding: 30px;
+  padding: 10px;
+}
+.propPanelGrid {
+  background-color: white;
+  height: 100%;
+  padding: 20px;
+}
+.propPanelTabContent {
+  background-color: white;
+  height: 100%;
+  padding-top: 30px;
 }
 
-/*blueprintjs button*/
+/*blueprintjs button style override*/
 .buttonStretch {
   width: 100%;
   flex-grow: 1;
+  margin-top: 3px;
 }
 
 /* centers circular progress */
