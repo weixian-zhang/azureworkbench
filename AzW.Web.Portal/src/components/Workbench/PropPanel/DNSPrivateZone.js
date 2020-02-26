@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import DNSPrivateZone from '../../../models/DNSPrivateZone';
 import { FormGroup, InputGroup, Drawer, Tooltip, Intent, Button } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
-import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Grid from "@material-ui/core/Grid";

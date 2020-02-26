@@ -6,8 +6,6 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import { Collapse, H5, Position, Classes, Popover } from "@blueprintjs/core";
-
 import { ReactComponent as Circle } from "../../assets/azure_icons/shape-circle.svg";
 import { ReactComponent as User } from "../../assets/azure_icons/shape-user.svg";
 import { ReactComponent as OnPremDBServer } from "../../assets/azure_icons/_Flat Symbols/CnE_Enterprise/Database server.svg";
@@ -46,7 +44,6 @@ import { ReactComponent as AppServiceDomain } from "../../assets/azure_icons/Web
 import { ReactComponent as VirtualMachine } from "../../assets/azure_icons/ComputeServiceColor/VM/VM-windows.svg";
 import { ReactComponent as LinuxVirtualMachine } from "../../assets/azure_icons/ComputeServiceColor/VM/VM-Linux.svg";
 import { ReactComponent as VMSS } from "../../assets/azure_icons/ComputeServiceColor/VM/VM Scale Sets.svg";
-import { ReactComponent as ServiceFabricMesh } from "../../assets/azure_icons/ComputeServiceColor/Mesh Applications.svg";
 import { ReactComponent as SIG } from "../../assets/azure_icons/ComputeServiceColor/Shared Image Galleries.svg";
 
 
@@ -115,6 +112,14 @@ export default class ResourcePalette extends Component {
 
     this.graphManager = this.props.mxgraphManager;
 
+    this.initRef();
+    
+    this.state = {
+      graphContainer: null
+    }
+  }
+
+  initRef(){
     this.straightArrow = React.createRef();
     this.dashedArrow = React.createRef();
     this.elbowArrow = React.createRef();
@@ -134,28 +139,29 @@ export default class ResourcePalette extends Component {
     this.iphoneIcon = React.createRef();
     this.onpremdbserverIcon = React.createRef();
 
+    this.sigIcon = React.createRef();
     this.vmWindowsIcon = React.createRef();
     this.vmLinuxIcon = React.createRef();
     this.vmssIcon =  React.createRef();
     this.funcIcon = React.createRef();
     this.aseIcon = React.createRef();
     this.appsvcIcon = React.createRef();
+    this.azsearchIcon = React.createRef();
+    this.signalrIcon = React.createRef();
+    this.appsvccertIcon = React.createRef();
+    this.appsvcdomainIcon = React.createRef();
 
     this.azfw = React.createRef();
     this.vnetIcon = React.createRef();
     this.nlbIcon = React.createRef();
     this.dnsprivatezoneIcon = React.createRef();
     this.appgwIcon = React.createRef();
-
+    this.frontdoorIcon = React.createRef();
     this.containerInstanceIcon = React.createRef();
     this.containerRegistryIcon = React.createRef();
     this.kubeIcon = React.createRef();
     this.siteRecoveryIcon = React.createRef();
     this.backupIcon = React.createRef();
-
-    this.state = {
-      graphContainer: null
-    }
   }
   
 
@@ -315,22 +321,22 @@ export default class ResourcePalette extends Component {
                   <FunctionApp class="azure-rsc-icon" />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.funcIcon}>
+              <div class="tile-panel" ref={this.azsearchIcon}>
                 <Tippy content="Azure Search" followCursor={true} placement="bottom">
                   <AzureSearch class="azure-rsc-icon" />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.funcIcon}>
+              <div class="tile-panel" ref={this.signalrIcon}>
                 <Tippy content="Azure SignalR" followCursor={true} placement="bottom">
                   <SignalR class="azure-rsc-icon" />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.funcIcon}>
+              <div class="tile-panel" ref={this.appsvccertIcon}>
                 <Tippy content="App Service Certificate" followCursor={true} placement="bottom">
                   <AppServiceCert class="azure-rsc-icon" />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.funcIcon}>
+              <div class="tile-panel" ref={this.appsvcdomainIcon}>
                 <Tippy content="App Service Domain" followCursor={true} placement="bottom">
                   <AppServiceDomain class="azure-rsc-icon" />
                 </Tippy>
@@ -360,11 +366,6 @@ export default class ResourcePalette extends Component {
               <div class="tile-panel" ref={this.vmssIcon}>
                 <Tippy content="Virtual Machine Scale Sets" followCursor={true} placement="bottom">
                   <VMSS class="azure-rsc-icon" />
-                </Tippy>
-              </div>
-              <div class="tile-panel" ref={this.servicefabricmeshIcon}>
-                <Tippy content="Service Fabric Mesh" followCursor={true} placement="bottom">
-                  <ServiceFabricMesh class="azure-rsc-icon" />
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.sigIcon}>
@@ -836,7 +837,12 @@ export default class ResourcePalette extends Component {
     this.graphManager.makeIconDraggable(this.appsvcIcon.current, ResourceType.AppService(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.aseIcon.current, ResourceType.ASE(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.funcIcon.current, ResourceType.Function(), thisComponent.props.addResourceToDiagramEditor);
-
+    this.graphManager.makeIconDraggable(this.azsearchIcon.current, ResourceType.AzureSearch(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.signalrIcon.current, ResourceType.SignalR(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.appsvccertIcon.current, ResourceType.AppServiceCert(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.appsvcdomainIcon.current, ResourceType.AppServiceDomain(), thisComponent.props.addResourceToDiagramEditor);
+    
+    this.graphManager.makeIconDraggable(this.sigIcon.current, ResourceType.SharedImageGallery(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.vmWindowsIcon.current, ResourceType.WindowsVM(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.vmLinuxIcon.current, ResourceType.LinuxVM(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.vmssIcon.current, ResourceType.VMSS(), thisComponent.props.addResourceToDiagramEditor);
@@ -845,6 +851,7 @@ export default class ResourcePalette extends Component {
     this.graphManager.makeIconDraggable(this.nlbIcon.current, ResourceType.NLB(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.appgwIcon.current, ResourceType.AppGw(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.dnsprivatezoneIcon.current, ResourceType.DNSPrivateZone(), thisComponent.props.addResourceToDiagramEditor);
-  
+    this.graphManager.makeIconDraggable(this.frontdoorIcon.current, ResourceType.FrontDoor(), thisComponent.props.addResourceToDiagramEditor);
+    
   }
 }

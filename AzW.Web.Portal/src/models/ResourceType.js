@@ -12,4 +12,10 @@ export default class ResourceType
     static NLB() {return 'nlb'; }
     static AppGw() {return 'appgw'; }
     static DNSPrivateZone() {return 'dnsprivatezone'; }
+    static AzureSearch() {return 'search'; }
+    static SignalR() {return 'signalr'; }
+    static AppServiceCert() {return 'appsvccert'; }
+    static AppServiceDomain() {return 'appsvcdomain'; }
+    static SharedImageGallery() {return 'sig'; }
+    static FrontDoor() {return 'frontdoor'; }
 }

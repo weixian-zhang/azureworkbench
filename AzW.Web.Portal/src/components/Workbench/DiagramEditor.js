@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import Workspace from './Workspace';
 import OverlaySaveToWorkspace from './OverlaySaveToWorkspace';
 import {Spinner, InputGroup, Classes, Button, Intent, Overlay, Toaster, Position} from "@blueprintjs/core";
+import CircularProgress from '@material-ui/core/CircularProgress';
 import StylePropPanel from './PropPanel/StylePropPanel';
 import VMPropPanel from "./PropPanel/VMPropPanel";
 import SubnetPropPanel from "./PropPanel/SubnetPropPanel";
@@ -10,9 +11,16 @@ import VNetPropPanel from "./PropPanel/VNetPropPanel";
 import NLBPropPanel from "./PropPanel/NLBPropPanel";
 import AppGwPropPanel from "./PropPanel/AppGwPropPanel";
 import DNSPrivateZonePropPanel from "./PropPanel/DNSPrivateZone";
-import CircularProgress from '@material-ui/core/CircularProgress';
+import AppServicePropPanel from "./PropPanel/AppSvcPropPanel";
+import ASEPropPanel from "./PropPanel/ASEPropPanel";
 
-
+import FrontDoor from "../../models/FrontDoor";
+import SharedImageGallery from "../../models/SharedImageGallery";
+import AppServiceDomain from "../../models/AppServiceDomain";
+import AppServiceCert from "../../models/AppServiceCert";
+import SignalR from "../../models/SignalR";
+import Func from "../../models/Function";
+import AzureSearch from "../../models/AzureSearch";
 import VM from "../../models/VM";
 import VMSS from "../../models/VMSS";
 import VNet from "../../models/VNet";
@@ -88,6 +96,8 @@ import mxClientOverrides from './Helpers/mxClientOverrides';
         <StylePropPanel ref={this.stylePanel} MxGraphManager={this.graphManager} />
         <OverlaySaveToWorkspace ref={this.overlaySaveToWorkspace} DiagramEditor={this} />
         <Workspace ref={this.workspace} DiagramEditor={this} />
+        <AppServicePropPanel ref={this.asePropPanel} />
+        <ASEPropPanel ref={this.asePropPanel} />
         <VMPropPanel ref={this.vmPropPanel} />
         <VNetPropPanel ref={this.vnetPropPanel} />
         <SubnetPropPanel ref={this.subnetPropPanel} />
@@ -126,6 +136,8 @@ import mxClientOverrides from './Helpers/mxClientOverrides';
     this.nlbPropPanel = React.createRef();
     this.appgwPropPanel = React.createRef();
     this.dnsPrivateZonePropPanel = React.createRef();
+    this.appsvcPropPanel = React.createRef();
+    this.asePropPanel = React.createRef();
   }
   
   addDblClickEventToOpenPropPanel(){
@@ -426,6 +438,24 @@ addUpDownLeftRightArrowToMoveCells() {
       case ResourceType.ASE():
         this.addASE(dropContext);
         break;
+      case ResourceType.Function():
+        this.addFunc(dropContext);
+        break;
+      case ResourceType.AzureSearch():
+        this.addAzSearch(dropContext);
+        break;
+      case ResourceType.SignalR():
+        this.addSignalR(dropContext);
+        break;
+      case ResourceType.AppServiceCert():
+        this.addAppSvcCert(dropContext);
+        break;
+      case ResourceType.AppServiceDomain():
+        this.addAppSvcDomain(dropContext);
+        break;
+      case ResourceType.SharedImageGallery():
+        this.addSharedImageGallery(dropContext);
+        break;
 
       case 'vmWindows':
         this.addVM(dropContext, 'vmWindows');
@@ -443,13 +473,15 @@ addUpDownLeftRightArrowToMoveCells() {
       case 'nlb':
         this.addNLB(dropContext);
         break;
-      case 'appgw':
+      case ResourceType.AppGw():
         this.addAppGw(dropContext);
         break;
-      case 'dnsprivatezone':
+      case ResourceType.DNSPrivateZone():
         this.addDNSPrivateZone(dropContext);
         break;
-        
+      case ResourceType.FrontDoor():
+        this.addFrontDoor(dropContext);
+        break;
       default:
         break;
     }
@@ -470,20 +502,7 @@ addUpDownLeftRightArrowToMoveCells() {
         newStyles.set(propName, propDesc.value);
       })
 
-      thisComp.graphManager.setNewStyleFromStylePropPanel(cell, newStyles);
-
-        // var newStyles = new Map();
-        // newStyles.set(style.stroke.key, style.stroke.value);
-        // newStyles.set(style.fill.key, style.fill.value);
-        // newStyles.set(style.arrowStrokeWidth.key, style.arrowStrokeWidth.value);
-        // newStyles.set(style.arrowDashed.key, style.arrowDashed.value);
-        // newStyles.set(style.arrowStartShow.key, style.arrowStartShow.value);
-        // newStyles.set(style.arrowEndShow.key, style.arrowEndShow.value);
-        // newStyles.set(style.fontColor.key, style.fontColor.value);
-        // newStyles.set(style.fontSize.key, style.fontSize.value);
-        // newStyles.set(style.shapeBorderDash.key, style.shapeBorderDash.value);
-
-        // thisComp.graphManager.setNewStyleFromStylePropPanel(cell, newStyles);      
+      thisComp.graphManager.setNewStyleFromStylePropPanel(cell, newStyles);  
       })
   }
 
@@ -492,6 +511,16 @@ addUpDownLeftRightArrowToMoveCells() {
     let thisComp = this;
 
     switch (userObject.GraphModel.ResourceType) {
+      case ResourceType.AppService():
+        this.appsvcPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.ASE():
+        this.asePropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
       case ResourceType.WindowsVM():
         this.vmPropPanel.current.show(userObject, function(savedUserObject){
           thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
@@ -1038,18 +1067,106 @@ addUpDownLeftRightArrowToMoveCells() {
 
     var ase = new ASE();
     ase.GraphModel.Id = this.shortUID.randomUUID(6);
-    ase.GraphModel.ResourceType = ResourceType.AppService();
     ase.GraphModel.DisplayName = 'App Service Environment'
 
     var aseJsonString = JSON.stringify(ase);
 
     this.graph.insertVertex
       (result.subnetCell, ase.GraphModel.IconId ,aseJsonString, subnetCenterPt.x, subnetCenterPt.y, 35, 35,
-      "fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.ASE());
   }
-  
 
+  addFunc = (dropContext) => {
+    var func = new Func();
+    func.GraphModel.Id = this.shortUID.randomUUID(6);
+    func.GraphModel.DisplayName = 'Function'
+
+    var funcJsonString = JSON.stringify(func);
+
+    this.graph.insertVertex
+      (this.graph.parent, func.GraphModel.IconId ,funcJsonString, dropContext.x, dropContext.y, 35, 35,
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.FunctionApp());
+  }
+
+  addAzSearch = (dropContext) => {
+    var azsearch = new AzureSearch();
+    azsearch.GraphModel.Id = this.shortUID.randomUUID(6);
+    azsearch.GraphModel.DisplayName = 'Azure Search'
+
+    var azsearchJsonString = JSON.stringify(azsearch);
+
+    this.graph.insertVertex
+      (this.graph.parent, azsearch.GraphModel.IconId ,azsearchJsonString, dropContext.x, dropContext.y, 35, 35,
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.AzureSearch());
+  }
+  
+  addSignalR = (dropContext) => {
+    var signalr = new SignalR();
+    signalr.GraphModel.Id = this.shortUID.randomUUID(6);
+    signalr.GraphModel.DisplayName = 'SignalR'
+
+    var signalrJsonString = JSON.stringify(signalr);
+
+    this.graph.insertVertex
+      (this.graph.parent, signalr.GraphModel.IconId ,signalrJsonString, dropContext.x, dropContext.y, 35, 35,
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.SignalR());
+  }
+
+  addAppSvcCert = (dropContext) => {
+    var appsvccert = new AppServiceCert();
+    appsvccert.GraphModel.Id = this.shortUID.randomUUID(6);
+    appsvccert.GraphModel.DisplayName = 'App Service Cert'
+
+    var appsvccertJsonString = JSON.stringify(appsvccert);
+
+    this.graph.insertVertex
+      (this.graph.parent, appsvccert.GraphModel.IconId ,appsvccertJsonString, dropContext.x, dropContext.y, 35, 35,
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.AppServiceCert());
+  }
+
+  addAppSvcDomain = (dropContext) => {
+    var appsvcdomain = new AppServiceDomain();
+    appsvcdomain.GraphModel.Id = this.shortUID.randomUUID(6);
+    appsvcdomain.GraphModel.DisplayName = 'App Service Domain'
+
+    var appsvcdomainJsonString = JSON.stringify(appsvcdomain);
+
+    this.graph.insertVertex
+      (this.graph.parent, appsvcdomain.GraphModel.IconId ,appsvcdomainJsonString, dropContext.x, dropContext.y, 35, 35,
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.AppServiceDomain());
+  }
+
+  addSharedImageGallery = (dropContext) => {
+    var model = new SharedImageGallery();
+    model.GraphModel.Id = this.shortUID.randomUUID(6);
+    model.GraphModel.DisplayName = 'Shared Image Gallery'
+
+    var modelJsonString = JSON.stringify(model);
+
+    this.graph.insertVertex
+      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.SharedImageGallery());
+  }
+
+  addFrontDoor = (dropContext) => {
+    var model = new FrontDoor();
+    model.GraphModel.Id = this.shortUID.randomUUID(6);
+    model.GraphModel.DisplayName = 'Front Door'
+
+    var modelJsonString = JSON.stringify(model);
+
+    this.graph.insertVertex
+      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.FrontDoor());
+  }
   
 
   //callbacks from Ref components
