@@ -14,6 +14,7 @@ import DNSPrivateZonePropPanel from "./PropPanel/DNSPrivateZone";
 import AppServicePropPanel from "./PropPanel/AppSvcPropPanel";
 import ASEPropPanel from "./PropPanel/ASEPropPanel";
 
+import AzureCDN from "../../models/AzureCDN";
 import VirtualNetworkGateway from "../../models/VirtualNetworkGateway";
 import DevTestLab from "../../models/DevTestLab";
 import TrafficManager from "../../models/TrafficManager";
@@ -477,6 +478,15 @@ addUpDownLeftRightArrowToMoveCells() {
         break;
       case ResourceType.VirtualNetworkGateway():
         this.addVNetGateway(dropContext);
+        break;
+      case ResourceType.CDN():
+        this.addCDN(dropContext);
+        break;
+        case ResourceType.ASG():
+      this.addASG(dropContext);
+        break;
+      case ResourceType.NIC():
+        this.addNIC(dropContext);
         break;
 
       case 'vmWindows':
@@ -1310,6 +1320,34 @@ addUpDownLeftRightArrowToMoveCells() {
       "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.VNetGateway());
   }
+
+  addCDN = (dropContext) => {
+    var model = new AzureCDN();
+    model.GraphModel.Id = this.shortUID.randomUUID(6);
+    model.GraphModel.DisplayName = 'Azure CDN'
+
+    var modelJsonString = JSON.stringify(model);
+
+    this.graph.insertVertex
+      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.CDN());
+  }
+
+  addASG = (dropContext) => {
+    this.graph.insertVertex
+      (this.graph.parent, '','Application Security Group', dropContext.x, dropContext.y, 35, 35,
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.ASG());
+  }
+
+  addNIC = (dropContext) => {
+    this.graph.insertVertex
+      (this.graph.parent, '','Network Interface', dropContext.x, dropContext.y, 35, 35,
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.NIC());
+  }
+  
   
   
   //callbacks from Ref components

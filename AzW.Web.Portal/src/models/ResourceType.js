@@ -23,5 +23,7 @@ export default class ResourceType
     static TrafficManager() {return 'trafficmanager'; }
     static DevTestLab() {return 'devtestlab'; }
     static VirtualNetworkGateway() {return 'vnetgateway'; }
-    
+    static CDN() {return 'cdn'; }
+    static ASG() {return 'asg'; }
+    static NIC() {return 'nic'; }
 }
