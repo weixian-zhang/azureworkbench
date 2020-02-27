@@ -14,6 +14,11 @@ import DNSPrivateZonePropPanel from "./PropPanel/DNSPrivateZone";
 import AppServicePropPanel from "./PropPanel/AppSvcPropPanel";
 import ASEPropPanel from "./PropPanel/ASEPropPanel";
 
+import VirtualNetworkGateway from "../../models/VirtualNetworkGateway";
+import DevTestLab from "../../models/DevTestLab";
+import TrafficManager from "../../models/TrafficManager";
+import ExpressRouteCircuit from "../../models/ExpressRouteCircuit";
+import PublicIp from "../../models/PublicIp";
 import FrontDoor from "../../models/FrontDoor";
 import SharedImageGallery from "../../models/SharedImageGallery";
 import AppServiceDomain from "../../models/AppServiceDomain";
@@ -298,15 +303,11 @@ addUpDownLeftRightArrowToMoveCells() {
         {
           thisComponent.addSubnet(cell); // is vnetCell
         });
-        menu.addSeparator();
-      }
-
-      if(thisComponent.graphManager.isCellExist())
-      {
-        menu.addItem('Preview Diagram', '', function()
+        menu.addItem('Add GatewaySubnet', '', function()
         {
-          thisComponent.previewGraph();
+          thisComponent.addGatewaySubnet(cell); // is vnetCell
         });
+        menu.addSeparator();
       }
 
       if(cell == null || cell.value == null){
@@ -372,6 +373,15 @@ addUpDownLeftRightArrowToMoveCells() {
         menu.addItem('Style', '', function()
         {
           thisComponent.openStylePanel(cell);
+        });
+      }
+
+      //preview diagram in new window
+      if(thisComponent.graphManager.isCellExist())
+      {
+        menu.addItem('Preview Diagram', '', function()
+        {
+          thisComponent.previewGraph();
         });
       }
     };
@@ -456,6 +466,18 @@ addUpDownLeftRightArrowToMoveCells() {
       case ResourceType.SharedImageGallery():
         this.addSharedImageGallery(dropContext);
         break;
+      case ResourceType.PublicIp():
+        this.addPublicIp(dropContext);
+        break;
+      case ResourceType.TrafficManager():
+        this.addTrafficManager(dropContext);
+        break;
+      case ResourceType.DevTestLab():
+        this.addDevTestLab(dropContext);
+        break;
+      case ResourceType.VirtualNetworkGateway():
+        this.addVNetGateway(dropContext);
+        break;
 
       case 'vmWindows':
         this.addVM(dropContext, 'vmWindows');
@@ -482,6 +504,10 @@ addUpDownLeftRightArrowToMoveCells() {
       case ResourceType.FrontDoor():
         this.addFrontDoor(dropContext);
         break;
+      case ResourceType.ExpressRouteCircuit():
+        this.addExpressRouteCircuit(dropContext);
+        break;
+
       default:
         break;
     }
@@ -537,6 +563,8 @@ addUpDownLeftRightArrowToMoveCells() {
         });
         break;
       case ResourceType.Subnet():
+          if(this.azureValidator.isGatewaySubnet(cell))
+            return;
           this.subnetPropPanel.current.show(userObject, function(savedUserObject){
             thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
           });
@@ -825,18 +853,19 @@ addUpDownLeftRightArrowToMoveCells() {
         );
 
         var subnetLogoOverlay = new mxCellOverlay(
-          new mxImage(require('../../assets/azure_icons/Networking Service Color/Subnet.svg'),15, 15),
+          new mxImage(require('../../assets/azure_icons/Networking Service Color/Subnet.svg'),20, 20),
           'Subnet',  mxConstants.ALIGN_Right, mxConstants.ALIGN_TOP
         );
 
         var subnetVertex;
 
-        if(loadContext == undefined){
+        if(loadContext == undefined) {
 
           var subnet = new Subnet();
           subnet.GraphModel.Id = this.shortUID.randomUUID(6);
           subnet.ProvisionContext.Name = "subnet_" + subnet.GraphModel.Id;
           subnet.GraphModel.DisplayName = subnet.ProvisionContext.Name
+
           var jsonstrSubnet = JSON.stringify(subnet);
 
           this.graphManager.translateToParentGeometryPoint(vnetCell)
@@ -858,6 +887,37 @@ addUpDownLeftRightArrowToMoveCells() {
  
         this.graph.addCellOverlay(subnetVertex, subnetLogoOverlay);
         this.graph.addCellOverlay(subnetVertex, nsgOverlay);
+  }
+
+  addGatewaySubnet(vnetCell){
+
+      var subnetLogoOverlay = new mxCellOverlay(
+        new mxImage(require('../../assets/azure_icons/Networking Service Color/Subnet.svg'),20, 20),
+        'Subnet',  mxConstants.ALIGN_Right, mxConstants.ALIGN_TOP
+      );
+
+      var subnet = new Subnet();
+      subnet.GraphModel.Id = this.shortUID.randomUUID(6);
+      subnet.ProvisionContext.Name = "GatewaySubnet";
+      subnet.GraphModel.DisplayName = subnet.ProvisionContext.Name
+      subnet.GraphModel.IsGatewaySubnet = true;
+
+      var jsonstrSubnet = JSON.stringify(subnet);
+
+      this.graphManager.translateToParentGeometryPoint(vnetCell)
+
+      var subnetVertex = this.graph.insertVertex(
+      vnetCell,
+      subnet.GraphModel.Id,
+      jsonstrSubnet,
+      ((vnetCell.getGeometry().x /2) / 2) - 15,
+      vnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
+      vnetCell.getGeometry().width - 90,
+      100,
+      'subnetstyle'
+    );
+
+    this.graph.addCellOverlay(subnetVertex, subnetLogoOverlay);
   }
 
   addNLB = (dropContext) => {
@@ -1155,6 +1215,20 @@ addUpDownLeftRightArrowToMoveCells() {
         this.azureIcons.SharedImageGallery());
   }
 
+  addPublicIp = (dropContext) => {
+    var model = new PublicIp();
+    model.GraphModel.Id = this.shortUID.randomUUID(6);
+    model.GraphModel.DisplayName = 'Public IP'
+
+    var modelJsonString = JSON.stringify(model);
+
+    this.graph.insertVertex
+      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.PublicIp());
+  }
+  
+
   addFrontDoor = (dropContext) => {
     var model = new FrontDoor();
     model.GraphModel.Id = this.shortUID.randomUUID(6);
@@ -1168,7 +1242,76 @@ addUpDownLeftRightArrowToMoveCells() {
         this.azureIcons.FrontDoor());
   }
   
+  addExpressRouteCircuit = (dropContext) => {
+    var model = new ExpressRouteCircuit();
+    model.GraphModel.Id = this.shortUID.randomUUID(6);
+    model.GraphModel.DisplayName = 'ExpressRoute Circuit'
 
+    var modelJsonString = JSON.stringify(model);
+
+    this.graph.insertVertex
+      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.ExpressRouteCircuit());
+  }
+
+  addTrafficManager = (dropContext) => {
+    var model = new TrafficManager();
+    model.GraphModel.Id = this.shortUID.randomUUID(6);
+    model.GraphModel.DisplayName = 'Traffic Manager'
+
+    var modelJsonString = JSON.stringify(model);
+
+    this.graph.insertVertex
+      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.TrafficManager());
+  }
+  
+  addDevTestLab = (dropContext) => {
+    var model = new DevTestLab();
+    model.GraphModel.Id = this.shortUID.randomUUID(6);
+    model.GraphModel.DisplayName = 'DevTest Lab'
+
+    var modelJsonString = JSON.stringify(model);
+
+    this.graph.insertVertex
+      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.DevTestLab());
+  }
+
+  addVNetGateway = (dropContext) => {
+
+    var result = this.azureValidator.isResourceDropinSubnet();
+
+    var isVNetGatewayInGatewaySubnet =
+      this.azureValidator.isGatewaySubnet(result.subnetCell);
+
+    if(!result.isInSubnet || !isVNetGatewayInGatewaySubnet)
+    {
+        Toaster.create({
+          position: Position.TOP,
+          autoFocus: false,
+          canEscapeKeyClear: true
+        }).show({intent: Intent.DANGER, timeout: 8000, message: Messages.VNetGatewayNotInGatewaySubnet()});
+        return;
+    }
+
+    var model = new VirtualNetworkGateway();
+    model.GraphModel.Id = this.shortUID.randomUUID(6);
+    model.GraphModel.DisplayName = 'Virtual Network Gateway';
+    var modelJsonString = JSON.stringify(model);
+
+    var dropContext = Utils.getCellCenterPoint(result.subnetCell);
+
+    this.graph.insertVertex
+      (result.subnetCell, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.VNetGateway());
+  }
+  
+  
   //callbacks from Ref components
   fromVMPropPanelSaveModel(vmModel) {
       var vmCell = this.graph.getModel().getCell(vmModel.GraphModel.Id);

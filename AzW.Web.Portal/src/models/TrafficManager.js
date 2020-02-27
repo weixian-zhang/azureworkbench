@@ -1,21 +1,21 @@
 import ResourceType from './ResourceType'
-export default class ASE
+export default class TrafficManager
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.ASE(),
+            ResourceType: ResourceType.TrafficManager(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.ASE(),
+            ResourceType: ResourceType.TrafficManager(),
             Deployable: true,
-            HighCost: true,
+            HighCost: false,
             
             Name: '',
             Location: '',
-            Tags: [],
+            Tags: []
         };
         this.CalculatorContext = {
             IsFree: false,

@@ -13,6 +13,9 @@ export default class AzureValidator {
             cell = droppedCell;
         else
             cell = this.graph.getSelectionCell();
+        
+            if(Utils.IsNullOrUndefine(cell))
+                return false;
 
          if(this.isSubnet(cell))
             return {isInSubnet: true, subnetCell: cell};
@@ -86,5 +89,46 @@ export default class AzureValidator {
         {
             return false;
         }
+    }
+
+    isGatewaySubnetExist(vnetCell){
+        if(Utils.IsNullOrUndefine(vnetCell))
+            return false;
+        
+        var subnets = this.graph.getChildVertices(vnetCell);
+
+        if(subnets.length <= 0)
+            return false;
+        
+        subnets.map(sub => {
+            var result = Utils.TryParseUserObject(sub.value);
+
+            if(result.isUserObject) {
+                
+                if(result.userObject.GraphModel.ResourceType == ResourceType.Subnet()
+                    && result.userObject.GraphModel.IsGatewaySubnet == true)
+                    {
+                        return true;
+                    }
+            }
+        });
+
+        return false;
+    }
+
+    isGatewaySubnet(subnetCell){
+
+        if(Utils.IsNullOrUndefine(subnetCell))
+            return false;
+
+        var result = Utils.TryParseUserObject(subnetCell.value);
+
+        if(result.userObject.GraphModel.ResourceType == ResourceType.Subnet()
+        && result.userObject.GraphModel.IsGatewaySubnet == true)
+        {
+            return true;
+        }
+        else
+            return false;
     }
 }

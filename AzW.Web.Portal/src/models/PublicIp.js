@@ -1,21 +1,24 @@
 import ResourceType from './ResourceType'
-export default class ASE
+export default class PublicIp
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.ASE(),
+            ResourceType: ResourceType.PublicIp(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.ASE(),
+            ResourceType: ResourceType.PublicIp(),
             Deployable: true,
-            HighCost: true,
+            HighCost: false,
             
             Name: '',
             Location: '',
             Tags: [],
+
+            VNetAddress: '',
+            SubnetName: ''
         };
         this.CalculatorContext = {
             IsFree: false,

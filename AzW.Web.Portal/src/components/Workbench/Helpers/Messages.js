@@ -15,4 +15,5 @@ export default class Messages {
     static SubnetUngroupVNetNotAllowed() {return "Subnet must be in a Virtual Network"};
     static SaveWorkspaceFieldNotEmpty() {return "Collection and diagram name cannot be empty"};
     static PDFDownloaded() {return "PDF downloaded"};
+    static VNetGatewayNotInGatewaySubnet() {return "Virtual Network Gateway must be in GatewaySubnet. Add a GatewaySubnet, select the subnet and drag Virtual Network Gateway onto canvas"};
 }

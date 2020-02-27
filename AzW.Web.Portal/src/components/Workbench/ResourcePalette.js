@@ -17,6 +17,7 @@ import { ReactComponent as SQLDatabase } from "../../assets/azure_icons/Database
 import { ReactComponent as CosmosDB } from "../../assets/azure_icons/Databases Service Color/Azure Cosmos DB.svg";
 import { ReactComponent as PostgreSQL } from "../../assets/azure_icons/Databases Service Color/Azure Database for PostgreSQL servers.svg";
 import { ReactComponent as MySQL } from "../../assets/azure_icons/Databases Service Color/Azure Database for MySQL servers.svg";
+import { ReactComponent as MariaDB } from "../../assets/azure_icons/Databases Service Color/Azure Database for MariaDB servers.svg";
 import { ReactComponent as AzSQLElasticPool } from "../../assets/azure_icons/Databases Service Color/Elastic Database Pools.svg";
 import { ReactComponent as SQLManagedInstance } from "../../assets/azure_icons/Databases Service Color/SQL Managed Instances.svg";
 import { ReactComponent as SQLStretchedDB } from "../../assets/azure_icons/Databases Service Color/SQL Server stretch Databases.svg";
@@ -44,6 +45,7 @@ import { ReactComponent as AppServiceDomain } from "../../assets/azure_icons/Web
 import { ReactComponent as VirtualMachine } from "../../assets/azure_icons/ComputeServiceColor/VM/VM-windows.svg";
 import { ReactComponent as LinuxVirtualMachine } from "../../assets/azure_icons/ComputeServiceColor/VM/VM-Linux.svg";
 import { ReactComponent as VMSS } from "../../assets/azure_icons/ComputeServiceColor/VM/VM Scale Sets.svg";
+import { ReactComponent as DevTestLab } from "../../assets/azure_icons/ComputeServiceColor/Azure DevTest Labs.svg";
 import { ReactComponent as SIG } from "../../assets/azure_icons/ComputeServiceColor/Shared Image Galleries.svg";
 
 
@@ -54,9 +56,8 @@ import { ReactComponent as DNSPrivateZone } from "../../assets/azure_icons/Netwo
 import { ReactComponent as FrontDoor } from "../../assets/azure_icons/Networking Service Color/Front Doors.svg";
 import { ReactComponent as PublicIp } from "../../assets/azure_icons/Networking Service Color/Public IP Addresses.svg";
 import { ReactComponent as ExpressRoute } from "../../assets/azure_icons/Networking Service Color/ExpressRoute Circuits.svg";
-import { ReactComponent as NetworkWatcher } from "../../assets/azure_icons/Networking Service Color/Network Watcher.svg";
 import { ReactComponent as TrafficManager } from "../../assets/azure_icons/Networking Service Color/Traffic Manager Profiles.svg";
-import { ReactComponent as VPNGateway } from "../../assets/azure_icons/Networking Service Color/Virtual Network Gateways.svg";
+import { ReactComponent as VNetGateway } from "../../assets/azure_icons/Networking Service Color/Virtual Network Gateways.svg";
 import { ReactComponent as CDN } from "../../assets/azure_icons/Networking Service Color/CDN Profiles.svg";
 import { ReactComponent as ASG } from "../../assets/azure_icons/Networking Service Color/Application Security Groups.svg";
 import { ReactComponent as UDR } from "../../assets/azure_icons/Networking Service Color/Route Tables.svg";
@@ -139,6 +140,7 @@ export default class ResourcePalette extends Component {
     this.iphoneIcon = React.createRef();
     this.onpremdbserverIcon = React.createRef();
 
+    this.devtestlabIcon = React.createRef();
     this.sigIcon = React.createRef();
     this.vmWindowsIcon = React.createRef();
     this.vmLinuxIcon = React.createRef();
@@ -150,6 +152,10 @@ export default class ResourcePalette extends Component {
     this.signalrIcon = React.createRef();
     this.appsvccertIcon = React.createRef();
     this.appsvcdomainIcon = React.createRef();
+    this.publicipIcon = React.createRef();
+    this.expressrouteIcon = React.createRef();
+    this.trafficmanagerIcon = React.createRef();
+    this.vnetgatewayIcon = React.createRef();
 
     this.azfw = React.createRef();
     this.vnetIcon = React.createRef();
@@ -368,6 +374,11 @@ export default class ResourcePalette extends Component {
                   <VMSS class="azure-rsc-icon" />
                 </Tippy>
               </div>
+              <div class="tile-panel" ref={this.devtestlabIcon}>
+                <Tippy content="DevTest Lab" followCursor={true} placement="bottom">
+                  <DevTestLab class="azure-rsc-icon" />
+                </Tippy>
+              </div>
               <div class="tile-panel" ref={this.sigIcon}>
                 <Tippy content="Shared Image Galleries" followCursor={true} placement="bottom">
                   <SIG class="azure-rsc-icon" />
@@ -416,13 +427,8 @@ export default class ResourcePalette extends Component {
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.expressrouteIcon}>
-                <Tippy content="Express Route" followCursor={true} placement="bottom">
+                <Tippy content="ExpressRoute Circuit" followCursor={true} placement="bottom">
                   <ExpressRoute class="azure-rsc-icon" />
-                </Tippy>
-              </div>
-              <div class="tile-panel" ref={this.networkwatcherIcon}>
-                <Tippy content="Network Watcher" followCursor={true} placement="bottom">
-                  <NetworkWatcher class="azure-rsc-icon" />
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.trafficmanagerIcon}>
@@ -430,9 +436,9 @@ export default class ResourcePalette extends Component {
                   <TrafficManager class="azure-rsc-icon" />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.vpngatewayIcon}>
-                <Tippy content="VPN Gateway" followCursor={true} placement="bottom">
-                  <VPNGateway class="azure-rsc-icon" />
+              <div class="tile-panel" ref={this.vnetgatewayIcon}>
+                <Tippy content="Virtual Network Gateway" followCursor={true} placement="bottom">
+                  <VNetGateway class="azure-rsc-icon" />
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.cdnIcon}>
@@ -515,9 +521,14 @@ export default class ResourcePalette extends Component {
           <ExpansionPanelDetails>
             <Typography component={'span'} variant={'body2'}>
               <div class="tile-panel" ref={this.postgresqlIcon}>
-              <Tippy content="Azure Database for PostgreSQL" followCursor={true} placement="bottom">
-                <PostgreSQL class="azure-rsc-icon" />
-              </Tippy>
+                <Tippy content="Azure Database for PostgreSQL" followCursor={true} placement="bottom">
+                  <PostgreSQL class="azure-rsc-icon" />
+                </Tippy>
+              </div>
+              <div class="tile-panel" ref={this.mariaDbIcon}>
+                <Tippy content="Azure Database for MariaDB" followCursor={true} placement="bottom">
+                  <MariaDB class="azure-rsc-icon" />
+                </Tippy>
               </div>
               <div class="tile-panel" ref={this.sqldbIcon}>
                 <Tippy content="Azure SQL" followCursor={true} placement="bottom">
@@ -841,11 +852,17 @@ export default class ResourcePalette extends Component {
     this.graphManager.makeIconDraggable(this.signalrIcon.current, ResourceType.SignalR(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.appsvccertIcon.current, ResourceType.AppServiceCert(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.appsvcdomainIcon.current, ResourceType.AppServiceDomain(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.publicipIcon.current, ResourceType.PublicIp(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.expressrouteIcon.current, ResourceType.ExpressRouteCircuit(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.trafficmanagerIcon.current, ResourceType.TrafficManager(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.vnetgatewayIcon.current, ResourceType.VirtualNetworkGateway(), thisComponent.props.addResourceToDiagramEditor);
+
     
     this.graphManager.makeIconDraggable(this.sigIcon.current, ResourceType.SharedImageGallery(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.vmWindowsIcon.current, ResourceType.WindowsVM(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.vmLinuxIcon.current, ResourceType.LinuxVM(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.vmssIcon.current, ResourceType.VMSS(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.devtestlabIcon.current, ResourceType.DevTestLab(), thisComponent.props.addResourceToDiagramEditor);
 
     this.graphManager.makeIconDraggable(this.vnetIcon.current, ResourceType.VNet(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.nlbIcon.current, ResourceType.NLB(), thisComponent.props.addResourceToDiagramEditor);

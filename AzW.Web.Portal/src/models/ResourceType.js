@@ -18,4 +18,10 @@ export default class ResourceType
     static AppServiceDomain() {return 'appsvcdomain'; }
     static SharedImageGallery() {return 'sig'; }
     static FrontDoor() {return 'frontdoor'; }
+    static PublicIp() {return 'pip'; }
+    static ExpressRouteCircuit() {return 'expressroute'; }
+    static TrafficManager() {return 'trafficmanager'; }
+    static DevTestLab() {return 'devtestlab'; }
+    static VirtualNetworkGateway() {return 'vnetgateway'; }
+    
 }

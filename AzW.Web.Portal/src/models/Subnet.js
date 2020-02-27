@@ -5,7 +5,8 @@ export default class Subnet
         this.GraphModel = {
             Id: '',
             ResourceType: ResourceType.Subnet(),
-            DisplayName: ''
+            DisplayName: '',
+            IsGatewaySubnet: false
         };
 
         this.ProvisionContext = {
@@ -14,6 +15,7 @@ export default class Subnet
             HighCost: false,
             
             Name: '',
+            IsGatewaySubnet: false,
             VNetName: '',
             CIDR: '',
             NSG: []
