@@ -26,4 +26,30 @@ export default class ResourceType
     static CDN() {return 'cdn'; }
     static ASG() {return 'asg'; }
     static NIC() {return 'nic'; }
+    static BlobStorage() {return 'blobstorage'; }
+    static AzFile() {return 'azfile'; }
+    static AzFileSync() {return 'azfilesync'; }
+    static NetAppFile() {return 'netappfile'; }
+    static QueueStorage() {return 'queuestorage'; }
+    static TableStorage() {return 'tablestorage'; }
+    static Databox() {return 'databox'; }
+    static PostgreSQL() {return 'postgresql'; }
+    static MariaDB() {return 'maria'; }
+    static SQLDB() {return 'sqldb'; }
+    static CosmosDB() {return 'cosmos'; }
+    static MySQL() {return 'mysql'; }
+    static SQLElasticPool() {return 'sqlelasticpool'; }
+    static SQLMI() {return 'sqlmi'; }
+    static SQLStretchDB() {return 'sqlstretchdb'; }
+    static Redis() {return 'redis'; }
+    static DataLakeStorage() {return 'datalakestorage'; }
+    static Synapse() {return 'synapse'; }
+    static DataExplorer() {return 'dataexplorer'; }
+    static Databricks() {return 'databricks'; }
+    static DataFactory() {return 'datafactory'; }
+    static DataLakeAnalytics() {return 'datalakeanalytics'; }
+    static HdInsight() {return 'hdinsight'; }
+    static ContainerInstance() {return 'containerinstance'; }
+    static ContainerRegistry() {return 'containerregistry'; }
+    static Kubernetes() {return 'kube'; }
 }

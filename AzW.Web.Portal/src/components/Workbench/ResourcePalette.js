@@ -24,8 +24,7 @@ import { ReactComponent as SQLStretchedDB } from "../../assets/azure_icons/Datab
 import { ReactComponent as RedisCache } from "../../assets/azure_icons/Databases Service Color/Azure Cache for Redis.svg";
 
 //data
-import { ReactComponent as SynapseAnalytics } from "../../assets/azure_icons/Databases Service Color/Azure SQL DataWarehouse.svg";
-import { ReactComponent as DataLake } from "../../assets/azure_icons/Databases Service Color/Data Lake.svg";
+import { ReactComponent as DataLake } from "../../assets/azure_icons/Databases Service Color/Data Lake Storage.svg";
 import { ReactComponent as DataBricks } from "../../assets/azure_icons/Analytics Service Color/Azure Databricks.svg";
 import { ReactComponent as DataFactory } from "../../assets/azure_icons/Analytics Service Color/Data Factories.svg";
 import { ReactComponent as HDInsights } from "../../assets/azure_icons/Analytics Service Color/HDInsightClusters.svg";
@@ -78,6 +77,7 @@ import { ReactComponent as Kubernetes } from "../../assets/azure_icons/Container
 import { ReactComponent as APIM } from "../../assets/azure_icons/Integration Service Color/API Management Services.svg";
 import { ReactComponent as ServiceBus } from "../../assets/azure_icons/Integration Service Color/Azure Service Bus.svg";
 import { ReactComponent as LogicApp } from "../../assets/azure_icons/Integration Service Color/Logic Apps.svg";
+import { ReactComponent as ISE } from "../../assets/azure_icons/Integration Service Color/Integration Service Environments.svg";
 import { ReactComponent as EventGridTopic } from "../../assets/azure_icons/Integration Service Color/Event Grid Subscriptions.svg";
 import { ReactComponent as EventGridSubscription } from "../../assets/azure_icons/Integration Service Color/Event Grid Topics.svg";
 import { ReactComponent as SendGrid } from "../../assets/azure_icons/Integration Service Color/SendGrid Accounts.svg";
@@ -170,6 +170,31 @@ export default class ResourcePalette extends Component {
     this.kubeIcon = React.createRef();
     this.siteRecoveryIcon = React.createRef();
     this.backupIcon = React.createRef();
+    this.azfileIcon = React.createRef();
+    this.blobstorageIcon = React.createRef();
+    this.azfilesyncIcon = React.createRef();
+    this.netappfileIcon = React.createRef();
+    this.queuestorageIcon = React.createRef();
+    this.tablestorageIcon = React.createRef();
+    this.databoxIcon = React.createRef();
+
+    this.postgresqlIcon = React.createRef();
+    this.mariaDbIcon = React.createRef();
+    this.sqldbIcon = React.createRef();
+    this.cosmosdbIcon = React.createRef();
+    this.mysqlIcon = React.createRef();
+    this.azSqlElasticPoolIcon = React.createRef();
+    this.sqlmiIcon = React.createRef();
+    this.sqlstretchIcon = React.createRef();
+    this.redisIcon = React.createRef();
+    this.datalakeIcon = React.createRef();
+    this.synapseIcon = React.createRef();
+    this.dataexplorerIcon = React.createRef();
+    this.databricksIcon = React.createRef();
+    this.datafactoryIcon = React.createRef();
+    this.datalakeanalyticsIcon = React.createRef();
+    this.hdinsightIcon = React.createRef();
+    
   }
   
 
@@ -470,7 +495,7 @@ export default class ResourcePalette extends Component {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Typography component={'span'} variant={'body2'}>
-              <div class="tile-panel" ref={this.storageIcon}>
+              <div class="tile-panel" ref={this.blobstorageIcon}>
                 <Tippy content="Blob Storage" followCursor={true} placement="bottom">
                   <Storage class="azure-rsc-icon" />
                 </Tippy>
@@ -480,27 +505,27 @@ export default class ResourcePalette extends Component {
                   <img src={require('../../assets/azure_icons/azure-storage-files.png')} width="25" height="25" />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.azfileIcon}>
+              <div class="tile-panel" ref={this.azfilesyncIcon}>
                 <Tippy content="Azure File Sync" followCursor={true} placement="bottom">
                   <FileSync class="azure-rsc-icon" />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.azfileIcon}>
+              <div class="tile-panel" ref={this.netappfileIcon}>
                 <Tippy content="NetApp Files" followCursor={true} placement="bottom">
                   <NetAppFiles class="azure-rsc-icon" />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.azfileIcon}>
+              <div class="tile-panel" ref={this.queuestorageIcon}>
                 <Tippy content="Queue Storage" followCursor={true} placement="bottom">
                   <QueueStorage class="azure-rsc-icon" />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.azfileIcon}>
+              <div class="tile-panel" ref={this.tablestorageIcon}>
                 <Tippy content="Table Storage" followCursor={true} placement="bottom">
                   <TableStorage class="azure-rsc-icon" />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.azfileIcon}>
+              <div class="tile-panel" ref={this.databoxIcon}>
                 <Tippy content="Databox" followCursor={true} placement="bottom">
                   <Databox class="azure-rsc-icon" />
                 </Tippy>
@@ -537,7 +562,7 @@ export default class ResourcePalette extends Component {
                   <CosmosDB class="azure-rsc-icon" />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.azDbMySqlIcon}>
+              <div class="tile-panel" ref={this.mysqlIcon}>
                 <Tippy content="Azure Database for MySQL" followCursor={true} placement="bottom">
                   <MySQL class="azure-rsc-icon" />
                 </Tippy>
@@ -547,18 +572,18 @@ export default class ResourcePalette extends Component {
                   <AzSQLElasticPool class="azure-rsc-icon" />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.azsqlmiPoolIcon}>
+              <div class="tile-panel" ref={this.sqlmiIcon}>
                 <Tippy content="Azure SQL Managed Instance" followCursor={true} placement="bottom">
                   <SQLManagedInstance class="azure-rsc-icon" />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.azsqlmiIcon}>
+              <div class="tile-panel" ref={this.sqlstretchIcon}>
                 <Tippy content="SQL Stretched DB" followCursor={true} placement="bottom">
                   <SQLStretchedDB class="azure-rsc-icon" />
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.redisIcon}>
-                <Tippy content="Redis" followCursor={true} placement="bottom">
+                <Tippy content="Azure Cache for Redis" followCursor={true} placement="bottom">
                   <RedisCache class="azure-rsc-icon" />
                 </Tippy>
               </div>
@@ -576,12 +601,17 @@ export default class ResourcePalette extends Component {
             <Typography component={'span'} variant={'body2'}>
               <div class="tile-panel" ref={this.synapseIcon}>
                 <Tippy content="Synapse Analytics" followCursor={true} placement="bottom">
-                  <SynapseAnalytics class="azure-rsc-icon" />
+                  <img src={require('../../assets/azure_icons/Databases Service Color/synapseanalytics.png')} width="30" height="30" />
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.datalakeIcon}>
                 <Tippy content="Data Lake Storage" followCursor={true} placement="bottom">
                   <DataLake class="azure-rsc-icon" />
+                </Tippy>
+              </div>
+              <div class="tile-panel" ref={this.datalakeanalyticsIcon}>
+                <Tippy content="Data Lake Analytics" followCursor={true} placement="bottom">
+                  <DataLakeAnalytics class="azure-rsc-icon" />
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.databricksIcon}>
@@ -602,11 +632,6 @@ export default class ResourcePalette extends Component {
               <div class="tile-panel" ref={this.dataexplorerIcon}>
                 <Tippy content="Data Explorer" followCursor={true} placement="bottom">
                   <DataExplorer class="azure-rsc-icon" />
-                </Tippy>
-              </div>
-              <div class="tile-panel" ref={this.dataexplorerIcon}>
-                <Tippy content="Data Lake Analytics" followCursor={true} placement="bottom">
-                  <DataLakeAnalytics class="azure-rsc-icon" />
                 </Tippy>
               </div>
             </Typography>
@@ -661,6 +686,11 @@ export default class ResourcePalette extends Component {
               <div class="tile-panel" ref={this.logicAppIcon}>
                 <Tippy content="Logic App" followCursor={true} placement="bottom">
                   <LogicApp class="azure-rsc-icon" />
+                </Tippy>
+              </div>
+              <div class="tile-panel" ref={this.iseIcon}>
+                <Tippy content="Integration Service Environment" followCursor={true} placement="bottom">
+                  <ISE class="azure-rsc-icon" />
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.eventGridTopicIcon}>
@@ -868,6 +898,33 @@ export default class ResourcePalette extends Component {
     this.graphManager.makeIconDraggable(this.appgwIcon.current, ResourceType.AppGw(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.dnsprivatezoneIcon.current, ResourceType.DNSPrivateZone(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.frontdoorIcon.current, ResourceType.FrontDoor(), thisComponent.props.addResourceToDiagramEditor);
-    
+   
+    this.graphManager.makeIconDraggable(this.blobstorageIcon.current, ResourceType.BlobStorage(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.azfileIcon.current, ResourceType.AzFile(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.azfilesyncIcon.current, ResourceType.AzFileSync(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.netappfileIcon.current, ResourceType.NetAppFile(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.queuestorageIcon.current, ResourceType.QueueStorage(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.tablestorageIcon.current, ResourceType.TableStorage(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.databoxIcon.current, ResourceType.Databox(), thisComponent.props.addResourceToDiagramEditor);   
+    this.graphManager.makeIconDraggable(this.postgresqlIcon.current, ResourceType.PostgreSQL(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.mariaDbIcon.current, ResourceType.MariaDB(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.sqldbIcon.current, ResourceType.SQLDB(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.cosmosdbIcon.current, ResourceType.CosmosDB(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.mysqlIcon.current, ResourceType.MySQL(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.azSqlElasticPoolIcon.current, ResourceType.SQLElasticPool(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.sqlmiIcon.current, ResourceType.SQLMI(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.sqlstretchIcon.current, ResourceType.SQLStretchDB(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.redisIcon.current, ResourceType.Redis(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.datalakeIcon.current, ResourceType.DataLakeStorage(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.synapseIcon.current, ResourceType.Synapse(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.dataexplorerIcon.current, ResourceType.DataExplorer(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.databricksIcon.current, ResourceType.Databricks(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.datafactoryIcon.current, ResourceType.DataFactory(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.datalakeanalyticsIcon.current, ResourceType.DataLakeAnalytics(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.hdinsightIcon.current, ResourceType.HdInsight(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.containerInstanceIcon.current, ResourceType.ContainerInstance(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.containerRegistryIcon.current, ResourceType.ContainerRegistry(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.kubeIcon.current, ResourceType.Kubernetes(), thisComponent.props.addResourceToDiagramEditor);
+
   }
 }

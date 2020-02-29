@@ -25,7 +25,9 @@ export default class AzureValidator {
 
     isResourceinDedicatedSubnet(subnetCell) {
 
-        if(this.isResourceDropinSubnet(subnetCell))
+        var result = this.isResourceDropinSubnet(subnetCell);
+
+        if(result.isInSubnet)
         {
            var childCellCount = this.graph.getModel().getChildCount(subnetCell);
 

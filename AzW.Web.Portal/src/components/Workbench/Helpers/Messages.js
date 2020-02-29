@@ -5,6 +5,7 @@ export default class Messages {
     static NoCellOnGraph() {return "There is no resource on canvas";}
     static SharedDiagramLinkCopied() {return "Link copied";}
     static AppGatewayNotInSubnetError() {return "Application Gateway must be in a dedicated subnet with no other resource";}
+    static KubeNotInSubnetError() {return "Kubernetes Service must be in a dedicated subnet with no other resource";}
     static DiagramSavedInBrowser() {return "Diagram saved in browser";}
     static SavedSuccessfully() {return "Saved successully";}
     static GetCollectionError() {return "An error occurred when retrieving collection";}
