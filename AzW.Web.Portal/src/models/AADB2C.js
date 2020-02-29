@@ -1,24 +1,21 @@
 import ResourceType from './ResourceType'
-export default class AppServiceDomain
+export default class AADB2C
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.AppServiceDomain(),
+            ResourceType: ResourceType.AADB2C(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.AppServiceDomain(),
+            ResourceType: ResourceType.AADB2C(),
             Deployable: true,
             HighCost: false,
             
             Name: '',
             Location: '',
             Tags: [],
-
-            VNetName: '',
-            SubnetName: ''
         };
         this.CalculatorContext = {
             IsFree: false,

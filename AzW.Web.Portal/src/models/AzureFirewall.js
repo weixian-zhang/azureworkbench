@@ -1,15 +1,15 @@
 import ResourceType from './ResourceType'
-export default class AppServiceDomain
+export default class AzureFirewall
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.AppServiceDomain(),
+            ResourceType: ResourceType.Firewall(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.AppServiceDomain(),
+            ResourceType: ResourceType.Firewall(),
             Deployable: true,
             HighCost: false,
             
@@ -17,7 +17,7 @@ export default class AppServiceDomain
             Location: '',
             Tags: [],
 
-            VNetName: '',
+            VNetAddress: '',
             SubnetName: ''
         };
         this.CalculatorContext = {

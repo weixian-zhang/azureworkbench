@@ -59,7 +59,6 @@ import { ReactComponent as TrafficManager } from "../../assets/azure_icons/Netwo
 import { ReactComponent as VNetGateway } from "../../assets/azure_icons/Networking Service Color/Virtual Network Gateways.svg";
 import { ReactComponent as CDN } from "../../assets/azure_icons/Networking Service Color/CDN Profiles.svg";
 import { ReactComponent as ASG } from "../../assets/azure_icons/Networking Service Color/Application Security Groups.svg";
-import { ReactComponent as UDR } from "../../assets/azure_icons/Networking Service Color/Route Tables.svg";
 import { ReactComponent as NIC } from "../../assets/azure_icons/Networking Service Color/Network Interfaces.svg";
 
 import { ReactComponent as Storage } from "../../assets/azure_icons/Storage Service Color/Blob Storage.svg";
@@ -76,6 +75,7 @@ import { ReactComponent as Kubernetes } from "../../assets/azure_icons/Container
 
 import { ReactComponent as APIM } from "../../assets/azure_icons/Integration Service Color/API Management Services.svg";
 import { ReactComponent as ServiceBus } from "../../assets/azure_icons/Integration Service Color/Azure Service Bus.svg";
+import { ReactComponent as Relay } from "../../assets/azure_icons/Integration Service Color/Azure Service Bus Relays.svg";
 import { ReactComponent as LogicApp } from "../../assets/azure_icons/Integration Service Color/Logic Apps.svg";
 import { ReactComponent as ISE } from "../../assets/azure_icons/Integration Service Color/Integration Service Environments.svg";
 import { ReactComponent as EventGridTopic } from "../../assets/azure_icons/Integration Service Color/Event Grid Subscriptions.svg";
@@ -88,7 +88,6 @@ import { ReactComponent as SecurityCenter } from "../../assets/azure_icons/Secur
 import { ReactComponent as DDOSStandard } from "../../assets/azure_icons/Networking Service Color/DDOS Protection Plans.svg";
 import { ReactComponent as AzFirewall } from "../../assets/azure_icons/Networking Service Color/Azure Firewall.svg";
 
-import { ReactComponent as AzBackup } from "../../assets/azure_icons/_Flat Symbols/CnE_Enterprise/Backup, online.svg";
 import { ReactComponent as Monitor } from "../../assets/azure_icons/Management and Governance Service Color/Monitor.svg";
 import { ReactComponent as AzAutomation } from "../../assets/azure_icons/Management and Governance Service Color/Automation Accounts.svg";
 
@@ -169,7 +168,6 @@ export default class ResourcePalette extends Component {
     this.containerRegistryIcon = React.createRef();
     this.kubeIcon = React.createRef();
     this.siteRecoveryIcon = React.createRef();
-    this.backupIcon = React.createRef();
     this.azfileIcon = React.createRef();
     this.blobstorageIcon = React.createRef();
     this.azfilesyncIcon = React.createRef();
@@ -194,7 +192,32 @@ export default class ResourcePalette extends Component {
     this.datafactoryIcon = React.createRef();
     this.datalakeanalyticsIcon = React.createRef();
     this.hdinsightIcon = React.createRef();
-    
+    this.apimIcon = React.createRef();
+    this.asbIcon = React.createRef();
+    this.logicAppIcon = React.createRef();
+    this.relayIcon =  React.createRef();
+    this.iseIcon = React.createRef();
+    this.eventGridTopicIcon = React.createRef();
+    this.eventGridSubIcon = React.createRef();
+    this.streamanalyticsIcon = React.createRef();
+    this.sendgridSubIcon = React.createRef();
+
+    this.azfwIcon = React.createRef();
+    this.sentinelIcon = React.createRef();
+    this.ascIcon = React.createRef();
+    this.ddosstandardIcon = React.createRef();
+    this.bastionIcon = React.createRef();
+    this.akvIcon = React.createRef();
+    this.siteRecoveryIcon = React.createRef();
+    this.appInsightsIcon = React.createRef();
+    this.azMonitorIcon = React.createRef();
+    this.automationIcon = React.createRef();
+
+    this.aadIcon = React.createRef();
+    this.aadb2cIcon = React.createRef();
+    this.iothub = React.createRef();
+    this.azmaps = React.createRef();
+    this.timeseriesinsights = React.createRef();
   }
   
 
@@ -683,6 +706,12 @@ export default class ResourcePalette extends Component {
                   <ServiceBus class="azure-rsc-icon" />
                 </Tippy>
               </div>
+              <div class="tile-panel" ref={this.relayIcon}>
+                <Tippy content="Azure Relay" followCursor={true} placement="bottom">
+                  <Relay class="azure-rsc-icon" />
+                </Tippy>
+              </div>
+              
               <div class="tile-panel" ref={this.logicAppIcon}>
                 <Tippy content="Logic App" followCursor={true} placement="bottom">
                   <LogicApp class="azure-rsc-icon" />
@@ -746,7 +775,7 @@ export default class ResourcePalette extends Component {
                   <SecurityCenter class="azure-rsc-icon" />
                 </Tippy>
               </div>
-              <div class="tile-panel" ref={this.azddosstandardIcon}>
+              <div class="tile-panel" ref={this.ddosstandardIcon}>
                 <Tippy content="DDoS Protection Standard" followCursor={true} placement="bottom">
                   <DDOSStandard class="azure-rsc-icon" />
                 </Tippy>
@@ -768,13 +797,8 @@ export default class ResourcePalette extends Component {
           </ExpansionPanelSummary>
             <ExpansionPanelDetails>
               <Typography component={'span'} variant={'body2'}>
-                  <div class="tile-panel" ref={this.backupIcon}>
-                  <Tippy content="Backup Service" followCursor={true} placement="bottom">
-                    <AzBackup class="azure-rsc-icon" />
-                  </Tippy>
-                </div>
                 <div class="tile-panel" ref={this.siteRecoveryIcon}>
-                  <Tippy content="Site Recovery" followCursor={true} placement="bottom">
+                  <Tippy content="Recovery Service Vault" followCursor={true} placement="bottom">
                     <img src={require('../../assets/azure_icons/Management and Governance Service Color/SiteRecovery.png')} width="30" height="30" />
                   </Tippy>
                 </div>
@@ -805,12 +829,12 @@ export default class ResourcePalette extends Component {
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
               <Typography component={'span'} variant={'body2'}>
-                <div class="tile-panel" ref={this.azad}>
+                <div class="tile-panel" ref={this.aadIcon}>
                   <Tippy content="Azure AD" followCursor={true} placement="bottom">
                     <AzureAD class="azure-rsc-icon" />
                   </Tippy>
                 </div>
-                <div class="tile-panel" ref={this.azdbb2c}>
+                <div class="tile-panel" ref={this.aadb2cIcon}>
                   <Tippy content="Azure AD B2C" followCursor={true} placement="bottom">
                     <AzureADB2C class="azure-rsc-icon" />
                   </Tippy>
@@ -925,6 +949,34 @@ export default class ResourcePalette extends Component {
     this.graphManager.makeIconDraggable(this.containerInstanceIcon.current, ResourceType.ContainerInstance(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.containerRegistryIcon.current, ResourceType.ContainerRegistry(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.kubeIcon.current, ResourceType.Kubernetes(), thisComponent.props.addResourceToDiagramEditor);
+
+    this.graphManager.makeIconDraggable(this.apimIcon.current, ResourceType.APIM(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.asbIcon.current, ResourceType.ASB(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.logicAppIcon.current, ResourceType.LogicApp(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.iseIcon.current, ResourceType.ISE(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.eventGridTopicIcon.current, ResourceType.EventGridTopic(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.eventGridSubIcon.current, ResourceType.EventGridSubscription(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.streamanalyticsIcon.current, ResourceType.StreamAnalytics(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.sendgridSubIcon.current, ResourceType.SendGrid(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.relayIcon.current, ResourceType.Relay(), thisComponent.props.addResourceToDiagramEditor);
+
+    this.graphManager.makeIconDraggable(this.azfwIcon.current, ResourceType.Firewall(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.sentinelIcon.current, ResourceType.Sentinel(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.akvIcon.current, ResourceType.KeyVault(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.ascIcon.current, ResourceType.SecurityCenter(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.ddosstandardIcon.current, ResourceType.DDoSStandard(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.bastionIcon.current, ResourceType.Bastion(), thisComponent.props.addResourceToDiagramEditor);
+
+    this.graphManager.makeIconDraggable(this.siteRecoveryIcon.current, ResourceType.RecoveryServiceVault(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.appInsightsIcon.current, ResourceType.AppInsights(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.azMonitorIcon.current, ResourceType.Monitor(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.automationIcon.current, ResourceType.Automation(), thisComponent.props.addResourceToDiagramEditor);
+
+    this.graphManager.makeIconDraggable(this.aadIcon.current, ResourceType.AAD(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.aadb2cIcon.current, ResourceType.AADB2C(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.iothub.current, ResourceType.IoTHub(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.azmaps.current, ResourceType.AzureMaps(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.timeseriesinsights.current, ResourceType.TimeSeriesInsights(), thisComponent.props.addResourceToDiagramEditor);
 
   }
 }

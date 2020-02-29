@@ -1,24 +1,21 @@
 import ResourceType from './ResourceType'
-export default class AppServiceDomain
+export default class ServiceBus
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.AppServiceDomain(),
+            ResourceType: ResourceType.ASB(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.AppServiceDomain(),
+            ResourceType: ResourceType.ASB(),
             Deployable: true,
             HighCost: false,
             
             Name: '',
             Location: '',
             Tags: [],
-
-            VNetName: '',
-            SubnetName: ''
         };
         this.CalculatorContext = {
             IsFree: false,

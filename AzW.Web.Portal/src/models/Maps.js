@@ -1,24 +1,22 @@
 import ResourceType from './ResourceType'
-export default class AppServiceDomain
+export default class Maps
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.AppServiceDomain(),
+            ResourceType: ResourceType.AzureMaps(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.AppServiceDomain(),
+            ResourceType: ResourceType.AzureMaps(),
             Deployable: true,
-            HighCost: false,
+            HighCost: true,
             
             Name: '',
             Location: '',
             Tags: [],
 
-            VNetName: '',
-            SubnetName: ''
         };
         this.CalculatorContext = {
             IsFree: false,

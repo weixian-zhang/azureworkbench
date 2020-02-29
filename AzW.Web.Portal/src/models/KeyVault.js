@@ -1,24 +1,21 @@
 import ResourceType from './ResourceType'
-export default class AppServiceDomain
+export default class KeyVault
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.AppServiceDomain(),
+            ResourceType: ResourceType.KeyVault(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.AppServiceDomain(),
+            ResourceType: ResourceType.KeyVault(),
             Deployable: true,
             HighCost: false,
             
             Name: '',
             Location: '',
-            Tags: [],
-
-            VNetName: '',
-            SubnetName: ''
+            Tags: []
         };
         this.CalculatorContext = {
             IsFree: false,

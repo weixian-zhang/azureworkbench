@@ -1,24 +1,21 @@
 import ResourceType from './ResourceType'
-export default class AppServiceDomain
+export default class IntegratedServiceEnvironment
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.AppServiceDomain(),
+            ResourceType: ResourceType.ISE(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.AppServiceDomain(),
+            ResourceType: ResourceType.ISE(),
             Deployable: true,
-            HighCost: false,
+            HighCost: true,
             
             Name: '',
             Location: '',
-            Tags: [],
-
-            VNetName: '',
-            SubnetName: ''
+            Tags: []
         };
         this.CalculatorContext = {
             IsFree: false,

@@ -1,24 +1,21 @@
 import ResourceType from './ResourceType'
-export default class AppServiceDomain
+export default class Relay
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.AppServiceDomain(),
+            ResourceType: ResourceType.Relay(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.AppServiceDomain(),
+            ResourceType: ResourceType.Relay(),
             Deployable: true,
             HighCost: false,
             
             Name: '',
             Location: '',
             Tags: [],
-
-            VNetName: '',
-            SubnetName: ''
         };
         this.CalculatorContext = {
             IsFree: false,

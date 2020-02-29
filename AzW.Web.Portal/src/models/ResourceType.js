@@ -52,4 +52,32 @@ export default class ResourceType
     static ContainerInstance() {return 'containerinstance'; }
     static ContainerRegistry() {return 'containerregistry'; }
     static Kubernetes() {return 'kube'; }
+
+    static APIM() {return 'apim'; }
+    static ASB() {return 'asb'; }
+    static Relay() {return 'relay'; }
+    static LogicApp() {return 'logicapp'; }
+    static ISE() {return 'ise'; }
+    static EventGridTopic() {return 'egtopic'; }
+    static EventGridSubscription() {return 'egsubscription'; }
+    static StreamAnalytics() {return 'streamanalytics'; }
+    static SendGrid() {return 'sendgrid'; }
+
+    static Firewall() {return 'firewall'; }
+    static Sentinel() {return 'sentinel'; }
+    static KeyVault() {return 'keyvault'; }
+    static SecurityCenter() {return 'asc'; }
+    static DDoSStandard() {return 'ddosstandard'; }
+    static Bastion() {return 'bastion'; }
+
+    static RecoveryServiceVault() {return 'recoveryservicevault'; }
+    static AppInsights() {return 'appinsights'; }
+    static Monitor() {return 'monitor'; }
+    static Automation() {return 'automation'; }
+
+    static AAD() {return 'aad'; }
+    static AADB2C() {return 'aadb2c'; }
+    static IoTHub() {return 'iothub'; }
+    static AzureMaps() {return 'maps'; }
+    static TimeSeriesInsights() {return 'timeseriesinsights'; }
 }

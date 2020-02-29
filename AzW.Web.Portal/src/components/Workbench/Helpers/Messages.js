@@ -6,6 +6,10 @@ export default class Messages {
     static SharedDiagramLinkCopied() {return "Link copied";}
     static AppGatewayNotInSubnetError() {return "Application Gateway must be in a dedicated subnet with no other resource";}
     static KubeNotInSubnetError() {return "Kubernetes Service must be in a dedicated subnet with no other resource";}
+    static ISENotInSubnetError() {return "Integrated Service Environment must be in a subnet, select a subnet then drag ISE onto canvas"}
+    static ISESubnetInfo() {return "Integrated Service Environment requires 4 dedicated subnets with at least /27 address space for each subnet"}
+    static FirewallNotInSubnetError() {return "Firewall must be in a subnet (/26), select a subnet then drag Firewall onto canvas"}
+    static BastionNotInSubnetError() {return "Bastion must be in a dedicated subnet, select a subnet then drag Firewall onto canvas"}
     static DiagramSavedInBrowser() {return "Diagram saved in browser";}
     static SavedSuccessfully() {return "Saved successully";}
     static GetCollectionError() {return "An error occurred when retrieving collection";}
