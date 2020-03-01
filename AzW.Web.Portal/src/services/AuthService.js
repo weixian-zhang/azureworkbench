@@ -1,6 +1,7 @@
 import { UserAgentApplication } from "msal";
 import UserProfile from '../models/UserProfile';
 import SessionStorage from './SessionStorage';
+import Config from "../../src/config";
 
 export default class AuthService 
 {
@@ -19,10 +20,10 @@ export default class AuthService
 
         this.msalApp = new UserAgentApplication({
             auth: {
-              clientId: "16afdc21-ffd3-4cf8-aeae-63bebf9e327e",
-              authority: "https://login.microsoftonline.com/common",
+              clientId: Config.AADClientId(), // "16afdc21-ffd3-4cf8-aeae-63bebf9e327e",
+              authority: Config.Authority(),  //"https://login.microsoftonline.com/common",
               validateAuthority: true,
-              postLogoutRedirectUri: "http://localhost:8090",
+              postLogoutRedirectUri: Config.BaseAPIUrl(), //"http://localhost:8090",
               navigateToLoginRequestUrl: false
             },
             cache: {
@@ -35,16 +36,15 @@ export default class AuthService
     login = (loginResponseCallback) => {
 
         const loginRequest = {
-            scopes: ["api://16afdc21-ffd3-4cf8-aeae-63bebf9e327e/azworkbench-azure-deploy"]
+            scopes: [Config.Scope()] //["api://16afdc21-ffd3-4cf8-aeae-63bebf9e327e/azworkbench-azure-deploy"]
           }
 
         this.msalApp.loginPopup(loginRequest)
         .then(response => 
         {
             var tokenRequest = {
-              //scopes: ["api://16afdc21-ffd3-4cf8-aeae-63bebf9e327e/azworkbench-portal-deploy"]
-              //scopes: ["api://3b606e44-5ceb-4473-84c6-5f9b1119a2fc/Api.All.ReadWrite"],
-              scopes: ["api://16afdc21-ffd3-4cf8-aeae-63bebf9e327e/.default"],
+              scopes: [Config.Scope()],
+              //scopes: ["api://16afdc21-ffd3-4cf8-aeae-63bebf9e327e/.default"],
               prompt: 'consent'
             };
 

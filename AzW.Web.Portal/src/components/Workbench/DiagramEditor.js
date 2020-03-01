@@ -113,6 +113,8 @@ import mxClientOverrides from './Helpers/mxClientOverrides';
         shareLinkInputbox: null,
         isLoading: false,
 
+        unsavedChanges: false,
+
         queryString: this.props.queryString
     }
   }
@@ -138,6 +140,8 @@ import mxClientOverrides from './Helpers/mxClientOverrides';
     this.loadSharedDiagram();
     this.initPasteImageFromBrowserClipboard();
     this.addCtrlSSave();
+    this.PromptSaveBeforeCloseBrowser();
+    this.canvasChangeEvent();
 
     this.initRef();
   }
@@ -209,6 +213,40 @@ import mxClientOverrides from './Helpers/mxClientOverrides';
         });  
   }
 
+  canvasChangeEvent() {
+    var thisComp = this;
+    this.graph.addListener(mxEvent.CELLS_ADDED, function (sender, evt) {
+      if(thisComp.state.unsavedChanges) { evt.consume(); return;}
+      thisComp.setState({unsavedChanges: true});
+      evt.consume();
+    });
+    this.graph.addListener(mxEvent.CELLS_MOVED, function (sender, evt) {
+      if(thisComp.state.unsavedChanges) { evt.consume(); return;}
+      thisComp.setState({unsavedChanges: true});
+      evt.consume();
+    });
+    this.graph.addListener(mxEvent.CELLS_RESIZED, function (sender, evt) {
+      if(thisComp.state.unsavedChanges) { evt.consume(); return;}
+      thisComp.setState({unsavedChanges: true});
+      evt.consume();
+    });
+    this.graph.addListener(mxEvent.CELL_CONNECTED, function (sender, evt) {
+      if(thisComp.state.unsavedChanges) { evt.consume(); return;}
+      thisComp.setState({unsavedChanges: true});
+      evt.consume();
+    });
+    this.graph.addListener(mxEvent.CELLS_REMOVED, function (sender, evt) {
+      if(thisComp.state.unsavedChanges) { evt.consume(); return;}
+      thisComp.setState({unsavedChanges: true});
+      evt.consume();
+    });
+    this.graph.addListener(mxEvent.GROUP_CELLS, function (sender, evt) {
+      if(thisComp.state.unsavedChanges) { evt.consume(); return;}
+      thisComp.setState({unsavedChanges: true});
+      evt.consume();
+    });
+  }
+
   addDeleteKeyEventToDeleteVertex(){
       var thisComp = this;
       // delete key remove vertex
@@ -274,6 +312,16 @@ addCtrlSSave() {
     }
   }
 }
+
+PromptSaveBeforeCloseBrowser() {
+  var thisComp = this;
+  window.addEventListener('beforeunload', (event) => {
+    if(thisComp.state.unsavedChanges){
+      event.returnValue = 'You have unsaved changes';
+    }
+  });
+}
+
 
 addUpDownLeftRightArrowToMoveCells() {
     var keyHandler = new mxKeyHandler(this.graph);
@@ -353,8 +401,9 @@ addUpDownLeftRightArrowToMoveCells() {
           thisComponent.addSubnet(cell); // is vnetCell
         });
 
+
         //if true, hide option
-        if(thisComponent.azureValidator.isGatewaySubnetExist(cell)){
+        if(!thisComponent.azureValidator.isGatewaySubnetExist(cell)){
           menu.addItem('Add GatewaySubnet', '', function()
           {
             thisComponent.addGatewaySubnet(cell); // is vnetCell
@@ -420,7 +469,9 @@ addUpDownLeftRightArrowToMoveCells() {
       }
 
       //style for shapes only
-      if(thisComponent.graphManager.isNonAzureShape(cell))
+      if(thisComponent.graphManager.isNonAzureShape(cell) ||
+        thisComponent.azureValidator.isSubnet(cell) ||
+        thisComponent.azureValidator.isVNet(cell))
       {
         menu.addSeparator();
         menu.addItem('Style', '', function()
@@ -441,7 +492,7 @@ addUpDownLeftRightArrowToMoveCells() {
   }
 
   addResourceToEditorFromPalette = (dropContext) => {
-
+    this.graphManager.graph.getModel().beginUpdate();
     switch(dropContext.resourceType) {
       case 'elbowarrow':
         this.addElbowArrow(dropContext);
@@ -732,6 +783,7 @@ addUpDownLeftRightArrowToMoveCells() {
       default:
         break;
     }
+    this.graphManager.graph.getModel().endUpdate();
     this.graph.clearSelection();
   }
 
@@ -1037,12 +1089,16 @@ addUpDownLeftRightArrowToMoveCells() {
             null,  mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP
           );
 
+          
+
           var vnetModel = new VNet();
               vnetModel.resourceType = ResourceType.VNet();
               vnetModel.GraphModel.Id = this.shortUID.randomUUID(6);
               vnetModel.ProvisionContext.Name = 'vnet_' + vnetModel.GraphModel.Id;
               vnetModel.GraphModel.DisplayName = vnetModel.ProvisionContext.Name;
               var jsonstrVnet = JSON.stringify(vnetModel);
+          
+          var vnetStyle = this.graphManager.getVNetStyle();
 
           var vnetVertex = this.graph.insertVertex(
                 this.graph.getDefaultParent(),
@@ -1052,7 +1108,7 @@ addUpDownLeftRightArrowToMoveCells() {
                 dropContext.y,
                 400,
                 300,
-                "vnetstyle"
+                vnetStyle
               );
 
           this.graph.addCellOverlay(vnetVertex, vnetIconOverlay);
@@ -1091,6 +1147,8 @@ addUpDownLeftRightArrowToMoveCells() {
 
           this.graphManager.translateToParentGeometryPoint(vnetCell)
 
+          var subnetStyle = this.graphManager.getSubnetStyle();
+
           subnetVertex = this.graph.insertVertex(
             vnetCell,
             subnet.GraphModel.Id,
@@ -1099,7 +1157,7 @@ addUpDownLeftRightArrowToMoveCells() {
             vnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
             vnetCell.getGeometry().width - 90,
             100,
-            'subnetstyle'
+            subnetStyle
           );
         }
         else {
@@ -2063,7 +2121,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
   addDDoSStandard = (dropContext) => {
 
-    var model = new KeyVault();
+    var model = new DDoSStandard();
     model.GraphModel.Id = this.shortUID.randomUUID(6);
     model.GraphModel.DisplayName = 'Azure DDoS Protection Standard'
     var modelJsonString = JSON.stringify(model);
@@ -2463,12 +2521,14 @@ addUpDownLeftRightArrowToMoveCells() {
     LocalStorage.set
       (LocalStorage.KeyNames.TempLocalDiagram, JSON.stringify(anonyDiagramContext));
 
-      Toaster.create({
-        position: Position.TOP,
-        autoFocus: false,
-        canEscapeKeyClear: true
-      }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.DiagramSavedInBrowser()});
-      return;
+    this.setState({unsavedChanges: false});
+
+    Toaster.create({
+      position: Position.TOP,
+      autoFocus: false,
+      canEscapeKeyClear: true
+    }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.DiagramSavedInBrowser()});
+    return;
   }
 
   loadDraftDiagramFromBrowser = () => {
@@ -2662,8 +2722,13 @@ addUpDownLeftRightArrowToMoveCells() {
     diagramContext.DiagramXml = this.getDiagramAsXml();
     diagramContext.DateTimeSaved = Date.now();
 
+    var thisComp = this;
+
     this.diagramService.saveDiagramToWorkspace(diagramContext,
       function onSuccess() {
+
+        thisComp.setState({unsavedChanges: false});
+
         Toaster.create({
           position: Position.TOP,
           autoFocus: false,
@@ -2671,12 +2736,12 @@ addUpDownLeftRightArrowToMoveCells() {
         }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.SavedSuccessfully()});
         return;
       },
-      function  onError() {
+      function onError(error) {
         Toaster.create({
           position: Position.TOP,
           autoFocus: false,
           canEscapeKeyClear: true
-        }).show({intent: Intent.DANGER, timeout: 2000, message: Messages.Error()});
+        }).show({intent: Intent.DANGER, timeout: 2000, message: error});
         return;
       });
   } 

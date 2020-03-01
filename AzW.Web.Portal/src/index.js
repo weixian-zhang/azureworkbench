@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter as Router } from "react-router-dom";
 import App from "./App";
+import Config from "../src/config";
 import "normalize.css";
 import "@blueprintjs/core/lib/css/blueprint.css"; 
 import "@blueprintjs/icons/lib/css/blueprint-icons.css";
@@ -13,7 +14,7 @@ import { store, persistor } from "./redux/store";
 import { Intent, Spinner } from "@blueprintjs/core";
 import axios from 'axios';
 
-////https://blog.logrocket.com/how-to-make-http-requests-like-a-pro-with-axios/
+//https://blog.logrocket.com/how-to-make-http-requests-like-a-pro-with-axios/
 axios.defaults.baseURL = 'http://localhost:8089/';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 axios.interceptors.request.use(request => {

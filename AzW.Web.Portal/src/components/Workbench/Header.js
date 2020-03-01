@@ -17,8 +17,6 @@ import HelpIcon from '@material-ui/icons/Help';
 import Tippy from '@tippy.js/react';
 import 'tippy.js/dist/tippy.css';
 
-import { connect } from "react-redux";
-import { msalLoginAsync, msalLogout } from "../../redux/actions";
 import AuthService from '../../services/AuthService';
 
 export default class Header extends Component {

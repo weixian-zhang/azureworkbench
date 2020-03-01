@@ -509,6 +509,7 @@ export default class MxGraphManager
         var vnetCellStyle  = new Object();
         vnetCellStyle[mxConstants.STYLE_STROKECOLOR] = 'darkblue';
         vnetCellStyle[mxConstants.SHAPE_RECTANGLE] = 'rectangle';
+        vnetCellStyle[mxConstants.STYLE_DASHED] = '0';
         vnetCellStyle[mxConstants.RECTANGLE_ROUNDING_FACTOR] = '0.0';
         vnetCellStyle[mxConstants.STYLE_SHADOW] = false;
         vnetCellStyle[mxConstants.STYLE_FILLCOLOR] = 'none';
@@ -526,6 +527,7 @@ export default class MxGraphManager
         var subnetCellStyle  = new Object();
         subnetCellStyle[mxConstants.STYLE_STROKECOLOR] = 'black';
         subnetCellStyle[mxConstants.STYLE_STROKEWIDTH] = '0.5';
+        subnetCellStyle[mxConstants.STYLE_DASHED] = '0';
         subnetCellStyle[mxConstants.SHAPE_RECTANGLE] = 'rectangle';
         subnetCellStyle[mxConstants.RECTANGLE_ROUNDING_FACTOR] = '0.0';
         subnetCellStyle[mxConstants.STYLE_SHADOW] = false;
@@ -891,6 +893,16 @@ export default class MxGraphManager
         //var styleObj = this.graph.getStylesheet().getCellStyle(styleString);
         
         return styleObj;;
+    }
+
+    getVNetStyle() {
+        var style = this.graph.getStylesheet().getCellStyle('vnetstyle');
+        return this.convertStyleObjectToString(style);
+    }
+
+    getSubnetStyle() {
+        var style = this.graph.getStylesheet().getCellStyle('subnetstyle');
+        return this.convertStyleObjectToString(style);
     }
 
     getDefaultRectStyleString() {

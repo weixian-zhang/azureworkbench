@@ -5,6 +5,7 @@ import { CirclePicker } from 'react-color';
 import Grid from '@material-ui/core/Grid';
 import { mxConstants } from "mxgraph-js";
 import Utils from '../Helpers/Utils';
+import AzureValidator from '../Helpers/AzureValidator';
 
 export default class StylePropPanel extends Component {
   constructor(props) {
@@ -60,6 +61,8 @@ export default class StylePropPanel extends Component {
 
         colors: ["transparent","#ffffff", "#cccccc", "#B2B2B2", "#4C4C4C", "#000000", "#f44336", "#e91e63", "#9c27b0", "#673ab7", "#3f51b5", "#2196f3", "#03a9f4", "#00bcd4", "#009688", "#4caf50", "#8bc34a", "#cddc39", "#ffeb3b", "#ffc107", "#ff9800", "#ff5722", "#795548", "#607d8b"]
       }
+
+      this.azureValidator = new AzureValidator();
 
       this.hydrateStateWithExistingCellStyle = this.hydrateStateWithExistingCellStyle.bind(this);
   }
@@ -158,7 +161,7 @@ export default class StylePropPanel extends Component {
         </div>
       );
     }
-    else if (this.getMxGraphManager().isNonAzureShape(cell)) {
+    else {
         return (
           <div>
             <h4>Stroke Color</h4>
@@ -167,7 +170,7 @@ export default class StylePropPanel extends Component {
             <CirclePicker colors={this.state.colors} onChangeComplete={this.onShapeFillColorChange} />
             <div>
               <br />
-              <Switch checked={this.state.shapeBorderDash.value} label="Border Dashed" onChange={this.onShapeBorderDashChange} />
+              <Switch checked={this.state.shapeBorderDash.value == '1' ? true : false} label="Border Dashed" onChange={this.onShapeBorderDashChange} />
             </div>
           </div>
         );
@@ -233,18 +236,20 @@ export default class StylePropPanel extends Component {
         return;
       }
 
-      if(this.getMxGraphManager().isNonAzureShape(cell))
-      {
-        let propShapeBorderDash =
-          Object.getOwnPropertyDescriptor(styleObj, mxConstants.STYLE_DASHED);
-        this.onShapeBorderDashChange(null, propShapeBorderDash.value);
+      //style for shapes, vnet and subnet
+      let propShapeBorderDash =
+      Object.getOwnPropertyDescriptor(styleObj, mxConstants.STYLE_DASHED);
+      this.onShapeBorderDashChange(null, propShapeBorderDash.value);
 
-        let propShapeFill =
-          Object.getOwnPropertyDescriptor(styleObj, mxConstants.STYLE_FILLCOLOR);
-        this.onShapeFillColorChange(null, null, propShapeFill.value);
+      let propShapeFill =
+      Object.getOwnPropertyDescriptor(styleObj, mxConstants.STYLE_FILLCOLOR);
+      this.onShapeFillColorChange(null, null, propShapeFill.value);
 
-        return;
-      }
+      let propShapeStroke =
+      Object.getOwnPropertyDescriptor(styleObj, mxConstants.STYLE_STROKECOLOR);
+      this.onShapeStrokeColorChange(null, null, propShapeStroke.value);
+
+      return;
   }
 
   onShapeStrokeColorChange = (color, sender, hydrateFromExisting) => {
@@ -402,18 +407,18 @@ export default class StylePropPanel extends Component {
         return;
       }
 
-      if(this.getMxGraphManager().isNonAzureShape(cell))
-      {
-        Object.defineProperty(styleObj, 
-          this.state.shapeBorderDash.key, { value: this.state.shapeBorderDash.value });
+      //style for shapes, vnet and subnet
+      Object.defineProperty(styleObj, 
+        this.state.shapeBorderDash.key, { value: this.state.shapeBorderDash.value });
 
-        Object.defineProperty(styleObj, 
-          this.state.fillColor.key, { value: this.state.fillColor.value });
+      Object.defineProperty(styleObj, 
+        this.state.shapeFillColor.key, { value: this.state.shapeFillColor.value });
 
-        this.state.saveCallback(styleObj);
-        this.drawerClose();
-        return;
-      }
+      Object.defineProperty(styleObj, 
+        this.state.shapeStrokeColor.key, { value: this.state.shapeStrokeColor.value });
+        
+      this.state.saveCallback(styleObj);
+      this.drawerClose();
   }
 
   drawerClose = () => {

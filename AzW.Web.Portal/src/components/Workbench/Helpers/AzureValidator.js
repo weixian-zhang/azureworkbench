@@ -74,6 +74,25 @@ export default class AzureValidator {
             return false;
     }
 
+    isVNet(cell){
+        if(Utils.IsNullOrUndefine(cell))
+        return false;
+
+        var obj = Utils.TryParseUserObject(cell.value);
+
+        if(Utils.IsNullOrUndefine(obj))
+            return false;
+        
+        if(obj.isUserObject && obj.userObject.GraphModel.ResourceType == ResourceType.VNet())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     isSubnet(cell){
         if(Utils.IsNullOrUndefine(cell))
         return false;
@@ -102,7 +121,11 @@ export default class AzureValidator {
         if(subnets.length <= 0)
             return false;
         
-        subnets.map(sub => {
+        var gatewaySubnetExist = false;
+        
+        for (var i = 0; i < subnets.length; i++) {
+            var sub = subnets[i];
+
             var result = Utils.TryParseUserObject(sub.value);
 
             if(result.isUserObject) {
@@ -110,12 +133,13 @@ export default class AzureValidator {
                 if(result.userObject.GraphModel.ResourceType == ResourceType.Subnet()
                     && result.userObject.GraphModel.IsGatewaySubnet == true)
                     {
-                        return true;
+                        gatewaySubnetExist = true;
+                        break;
                     }
             }
-        });
+        }
 
-        return false;
+        return gatewaySubnetExist;
     }
 
     isGatewaySubnet(subnetCell){

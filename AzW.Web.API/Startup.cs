@@ -112,7 +112,7 @@ namespace AzW.Web.API
             {
                 // This is a Microsoft identity platform web API.
                 options.Authority += "/v2.0";
-                options.Audience = "3b606e44-5ceb-4473-84c6-5f9b1119a2fc"; //"16afdc21-ffd3-4cf8-aeae-63bebf9e327e";
+                options.Audience = "16afdc21-ffd3-4cf8-aeae-63bebf9e327e"; //"";
 
                 // The web API accepts as audiences both the Client ID (options.Audience) and api://{ClientID}.
                 options.TokenValidationParameters.ValidAudiences = new []

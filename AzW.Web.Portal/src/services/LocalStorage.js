@@ -1,6 +1,7 @@
 export default class LocalStorage
 {
     static set(key, data) {
+        localStorage.removeItem(key);
         localStorage.setItem(key, data);
     }
 

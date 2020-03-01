@@ -6,6 +6,7 @@ import MainWorkbench from "./components/Workbench"
 import { msalLoginAsync } from "./redux/actions";
 import {addDiagram, deleteDiagram, addVertex} from './redux/actions/graphActions';
 import { Route, Link, BrowserRouter as Router } from 'react-router-dom'
+import axios from "axios";
 
 class App extends Component {
 

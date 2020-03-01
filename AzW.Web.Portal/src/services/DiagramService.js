@@ -1,8 +1,7 @@
-import axios from "axios";
+import axios from 'axios';
 import AnonymousDiagramContext from '../models/services/AnonymousDiagramContext';
 import WorkspaceDiagramContext from '../models/services/WorkspaceDiagramContext';
 import AuthService from './AuthService';
-import { isWidthDown } from "@material-ui/core";
 
 export default class DiagramService
 {
@@ -15,7 +14,7 @@ export default class DiagramService
             return;
       
         //axios.defaults.headers.common['Authorization'] = token.accessToken;
-        axios.post('api/dia/anony/share', anonyDiagramContext)
+        axios.post('/api/dia/anony/share', anonyDiagramContext)
         .then(function (response) {
           respCallback(response.data)
         })
@@ -32,7 +31,7 @@ export default class DiagramService
       if(anonyDiagramId == null)
         return;
 
-      return axios.get('api/dia/anony/shareload',{
+      return axios.get('/api/dia/anony/shareload',{
           params: {
             anonyDiagramId: anonyDiagramId
           }
@@ -86,7 +85,7 @@ export default class DiagramService
 
         var user = this.authService.getUserProfile();
 
-        axios.get('api/wrkspace/colls', 
+        axios.get('/api/wrkspace/colls', 
         {
           params: {
             emailId: user.UserName
@@ -119,7 +118,7 @@ export default class DiagramService
 
       var user = this.authService.getUserProfile();
 
-      axios.get('api/wrkspace/diagrams', 
+      axios.get('/api/wrkspace/diagrams', 
       {
         params: {
           emailId: user.UserName
@@ -151,7 +150,7 @@ export default class DiagramService
 
         var user = this.authService.getUserProfile();
 
-        axios.get('api/wrkspace/dia/load', 
+        axios.get('/api/wrkspace/dia/load', 
         {
           params: {
             emailId: diagramContext.emailId,
@@ -184,7 +183,7 @@ export default class DiagramService
 
         var user = this.authService.getUserProfile();
 
-        axios.delete('api/wrkspace/dia/del', 
+        axios.delete('/api/wrkspace/dia/del', 
         {
           params: {
             emailId: diagramContext.emailId,
@@ -215,7 +214,7 @@ export default class DiagramService
         // };
 
         
-        axios.post('api/export/pdf', JSON.stringify(svgbase64),
+        axios.post('/api/export/pdf', JSON.stringify(svgbase64),
         {
           headers: {
             'Accept': 'application/octet-stream'
