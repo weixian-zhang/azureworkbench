@@ -51,7 +51,15 @@ namespace AzW.Infrastructure.Data
             var db = CosmosDbHelper.GetDatabase(_secret);
 
             var coll = db.GetCollection<WorkspaceDiagramContext>(CollectionName.Workspace);
-            await coll.InsertOneAsync(context);
+
+            var existingReplacedDiagram =coll.FindOneAndReplace(x => 
+                x.CollectionName == context.CollectionName &&
+                x.DiagramName == context.DiagramName,
+                context
+            );
+
+            if(existingReplacedDiagram == null)
+                await coll.InsertOneAsync(context);
         }
 
         public async Task<IEnumerable<WorkspaceDiagramContextResult>>
@@ -105,14 +113,15 @@ namespace AzW.Infrastructure.Data
         }
 
         public async Task<string> LoadDiagramFromWorkspace
-            (string emailId, string collectionName, string UID)
+            (string emailId, string collectionName, string diagramName)
         {
             var db = CosmosDbHelper.GetDatabase(_secret);
 
             var coll = db.GetCollection<WorkspaceDiagramContext>(CollectionName.Workspace);
 
             var diagramContext = await coll.Find<WorkspaceDiagramContext>
-                (x => x.EmailId == emailId && x.CollectionName == collectionName && x.UID ==  UID)
+                (x => x.EmailId == emailId && x.CollectionName == collectionName &
+                 x.DiagramName ==  diagramName)
                 .SingleOrDefaultAsync();
 
             return diagramContext.DiagramXml;

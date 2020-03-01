@@ -14,7 +14,7 @@ export default class DiagramService
             return;
       
         //axios.defaults.headers.common['Authorization'] = token.accessToken;
-        axios.post('/api/dia/anony/share', anonyDiagramContext)
+        axios.post('api/dia/anony/share', anonyDiagramContext)
         .then(function (response) {
           respCallback(response.data)
         })
@@ -85,7 +85,7 @@ export default class DiagramService
 
         var user = this.authService.getUserProfile();
 
-        axios.get('/api/wrkspace/colls', 
+        axios.get('api/wrkspace/colls', 
         {
           params: {
             emailId: user.UserName
@@ -118,7 +118,7 @@ export default class DiagramService
 
       var user = this.authService.getUserProfile();
 
-      axios.get('/api/wrkspace/diagrams', 
+      axios.get('api/wrkspace/diagrams', 
       {
         params: {
           emailId: user.UserName
@@ -150,12 +150,12 @@ export default class DiagramService
 
         var user = this.authService.getUserProfile();
 
-        axios.get('/api/wrkspace/dia/load', 
+        axios.get('api/wrkspace/dia/load', 
         {
           params: {
             emailId: diagramContext.emailId,
             collectionName: diagramContext.collectionName,
-            uid: diagramContext.uid
+            diagramName: diagramContext.diagramName
           },
           headers: {
             'Authorization': 'Bearer ' + user.AccessToken,
@@ -183,7 +183,7 @@ export default class DiagramService
 
         var user = this.authService.getUserProfile();
 
-        axios.delete('/api/wrkspace/dia/del', 
+        axios.delete('api/wrkspace/dia/del', 
         {
           params: {
             emailId: diagramContext.emailId,
@@ -209,16 +209,11 @@ export default class DiagramService
 
     async exportDiagramAsPNG(svgbase64,  successCallback, errorCallback)
       {
-        // const params = {
-        //   svgbase64: svgbase64
-        // };
-
-        
-        axios.post('/api/export/pdf', JSON.stringify(svgbase64),
+       
+        axios.post('api/export/pdf', JSON.stringify(svgbase64),
         {
           headers: {
             'Accept': 'application/octet-stream'
-            //'Content-Type': 'application/json'
           },
           responseType: 'blob',
         })

@@ -72,9 +72,9 @@ namespace AzW.Web.API
 
         [Authorize()]
         [HttpGet("wrkspace/dia/load")]
-        public async Task<string> LoadDiagramFromWorkspace(string emailId, string collectionName, string uid)
+        public async Task<string> LoadDiagramFromWorkspace(string emailId, string collectionName, string diagramName)
         {
-           return  await _diagramRepo.LoadDiagramFromWorkspace(emailId, collectionName, uid);
+           return  await _diagramRepo.LoadDiagramFromWorkspace(emailId, collectionName, diagramName);
         }
 
         [Authorize()]

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import ASE from '../../../models/ASE';
-import { FormGroup, Drawer, Tooltip, Intent, Button } from "@blueprintjs/core";
+import EventGridTopic from '../../../models/EventGridTopic';
+import { FormGroup, InputGroup, Drawer, Tooltip, Intent, Button } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -8,13 +8,13 @@ import Grid from "@material-ui/core/Grid";
 import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
 
-export default class ASEPropPanel extends Component {
+export default class EventGridTopicPropPanel extends Component {
   constructor(props) {
       super(props);
 
       this.state ={
         isOpen: false,
-        userObject: new ASE(),
+        userObject: new EventGridTopic(),
         
         value: 'diagram', //tabs
 
@@ -25,7 +25,7 @@ export default class ASEPropPanel extends Component {
   render = () => {
     return (
       <Drawer
-          title="App Service Environment Properties"
+          title="EventGrid Topic Properties"
           autoFocus= {true}
           canEscapeKeyClose= {true}
           canOutsideClickClose= {true}

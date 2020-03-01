@@ -47,7 +47,7 @@ inline {
   background-color: #fff;
   border: 1px solid #000;
   text-align:center;
-  height: 700px;/*height needs to be set*/
+  height: 750px;/*height needs to be set*/
   width: 900px;
   margin: auto;
   position: fixed;
@@ -55,6 +55,7 @@ inline {
   right: 0;
   bottom: 0;
   left: 0;
+  overflow: auto;
   }
 .saveto-workspace-overlay-box {
     background-color: #fff;
@@ -68,7 +69,7 @@ inline {
     right: 0;
     bottom: 0;
     left: 0;
-  }
+    }
   .workspace-deletediagramdialog-overlay-box {
     background-color: #fff;
     border: 1px solid #000;

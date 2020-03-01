@@ -2,28 +2,33 @@
 import React, { Component } from "react";
 import Workspace from './Workspace';
 import OverlaySaveToWorkspace from './OverlaySaveToWorkspace';
-import {Spinner, InputGroup, Classes, Button, Intent, Overlay, Toaster, Position} from "@blueprintjs/core";
-import CircularProgress from '@material-ui/core/CircularProgress';
-import StylePropPanel from './PropPanel/StylePropPanel';
-import VMPropPanel from "./PropPanel/VMPropPanel";
-import SubnetPropPanel from "./PropPanel/SubnetPropPanel";
-import VNetPropPanel from "./PropPanel/VNetPropPanel";
-import NLBPropPanel from "./PropPanel/NLBPropPanel";
-import AppGwPropPanel from "./PropPanel/AppGwPropPanel";
-import DNSPrivateZonePropPanel from "./PropPanel/DNSPrivateZone";
-import AppServicePropPanel from "./PropPanel/AppSvcPropPanel";
-import ASEPropPanel from "./PropPanel/ASEPropPanel";
+import {InputGroup, Classes, Button, Intent, Overlay, Toaster, Position} from "@blueprintjs/core";
 
+//3rd-party libraries
+import ShortUniqueId from 'short-unique-id';
+import AzureIcons from "./Helpers/AzureIcons";
+import Messages from "./Helpers/Messages";
+import Utils from "./Helpers/Utils";
+import MxGraphManager from './Helpers/MxGraphManager';
+import { mxCellPath, mxDefaultToolbar, mxDefaultPopupMenu, mxDefaultKeyHandler, mxStylesheet, mxGraphModel, mxClipboard, mxCodec, mxPoint, mxGeometry, mxCellOverlay, mxImage, mxKeyHandler, mxConstants, mxEvent, mxUtils,mxPopupMenuHandler, mxDragSource, mxUndoManager, mxCell, mxEditor, mxGraph, mxElbowEdgeHandler, mxLabel, mxEventObject } from "mxgraph-js";
+import Subnet from "../../models/Subnet";
+import LoadAnonyDiagramContext from "../../models/LoadAnonyDiagramContext";
+import DiagramService from '../../services/DiagramService';
+import queryString from 'query-string';
+import AzureValidator from './Helpers/AzureValidator';
+import LocalStorage from '../../services/LocalStorage';
+import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramContext";
+import mxClientOverrides from './Helpers/mxClientOverrides';
+
+//models
 import AADB2C from "../../models/AADB2C";
 import IoTHub from "../../models/IoTHub";
 import Maps from "../../models/Maps";
 import TimeSeriesInsights from "../../models/TimeSeriesInsights";
-
 import RecoveryServiceVault from "../../models/RecoveryServiceVault";
 import AppInsights from "../../models/AppInsights";
 import Monitor from "../../models/Monitor";
 import Automation from "../../models/Automation";
-
 import APIM from "../../models/APIM";
 import ServiceBus from "../../models/ServiceBus";
 import LogicApp from "../../models/LogicApp";
@@ -31,13 +36,11 @@ import IntegratedServiceEnvironment from "../../models/IntegratedServiceEnvironm
 import EventGridTopic from "../../models/EventGridTopic";
 import EventGridSubscription from "../../models/EventGridSubscription";
 import StreamAnalytics from "../../models/StreamAnalytics";
-
 import AzureFirewall from "../../models/AzureFirewall";
 import Sentinel from "../../models/Sentinel";
 import KeyVault from "../../models/KeyVault";
 import DDoSStandard from "../../models/DDoSStandard";
 import Bastion from "../../models/Bastion";
-
 import Relay from "../../models/Relay";
 import ContainerRegistry from "../../models/ContainerRegistry";
 import ContainerInstance from "../../models/ContainerInstance";
@@ -82,22 +85,65 @@ import AppService from "../../models/AppService";
 import AppGateway from "../../models/AppGateway";
 import ResourceType from '../../models/ResourceType';
 import ASE from "../../models/ASE";
-import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext"; 
+import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
 
-import ShortUniqueId from 'short-unique-id';
-import AzureIcons from "./Helpers/AzureIcons";
-import Messages from "./Helpers/Messages";
-import Utils from "./Helpers/Utils";
-import MxGraphManager from './Helpers/MxGraphManager';
-import { mxXmlCanvas2D,mxXmlRequest, mxImageExport, mxCellPath, mxDefaultToolbar, mxDefaultPopupMenu, mxDefaultKeyHandler, mxStylesheet, mxGraphModel, mxClipboard, mxCodec, mxPoint, mxGeometry, mxCellOverlay, mxImage, mxKeyHandler, mxConstants, mxEvent, mxUtils,mxPopupMenuHandler, mxDragSource, mxUndoManager, mxCell, mxEditor, mxGraph, mxElbowEdgeHandler, mxLabel, mxEventObject } from "mxgraph-js";
-import Subnet from "../../models/Subnet";
-import LoadAnonyDiagramContext from "../../models/LoadAnonyDiagramContext";
-import DiagramService from '../../services/DiagramService';
-import queryString from 'query-string';
-import AzureValidator from './Helpers/AzureValidator';
-import LocalStorage from '../../services/LocalStorage';
-import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramContext";
-import mxClientOverrides from './Helpers/mxClientOverrides';
+//property panels
+import StylePropPanel from './PropPanel/StylePropPanel';
+import SubnetPropPanel from "./PropPanel/SubnetPropPanel";
+import VNetPropPanel from "./PropPanel/VNetPropPanel";
+import NLBPropPanel from "./PropPanel/NLBPropPanel";
+import AppGwPropPanel from "./PropPanel/AppGwPropPanel";
+import DNSPrivateZonePropPanel from "./PropPanel/DNSPrivateZone";
+import AppServicePropPanel from "./PropPanel/AppSvcPropPanel";
+import ASEPropPanel from "./PropPanel/ASEPropPanel";
+import FuncPropPanel from "./PropPanel/FuncPropPanel";
+import AzureSearchPropPanel from "./PropPanel/AzureSearchPropPanel";
+import SignalRPropPanel from "./PropPanel/SignalRPropPanel";
+import AppServiceCertPropPanel from "./PropPanel/AppServiceCertPropPanel";
+import AppServiceDomainPropPanel from "./PropPanel/AppServiceDomainPropPanel";
+import VMPropPanel from "./PropPanel/VMPropPanel";
+import VMSSPropPanel from "./PropPanel/VMSSPropPanel";
+import DevTestLabPropPanel from "./PropPanel/DevTestLabPropPanel";
+import SharedImageGalleryPropPanel from "./PropPanel/SharedImageGalleryPropPanel";
+import FrontDoorPropPanel from "./PropPanel/FrontDoorPropPanel";
+import PublicIPPropPanel from "./PropPanel/PublicIPPropPanel";
+import ExpressRoutePropPanel from "./PropPanel/ExpressRoutePropPanel";
+import TrafficManagerPropPanel from "./PropPanel/TrafficManagerPropPanel";
+import VNetGatewayPropPanel from "./PropPanel/VNetGatewayPropPanel";
+import CDNPropPanel from "./PropPanel/CDNPropPanel";
+import StoragePropPanel from "./PropPanel/StoragePropPanel";
+import AzureFileSyncPropPanel from "./PropPanel/AzureFileSyncPropPanel";
+import NetAppFilePropPanel from "./PropPanel/NetAppFilePropPanel";
+import SynapsePropPanel from "./PropPanel/SynapsePropPanel";
+import PostgreSQLPropPanel from "./PropPanel/PostgreSQLPropPanel";
+import MariaDBPropPanel from "./PropPanel/MariaDBPropPanel";
+import AzureSQLPropPanel from "./PropPanel/AzureSQLPropPanel";
+import CosmosPropPanel from "./PropPanel/CosmosPropPanel";
+import MySQLPropPanel from "./PropPanel/MySQLPropPanel";
+import SQLElasticPoolPropPanel from "./PropPanel/SQLElasticPoolPropPanel";
+import SQLMIPropPanel from "./PropPanel/SQLMIPropPanel";
+import RedisPropPanel from "./PropPanel/RedisPropPanel";
+import DataLakeStoragePropPanel from "./PropPanel/DataLakeStoragePropPanel";
+import DataLakeAnalyticsPropPanel from "./PropPanel/DataLakeAnalyticsPropPanel";
+import DatabricksPropPanel from "./PropPanel/DatabricksPropPanel";
+import DataFactoryPropPanel from "./PropPanel/DataFactoryPropPanel";
+import HdInsightPropPanel from "./PropPanel/HdInsightPropPanel";
+import DataExplorerPropPanel from "./PropPanel/DataExplorerPropPanel";
+import ContainerInstancePropPanel from "./PropPanel/ContainerInstancePropPanel";
+import ContainerRegistryPropPanel from "./PropPanel/ContainerRegistryPropPanel";
+import KubernetesPropPanel from "./PropPanel/KubernetesPropPanel";
+import APIMPropPanel from "./PropPanel/APIMPropPanel";
+import ServiceBusPropPanel from "./PropPanel/ServiceBusPropPanel";
+import RelayPropPanel from "./PropPanel/RelayPropPanel";
+import LogicAppPropPanel from "./PropPanel/LogicAppPropPanel";
+import ISEPropPanel from "./PropPanel/ISEPropPanel";
+import EventGridTopicPropPanel from "./PropPanel/EventGridTopicPropPanel";
+import EventGridSubscriptionPropPanel from "./PropPanel/EventGridTopicPropPanel";
+import StreamAnalyticsPropPanel from "./PropPanel/StreamAnalyticsPropPanel";
+
+
+
+
 
  export default class DiagramEditor extends Component {
   constructor(props) {
@@ -152,9 +198,53 @@ import mxClientOverrides from './Helpers/mxClientOverrides';
         <StylePropPanel ref={this.stylePanel} MxGraphManager={this.graphManager} />
         <OverlaySaveToWorkspace ref={this.overlaySaveToWorkspace} DiagramEditor={this} />
         <Workspace ref={this.workspace} DiagramEditor={this} />
-        <AppServicePropPanel ref={this.asePropPanel} />
+        <AppServicePropPanel ref={this.appsvcPropPanel} />
         <ASEPropPanel ref={this.asePropPanel} />
+        <FuncPropPanel ref={this.funcPropPanel} />
+        <AzureSearchPropPanel ref={this.azsearchPropPanel} />
+        <SignalRPropPanel ref={this.signalrPropPanel} />
+        <AppServiceCertPropPanel ref={this.appsvccertPropPanel} />
+        <AppServiceDomainPropPanel ref={this.appsvcdomainPropPanel} />
         <VMPropPanel ref={this.vmPropPanel} />
+        <VMSSPropPanel ref={this .vmssPropPanel} />
+        <DevTestLabPropPanel ref={this.devteslabPropPanel} />
+        <SharedImageGalleryPropPanel ref={this.sigPropPanel} />
+        <FrontDoorPropPanel ref={this.frontdoorPropPanel} />
+        <PublicIPPropPanel ref={this.pipPropPanel} />
+        <ExpressRoutePropPanel ref={this.expressroutePropPanel} />
+        <TrafficManagerPropPanel ref={this.trafficmanagerPropPanel} />
+        <VNetGatewayPropPanel ref={this.vnetgatewayPropPanel} />
+        <CDNPropPanel ref={this.cdnPropPanel} />
+        <StoragePropPanel ref={this.storagePropPanel} />
+        <AzureFileSyncPropPanel ref={this.filesyncPanel} />
+        <NetAppFilePropPanel ref={this.netappfilePropPanel} />
+        <SynapsePropPanel ref={this.synapsePropPanel} />
+        <PostgreSQLPropPanel ref={this.postgresqlPropPanel} />
+        <MariaDBPropPanel ref={this.mariadbPropPanel} />
+        <AzureSQLPropPanel ref={this.azuresqlPropPanel} />
+        <CosmosPropPanel ref={this.cosmosPropPanel} />
+        <MySQLPropPanel ref={this.mysqlPropPanel} />
+        <SQLElasticPoolPropPanel ref={this.sqlelasticpoolPropPanel} />
+        <SQLMIPropPanel ref={this.sqlmiPropPanel} />
+        <RedisPropPanel ref={this.redisPropPanel} />
+        <DataLakeStoragePropPanel ref={this.datalakestoragePropPanel} />
+        <DataLakeAnalyticsPropPanel ref={this.datalakeanalyticsPropPanel} />
+        <DatabricksPropPanel ref={this.databricksPropPanel} />
+        <DataFactoryPropPanel ref={this.datafactoryPropPanel} />
+        <HdInsightPropPanel  ref={this.hdinsightPropPanel} />
+        <DataExplorerPropPanel ref={this.dataexplorerPropPanel} />
+        <ContainerInstancePropPanel  ref={this.containerintancePropPanel} />
+        <ContainerRegistryPropPanel  ref={this.containerregistryPropPanel} />
+        <KubernetesPropPanel ref={this.kubePropPanel} />
+        <APIMPropPanel ref={this.apimPropPanel} />
+        <ServiceBusPropPanel ref={this.servicebusPropPanel} />
+        <RelayPropPanel ref={this.relayPropPanel} />
+        <LogicAppPropPanel ref={this.logicappPropPanel} />
+        <ISEPropPanel ref={this.isePropPanel} />
+        <EventGridTopicPropPanel ref={this.egtopicPropPanel} />
+        <EventGridSubscriptionPropPanel ref={this.egsubscriptionPropPanel} />
+        <StreamAnalyticsPropPanel ref={this.streamanalyticsPropPanel} />
+
         <VNetPropPanel ref={this.vnetPropPanel} />
         <SubnetPropPanel ref={this.subnetPropPanel} />
         <NLBPropPanel ref={this.nlbPropPanel} />
@@ -174,10 +264,6 @@ import mxClientOverrides from './Helpers/mxClientOverrides';
             <Button style={{float: '15%'}} className="bp3-button bp3-intent-success" icon="tick" onClick={this.copySharedLink}>Copy</Button>
           </div>
         </Overlay>
-        <Overlay isOpen={this.state.showSpinner} onClose={this.handleSpinnerClose}>
-          <Spinner intent={Intent.PRIMARY} size={Spinner.SIZE_STANDARD} value={0.6} />
-        </Overlay>
-        {(this.state.isLoading) ? <CircularProgress className="loader" /> : ''}
       </div>
     );
   }
@@ -194,6 +280,50 @@ import mxClientOverrides from './Helpers/mxClientOverrides';
     this.dnsPrivateZonePropPanel = React.createRef();
     this.appsvcPropPanel = React.createRef();
     this.asePropPanel = React.createRef();
+    this.funcPropPanel = React.createRef();
+    this.azsearchPropPanel = React.createRef();
+    this.signalrPropPanel = React.createRef();
+    this.appsvccertPropPanel = React.createRef();
+    this.appsvcdomainPropPanel = React.createRef();
+    this.vmssPropPanel = React.createRef();
+    this.devteslabPropPanel = React.createRef();
+    this.sigPropPanel = React.createRef();
+    this.frontdoorPropPanel = React.createRef();
+    this.pipPropPanel = React.createRef();
+    this.expressroutePropPanel = React.createRef();
+    this.trafficmanagerPropPanel = React.createRef();
+    this.vnetgatewayPropPanel = React.createRef();
+    this.cdnPropPanel = React.createRef();
+    this.storagePropPanel = React.createRef();
+    this.filesyncPanel = React.createRef();
+    this.netappfilePropPanel = React.createRef();
+    this.synapsePropPanel  = React.createRef();
+    this.postgresqlPropPanel = React.createRef();
+    this.mariadbPropPanel = React.createRef();
+    this.azuresqlPropPanel = React.createRef();
+    this.cosmosPropPanel = React.createRef();
+    this.mysqlPropPanel = React.createRef();
+    this.sqlelasticpoolPropPanel = React.createRef();
+    this.sqlmiPropPanel = React.createRef();
+    this.redisPropPanel = React.createRef();
+    this.datalakestoragePropPanel = React.createRef(); 
+    this.datalakeanalyticsPropPanel = React.createRef();
+    this.databricksPropPanel = React.createRef();
+    this.datafactoryPropPanel = React.createRef();
+    this.hdinsightPropPanel = React.createRef();
+    this.dataexplorerPropPanel = React.createRef();
+    this.containerintancePropPanel =  React.createRef();
+    this.containerregistryPropPanel =  React.createRef();
+    this.kubePropPanel =  React.createRef();
+    this.apimPropPanel =  React.createRef();
+    this.servicebusPropPanel =  React.createRef();
+    this.relayPropPanel =  React.createRef();
+    this.logicappPropPanel =  React.createRef();
+    this.isePropPanel = React.createRef();
+    this.egtopicPropPanel = React.createRef();
+    this.egsubscriptionPropPanel = React.createRef();
+    this.streamanalyticsPropPanel = React.createRef();
+
   }
   
   addDblClickEventToOpenPropPanel(){
@@ -316,6 +446,7 @@ addCtrlSSave() {
 PromptSaveBeforeCloseBrowser() {
   var thisComp = this;
   window.addEventListener('beforeunload', (event) => {
+    if(!thisComp.graphManager.isCellExist()) return;
     if(thisComp.state.unsavedChanges){
       event.returnValue = 'You have unsaved changes';
     }
@@ -810,6 +941,168 @@ addUpDownLeftRightArrowToMoveCells() {
     let thisComp = this;
 
     switch (userObject.GraphModel.ResourceType) {
+
+      
+      case ResourceType.StreamAnalytics():
+        this.streamanalyticsPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.EventGridSubscription():
+        this.egsubscriptionPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.EventGridTopic():
+        this.egtopicPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.ISE():
+        this.isePropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.LogicApp():
+        this.logicappPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.Relay():
+        this.relayPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.ASB():
+        this.servicebusPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.APIM():
+        this.apimPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.Kubernetes():
+        this.kubePropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.ContainerRegistry():
+        this.containerregistryPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.ContainerInstance():
+        this.containerintancePropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.DataExplorer():
+        this.dataexplorerPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.HdInsight():
+        this.hdinsightPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.DataFactory():
+        this.datafactoryPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.Databricks():
+        this.databricksPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.DataLakeAnalytics():
+        this.datalakeanalyticsPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.DataLakeStorage():
+        this.datalakestoragePropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.Redis():
+        this.redisPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.SQLMI():
+        this.sqlmiPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.SQLElasticPool():
+        this.sqlelasticpoolPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.MySQL():
+        this.mysqlPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.CosmosDB():
+        this.cosmosPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.SQLDB():
+        this.azuresqlPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.MariaDB():
+        this.mariadbPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.PostgreSQL():
+        this.postgresqlPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.Synapse():
+        this.synapsePropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.NetAppFile():
+        this.netappfilePropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.AzFileSync():
+        this.filesyncPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.BlobStorage():
+        this.storagePropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.CDN():
+        this.cdnPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.VirtualNetworkGateway():
+        this.vnetgatewayPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.TrafficManager():
+        this.trafficmanagerPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
       case ResourceType.AppService():
         this.appsvcPropPanel.current.show(userObject, function(savedUserObject){
           thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
@@ -820,6 +1113,63 @@ addUpDownLeftRightArrowToMoveCells() {
           thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
         });
         break;
+      case ResourceType.Function():
+        this.funcPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.AzureSearch():
+        this.azsearchPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.SignalR():
+        this.signalrPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break; 
+      case ResourceType.AppServiceCert():
+        this.appsvccertPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.AppServiceDomain():
+        this.appsvcdomainPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.VMSS():
+        this.vmssPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break; 
+      case ResourceType.DevTestLab():
+        this.devteslabPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.SharedImageGallery():
+        this.sigPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.FrontDoor():
+        this.frontdoorPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.PublicIp():
+        this.pipPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.ExpressRouteCircuit():
+        this.expressroutePropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+        
+        
       case ResourceType.WindowsVM():
         this.vmPropPanel.current.show(userObject, function(savedUserObject){
           thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
@@ -1412,7 +1762,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, func.GraphModel.IconId ,funcJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/png," +
         this.azureIcons.FunctionApp());
   }
 
@@ -2008,7 +2358,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.EventGridTopic());
   }
 
@@ -2021,7 +2371,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.EventGridSubscription());
   }
 
@@ -2498,10 +2848,7 @@ addUpDownLeftRightArrowToMoveCells() {
   }
 
   showSpinner(toShow) {
-    if(toShow)
-      this.setState({showSpinner: true});
-    else
-    this.setState({showSpinner: false});
+  
   }
 
   saveDiagramToBrowser = () => {
@@ -2727,6 +3074,8 @@ addUpDownLeftRightArrowToMoveCells() {
     this.diagramService.saveDiagramToWorkspace(diagramContext,
       function onSuccess() {
 
+        this.showSpinner(false);
+
         thisComp.setState({unsavedChanges: false});
 
         Toaster.create({
@@ -2737,6 +3086,7 @@ addUpDownLeftRightArrowToMoveCells() {
         return;
       },
       function onError(error) {
+        this.showSpinner(false);
         Toaster.create({
           position: Position.TOP,
           autoFocus: false,
@@ -2760,7 +3110,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.getSelectionModel().clear();
 
-    this.showLoading(true);
+    this.showSpinner(false);
     
     var svg = this.getDiagramSvg();
 
@@ -2772,7 +3122,7 @@ addUpDownLeftRightArrowToMoveCells() {
     this.diagramService.exportDiagramAsPNG(svgXmlBase64,
       function onSuccess(pdfByteArray)
       {
-        thisComp.showLoading(true);
+        thisComp.showSpinner(false);
 
         const url = window.URL.createObjectURL(new Blob([pdfByteArray]));
           const link = document.createElement('a');
@@ -2789,7 +3139,7 @@ addUpDownLeftRightArrowToMoveCells() {
         return;
       },
       function onError(error){
-        thisComp.showLoading(true);
+        thisComp.showSpinner(false);
         console.log(error);
       });
   }
@@ -2821,6 +3171,5 @@ addUpDownLeftRightArrowToMoveCells() {
     this.graph.getModel().clear();
   }
 
-  handleSpinnerClose = () => this.setState({ showSpinner: false });
   closeShareDiagramPopup = () => this.setState({ showShareDiagramPopup: false, useTallContent: false });
 }
