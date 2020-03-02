@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 
+
 import ResourcePalette from "./ResourcePalette";
 import DiagramEditor from "./DiagramEditor";
 
@@ -20,6 +21,8 @@ export default class Workbench extends Component {
     this.DiagramEditor = React.createRef();
     this.graphContainer = null;
     this.dropContext = null;
+
+    this.Index = this.props.Index;
   }
 
   componentDidMount() {
@@ -31,7 +34,7 @@ export default class Workbench extends Component {
     return (
         <div className="workbenchgrid-container">
           { renderResourcePalette ? <ResourcePalette mxgraphManager={this.graphManager}  addResourceToDiagramEditor={this.addResourceToDiagramEditor} /> : '' }
-          <DiagramEditor queryString={this.state.queryString} ref={this.DiagramEditor} mxgraphManagerReadyCallback={this.mxgraphManagerReadyCallback} Workbench={this} />
+          <DiagramEditor Index={this.Index} queryString={this.state.queryString} ref={this.DiagramEditor} mxgraphManagerReadyCallback={this.mxgraphManagerReadyCallback} Workbench={this} />
         </div>
     );
   }

@@ -39,6 +39,7 @@ import { ReactComponent as AzureSearch } from "../../assets/azure_icons/Web Serv
 import { ReactComponent as SignalR } from "../../assets/azure_icons/Web Service Color/SignalR.svg";
 import { ReactComponent as AppServiceCert } from "../../assets/azure_icons/Web Service Color/App Service Certificates.svg";
 import { ReactComponent as AppServiceDomain } from "../../assets/azure_icons/Web Service Color/App Service Domains.svg";
+import { ReactComponent as AppConfig } from "../../assets/azure_icons/Web Service Color/App Configuration.svg";
 
 //compute
 import { ReactComponent as VirtualMachine } from "../../assets/azure_icons/ComputeServiceColor/VM/VM-windows.svg";
@@ -88,8 +89,10 @@ import { ReactComponent as SecurityCenter } from "../../assets/azure_icons/Secur
 import { ReactComponent as DDOSStandard } from "../../assets/azure_icons/Networking Service Color/DDOS Protection Plans.svg";
 import { ReactComponent as AzFirewall } from "../../assets/azure_icons/Networking Service Color/Azure Firewall.svg";
 
-import { ReactComponent as Monitor } from "../../assets/azure_icons/Management and Governance Service Color/Monitor.svg";
+import { ReactComponent as LogAnalytics } from "../../assets/azure_icons/Management and Governance Service Color/Log Analytics Workspaces.svg";
 import { ReactComponent as AzAutomation } from "../../assets/azure_icons/Management and Governance Service Color/Automation Accounts.svg";
+
+
 
 import { ReactComponent as AzureAD } from "../../assets/azure_icons/Identity Service Color/Active Directory.svg";
 import { ReactComponent as AzureADB2C } from "../../assets/azure_icons/Identity Service Color/Azure AD B2C.svg";
@@ -210,7 +213,7 @@ export default class ResourcePalette extends Component {
     this.akvIcon = React.createRef();
     this.siteRecoveryIcon = React.createRef();
     this.appInsightsIcon = React.createRef();
-    this.azMonitorIcon = React.createRef();
+    this.azloganalyticsIcon = React.createRef();
     this.automationIcon = React.createRef();
 
     this.aadIcon = React.createRef();
@@ -218,6 +221,7 @@ export default class ResourcePalette extends Component {
     this.iothub = React.createRef();
     this.azmaps = React.createRef();
     this.timeseriesinsights = React.createRef();
+    this.appconfigIcon = React.createRef();
   }
   
 
@@ -397,6 +401,12 @@ export default class ResourcePalette extends Component {
                   <AppServiceDomain class="azure-rsc-icon" />
                 </Tippy>
               </div>
+              <div class="tile-panel" ref={this.appconfigIcon}>
+                <Tippy content="App Configuration" followCursor={true} placement="bottom">
+                  <AppConfig class="azure-rsc-icon" />
+                </Tippy>
+              </div>
+              
             </Typography>
           </ExpansionPanelDetails>
         </ExpansionPanel>
@@ -807,9 +817,9 @@ export default class ResourcePalette extends Component {
                     <img src={require('../../assets/azure_icons/Management and Governance Service Color/AppInsights.png')} width="25" height="25" />
                   </Tippy>
                 </div>
-                <div class="tile-panel" ref={this.azMonitorIcon}>
-                  <Tippy content="Monitor/Log Analytics" followCursor={true} placement="bottom">
-                    <Monitor class="azure-rsc-icon" />
+                <div class="tile-panel" ref={this.azloganalyticsIcon}>
+                  <Tippy content="Log Analytics Workspace" followCursor={true} placement="bottom">
+                  <img src={require('../../assets/azure_icons/Management and Governance Service Color/Log Analytics Workspaces.png')} width="25" height="25" />
                   </Tippy>
                 </div>
                 <div class="tile-panel" ref={this.automationIcon}>
@@ -969,7 +979,7 @@ export default class ResourcePalette extends Component {
 
     this.graphManager.makeIconDraggable(this.siteRecoveryIcon.current, ResourceType.RecoveryServiceVault(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.appInsightsIcon.current, ResourceType.AppInsights(), thisComponent.props.addResourceToDiagramEditor);
-    this.graphManager.makeIconDraggable(this.azMonitorIcon.current, ResourceType.Monitor(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.azloganalyticsIcon.current, ResourceType.LogAnalytics(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.automationIcon.current, ResourceType.Automation(), thisComponent.props.addResourceToDiagramEditor);
 
     this.graphManager.makeIconDraggable(this.aadIcon.current, ResourceType.AAD(), thisComponent.props.addResourceToDiagramEditor);
@@ -977,6 +987,8 @@ export default class ResourcePalette extends Component {
     this.graphManager.makeIconDraggable(this.iothub.current, ResourceType.IoTHub(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.azmaps.current, ResourceType.AzureMaps(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.timeseriesinsights.current, ResourceType.TimeSeriesInsights(), thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.appconfigIcon.current, ResourceType.AppConfig(), thisComponent.props.addResourceToDiagramEditor);
 
+    
   }
 }

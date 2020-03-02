@@ -62,7 +62,7 @@ export default class ResourceType
     static EventGridSubscription() {return 'egsubscription'; }
     static StreamAnalytics() {return 'streamanalytics'; }
     static SendGrid() {return 'sendgrid'; }
-
+    static AppConfig() {return 'appconfig'; }
     static Firewall() {return 'firewall'; }
     static Sentinel() {return 'sentinel'; }
     static KeyVault() {return 'keyvault'; }
@@ -72,7 +72,7 @@ export default class ResourceType
 
     static RecoveryServiceVault() {return 'recoveryservicevault'; }
     static AppInsights() {return 'appinsights'; }
-    static Monitor() {return 'monitor'; }
+    static LogAnalytics() {return 'loganalytics'; }
     static Automation() {return 'automation'; }
 
     static AAD() {return 'aad'; }

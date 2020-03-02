@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import Header from "./Header";
 import Workbench from "./Workbench";
 import ActionBar from "./ActionBar";
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Box from '@material-ui/core/Box';
 
 export default class MainWorkbench extends Component {
 
@@ -9,9 +11,15 @@ export default class MainWorkbench extends Component {
     super(props);
     this.workbench = React.createRef();
     this.actionBar = React.createRef();
+
+    this.state = {
+      showProgress: false,
+      progressMessage: ''
+    };
   }
 
   componentDidMount(){
+      this.progress = React.createRef();
   }
 
   render() {
@@ -19,7 +27,17 @@ export default class MainWorkbench extends Component {
       <div className="container">
         <Header ActionBar={this.actionBar} Workbench={this.workbench} />
         {/* <ActionBar ref={this.actionBar} Workbench={this.workbench} /> */}
-        <Workbench queryString={this.props.location.search} ref={this.workbench} />
+        <Workbench Index={this} queryString={this.props.location.search} ref={this.workbench} />
+        {
+          this.state.showProgress ? 
+          <Box ref={this.progress} style={{position:'absolute', marginLeft: '50%', marginTop: '20%'}}>
+              <CircularProgress style={{display: 'block', marginLeft: '35%'}} />
+              <div style={{'paddingTop': '1.5em', fontFamily: 'Segoe UI', fontSize: '16'}}>
+                {this.state.progressMessage}
+              </div>
+          </Box>
+          : ''
+        }
       </div>
     );
   }
@@ -32,9 +50,11 @@ export default class MainWorkbench extends Component {
     this.workbench.current.shareDiagram();
   }
 
-  loadSharedDiagramIfExist() {
-    // var parsedQS = queryString.parse(this.props.location.search)
-    // if(parsedQS != null && parsedQS.id != null)
-    //   this.workbench.current.loadSharedDiagram(parsedQS.id);
+  showProgress(toShow, message) {
+    if(toShow)
+      this.setState({showProgress: toShow, progressMessage: message});
+    else
+      this.setState({showProgress: toShow, progressMessage: ''});
+    
   }
 }

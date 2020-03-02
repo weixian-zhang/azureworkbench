@@ -21,13 +21,15 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
 import mxClientOverrides from './Helpers/mxClientOverrides';
 
 //models
+
+import LogAnalytics from "../../models/LogAnalytics";
+import AppConfig from "../../models/AppConfig";
 import AADB2C from "../../models/AADB2C";
 import IoTHub from "../../models/IoTHub";
 import Maps from "../../models/Maps";
 import TimeSeriesInsights from "../../models/TimeSeriesInsights";
 import RecoveryServiceVault from "../../models/RecoveryServiceVault";
 import AppInsights from "../../models/AppInsights";
-import Monitor from "../../models/Monitor";
 import Automation from "../../models/Automation";
 import APIM from "../../models/APIM";
 import ServiceBus from "../../models/ServiceBus";
@@ -140,9 +142,16 @@ import ISEPropPanel from "./PropPanel/ISEPropPanel";
 import EventGridTopicPropPanel from "./PropPanel/EventGridTopicPropPanel";
 import EventGridSubscriptionPropPanel from "./PropPanel/EventGridTopicPropPanel";
 import StreamAnalyticsPropPanel from "./PropPanel/StreamAnalyticsPropPanel";
-
-
-
+import AppConfigurationPropPanel from "./PropPanel/AppConfigurationPropPanel";
+import FirewallPropPanel from "./PropPanel/FirewallPropPanel";
+import SentinelPropPanel from "./PropPanel/SentinelPropPanel";
+import KeyVaultPropPanel from "./PropPanel/KeyVaultPropPanel";
+import DDoSStandardPropPanel from "./PropPanel/DDoSStandardPropPanel";
+import BastionPropPanel from "./PropPanel/BastionPropPanel";
+import RecoveryServiceVaultPropPanel from "./PropPanel/RecoveryServiceVaultPropPanel";
+import AppInsightsPropPanel from "./PropPanel/AppInsightsPropPanel";
+import LogAnalyticsPropPanel from "./PropPanel/LogAnalyticsPropPanel";
+import AutomationPropPanel from "./PropPanel/AutomationPropPanel";
 
 
  export default class DiagramEditor extends Component {
@@ -151,6 +160,8 @@ import StreamAnalyticsPropPanel from "./PropPanel/StreamAnalyticsPropPanel";
     this.shortUID = new ShortUniqueId();
     this.graph = null;
     this.azureIcons = AzureIcons;
+
+    this.Index = this.props.Index; //Index component contains progress Comp
 
     //state
     this.state = {
@@ -244,6 +255,16 @@ import StreamAnalyticsPropPanel from "./PropPanel/StreamAnalyticsPropPanel";
         <EventGridTopicPropPanel ref={this.egtopicPropPanel} />
         <EventGridSubscriptionPropPanel ref={this.egsubscriptionPropPanel} />
         <StreamAnalyticsPropPanel ref={this.streamanalyticsPropPanel} />
+        <AppConfigurationPropPanel ref={this.appconfigPropPanel} />
+        <FirewallPropPanel ref={this.firewallPropPanel} />
+        <SentinelPropPanel ref={this.sentinelPropPanel} />
+        <KeyVaultPropPanel ref={this.akvPropPanel} />
+        <DDoSStandardPropPanel ref={this.ddosstandardPropPanel} />
+        <BastionPropPanel ref={this.bastionPropPanel} />
+        <RecoveryServiceVaultPropPanel ref={this.recoveryservicevaultPropPanel} />
+        <AppInsightsPropPanel ref={this.appinsightsPropPanel} />
+        <LogAnalyticsPropPanel ref={this.loganalyticsPropPanel} />
+        <AutomationPropPanel ref={this.automationPropPanel} />
 
         <VNetPropPanel ref={this.vnetPropPanel} />
         <SubnetPropPanel ref={this.subnetPropPanel} />
@@ -323,6 +344,16 @@ import StreamAnalyticsPropPanel from "./PropPanel/StreamAnalyticsPropPanel";
     this.egtopicPropPanel = React.createRef();
     this.egsubscriptionPropPanel = React.createRef();
     this.streamanalyticsPropPanel = React.createRef();
+    this.appconfigPropPanel = React.createRef();
+    this.firewallPropPanel = React.createRef();
+    this.sentinelPropPanel = React.createRef();
+    this.akvPropPanel = React.createRef();
+    this.ddosstandardPropPanel = React.createRef();
+    this.bastionPropPanel = React.createRef();
+    this.recoveryservicevaultPropPanel = React.createRef();
+    this.appinsightsPropPanel = React.createRef();
+    this.loganalyticsPropPanel = React.createRef();
+    this.automationPropPanel = React.createRef();
 
   }
   
@@ -698,6 +729,9 @@ addUpDownLeftRightArrowToMoveCells() {
       case ResourceType.AppServiceDomain():
         this.addAppSvcDomain(dropContext);
         break;
+      case ResourceType.AppConfig():
+        this.addAppConfig(dropContext);
+        break;
       case ResourceType.SharedImageGallery():
         this.addSharedImageGallery(dropContext);
         break;
@@ -888,8 +922,8 @@ addUpDownLeftRightArrowToMoveCells() {
       case ResourceType.AppInsights():
         this.addAppInsights(dropContext);
         break;
-      case ResourceType.Monitor():
-        this.addMonitor(dropContext);
+      case ResourceType.LogAnalytics():
+        this.addLogAnalytics(dropContext);
         break;
       case ResourceType.Automation():
         this.addAutomation(dropContext);
@@ -941,8 +975,58 @@ addUpDownLeftRightArrowToMoveCells() {
     let thisComp = this;
 
     switch (userObject.GraphModel.ResourceType) {
-
       
+      
+      case ResourceType.Automation():
+        this.automationPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.LogAnalytics():
+        this.loganalyticsPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.AppInsights():
+        this.appinsightsPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.RecoveryServiceVault():
+        this.recoveryservicevaultPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.Bastion():
+        this.bastionPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.DDoSStandard():
+        this.ddosstandardPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.KeyVault():
+        this.akvPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.Sentinel():
+        this.sentinelPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.Firewall():
+        this.firewallPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.AppConfig():
+        this.appconfigPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
       case ResourceType.StreamAnalytics():
         this.streamanalyticsPropPanel.current.show(userObject, function(savedUserObject){
           thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
@@ -1368,65 +1452,62 @@ addUpDownLeftRightArrowToMoveCells() {
   addUser = (dropContext) => {
     this.graph.insertVertex
           (this.graph.getDefaultParent(), null, 'user', dropContext.x, dropContext.y, 50, 50,
-          "editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+          "verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
           this.azureIcons.User());
   }
 
   addOnpremDC = (dropContext) => {
     this.graph.insertVertex
           (this.graph.getDefaultParent(), null, '<p style="margin: 0px auto">datacenter</p>', dropContext.x, dropContext.y, 50, 50,
-          "fontSize=13;editable=1;verticalLabelPosition=bottom;shape=image;image=" +
+          "verticalLabelPosition=bottom;verticalAlign=top;fontSize=13;editable=1;verticalLabelPosition=bottom;shape=image;image=" +
           require('../../assets/azure_icons/shape-dc.png'));
   }
 
   addInternet = (dropContext) => {
     this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'internet', dropContext.x, dropContext.y, 60, 60,
-    "editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+    "verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
       this.azureIcons.Internet());
   }
 
   addClientDevice = (dropContext) => {
     this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'laptop', dropContext.x, dropContext.y, 60, 60,
-    "editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+    "verticalLabelPosition=bottom;verticalAlign=top;editable=1;shape=image;image=data:image/svg+xml," +
       this.azureIcons.ClientDevice());
   }
 
   addADFSDevice = (dropContext) => {
     this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'ADFS', dropContext.x, dropContext.y, 60, 60,
-    "editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+    "verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
       this.azureIcons.ADFS());
   }
 
   addAndriodDevice = (dropContext) => {
     this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'Andriod', dropContext.x, dropContext.y, 60, 60,
-    "editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+    "verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
       this.azureIcons.Andriod());
   }
 
   addiPhoneDevice = (dropContext) => {
     this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'iPhone', dropContext.x, dropContext.y, 60, 60,
-    "editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+    "verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
       this.azureIcons.iPhone());
   }
 
   addOnPremDBServerDevice = (dropContext) => {
     this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'On-Prem DB Server', dropContext.x, dropContext.y, 60, 60,
-    "editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+    "verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
       this.azureIcons.OnPremDBServer());
   }
   
   
 
   addVNet = (dropContext) => {
-
-    //mxgraph examples
-    https://jgraph.github.io/mxgraph/javascript/index.html
 
       this.graphManager.graph.getModel().beginUpdate();
       try
@@ -1438,8 +1519,6 @@ addUpDownLeftRightArrowToMoveCells() {
             new mxImage(require('../../assets/azure_icons/Networking Service Color/Virtual Networks.svg'),20, 20),
             null,  mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP
           );
-
-          
 
           var vnetModel = new VNet();
               vnetModel.resourceType = ResourceType.VNet();
@@ -1571,7 +1650,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
       this.graph.insertVertex
         (parent, nlb.GraphModel.IconId ,nlbJsonString, dropContext.x, dropContext.y, 30, 30,
-        "fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+        "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/svg+xml," +
           this.azureIcons.NLB());
   }
 
@@ -1598,7 +1677,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
       this.graph.insertVertex
         (subnetCell, appgw.GraphModel.IconId ,appgwJsonString, dropContext.x, dropContext.y, 35, 35,
-        "fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+        "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
           this.azureIcons.AppGateway());
   }
 
@@ -1615,7 +1694,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
       this.graph.insertVertex
         (parent, dnsPrivateZone.GraphModel.IconId ,dnsPrivateZoneJsonString, dropContext.x, dropContext.y, 35, 35,
-        "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+        "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/svg+xml," +
           this.azureIcons.DNSPrivateZone());
   }
 
@@ -1663,7 +1742,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
         var vm = this.graph.insertVertex
           (result.subnetCell, vmModel.GraphModel.IconId, JSON.stringify(vmModel), subnetCenterPt.x, subnetCenterPt.y, 30, 30,
-          "verticalLabelPosition=bottom;verticalAlign=top;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + iconByOS);
+          "verticalLabelPosition=bottom;verticalAlign=top;editable=0;shape=image;image=data:image/svg+xml," + iconByOS);
     }
      finally
      {
@@ -1830,6 +1909,20 @@ addUpDownLeftRightArrowToMoveCells() {
       "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.SharedImageGallery());
   }
+
+  addAppConfig = (dropContext) => {
+    var model = new AppConfig();
+    model.GraphModel.Id = this.shortUID.randomUUID(6);
+    model.GraphModel.DisplayName = 'App Configuration'
+
+    var modelJsonString = JSON.stringify(model);
+
+    this.graph.insertVertex
+      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.AppConfig());
+  }
+  
 
   addPublicIp = (dropContext) => {
     var model = new PublicIp();
@@ -2534,17 +2627,17 @@ addUpDownLeftRightArrowToMoveCells() {
         this.azureIcons.AppInsights());
   }
 
-  addMonitor = (dropContext) => {
+  addLogAnalytics = (dropContext) => {
 
-    var model = new Monitor();
+    var model = new LogAnalytics();
     model.GraphModel.Id = this.shortUID.randomUUID(6);
-    model.GraphModel.DisplayName = 'Azure Monitor'
+    model.GraphModel.DisplayName = 'Log Analytics Workspace'
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
       "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-        this.azureIcons.Monitor());
+        this.azureIcons.LogAnalytics());
   }
 
   addAutomation = (dropContext) => {
@@ -2847,9 +2940,6 @@ addUpDownLeftRightArrowToMoveCells() {
       this.graphManager.graph.getModel().endUpdate();
   }
 
-  showSpinner(toShow) {
-  
-  }
 
   saveDiagramToBrowser = () => {
     if(!this.graphManager.isCellExist())
@@ -2999,7 +3089,7 @@ addUpDownLeftRightArrowToMoveCells() {
         return;
       }
     
-    this.showSpinner(true);
+      this.Index.showProgress(true, 'Generating Share link...');
 
     var thisComp = this;
     var anonyDiagramContext = new AnonymousDiagramContext();
@@ -3010,19 +3100,18 @@ addUpDownLeftRightArrowToMoveCells() {
     var shareLink = this.diagramService
       .saveAnonymousDiagram(anonyDiagramContext,
         function (shareLink){
-          thisComp.showSpinner(false);
+
+          thisComp.Index.showProgress(false);
           thisComp.setState({shareLink: shareLink, showShareDiagramPopup: true});
         },
         function(error){
-          thisComp.showSpinner(false);
+          thisComp.Index.showProgress(false);
           Toaster.create({
             position: Position.TOP,
             autoFocus: false,
             canEscapeKeyClear: true
           }).show({intent: Intent.DANGER, timeout: 3000, message: error.message});
         });
-
-        this.showSpinner(false);
   }
 
   copySharedLink = () => {
@@ -3074,8 +3163,7 @@ addUpDownLeftRightArrowToMoveCells() {
     this.diagramService.saveDiagramToWorkspace(diagramContext,
       function onSuccess() {
 
-        this.showSpinner(false);
-
+        this.Index.showProgress(false);
         thisComp.setState({unsavedChanges: false});
 
         Toaster.create({
@@ -3086,7 +3174,7 @@ addUpDownLeftRightArrowToMoveCells() {
         return;
       },
       function onError(error) {
-        this.showSpinner(false);
+        this.Index.showProgress(false);
         Toaster.create({
           position: Position.TOP,
           autoFocus: false,
@@ -3110,7 +3198,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.getSelectionModel().clear();
 
-    this.showSpinner(false);
+    this.Index.showProgress(true);
     
     var svg = this.getDiagramSvg();
 
@@ -3122,7 +3210,7 @@ addUpDownLeftRightArrowToMoveCells() {
     this.diagramService.exportDiagramAsPNG(svgXmlBase64,
       function onSuccess(pdfByteArray)
       {
-        thisComp.showSpinner(false);
+        thisComp.Index.showProgress(false);
 
         const url = window.URL.createObjectURL(new Blob([pdfByteArray]));
           const link = document.createElement('a');
@@ -3139,7 +3227,7 @@ addUpDownLeftRightArrowToMoveCells() {
         return;
       },
       function onError(error){
-        thisComp.showSpinner(false);
+        thisComp.Index.showProgress(false);
         console.log(error);
       });
   }
@@ -3162,8 +3250,8 @@ addUpDownLeftRightArrowToMoveCells() {
   }
 
   previewGraph = () => {
-    var bounds =  this.graph.getView().getGraphBounds()
-    mxUtils.show(this.graph, null, bounds.x, bounds.y , bounds.width, bounds.height);
+    var bounds =  this.graph.getGraphBounds();
+    mxUtils.show(this.graph, null, bounds.x, bounds.y , bounds.width + 50, bounds.height + 50);
   }
 
   clearGraph() {

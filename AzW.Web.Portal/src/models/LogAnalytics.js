@@ -1,15 +1,15 @@
 import ResourceType from './ResourceType'
-export default class Monitor
+export default class LogAnalytics
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.Monitor(),
+            ResourceType: ResourceType.LogAnalytics(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.Monitor(),
+            ResourceType: ResourceType.LogAnalytics(),
             Deployable: true,
             HighCost: false,
             
