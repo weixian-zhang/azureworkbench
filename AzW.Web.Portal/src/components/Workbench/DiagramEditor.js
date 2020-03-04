@@ -21,7 +21,7 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
 import mxClientOverrides from './Helpers/mxClientOverrides';
 
 //models
-
+import IoTCentral from "../../models/IoTCentral";
 import LogAnalytics from "../../models/LogAnalytics";
 import AppConfig from "../../models/AppConfig";
 import AADB2C from "../../models/AADB2C";
@@ -152,6 +152,11 @@ import RecoveryServiceVaultPropPanel from "./PropPanel/RecoveryServiceVaultPropP
 import AppInsightsPropPanel from "./PropPanel/AppInsightsPropPanel";
 import LogAnalyticsPropPanel from "./PropPanel/LogAnalyticsPropPanel";
 import AutomationPropPanel from "./PropPanel/AutomationPropPanel";
+import AADB2CPropPanel from "./PropPanel/AADB2CPropPanel";
+import IoTHubPropPanel from "./PropPanel/IoTHubPropPanel";
+import MapsPropPanel from "./PropPanel/MapsPropPanel";
+import TimeSeriesPropPanel from "./PropPanel/TimeSeriesPropPanel";
+import IoTCentralPropPanel from "./PropPanel/IoTCentralPropPanel";
 
 
  export default class DiagramEditor extends Component {
@@ -208,7 +213,7 @@ import AutomationPropPanel from "./PropPanel/AutomationPropPanel";
       <div id="diagramEditor" className="diagramEditor">
         <StylePropPanel ref={this.stylePanel} MxGraphManager={this.graphManager} />
         <OverlaySaveToWorkspace ref={this.overlaySaveToWorkspace} DiagramEditor={this} />
-        <Workspace ref={this.workspace} DiagramEditor={this} />
+        <Workspace ref={this.workspace} DiagramEditor={this} Index={this.Index} />
         <AppServicePropPanel ref={this.appsvcPropPanel} />
         <ASEPropPanel ref={this.asePropPanel} />
         <FuncPropPanel ref={this.funcPropPanel} />
@@ -265,7 +270,11 @@ import AutomationPropPanel from "./PropPanel/AutomationPropPanel";
         <AppInsightsPropPanel ref={this.appinsightsPropPanel} />
         <LogAnalyticsPropPanel ref={this.loganalyticsPropPanel} />
         <AutomationPropPanel ref={this.automationPropPanel} />
-
+        <AADB2CPropPanel  ref={this.aadb2cPropPanel} />
+        <IoTHubPropPanel ref={this.iothubPropPanel} />
+        <MapsPropPanel ref={this.mapsPropPanel} />
+        <TimeSeriesPropPanel ref={this.timeseriesPropPanel} />
+        <IoTCentralPropPanel ref={this.iotcentralPropPanel} />
         <VNetPropPanel ref={this.vnetPropPanel} />
         <SubnetPropPanel ref={this.subnetPropPanel} />
         <NLBPropPanel ref={this.nlbPropPanel} />
@@ -354,7 +363,11 @@ import AutomationPropPanel from "./PropPanel/AutomationPropPanel";
     this.appinsightsPropPanel = React.createRef();
     this.loganalyticsPropPanel = React.createRef();
     this.automationPropPanel = React.createRef();
-
+    this.aadb2cPropPanel  = React.createRef();
+    this.iothubPropPanel = React.createRef();
+    this.mapsPropPanel = React.createRef();
+    this.timeseriesPropPanel = React.createRef();
+    this.iotcentralPropPanel = React.createRef();
   }
   
   addDblClickEventToOpenPropPanel(){
@@ -938,6 +951,9 @@ addUpDownLeftRightArrowToMoveCells() {
       case ResourceType.IoTHub():
         this.addIoTHub(dropContext);
         break;
+      case ResourceType.IoTCentral():
+        this.addIoTCentral(dropContext);
+      break;
       case ResourceType.AzureMaps():
         this.addAzureMaps(dropContext);
         break;
@@ -975,8 +991,32 @@ addUpDownLeftRightArrowToMoveCells() {
     let thisComp = this;
 
     switch (userObject.GraphModel.ResourceType) {
-      
-      
+
+      case ResourceType.IoTCentral():
+        this.iotcentralPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.TimeSeriesInsights():
+        this.timeseriesPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.AzureMaps():
+        this.mapsPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.IoTHub():
+        this.iothubPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.AADB2C():
+        this.aadb2cPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
       case ResourceType.Automation():
         this.automationPropPanel.current.show(userObject, function(savedUserObject){
           thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
@@ -2687,6 +2727,20 @@ addUpDownLeftRightArrowToMoveCells() {
         this.azureIcons.IoTHub());
   }
 
+  addIoTCentral = (dropContext) => {
+
+    var model = new IoTCentral();
+    model.GraphModel.Id = this.shortUID.randomUUID(6);
+    model.GraphModel.DisplayName = 'IoT Central Application'
+    var modelJsonString = JSON.stringify(model);
+
+    this.graph.insertVertex
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.IoTCentral());
+  }
+
+
   addAzureMaps = (dropContext) => {
 
     var model = new Maps();
@@ -3198,7 +3252,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.getSelectionModel().clear();
 
-    this.Index.showProgress(true);
+    this.Index.showProgress(true, 'Generating PDF...');
     
     var svg = this.getDiagramSvg();
 

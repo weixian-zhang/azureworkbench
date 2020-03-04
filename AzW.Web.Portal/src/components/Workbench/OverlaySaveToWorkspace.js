@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import {Toaster, Card,Elevation,Position, FormGroup, InputGroup, Button, Overlay, Intent} from "@blueprintjs/core";
 import AuthService from '../../services/AuthService';
 import Messages from './Helpers/Messages';
-import Utils from './Helpers/Utils'
-;
+import Utils from './Helpers/Utils';
+
 export default class OverlaySaveToWorkspace extends Component {
     constructor(props) {
       super(props);

@@ -10,9 +10,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Badge from '@material-ui/core/Badge';
-import Skeleton from '@material-ui/lab/Skeleton';
 
-import Collection from '../../models/services/Collection';
+
 import Messages from './Helpers/Messages';
 import DiagramService from '../../services/DiagramService';
 import AuthService from '../../services/AuthService';
@@ -25,13 +24,16 @@ export default class Workspace extends Component {
         
       this.authService = new AuthService();
 
+      this.Index = this.props.Index;
+
       this.state = {
         isOpen: false,
         isAuthenticated: this.authService.isUserLogin(),
         isDeleteConfirmationDialogOpen: false,
         selectedDiagramContextForDelete: null,
         collections: [],
-        diagrams: []
+        diagrams: [],
+        filteredDiagrams: []
       }
     }
 
@@ -85,7 +87,7 @@ export default class Workspace extends Component {
                                 itemRenderer={this.renderCollection}
                                 noResults={<MenuItem disabled={true}
                                 text={this.authService.isUserLogin() ? "No collection found" : "Login first..."} />}
-                                onItemSelect={this.setCurrentCollection}
+                                
                                 filterable={false}>
                                 {/* children become the popover target; render value here */}
                                 <Button text='Collections' rightIcon="double-caret-vertical" />
@@ -102,7 +104,7 @@ export default class Workspace extends Component {
                               </TableRow>
                             </TableHead>
                             <TableBody>
-                              {this.state.diagrams.map(diagram => 
+                              {this.state.filteredDiagrams.map(diagram => 
                             (
                                 <TableRow>
                                   <TableCell component="th" scope="row">
@@ -185,26 +187,40 @@ export default class Workspace extends Component {
       renderCollection = (collection, { handleClick, modifiers }) => {
         return (
             <MenuItem
-                key={collection.name}
-                onClick={this.setCurrentCollection}
                 text={collection.name}
+                onClick={this.onCollectionItemClick}
             />
         );
     }
 
-    setCurrentCollection = (item, event) => {
-        this.setState({currentCollection: item});
+    onCollectionItemClick = (sender) => {
+        var collectionName = sender.target.innerText;
+
+        if(collectionName == 'All')
+          this.setState({filteredDiagrams: this.state.diagrams})
+        else
+        {
+          var filtered = this.state.diagrams.filter(function (diagram) {
+            return diagram.collectionName === collectionName;
+          });
+
+          this.setState({filteredDiagrams:filtered })
+        }
     }
 
     getDiagramsFromWorkspace = () => {
       
+      this.Index.showProgress(true, 'Retrieving diagrams from My Space...');
+
       var thisComp = this;
 
       this.diagramService.getDiagramsFromWorkspace(
         function onSuccess(diagrams) {
-            thisComp.setState({diagrams: diagrams});
+          thisComp.Index.showProgress(false);
+            thisComp.setState({diagrams: diagrams, filteredDiagrams: diagrams});
         },
-        function onSuccess() {
+        function onError() {
+          thisComp.Index.showProgress(false);
           Toaster.create({
             position: Position.TOP,
             autoFocus: false,

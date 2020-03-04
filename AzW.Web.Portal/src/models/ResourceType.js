@@ -78,6 +78,7 @@ export default class ResourceType
     static AAD() {return 'aad'; }
     static AADB2C() {return 'aadb2c'; }
     static IoTHub() {return 'iothub'; }
+    static IoTCentral() {return 'iotcentral'; }
     static AzureMaps() {return 'maps'; }
     static TimeSeriesInsights() {return 'timeseriesinsights'; }
 }

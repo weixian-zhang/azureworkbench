@@ -43,7 +43,7 @@ export default class DiagramService
       {
         if(!this.authService.isUserLogin())
         {
-          errorCallback('User login required')
+          errorCallback('User login required or session has expried')
           return;
         }
 
@@ -79,7 +79,7 @@ export default class DiagramService
       {
         if(!this.authService.isUserLogin())
         {
-          errorCallback('User login required')
+          errorCallback('User login required or session has expried')
           return;
         }
 
@@ -112,7 +112,7 @@ export default class DiagramService
     {
       if(!this.authService.isUserLogin())
       {
-        errorCallback('User login required')
+        errorCallback('User login required or session has expried')
         return;
       }
 

@@ -90,7 +90,7 @@ namespace AzW.Web.API
         {
            var collections = await _diagramRepo.GetCollectionFromWorkspaceAsync(emailId);
 
-           var collectionsWithAllOption = collections.ToList();
+           var collectionDistinct = collections.ToList().Distinct();
 
            var collList = new List<Collection>();
 
@@ -99,7 +99,7 @@ namespace AzW.Web.API
 
             collList.Add(new Collection(){Name = "All"});
 
-           foreach(var coll in collections)
+           foreach(var coll in collectionDistinct)
            {
                collList.Add(new Collection()
                {

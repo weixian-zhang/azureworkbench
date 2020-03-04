@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Toaster,Intent, Popover, Menu, Position, MenuItem,MenuDivider, Classes, Icon } from "@blueprintjs/core";
+import { PopoverInteractionKind,Intent, Popover, Menu, Position, MenuItem,MenuDivider, Classes, Icon } from "@blueprintjs/core";
 
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -7,12 +7,12 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import SaveIcon from '@material-ui/icons/Save';
 import CloudIcon from '@material-ui/icons/Cloud';
 import FolderIcon from '@material-ui/icons/Folder';
 import ShareIcon from '@material-ui/icons/Share';
-import ImportExportIcon from '@material-ui/icons/ImportExport';
 import HelpIcon from '@material-ui/icons/Help';
+
+import OverlayTutorial from './OverlayTutorial';
 
 import Tippy from '@tippy.js/react';
 import 'tippy.js/dist/tippy.css';
@@ -39,6 +39,7 @@ export default class Header extends Component {
     }
 
     this.acctIconRef = React.createRef();
+    this.overlayTutorial = React.createRef();
 
     this.diagramEditor = this.props.Workbench.current;
   }
@@ -54,11 +55,17 @@ export default class Header extends Component {
           marginRight: -12,
         }
     };
+
+  }
+
+  componentDidMount() { 
+    
   }
 
   render() {
     return (
       <div style={this.style.root}>
+        <OverlayTutorial ref={this.overlayTutorial} />
         <AppBar position="static" style={{ background: '#2E3B55' }}>
           <Toolbar variant='dense'>
             <Typography color="inherit">
@@ -75,16 +82,14 @@ export default class Header extends Component {
               <Popover content=
                { 
                    <Menu className={Classes.ELEVATION_1}>
-                     <MenuItem  text="Save in Browser" onClick={this.saveToLocal} />
+                     <MenuItem  text="Save to Browser" onClick={this.saveToLocal} />
                      <MenuItem  text="Save to Workspace" onClick={this.savetoWorkspace} />
                      <MenuDivider />
                      <MenuItem  text="Export as PDF" onClick={this.exportDiagramAsPDF} />
                    </Menu>
-               } position={Position.BOTTOM}>
+               } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.HOVER}>
                 <IconButton color="inherit" aria-label="Edit">
-                  <Tippy content="File" followCursor={true} placement="bottom">
-                    <FolderIcon  />
-                  </Tippy>
+                  <FolderIcon  />
                 </IconButton>
               </Popover>
               
@@ -96,7 +101,7 @@ export default class Header extends Component {
         
               <IconButton color="inherit" aria-label="Save">
                 <Tippy content="Help" followCursor={true} placement="bottom">
-                  <HelpIcon />
+                  <HelpIcon onClick={this.showTutorial} />
                 </Tippy>
               </IconButton>
             
@@ -105,7 +110,6 @@ export default class Header extends Component {
                    <Menu className={Classes.ELEVATION_1}>
                      {this.state.isLogin == true ? <MenuItem labelElement={<Icon icon="log-out" />} text="Logout" onClick={this.logout} /> : ''}
                      {this.state.isLogin == false ? <MenuItem labelElement={<Icon icon="log-in" />} text="Login" onClick={this.login} /> : '' }
-                     <MenuItem  text="Feedback" onClick={this.showFeedbackOverlay} />
                      <MenuItem  text="About Azure Workbench" onClick={this.showAboutOverlay} />
                    </Menu>
                } position={Position.BOTTOM}>
@@ -120,59 +124,11 @@ export default class Header extends Component {
                       </Tippy>
                   }
                 </IconButton>
-               {/* <Button
-                 className="bp3-minimal"
-                 icon="person"
-                 text=/> */}
              </Popover>
             </section>
           </Toolbar>
         </AppBar>
       </div>
-          
-      // <div>
-      //   <Navbar>
-      //     <Navbar.Group align={Alignment.LEFT}>
-      //       <Navbar.Heading>
-      //         <div style={{display: 'inline'}}><img src ={require('../../assets/azure_icons/azure-logo.svg')} alt="" style={{width : 25, height : 25, marginRight: 3}} /></div>
-      //         <div style={{display: 'inline'}}>Azure Workbench</div>
-      //       </Navbar.Heading>
-      //     </Navbar.Group>
-      //     <Navbar.Group align={Alignment.RIGHT}>
-      //         <Popover content=
-      //         { 
-      //             <Menu className={Classes.ELEVATION_1}>
-      //               {this.state.isLogin == true ? <MenuItem labelElement={<Icon icon="log-out" />} text="Logout" onClick={this.logout} /> : ''}
-      //               {this.state.isLogin == false ? <MenuItem labelElement={<Icon icon="log-in" />} text="Login" onClick={this.login} /> : '' }
-      //               <MenuItem  text="Quick Tutorial" onClick={this.showFeedbackOverlay} />
-      //               <MenuItem  text="Feedback" onClick={this.showFeedbackOverlay} />
-      //               <MenuItem  text="About Azure Workbench" onClick={this.showAboutOverlay} />
-      //             </Menu>
-      //         } position={Position.BOTTOM}>
-              
-      //         <Button
-      //           className="bp3-minimal"
-      //           icon="person"
-      //           text={this.state.userProfile != null ? this.state.userProfile.UserName : ''}/>
-      //       </Popover>
-      //     </Navbar.Group>
-      //   </Navbar>
-      //   <Overlay isOpen={this.state.isTutorialOpen} onClose={this.handleTutorialClose}>
-      //     <Card>
-              
-      //     </Card>
-      //   </Overlay>
-      //   <Overlay isOpen={this.state.isFeedbackOpen} onClose={this.handleFeedbackClose}>
-      //     <Card>
-              
-      //     </Card>
-      //   </Overlay>
-      //   <Overlay isOpen={this.state.isAboutOpen} onClose={this.handleAboutClose}>
-      //     <Card>
-              
-      //     </Card>
-      //   </Overlay>
-      // </div>
     );
   }
 
@@ -220,14 +176,9 @@ export default class Header extends Component {
     diagramEditor.clearGraph();
  }
 
- calculate(){
-     Toaster.create({
-         position: Position.TOP,
-         autoFocus: false,
-         canEscapeKeyClear: true
-       }).show({intent: Intent.SUCCESS, timeout: 3000, message: 'In the roadmap...'});
-       return;
- }
+showTutorial = () => {
+  this.overlayTutorial.current.show();
+}
 
 
 

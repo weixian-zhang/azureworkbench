@@ -95,10 +95,20 @@ export default class AuthService
     }
 
     isUserLogin(){
-      if (this.msalApp.getAccount() != null)
-        return true;
-      else
+      if (this.msalApp.getAccount() == null || this.isSessionExpired())
         return false;
+      else
+        return true;
     }
+
+    isSessionExpired() {
+        var userProfile = this.getUserProfile();
+        var accessTokenExpireOn = userProfile.AccessTokenExpiresOn;
+        var CurrentDate = new Date();
+        if(accessTokenExpireOn < CurrentDate)
+            return true;
+        else
+            return false;
+    } 
     
 }

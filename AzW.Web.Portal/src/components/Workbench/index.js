@@ -25,12 +25,12 @@ export default class MainWorkbench extends Component {
   render() {
     return (
       <div className="container">
-        <Header ActionBar={this.actionBar} Workbench={this.workbench} />
+        <Header ActionBar={this.actionBar} Workbench={this.workbench} Index={this} />
         {/* <ActionBar ref={this.actionBar} Workbench={this.workbench} /> */}
         <Workbench Index={this} queryString={this.props.location.search} ref={this.workbench} />
         {
           this.state.showProgress ? 
-          <Box ref={this.progress} style={{position:'absolute', marginLeft: '50%', marginTop: '20%'}}>
+          <Box ref={this.progress} style={{position:'absolute', 'z-index': '-1', marginLeft: '50%', marginTop: '20%'}}>
               <CircularProgress style={{display: 'block', marginLeft: '35%'}} />
               <div style={{'paddingTop': '1.5em', fontFamily: 'Segoe UI', fontSize: '16'}}>
                 {this.state.progressMessage}

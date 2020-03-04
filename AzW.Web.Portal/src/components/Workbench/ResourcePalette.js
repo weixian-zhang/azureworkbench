@@ -89,10 +89,7 @@ import { ReactComponent as SecurityCenter } from "../../assets/azure_icons/Secur
 import { ReactComponent as DDOSStandard } from "../../assets/azure_icons/Networking Service Color/DDOS Protection Plans.svg";
 import { ReactComponent as AzFirewall } from "../../assets/azure_icons/Networking Service Color/Azure Firewall.svg";
 
-import { ReactComponent as LogAnalytics } from "../../assets/azure_icons/Management and Governance Service Color/Log Analytics Workspaces.svg";
 import { ReactComponent as AzAutomation } from "../../assets/azure_icons/Management and Governance Service Color/Automation Accounts.svg";
-
-
 
 import { ReactComponent as AzureAD } from "../../assets/azure_icons/Identity Service Color/Active Directory.svg";
 import { ReactComponent as AzureADB2C } from "../../assets/azure_icons/Identity Service Color/Azure AD B2C.svg";
@@ -222,6 +219,7 @@ export default class ResourcePalette extends Component {
     this.azmaps = React.createRef();
     this.timeseriesinsights = React.createRef();
     this.appconfigIcon = React.createRef();
+    this.iotcentralhub =  React.createRef();
   }
   
 
@@ -863,7 +861,12 @@ export default class ResourcePalette extends Component {
               <Typography component={'span'} variant={'body2'}>
                 <div class="tile-panel" ref={this.iothub}>
                   <Tippy content="IoT Hub" followCursor={true} placement="bottom">
-                    <IoTHub class="azure-rsc-icon" />
+                    <img src={require('../../assets/azure_icons/Internet of Things Service Color/Azure IoT Hub.png')} width="30" height="30" />
+                  </Tippy>
+                </div>
+                <div class="tile-panel" ref={this.iotcentralhub}>
+                  <Tippy content="IoT Central Application" followCursor={true} placement="bottom">
+                    <img src={require('../../assets/azure_icons/Internet of Things Service Color/IoT Central Applications.png')} width="30" height="30" />
                   </Tippy>
                 </div>
                 <div class="tile-panel" ref={this.azmaps}>
@@ -988,7 +991,7 @@ export default class ResourcePalette extends Component {
     this.graphManager.makeIconDraggable(this.azmaps.current, ResourceType.AzureMaps(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.timeseriesinsights.current, ResourceType.TimeSeriesInsights(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.appconfigIcon.current, ResourceType.AppConfig(), thisComponent.props.addResourceToDiagramEditor);
-
+    this.graphManager.makeIconDraggable(this.iotcentralhub.current, ResourceType.IoTCentral(), thisComponent.props.addResourceToDiagramEditor);
     
   }
 }
