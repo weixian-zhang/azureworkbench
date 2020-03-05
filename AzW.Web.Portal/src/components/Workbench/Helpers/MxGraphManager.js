@@ -521,7 +521,7 @@ export default class MxGraphManager
         vnetCellStyle[mxConstants.STYLE_ALIGN] = "right";
         vnetCellStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "TOP";
         vnetCellStyle[mxConstants.STYLE_EDITABLE] = '0';
-        vnetCellStyle[mxConstants.STYLE_FOLDABLE] = '1';
+        vnetCellStyle[mxConstants.STYLE_FOLDABLE] = '0';
         this.graph.getStylesheet().putCellStyle('vnetstyle', vnetCellStyle);
 
         var subnetCellStyle  = new Object();
@@ -641,15 +641,34 @@ export default class MxGraphManager
                 if (terminal != null && this.model.isVertex(terminal.cell) &&
                 thisComp.isImage(terminal.cell))
                 {
-                    return [
-                        new mxConnectionConstraint(new mxPoint(0, 0.5), false, 'west', 1.3, 0.0),//w
-                        new mxConnectionConstraint(new mxPoint(0.95, 0.5), false, 'east', 0.0, 0.0), //e
-                        new mxConnectionConstraint(new mxPoint(0.5, 0), false, 'north', 0.0, 0.5),//n
-                        new mxConnectionConstraint(new mxPoint(0.5, 1), false, 'south', 0.0, 0.9)]//s
+                    var val = Utils.TryParseUserObject(terminal.cell.value);
+
+                    if(val.isUserObject && 
+                       !Utils.IsNullOrUndefine(val.userObject.GraphModel.DisplayName) &&
+                       val.userObject.GraphModel.DisplayName != '')
+                    {
+                        return [
+                            new mxConnectionConstraint(new mxPoint(0, 0.5), false, 'west', 1.3, 0.0),//w
+                            new mxConnectionConstraint(new mxPoint(0.95, 0.5), false, 'east', 0.0, 0.0), //e
+                            new mxConnectionConstraint(new mxPoint(0.5, 0), false, 'north', 0.0, 0.5),//n
+                            new mxConnectionConstraint(new mxPoint(0.5, 1), false, 'south', 0.0, 0.9),//s
+                            new mxConnectionConstraint(new mxPoint(0.5, 1.5), false, 'belowLabel', 0.0, 0.9)]//below label
+                    }
+                    else
+                        return [
+                            new mxConnectionConstraint(new mxPoint(0, 0.5), false, 'west', 1.3, 0.0),//w
+                            new mxConnectionConstraint(new mxPoint(0.95, 0.5), false, 'east', 0.0, 0.0), //e
+                            new mxConnectionConstraint(new mxPoint(0.5, 0), false, 'north', 0.0, 0.5),//n
+                            new mxConnectionConstraint(new mxPoint(0.5, 1), false, 'south', 0.0, 0.9)]//s
+                        
+
+                        
                         // new mxConnectionConstraint(new mxPoint(0.65, 0.5), false),//ne
                         // new mxConnectionConstraint(new mxPoint(0.15, 0.8), false), //sw
                         // new mxConnectionConstraint(new mxPoint(0.5, 0.5), false), //s
                         // new mxConnectionConstraint(new mxPoint(1, 0.9), false)];//se
+
+                       
 
                 }
                 else if (terminal != null && this.model.isVertex(terminal.cell))
@@ -662,15 +681,6 @@ export default class MxGraphManager
                         new mxConnectionConstraint(new mxPoint(0, 1), true),
                         new mxConnectionConstraint(new mxPoint(0.5, 1), true),
                         new mxConnectionConstraint(new mxPoint(1, 1), true)];
-
-                    //  var ports = [
-                    //     new mxConnectionConstraint(new mxPoint(0.5, 0), true),
-                    //     new mxConnectionConstraint(new mxPoint(0, 0.5), true),
-                    //     new mxConnectionConstraint(new mxPoint(1, 0.5), true),
-                    //     new mxConnectionConstraint(new mxPoint(0.5, 1), true),
-                    // ];
-
-                    // return ports;
                 }
 
                 return null;

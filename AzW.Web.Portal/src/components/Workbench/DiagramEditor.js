@@ -281,9 +281,9 @@ import IoTCentralPropPanel from "./PropPanel/IoTCentralPropPanel";
         <AppGwPropPanel ref={this.appgwPropPanel} />
         <DNSPrivateZonePropPanel ref={this.dnsPrivateZonePropPanel} />
         <Overlay isOpen={this.state.showShareDiagramPopup} onClose={this.closeShareDiagramPopup} >
-          <div style={{width: '100%'}} className={[Classes.CARD, Classes.ELEVATION_4, "login-overlay"]}>
+          <div style={{width: '400px',height:'100px'}} className={[Classes.CARD, Classes.ELEVATION_4, "login-overlay"]}>
           <InputGroup
-                    style={{float: 'left'}}
+
                     disabled={true}
                     value={this.state.shareLink}
                     inputRef={(input) => {
@@ -291,7 +291,7 @@ import IoTCentralPropPanel from "./PropPanel/IoTCentralPropPanel";
                         this.setState({shareLinkInputbox: input})
                   }}
                 />
-            <Button style={{float: '15%'}} className="bp3-button bp3-intent-success" icon="tick" onClick={this.copySharedLink}>Copy</Button>
+            <Button style={{marginTop: '10px', float: 'right'}} className="bp3-button bp3-intent-success" icon="tick" onClick={this.copySharedLink}>Copy</Button>
           </div>
         </Overlay>
       </div>
@@ -443,7 +443,7 @@ import IoTCentralPropPanel from "./PropPanel/IoTCentralPropPanel";
     var keyHandler = new mxKeyHandler(this.graph);
 
     keyHandler.getFunction = function(evt) {
-      if (evt != null && evt.shit == true && evt.key == 'z')
+      if (evt != null && evt.ctrlKey == true && evt.key == 'z')
       {
           undoManager.undo();
       }
@@ -3142,8 +3142,8 @@ addUpDownLeftRightArrowToMoveCells() {
         }).show({intent: Intent.WARNING, timeout: 3000, message: Messages.NoCellOnGraph()});
         return;
       }
-    
-      this.Index.showProgress(true, 'Generating Share link...');
+
+    this.Index.showProgress(true, 'Generating Share link...');
 
     var thisComp = this;
     var anonyDiagramContext = new AnonymousDiagramContext();
@@ -3236,7 +3236,36 @@ addUpDownLeftRightArrowToMoveCells() {
         }).show({intent: Intent.DANGER, timeout: 2000, message: error});
         return;
       });
-  } 
+  }
+
+  exportAsSvg(){
+    if(!this.graphManager.isCellExist())
+    {
+      Toaster.create({
+        position: Position.TOP,
+        autoFocus: false,
+        canEscapeKeyClear: true
+      }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.NoCellOnGraph()});
+      return;
+    }
+
+    this.Index.showProgress(true, 'Generating SVG...');
+
+    var svg = this.getDiagramSvg();
+   
+    // get svg data
+    var svgXmlString = new XMLSerializer().serializeToString(svg);
+
+    const blob = new Blob([svgXmlString], {type: 'image/svg+xml'});
+
+    var link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', 'diagram.svg');
+    document.body.appendChild(link);
+    link.click();
+
+    this.Index.showProgress(false);
+  }
 
   exportDiagramAsPDF(){
 
@@ -3250,12 +3279,12 @@ addUpDownLeftRightArrowToMoveCells() {
       return;
     }
 
+    this.Index.showProgress(true, 'Generating PDF...');
+
     this.graph.getSelectionModel().clear();
 
-    this.Index.showProgress(true, 'Generating PDF...');
-    
     var svg = this.getDiagramSvg();
-
+   
     // get svg data
     var svgXmlString = new XMLSerializer().serializeToString(svg);
     var svgXmlBase64 = window.btoa(svgXmlString);

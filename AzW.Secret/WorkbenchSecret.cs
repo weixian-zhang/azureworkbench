@@ -13,5 +13,7 @@ namespace AzW.Secret
         public string AccessToken { get; set; }
 
         public string PortalUrl { get; set; }
+
+        public string LocalPath { get; set; }
     }
 }

@@ -85,6 +85,7 @@ export default class Header extends Component {
                      <MenuItem  text="Save to Browser" onClick={this.saveToLocal} />
                      <MenuItem  text="Save to Workspace" onClick={this.savetoWorkspace} />
                      <MenuDivider />
+                     <MenuItem  text="Export as SVG" onClick={this.exportDiagramAsSVG} />
                      <MenuItem  text="Export as PDF" onClick={this.exportDiagramAsPDF} />
                    </Menu>
                } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.HOVER}>
@@ -170,6 +171,11 @@ export default class Header extends Component {
     var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
     diagramEditor.exportDiagramAsPDF();
  }
+
+ exportDiagramAsSVG = () => {
+  var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
+  diagramEditor.exportAsSvg();
+}
 
  clearGraph = () => {
      var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
