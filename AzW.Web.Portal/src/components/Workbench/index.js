@@ -28,7 +28,7 @@ export default class MainWorkbench extends Component {
       <div className="container">
         <Header ActionBar={this.actionBar} Workbench={this.workbench} Index={this} />
         {/* <ActionBar ref={this.actionBar} Workbench={this.workbench} /> */}
-        <Workbench Index={this} queryString={this.props.location.search} ref={this.workbench} />
+        <Workbench Index={this} queryString={this.props.location} ref={this.workbench} />
         {
           this.state.showProgress ? 
           <Card ref={this.progress} style={{position:'absolute', marginLeft: '45%', marginTop: '20%'}}>

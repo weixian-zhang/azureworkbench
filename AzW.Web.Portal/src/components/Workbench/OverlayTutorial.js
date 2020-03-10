@@ -73,7 +73,7 @@ export default class OverlayTutorial extends Component {
                        My Space
                     </Typography>
                     <Typography variant="body1" align="left" gutterBottom>
-                        By loggin using your Azure AD work account,
+                        By logging in using your Azure AD work account,
                         You can catogorize and save your diagrams to Azure Workbench and load your saved diagrams anytime.
                     </Typography>
                 </Card>

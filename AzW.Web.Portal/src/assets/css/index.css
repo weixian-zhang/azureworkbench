@@ -83,12 +83,12 @@ inline {
     bottom: 0;
     left: 0;
   }
-  .about-overlay-box {
+  .workspace-overlay-about {
     background-color: #fff;
     border: 1px solid #000;
     text-align:center;
-    height: 500px;/*height needs to be set*/
-    width: 700px;
+    height: 300px;/*height needs to be set*/
+    width: 600px;
     margin: auto;
     position: fixed;
     top: 0;

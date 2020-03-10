@@ -1,6 +1,7 @@
 .dockerignore
 .env
 .git
+.publish
 .gitignore
 .vs
 .vscode

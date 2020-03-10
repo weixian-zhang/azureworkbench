@@ -10,7 +10,7 @@ import AzureIcons from "./Helpers/AzureIcons";
 import Messages from "./Helpers/Messages";
 import Utils from "./Helpers/Utils";
 import MxGraphManager from './Helpers/MxGraphManager';
-import { mxCellPath, mxDefaultToolbar, mxDefaultPopupMenu, mxDefaultKeyHandler, mxStylesheet, mxGraphModel, mxClipboard, mxCodec, mxPoint, mxGeometry, mxCellOverlay, mxImage, mxKeyHandler, mxConstants, mxEvent, mxUtils,mxPopupMenuHandler, mxDragSource, mxUndoManager, mxCell, mxEditor, mxGraph, mxElbowEdgeHandler, mxLabel, mxEventObject } from "mxgraph-js";
+import {mxChildChangeCodec,mxCellCodec, mxChildChange, mxGraphSelectionModel, mxCellPath, mxDefaultToolbar, mxDefaultPopupMenu, mxDefaultKeyHandler, mxStylesheet, mxGraphModel, mxClipboard, mxCodec, mxPoint, mxGeometry, mxCellOverlay, mxImage, mxKeyHandler, mxConstants, mxEvent, mxUtils,mxPopupMenuHandler, mxDragSource, mxUndoManager, mxCell, mxEditor, mxGraph} from "mxgraph-js";
 import Subnet from "../../models/Subnet";
 import LoadAnonyDiagramContext from "../../models/LoadAnonyDiagramContext";
 import DiagramService from '../../services/DiagramService';
@@ -192,6 +192,7 @@ import IoTCentralPropPanel from "./PropPanel/IoTCentralPropPanel";
     //services
     this.diagramService = new DiagramService();
 
+    
     this.addDblClickEventToOpenPropPanel();
     this.addDeleteKeyEventToDeleteVertex();
     this.addContextMenu();
@@ -199,13 +200,15 @@ import IoTCentralPropPanel from "./PropPanel/IoTCentralPropPanel";
     this.addCtrlAEventSelectAll();
     this.addCtrlCCtrlVCopyPasteVertices();
     this.addUpDownLeftRightArrowToMoveCells();
-    this.loadSharedDiagram();
+    
     this.initPasteImageFromBrowserClipboard();
     this.addCtrlSSave();
     this.PromptSaveBeforeCloseBrowser();
     this.canvasChangeEvent();
 
     this.initRef();
+
+    this.loadSharedDiagram();
   }
 
   render() {
@@ -410,8 +413,22 @@ import IoTCentralPropPanel from "./PropPanel/IoTCentralPropPanel";
       evt.consume();
     });
     this.graph.addListener(mxEvent.CELLS_REMOVED, function (sender, evt) {
+
+      // var delcell = evt.properties.cells[0];
+      // if(Utils.IsNullOrUndefine(delcell.parent))
+      // {
+      //   thisComp.graph.getModel().remove(delcell);
+        
+      //   //addCell(delcell, thisComp.graph.getDefaultParent());
+      //   //this.graph.insertVertex(, null, node, 0, 0, 0, 0);
+      // }
+
       if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-      thisComp.setState({unsavedChanges: true});
+        thisComp.setState({unsavedChanges: true});
+      evt.consume();
+
+      // if(thisComp.state.unsavedChanges) { evt.consume(); return;}
+      // thisComp.setState({unsavedChanges: true});
       evt.consume();
     });
     this.graph.addListener(mxEvent.GROUP_CELLS, function (sender, evt) {
@@ -427,7 +444,31 @@ import IoTCentralPropPanel from "./PropPanel/IoTCentralPropPanel";
       var keyHandler = new mxKeyHandler(this.graph);
       keyHandler.bindKey(46, (evt) =>
         { 
-          thisComp.graph.removeCells(null, false);
+          thisComp.graph.removeCells();
+
+          // var celltodel = thisComp.graph.getSelectionCell();
+          // if(celltodel.parent == null){
+          //   thisComp.graph.getModel().add(thisComp.graph.getDefaultParent(), celltodel); 
+          // }
+          // celltodel.vertex = true;
+          // thisComp.graphManager.graph.getModel().beginUpdate();
+          // thisComp.graph.removeCells();
+          // thisComp.graphManager.graph.getModel().endUpdate();
+          // thisComp.graph.refresh();
+          // cells.map(cell => {
+          //   if(thisComp.azureValidator.isSubnet(cell.parent))
+          //   {
+          
+          //     thisComp.graph.removeCells(cells);
+              
+          //     //thisComp.graph.removeCells(cell);
+          //   }
+          //   else
+          //     thisComp.graph.removeCells(cell);
+          // });
+          // this.graphManager.graph.getModel().beginUpdate();
+          // thisComp.graph.removeCells(thisComp.graph.getSelectionCells(), true);
+          // this.graphManager.graph.getModel().endUpdate();
         });
   }
 
@@ -613,6 +654,10 @@ addUpDownLeftRightArrowToMoveCells() {
       menu.addSeparator();
       menu.addItem('Delete', '', function()
       {
+        var cell = thisComponent.graph.getSelectionCell();
+        cell.setVertex(true);
+        cell.connectable = true;
+
         thisComponent.graph.removeCells(); 
       });
       
@@ -3029,15 +3074,20 @@ addUpDownLeftRightArrowToMoveCells() {
       this.importXmlAsDiagram(anonyDiagramContext);
   }
 
-  getDiagramLocalBrowser = () => {
-
-  }
-
   loadSharedDiagram = () => {
-      var parsedQS =  queryString.parse(this.state.queryString)
-      if(parsedQS == undefined || parsedQS.id == undefined)
+      if(Utils.IsNullOrUndefine(this.state.queryString)) //querystring is object contains path and querystring
+        return;
+
+      var pathName = this.state.queryString.pathname;
+      var parsedQS =  queryString.parse(this.state.queryString.search)
+      var anonyDiagramId = parsedQS.id
+
+      if(!Utils.IsNullOrUndefine(pathName) && !Utils.IsNullOrUndefine(anonyDiagramId)
+          && pathName != '/shareanonydia')
           return;
       
+      this.graph.removeCells(this.graph.getChildVertices(this.graph.getDefaultParent()));
+
       var thisComp = this;
 
       this.diagramService.loadAnonymousDiagram(parsedQS.id)
@@ -3078,11 +3128,47 @@ addUpDownLeftRightArrowToMoveCells() {
       window['mxStylesheet'] = mxStylesheet;
       window['mxDefaultToolbar'] = mxDefaultToolbar;
       window['mxGraphModel'] = mxGraphModel;
-    
+      window['mxGraphSelectionModel'] = mxGraphSelectionModel;
+      window['mxGraphModel'] = mxGraphModel;
+      window['mxChildChange'] = mxChildChange;
+      window['mxChildChangeCodec'] = mxChildChangeCodec;
+      window['mxCellCodec'] = mxCellCodec;
+      window['mxUtils'] = mxUtils;
+
       var doc = mxUtils.parseXml(anonymousDiagramContext.DiagramXml);
       var codec = new mxCodec(doc);
       
-      codec.decode(doc.documentElement, this.graph.getModel());
+     var changes = codec.decode(doc.documentElement, this.graph.getModel());
+
+      // var model =  codec.decode(doc.documentElement);
+
+      // this.graph.getModel().mergeChildren
+      // (model.getRoot().getChildAt(1).children, this.graph.getDefaultParent(), true);
+
+    //  for (var key in model.cells )
+    //   {
+    //     var cell = model.cells[key];
+
+    //     if(!Utils.IsNullOrUndefine(cell.geometry) && !Utils.IsNullOrUndefine(cell.style))
+    //     {
+    //       var cloned = cell.clone();
+    //       var parent;
+
+    //       if(cloned.getParent() == null)
+    //         parent = this.graph.getDefaultParent();
+    //       else
+    //         parent = cloned.getParent();
+
+    //       this.graph.addCell
+    //         (cloned, parent, cloned.getIndex(), cloned.source, cloned.target);
+    //     }
+    //   }
+
+     // Merges the response model with the client model
+    
+
+    //   this.graph.setEnabled(true);
+    //   this.graph.setCellsDeletable(true);
 
       //re-add cell overlays
       var cells =
@@ -3129,7 +3215,6 @@ addUpDownLeftRightArrowToMoveCells() {
               }
             });
         }
-        var cells = this.graph.getChildCells(this.graph.getDefaultParent());
   }
 
   shareDiagram(){

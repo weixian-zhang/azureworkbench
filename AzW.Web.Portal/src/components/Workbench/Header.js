@@ -1,7 +1,6 @@
 import React, { Component } from "react";
-import { PopoverInteractionKind,Intent, Popover, Menu, Position, MenuItem,MenuDivider, Classes, Icon } from "@blueprintjs/core";
+import { PopoverInteractionKind, Popover, Menu, Position, MenuItem,MenuDivider, Classes, Icon } from "@blueprintjs/core";
 
-import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -13,6 +12,7 @@ import ShareIcon from '@material-ui/icons/Share';
 import HelpIcon from '@material-ui/icons/Help';
 
 import OverlayTutorial from './OverlayTutorial';
+import OverlayAbout from './OverlayAbout';
 
 import Tippy from '@tippy.js/react';
 import 'tippy.js/dist/tippy.css';
@@ -40,6 +40,7 @@ export default class Header extends Component {
 
     this.acctIconRef = React.createRef();
     this.overlayTutorial = React.createRef();
+    this.overlayAbout = React.createRef();
 
     this.diagramEditor = this.props.Workbench.current;
   }
@@ -66,6 +67,7 @@ export default class Header extends Component {
     return (
       <div style={this.style.root}>
         <OverlayTutorial ref={this.overlayTutorial} />
+        <OverlayAbout ref={this.overlayAbout} />
         <AppBar position="static" style={{ background: '#2E3B55' }}>
           <Toolbar variant='dense'>
             <Typography color="inherit">
@@ -187,56 +189,15 @@ showTutorial = () => {
 }
 
 
+showAboutOverlay = () => {
+  this.overlayAbout.current.show();
+}
 
-//  deploy(){
-//      Toaster.create({
-//          position: Position.TOP,
-//          autoFocus: false,
-//          canEscapeKeyClear: true
-//        }).show({intent: Intent.SUCCESS, timeout: 3000, message: 'In the roadmap...'});
-//        return;
-//  }
+showFeedbackOverlay = () => {
+  this.setState({ isFeedbackOpen: true });
+}
 
-//  setCurrentSubscription(item, event) {
-//      SessionStorage.set(SessionStorage.KeyNames.CurrentSubscription, item);
-//  }
-
-//  renderSubscription({ handleClick, isActive, item: sub }) {
-//      return (
-//          <MenuItem
-//              className={classes}
-//              label={sub.Name}
-//              key={sub.SubscriptionId}
-//              onClick={this.setCurrentSubscription}
-//              text={sub.Name} //{`${film.rank}. ${film.title}`}
-//          />
-//      );
-//  }
-
-//  getSubscriptions(){
-//      if(this.authService.isUserLogin())
-//      {
-//          var userProfile = this.authService.getUserProfile();
-//          ARMService.getSubscriptions(userProfile.AccessToken, function(subscriptions){
-//              this.setState({subscriptions: subscriptions});
-//          });
-//      }
-     
-//  }
-
-  showTutorialOverlay = () => {
-    this.setState({ isTutorialOpen: true });
-  }
-
-  showAboutOverlay = () => {
-    this.setState({ isAboutOpen: true });
-  }
-
-  showFeedbackOverlay = () => {
-    this.setState({ isFeedbackOpen: true });
-  }
-
-  handleTutorialClose = () => this.setState({ isTutorialOpen: false });
-  handleFeedbackClose = () => this.setState({ isFeedbackOpen: false });
-  handleAboutClose = () => this.setState({ isAboutOpen: false });
+handleTutorialClose = () => this.setState({ isTutorialOpen: false });
+handleFeedbackClose = () => this.setState({ isFeedbackOpen: false });
+handleAboutClose = () => this.setState({ isAboutOpen: false });
 }

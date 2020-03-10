@@ -4,7 +4,7 @@ import {
     mxEdgeHandler,
     mxGraphHandler,
     mxConstants,
-    mxEdgeStyle,
+    mxDictionary,
     mxRubberband,
     mxUtils,
     mxEvent,
@@ -17,7 +17,10 @@ import {
     mxCodecRegistry,
     mxCell,
     mxObjectCodec,
-    mxCellEditor
+    mxCellEditor,
+    mxEventObject,
+    mxGraphModel,
+    mxChildChange
   } from "mxgraph-js";
   import Utils from '../Helpers/Utils';
 
@@ -63,6 +66,8 @@ export default class MxGraphManager
 				
         // Disables built-in context menu
         mxEvent.disableContextMenu(this.container);
+
+        this.overrideRemoveCell();
     
         this.initCodecBehaviour();
 
@@ -126,6 +131,221 @@ export default class MxGraphManager
 
         this.graph.panningHandler.addListener(mxEvent.PAN_END, 
             function() { this.graph.container.style.cursor = 'default'; });
+    }
+
+    overrideRemoveCell() {
+        mxGraph.prototype.removeCells = function(cells, includeEdges)
+        {
+            includeEdges = (includeEdges != null) ? includeEdges : true;
+            
+            if (cells == null)
+            {
+                cells = this.getDeletableCells(this.getSelectionCells());
+            }
+
+            // Adds all edges to the cells
+            if (includeEdges)
+            {
+                // FIXME: Remove duplicate cells in result or do not add if
+                // in cells or descendant of cells
+                cells = this.getDeletableCells(this.addAllEdges(cells));
+            }
+            else
+            {
+                cells = cells.slice();
+                
+                // Removes edges that are currently not
+                // visible as those cannot be updated
+                var edges = this.getDeletableCells(this.getAllEdges(cells));
+                var dict = new mxDictionary();
+                
+                for (var i = 0; i < cells.length; i++)
+                {
+                    dict.put(cells[i], true);
+                }
+                
+                for (var i = 0; i < edges.length; i++)
+                {
+                    if (this.view.getState(edges[i]) == null &&
+                        !dict.get(edges[i]))
+                    {
+                        dict.put(edges[i], true);
+                        cells.push(edges[i]);
+                    }
+                }
+            }
+
+            this.model.beginUpdate();
+            try
+            {
+                this.cellsRemoved(cells);
+                this.fireEvent(new mxEventObject(mxEvent.REMOVE_CELLS, 
+                        'cells', cells, 'includeEdges', includeEdges));
+            }
+            finally
+            {
+                this.model.endUpdate();
+            }
+            
+            return cells;
+        };
+    
+
+        mxGraph.prototype.cellsRemoved = function(cells)
+        {
+            if (cells != null && cells.length > 0)
+            {
+                var scale = this.view.scale;
+                var tr = this.view.translate;
+                
+                this.model.beginUpdate();
+                try
+                {
+                    // Creates hashtable for faster lookup
+                    var dict = new mxDictionary();
+                    
+                    for (var i = 0; i < cells.length; i++)
+                    {
+                        dict.put(cells[i], true);
+                    }
+                    
+                    for (var i = 0; i < cells.length; i++)
+                    {
+                        // Disconnects edges which are not being removed
+                        var edges = this.getAllEdges([cells[i]]);
+                        
+                        var disconnectTerminal = mxUtils.bind(this, function(edge, source)
+                        {
+                            var geo = this.model.getGeometry(edge);
+
+                            if (geo != null)
+                            {
+                                // Checks if terminal is being removed
+                                var terminal = this.model.getTerminal(edge, source);
+                                var connected = false;
+                                var tmp = terminal;
+                                
+                                while (tmp != null)
+                                {
+                                    if (cells[i] == tmp)
+                                    {
+                                        connected = true;
+                                        break;
+                                    }
+                                    
+                                    tmp = this.model.getParent(tmp);
+                                }
+
+                                if (connected)
+                                {
+                                    geo = geo.clone();
+                                    var state = this.view.getState(edge);
+
+                                    if (state != null && state.absolutePoints != null)
+                                    {
+                                        var pts = state.absolutePoints;
+                                        var n = (source) ? 0 : pts.length - 1;
+
+                                        geo.setTerminalPoint(new mxPoint(
+                                            pts[n].x / scale - tr.x - state.origin.x,
+                                            pts[n].y / scale - tr.y - state.origin.y), source);
+                                    }
+                                    else
+                                    {
+                                        // Fallback to center of terminal if routing
+                                        // points are not available to add new point
+                                        // KNOWN: Should recurse to find parent offset
+                                        // of edge for nested groups but invisible edges
+                                        // should be removed in removeCells step
+                                        var tstate = this.view.getState(terminal);
+                                        
+                                        if (tstate != null)
+                                        {
+                                            geo.setTerminalPoint(new mxPoint(
+                                                tstate.getCenterX() / scale - tr.x,
+                                                tstate.getCenterY() / scale - tr.y), source);
+                                        }
+                                    }
+
+                                    this.model.setGeometry(edge, geo);
+                                    this.model.setTerminal(edge, null, source);
+                                }
+                            }
+                        });
+                        
+                        for (var j = 0; j < edges.length; j++)
+                        {
+                            if (!dict.get(edges[j]))
+                            {
+                                dict.put(edges[j], true);
+                                disconnectTerminal(edges[j], true);
+                                disconnectTerminal(edges[j], false);
+                            }
+                        }
+
+                        this.model.remove(cells[i]);
+                    }
+                    
+                    this.fireEvent(new mxEventObject(mxEvent.CELLS_REMOVED, 'cells', cells));
+                }
+                finally
+                {
+                    this.model.endUpdate();
+                }
+            }
+        };
+
+        // mxGraphModel.prototype.remove = function(cell)
+        // {
+        //     if (cell == this.root)
+        //     {
+        //         this.setRoot(null);
+        //     }
+        //     else if (this.getParent(cell) != null)
+        //     {
+        //         var parent = this.getParent(cell);
+        //         this.execute(new mxChildChange(this, parent, cell));
+        //     }
+            
+        //     return cell;
+        // };
+
+        // function mxChildChange(model, parent, child, index)
+        // {
+        //     this.model = model;
+        //     this.parent = parent;
+        //     this.previous = parent;
+        //     this.child = child;
+        //     this.index = index;
+        //     this.previousIndex = index;
+        // };
+
+        // mxChildChange.prototype.execute = function()
+        // {
+        //     if (this.child != null)
+        //     {
+        //         var tmp = this.model.getParent(this.child);
+        //         var tmp2 = (tmp != null) ? tmp.getIndex(this.child) : 0;
+                
+        //         if (this.previous == null)
+        //         {
+        //             this.connect(this.child, false);
+        //         }
+                
+        //         tmp = this.model.parentForCellChanged(
+        //             this.child, this.previous, this.previousIndex);
+                    
+        //         if (this.previous != null)
+        //         {
+        //             this.connect(this.child, true);
+        //         }
+                
+        //         this.parent = this.previous;
+        //         this.previous = tmp;
+        //         this.index = this.previousIndex;
+        //         this.previousIndex = tmp2;
+        //     }
+        // };
     }
 
     initLabelBehaviour() {
@@ -369,21 +589,23 @@ export default class MxGraphManager
 
     initCodecBehaviour() {
         // remove overlays from exclude list for mxCellCodec so that overlays are encoded into XML
-        var cellCodec = mxCodecRegistry.getCodec(mxCell);
-        var excludes = cellCodec.exclude;
-        excludes.splice(excludes.indexOf('geometry'), 1);
-        excludes.splice(excludes.indexOf('overlays'), 1);
-        excludes.splice(excludes.indexOf('children'), 1);
-        excludes.splice(excludes.indexOf('parent'), 1);
-        excludes.splice(excludes.indexOf('source'), 1);
-        excludes.splice(excludes.indexOf('target'), 1);
-        excludes.splice(excludes.indexOf('edges'), 1);
-        excludes.splice(excludes.indexOf('mxTransient'), 1);
-        excludes.splice(excludes.indexOf('mxPoint'), 1);
+        // var cellCodec = mxCodecRegistry.getCodec(mxCell);
+        // var excludes = cellCodec.exclude;
+        // excludes.splice(excludes.indexOf('geometry'), 1);
+        // excludes.splice(excludes.indexOf('overlays'), 1);
+        // excludes.splice(excludes.indexOf('children'), 1);
+        // excludes.splice(excludes.indexOf('parent'), 1);
+        // excludes.splice(excludes.indexOf('source'), 1);
+        // excludes.splice(excludes.indexOf('target'), 1);
+        // excludes.splice(excludes.indexOf('edges'), 1);
+        // excludes.splice(excludes.indexOf('mxTransient'), 1);
+        // excludes.splice(excludes.indexOf('mxPoint'), 1);
+        //  excludes.splice(excludes.indexOf('mxKeyHandler'), 1);
+        // excludes.splice(excludes.indexOf('mxGraphSelectionModel'), 1);
         // set flag to allow expressions (function) to be encoded
-        cellCodec.allowEval = true;
+        //cellCodec.allowEval = true;
         // set flag to allow expressions (function) to be decoded
-        mxObjectCodec.allowEval = true;
+        //mxObjectCodec.allowEval = true;
     }
 
     initGraphStyle(){

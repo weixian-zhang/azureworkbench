@@ -20,10 +20,10 @@ export default class AuthService
 
         this.msalApp = new UserAgentApplication({
             auth: {
-              clientId: Config.AADClientId(), // "16afdc21-ffd3-4cf8-aeae-63bebf9e327e",
-              authority: Config.Authority(),  //"https://login.microsoftonline.com/common",
+              clientId: Config.AADClientId(), 
+              authority: Config.Authority(), 
               validateAuthority: true,
-              postLogoutRedirectUri: Config.BaseAPIUrl(), //"http://localhost:8090",
+              postLogoutRedirectUri: Config.BaseAPIUrl(),
               navigateToLoginRequestUrl: false
             },
             cache: {
