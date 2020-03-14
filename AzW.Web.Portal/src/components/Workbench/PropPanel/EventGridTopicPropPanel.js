@@ -59,6 +59,7 @@ export default class EventGridTopicPropPanel extends Component {
                                 prop='DisplayName'
                                 value={this.state.userObject.GraphModel.DisplayName}
                                 onChange={this.onDiagramIconNameChange}
+                                autoFocus ={true}
                                 />
                               </div>
                         </FormGroup>

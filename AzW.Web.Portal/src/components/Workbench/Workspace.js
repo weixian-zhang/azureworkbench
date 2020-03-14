@@ -79,7 +79,7 @@ export default class Workspace extends Component {
                     {
                         (!this.authService.isUserLogin()) ? 
                         <Label>
-                        You need to login to retrieve diagrams saved in your workspace                       
+                        You need to login to retrieve diagrams saved in My Space                       
                         </Label> :
                         <span>
                           <Select
@@ -210,17 +210,13 @@ export default class Workspace extends Component {
 
     getDiagramsFromWorkspace = () => {
       
-      this.Index.showProgress(true, 'Retrieving diagrams from My Space...');
-
       var thisComp = this;
 
       this.diagramService.getDiagramsFromWorkspace(
         function onSuccess(diagrams) {
-          thisComp.Index.showProgress(false);
             thisComp.setState({diagrams: diagrams, filteredDiagrams: diagrams});
         },
         function onError() {
-          thisComp.Index.showProgress(false);
           Toaster.create({
             position: Position.TOP,
             autoFocus: false,
@@ -244,6 +240,14 @@ export default class Workspace extends Component {
                 diagramContext.DiagramXml = diagramXml;
                 thisComp.props.DiagramEditor.importXmlAsDiagram(diagramContext);
                 thisComp.setState({isOpen: false});
+
+                Toaster.create({
+                  position: Position.TOP,
+                  autoFocus: false,
+                  canEscapeKeyClear: true
+                }).show({intent: Intent.SUCCESS, timeout: 2000, message: 'Diagram loaded'});
+                
+                return;
               },
               function onError(err){
                 Toaster.create({
@@ -268,10 +272,12 @@ export default class Workspace extends Component {
       if(this.state.selectedDiagramContextForDelete == null)
         return;
 
+      var thisComp = this;
+
       this.diagramService.deleteDiagramFromWorkspace
         (this.state.selectedDiagramContextForDelete,
           function onSuccess(isDeleted){
-            this.setState({
+            thisComp.setState({
               isDeleteConfirmationDialogOpen: false,
               selectedDiagramContextForDelete: null 
             });
@@ -279,7 +285,7 @@ export default class Workspace extends Component {
               position: Position.TOP,
               autoFocus: false,
               canEscapeKeyClear: true
-            }).show({intent: Intent.DANGER, timeout: 2000, message: Messages.DeleteDiagramFromWorkspaceTrue()});
+            }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.DeleteDiagramFromWorkspaceTrue()});
             return;
           },
           function onError(err){

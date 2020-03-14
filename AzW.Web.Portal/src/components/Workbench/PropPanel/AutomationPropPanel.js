@@ -59,6 +59,7 @@ export default class AutomationPropPanel extends Component {
                                 prop='DisplayName'
                                 value={this.state.userObject.GraphModel.DisplayName}
                                 onChange={this.onDiagramIconNameChange}
+                                autoFocus ={true}
                                 />
                               </div>
                         </FormGroup>

@@ -14,15 +14,11 @@ import {
     mxConnectionConstraint,
     mxConstraintHandler,
     mxConnectionHandler,
-    mxCodecRegistry,
-    mxCell,
-    mxObjectCodec,
     mxCellEditor,
     mxEventObject,
-    mxGraphModel,
-    mxChildChange
   } from "mxgraph-js";
-  import Utils from '../Helpers/Utils';
+
+import Utils from '../Helpers/Utils';
 
 export default class MxGraphManager
 {
@@ -294,85 +290,10 @@ export default class MxGraphManager
                 }
             }
         };
-
-        // mxGraphModel.prototype.remove = function(cell)
-        // {
-        //     if (cell == this.root)
-        //     {
-        //         this.setRoot(null);
-        //     }
-        //     else if (this.getParent(cell) != null)
-        //     {
-        //         var parent = this.getParent(cell);
-        //         this.execute(new mxChildChange(this, parent, cell));
-        //     }
-            
-        //     return cell;
-        // };
-
-        // function mxChildChange(model, parent, child, index)
-        // {
-        //     this.model = model;
-        //     this.parent = parent;
-        //     this.previous = parent;
-        //     this.child = child;
-        //     this.index = index;
-        //     this.previousIndex = index;
-        // };
-
-        // mxChildChange.prototype.execute = function()
-        // {
-        //     if (this.child != null)
-        //     {
-        //         var tmp = this.model.getParent(this.child);
-        //         var tmp2 = (tmp != null) ? tmp.getIndex(this.child) : 0;
-                
-        //         if (this.previous == null)
-        //         {
-        //             this.connect(this.child, false);
-        //         }
-                
-        //         tmp = this.model.parentForCellChanged(
-        //             this.child, this.previous, this.previousIndex);
-                    
-        //         if (this.previous != null)
-        //         {
-        //             this.connect(this.child, true);
-        //         }
-                
-        //         this.parent = this.previous;
-        //         this.previous = tmp;
-        //         this.index = this.previousIndex;
-        //         this.previousIndex = tmp2;
-        //     }
-        // };
     }
 
     initLabelBehaviour() {
-        
-        // Truncates the label to the size of the vertex
-        // this.graph.getLabel = function(cell)
-        // {
-        //     var label = (this.labelsVisible) ? this.convertValueToString(cell) : '';
-        //     var geometry = this.model.getGeometry(cell);
-            
-        //     if (!this.model.isCollapsed(cell) && geometry != null && (geometry.offset == null ||
-        //         (geometry.offset.x == 0 && geometry.offset.y == 0)) && this.model.isVertex(cell) &&
-        //         geometry.width >= 2)
-        //     {
-        //         var style = this.getCellStyle(cell);
-        //         var fontSize = style[mxConstants.STYLE_FONTSIZE] || mxConstants.DEFAULT_FONTSIZE;
-        //         var max = geometry.width / (fontSize * 0.625);
                 
-        //         if (max < label.length)
-        //         {
-        //             return label.substring(0, max) + '...';
-        //         }
-        //     }
-            
-        //     return label;
-        // };
-        
         this.graph.cellEditor.getEditorBounds = function(state)
         {
             var result = mxCellEditor.prototype.getEditorBounds.apply(this, arguments);
@@ -667,6 +588,22 @@ export default class MxGraphManager
         rectStyle[mxConstants.STYLE_SHAPE] = 'rectangle';
         this.graph.getStylesheet().putCellStyle('rectstyle', rectStyle);
 
+        var roundedRectStyle = new Object();
+        roundedRectStyle[mxConstants.STYLE_PERIMETER] = mxConstants.PERIMETER_RECTANGLE;
+        roundedRectStyle[mxConstants.STYLE_STROKECOLOR] = 'darkblue';
+        roundedRectStyle[mxConstants.STYLE_FILLCOLOR] = 'none';
+        roundedRectStyle[mxConstants.STYLE_RESIZABLE] = '1';
+        roundedRectStyle[mxConstants.STYLE_EDITABLE] = '1';
+        roundedRectStyle[mxConstants.STYLE_AUTOSIZE] = '0';
+        roundedRectStyle[mxConstants.STYLE_FONTSIZE] = '15';
+        roundedRectStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
+        roundedRectStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
+        roundedRectStyle[mxConstants.STYLE_DASHED] = '0';
+        roundedRectStyle[mxConstants.RECTANGLE_ROUNDING_FACTOR] = 0.1;
+        roundedRectStyle[mxConstants.STYLE_ROUNDED] = 1;
+        roundedRectStyle[mxConstants.STYLE_SHAPE] = 'rectangle';
+        this.graph.getStylesheet().putCellStyle('roundedrectstyle', roundedRectStyle);
+
         //triangle style
         var triangleStyle = new Object();
         triangleStyle[mxConstants.STYLE_PERIMETER] = mxConstants.PERIMETER_TRIANGLE;
@@ -933,6 +870,9 @@ export default class MxGraphManager
     }
 
     isNonAzureShape(cell){
+        if(cell == null)
+            return false;
+
         if(this.isRect(cell) || this.isEllipse(cell) || this.isTriangle(cell) ||
             this.isText(cell) || cell.isEdge() || this.isCylinder(cell) || this.isHexagon(cell))
             return true;
@@ -1139,6 +1079,11 @@ export default class MxGraphManager
 
     getDefaultRectStyleString() {
         var style = this.graph.getStylesheet().getCellStyle('rectstyle');
+        return this.convertStyleObjectToString(style);
+    }
+
+    getDefaultRoundedRectStyleString() {
+        var style = this.graph.getStylesheet().getCellStyle('roundedrectstyle');
         return this.convertStyleObjectToString(style);
     }
 

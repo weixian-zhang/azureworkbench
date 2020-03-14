@@ -23,6 +23,27 @@ export default class AzureValidator {
             return {isInSubnet: false, subnetCell: cell};
     }
 
+    isVMinSubnetTakenByDedicatedSubnetResource(subnet) {
+        var childCount = this.graph.getModel().getChildCount(subnet);
+
+        if(childCount <=0 )
+            return false;
+        
+        var childCells = this.graph.getChildVertices(subnet)
+
+        var result = false;
+        
+        for (var i = 0; i < childCells.length; i++) {
+            if(this.isPaaSInVNetResource(childCells[i]))
+            {
+                result = true;
+                break;
+            }
+        };
+
+        return result;
+    }
+
     isResourceinDedicatedSubnet(subnetCell) {
 
         var result = this.isResourceDropinSubnet(subnetCell);
@@ -59,24 +80,9 @@ export default class AzureValidator {
 
     }
 
-    isAppGateway(cell){
-        if(Utils.IsNullOrUndefine(cell))
-        return false;
-
-        var obj = Utils.TryParseUserObject(cell.value);
-
-        if(!obj.isUserObject)
-            return false;
-        
-        if(obj.isUserObject && obj.userObject.GraphModel.ResourceType == ResourceType.AppGw())
-            return true;
-        else
-            return false;
-    }
-
     isVNet(cell){
         if(Utils.IsNullOrUndefine(cell))
-        return false;
+            return false;
 
         var obj = Utils.TryParseUserObject(cell.value);
 
@@ -84,13 +90,9 @@ export default class AzureValidator {
             return false;
         
         if(obj.isUserObject && obj.userObject.GraphModel.ResourceType == ResourceType.VNet())
-        {
             return true;
-        }
         else
-        {
             return false;
-        }
     }
 
     isSubnet(cell){
@@ -154,6 +156,42 @@ export default class AzureValidator {
         {
             return true;
         }
+        else
+            return false;
+    }
+
+    isAppGateway(cell){
+        if(Utils.IsNullOrUndefine(cell))
+        return false;
+
+        var obj = Utils.TryParseUserObject(cell.value);
+
+        if(!obj.isUserObject)
+            return false;
+        
+        if(obj.isUserObject && obj.userObject.GraphModel.ResourceType == ResourceType.AppGw())
+            return true;
+        else
+            return false;
+    }
+
+    isPaaSInVNetResource(cell) {
+        if(Utils.IsNullOrUndefine(cell))
+        return false;
+
+        var obj = Utils.TryParseUserObject(cell.value);
+
+        if(!obj.isUserObject)
+            return false;
+        
+        if(obj.isUserObject && 
+            obj.userObject.GraphModel.ResourceType == ResourceType.AppGw() ||
+            obj.userObject.GraphModel.ResourceType == ResourceType.ASE() ||
+            obj.userObject.GraphModel.ResourceType == ResourceType.Bastion() ||
+            obj.userObject.GraphModel.ResourceType == ResourceType.Firewall() ||
+            obj.userObject.GraphModel.ResourceType == ResourceType.SQLMI()
+          )
+            return true;
         else
             return false;
     }

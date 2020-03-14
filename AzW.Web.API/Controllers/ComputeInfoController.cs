@@ -1,22 +1,38 @@
 
 using AzW.Application;
+using AzW.Infrastructure.AzureServices;
+using AzW.Model;
+using AzW.Secret;
+using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace AzW.Web.UI.Controllers
+namespace AzW.Web.API
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = AzureADDefaults.BearerAuthenticationScheme)]
     [Route("api/info/compute")]
-    public class ComputeInfoController : Controller
+    public class ComputeInfoController : BaseController
     {
-        public ComputeInfoController(IAzureInfoService azInfoSvc)
+        public ComputeInfoController(WorkbenchSecret secret)
         {
-            _azInfoSvc = azInfoSvc;
+            _secret = secret;
         }
 
-        private IAzureInfoService _azInfoSvc;
+        [HttpGet("vmsku")]
+        public Task<IEnumerable<VMImageReference>> GetVMSkus(string subscription)
+        {
+        string accessToken = GetUserIdentity().AccessToken;
+
+        _computeInfoSvc = new ComputeInfoService(accessToken, _secret);
+
+           var skus = _computeInfoSvc.GetImageReferences(subscription);
+
+           return null;
+        }
+
+        private ComputeInfoService _computeInfoSvc;
+        private WorkbenchSecret _secret;
     }
 }

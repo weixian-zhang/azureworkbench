@@ -1,7 +1,9 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using AzW.Secret;
 using Microsoft.Azure.Management.ResourceManager;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
@@ -10,27 +12,42 @@ using Microsoft.Rest.Azure;
 
 namespace AzW.Infrastructure.AzureServices
 {
-    public class ARMService : BaseService, IResourceManagerService
+    public class ARMService : BaseService, IARMService
     {
-        public ARMService(AzSDKCredentials sdkCred) : base(sdkCred)
+        public ARMService(string accessToken, WorkbenchSecret secret) : base(accessToken, secret)
         {  
-            _sdkCreds = sdkCred;
         }
 
-        public async Task<IEnumerable<IResourceGroup>> GetResourceGroups(string subscriptionId)
+        public async Task CreateResourceGroup(string subscription, string location, string rgName)
+        {
+            await AzClient.WithSubscription(subscription)
+                .ResourceGroups
+                .Define(rgName)
+                .WithRegion(location)
+                .CreateAsync();
+        }
+
+        public async Task<IEnumerable<IResourceGroup>> GetResourceGroups(string subscription)
         {
             var rgs = 
-                await AzAuthClient.WithDefaultSubscription().ResourceGroups.ListAsync();
+                await AzClient.WithSubscription(subscription).ResourceGroups.ListAsync();
 
             return rgs;
         }
 
         public async Task<IEnumerable<ISubscription>> GetSubscriptions()
         {
-            var subs = 
-                await AzAuthClient.WithDefaultSubscription().Subscriptions.ListAsync();
+            try
+            {
+                var subs = 
+                    await AzClient.Subscriptions.ListAsync();
 
-            return subs;
+                return subs;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public IEnumerable<string> GetLocations()

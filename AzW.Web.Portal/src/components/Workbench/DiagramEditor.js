@@ -90,7 +90,7 @@ import ASE from "../../models/ASE";
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
 
 //property panels
-import StylePropPanel from './PropPanel/StylePropPanel';
+import StylePropPanel from './StylePropPanel';
 import SubnetPropPanel from "./PropPanel/SubnetPropPanel";
 import VNetPropPanel from "./PropPanel/VNetPropPanel";
 import NLBPropPanel from "./PropPanel/NLBPropPanel";
@@ -158,6 +158,10 @@ import MapsPropPanel from "./PropPanel/MapsPropPanel";
 import TimeSeriesPropPanel from "./PropPanel/TimeSeriesPropPanel";
 import IoTCentralPropPanel from "./PropPanel/IoTCentralPropPanel";
 
+import OverlayPreviewDiagram from "./OverlayPreviewDiagram";
+
+import ARMService from "../../services/ARMService";
+import ComputeService from "../../services/ComputeService";
 
  export default class DiagramEditor extends Component {
   constructor(props) {
@@ -179,9 +183,33 @@ import IoTCentralPropPanel from "./PropPanel/IoTCentralPropPanel";
 
         queryString: this.props.queryString
     }
+
+    this.armsvc = new ARMService(); //test to remove
+    this.comsvc = new ComputeService();
   }
 
   componentDidMount() {   
+
+    //test to remove
+    // this.comsvc.getVMSku(
+    //   '0ab40889-880a-4261-95e1-600c60074519',
+    //   function onSuccess(subs){
+    //     var subscriptions = subs;
+    //   },
+    //   function onFailure(error){
+
+    //   }
+    // );
+    
+    // this.armsvc.getSubscriptions(
+    //   function onSuccess(subs){
+    //     var subscriptions = subs;
+    //   },
+    //   function onFailure(error){
+
+    //   }
+    // );
+
     this.graphManager = new MxGraphManager(document.getElementById("diagramEditor"));
     this.graphManager.initGraph();
     this.graph = this.graphManager.graph;
@@ -192,7 +220,6 @@ import IoTCentralPropPanel from "./PropPanel/IoTCentralPropPanel";
     //services
     this.diagramService = new DiagramService();
 
-    
     this.addDblClickEventToOpenPropPanel();
     this.addDeleteKeyEventToDeleteVertex();
     this.addContextMenu();
@@ -214,6 +241,7 @@ import IoTCentralPropPanel from "./PropPanel/IoTCentralPropPanel";
   render() {
     return (
       <div id="diagramEditor" className="diagramEditor">
+        <OverlayPreviewDiagram ref={this.previewOverlay} />
         <StylePropPanel ref={this.stylePanel} MxGraphManager={this.graphManager} />
         <OverlaySaveToWorkspace ref={this.overlaySaveToWorkspace} DiagramEditor={this} />
         <Workspace ref={this.workspace} DiagramEditor={this} Index={this.Index} />
@@ -304,6 +332,7 @@ import IoTCentralPropPanel from "./PropPanel/IoTCentralPropPanel";
   initRef() {
     this.stylePanel = React.createRef();
     this.overlaySaveToWorkspace = React.createRef();
+    this.previewOverlay = React.createRef();
     this.workspace = React.createRef();
     this.vmPropPanel = React.createRef();
     this.vnetPropPanel = React.createRef();
@@ -609,7 +638,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.popupMenuHandler.factoryMethod = function(menu, cell, evt)
     {
-            //for vnet
+       //for vnet
       if(Utils.IsVNet(cell))
       {
         menu.addItem('Add Subnet', '', function()
@@ -627,59 +656,50 @@ addUpDownLeftRightArrowToMoveCells() {
         }
         menu.addSeparator();
       }
-
-      if(cell == null || cell.value == null){
-        if(!mxClipboard.isEmpty())
-        {
-          menu.addItem('Paste', '', function()
-          {
-            thisComponent.pasteFromClipboard(); 
-          });
-          return;
-        }
-        else
-            return;
-      }
-        
-      menu.addItem('Bring to Front', '', function()
+      
+      //if any cell is selected
+      if(thisComponent.graph.getSelectionCells().length > 0) {
+        menu.addItem('Bring to Front', '', function()
         {
           thisComponent.graph.orderCells(false); 
         });
 
-      menu.addItem('Send To Back', '', function()
-      {
-        thisComponent.graph.orderCells(true); 
-      });
-
-      menu.addSeparator();
-      menu.addItem('Delete', '', function()
-      {
-        var cell = thisComponent.graph.getSelectionCell();
-        cell.setVertex(true);
-        cell.connectable = true;
-
-        thisComponent.graph.removeCells(); 
-      });
-      
-      menu.addSeparator();
-      menu.addItem('Group', '', function()
-      {
-        thisComponent.groupCells(); 
-      });
-      menu.addItem('Ungroup', '', function()
-      {
-        thisComponent.unGroupCells(); 
-      });
-
-      if(!Utils.IsNullOrUndefine(this.graph.getSelectionCells()))
-      {
-        menu.addSeparator();
-        menu.addItem('Copy', '', function()
+        menu.addItem('Send To Back', '', function()
         {
-          thisComponent.copyToClipboard(); 
+          thisComponent.graph.orderCells(true); 
         });
-      }
 
+        menu.addSeparator();
+        menu.addItem('Delete', '', function()
+        {
+          var cell = thisComponent.graph.getSelectionCell();
+          cell.setVertex(true);
+          cell.connectable = true;
+
+          thisComponent.graph.removeCells(); 
+        });
+        
+        menu.addSeparator();
+        menu.addItem('Group', '', function()
+        {
+          thisComponent.groupCells(); 
+        });
+        menu.addItem('Ungroup', '', function()
+        {
+          thisComponent.unGroupCells(); 
+        });
+
+        if(!Utils.IsNullOrUndefine(this.graph.getSelectionCells()))
+        {
+          menu.addSeparator();
+          menu.addItem('Copy', '', function()
+          {
+            thisComponent.copyToClipboard(); 
+          });
+        }
+      }
+      
+      //if clipboard exist
       if(!mxClipboard.isEmpty())
       {
         menu.addItem('Paste', '', function()
@@ -688,24 +708,25 @@ addUpDownLeftRightArrowToMoveCells() {
         });
       }
 
-      //style for shapes only
-      if(thisComponent.graphManager.isNonAzureShape(cell) ||
-        thisComponent.azureValidator.isSubnet(cell) ||
-        thisComponent.azureValidator.isVNet(cell))
-      {
-        menu.addSeparator();
-        menu.addItem('Style', '', function()
-        {
-          thisComponent.openStylePanel(cell);
-        });
-      }
+      //is cell exist on canvas
+      if(thisComponent.graphManager.isCellExist()){
+          
+        //style for shapes only
+          if(thisComponent.graphManager.isNonAzureShape(cell) ||
+          thisComponent.azureValidator.isSubnet(cell) ||
+          thisComponent.azureValidator.isVNet(cell))
+          {
+            menu.addSeparator();
+            menu.addItem('Style', '', function()
+            {
+              thisComponent.openStylePanel(cell);
+            });
+          }
 
-      //preview diagram in new window
-      if(thisComponent.graphManager.isCellExist())
-      {
+        //preview diagram in new window
         menu.addItem('Preview Diagram', '', function()
         {
-          thisComponent.previewGraph();
+          thisComponent.showPreviewDiagramOverlay();
         });
       }
     };
@@ -735,6 +756,10 @@ addUpDownLeftRightArrowToMoveCells() {
       case 'rectangle':
         this.addRectangle(dropContext);
         break;
+      case 'roundedrectangle':
+        this.addRoundedRectangle(dropContext);
+        break;
+        
       case 'triangle':
         this.addTriangle(dropContext);
         break;
@@ -1502,6 +1527,21 @@ addUpDownLeftRightArrowToMoveCells() {
     this.graph.scrollCellToVisible(rect);
   }
 
+  addRoundedRectangle = (dropContext) => {
+    var rect = this.graph.insertVertex(
+      this.graph.getDefaultParent(),
+      null,
+      'rectangle',
+      dropContext.x,
+      dropContext.y,
+      150,
+      100,
+      this.graphManager.getDefaultRoundedRectStyleString()
+    );
+    this.graph.scrollCellToVisible(rect);
+  }
+  
+
   addTriangle = (dropContext) => {
 
     var style = this.graphManager.getDefaultTriangleStyleString();
@@ -1785,20 +1825,39 @@ addUpDownLeftRightArrowToMoveCells() {
 
   addVM = (dropContext, vmType) => {
     
+    var result = this.azureValidator.isResourceDropinSubnet();
+
     if(dropContext.resourceType == ResourceType.WindowsVM() ||
         dropContext.resourceType == ResourceType.LinuxVM())
     {
-      var result = this.azureValidator.isResourceDropinSubnet();
-
       if(!result.isInSubnet)
       {
           Toaster.create({
             position: Position.TOP,
             autoFocus: false,
             canEscapeKeyClear: true
-          }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.VMInSubnet()});
+          }).show({intent: Intent.DANGER, timeout: 4000, message: Messages.VMInSubnet()});
           return;
       }
+    }
+
+    if(this.azureValidator.isGatewaySubnet(result.subnetCell)) {
+      Toaster.create({
+        position: Position.TOP,
+        autoFocus: false,
+        canEscapeKeyClear: true
+      }).show({intent: Intent.DANGER, timeout: 5000, message: Messages.NonVNetGwInGatewaySubnetError()});
+      return;
+    }
+
+    if(this.azureValidator.isVMinSubnetTakenByDedicatedSubnetResource(result.subnetCell))
+    {
+      Toaster.create({
+        position: Position.TOP,
+        autoFocus: false,
+        canEscapeKeyClear: true
+      }).show({intent: Intent.DANGER, timeout: 8000, message: Messages.ResourceInSubnetTakenByDedicatedSubnetResource()});
+      return;
     }
 
      var vmModel = new VM();
@@ -1841,14 +1900,33 @@ addUpDownLeftRightArrowToMoveCells() {
     var result = this.azureValidator.isResourceDropinSubnet();
 
     if(dropContext.resourceType == ResourceType.VMSS() && !result.isInSubnet)
-       {
-          Toaster.create({
-            position: Position.TOP,
-            autoFocus: false,
-            canEscapeKeyClear: true
-          }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.VMInSubnet()});
-          return;
-       }
+    {
+      Toaster.create({
+        position: Position.TOP,
+        autoFocus: false,
+        canEscapeKeyClear: true
+      }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.VMInSubnet()});
+      return;
+    }
+
+    if(this.azureValidator.isGatewaySubnet(result.subnetCell)) {
+      Toaster.create({
+        position: Position.TOP,
+        autoFocus: false,
+        canEscapeKeyClear: true
+      }).show({intent: Intent.DANGER, timeout: 5000, message: Messages.NonVNetGwInGatewaySubnetError()});
+      return;
+    }
+
+    if(this.azureValidator.isVMinSubnetTakenByDedicatedSubnetResource(result.subnetCell))
+    {
+      Toaster.create({
+        position: Position.TOP,
+        autoFocus: false,
+        canEscapeKeyClear: true
+      }).show({intent: Intent.DANGER, timeout: 8000, message: Messages.ResourceInSubnetTakenByDedicatedSubnetResource()});
+      return;
+    }
 
      var vmssModel = new VMSS();
      vmssModel.GraphModel.IconId = this.shortUID.randomUUID(6);
@@ -1891,19 +1969,28 @@ addUpDownLeftRightArrowToMoveCells() {
 
   addASE = (dropContext) => {
 
-    var result = this.azureValidator.isResourceDropinSubnet();
+    var subnetCell = this.graph.getSelectionCell();
+    if(!this.azureValidator.isResourceinDedicatedSubnet(subnetCell))
+    {
+      Toaster.create({
+          position: Position.TOP,
+          autoFocus: false,
+          canEscapeKeyClear: true
+        }).show({intent: Intent.DANGER, timeout: 5000, message: Messages.ASEInSubnet()});
+        return;
+    }
 
-    if(dropContext.resourceType == ResourceType.ASE() && !result.isInSubnet)
-       {
-          Toaster.create({
-            position: Position.TOP,
-            autoFocus: false,
-            canEscapeKeyClear: true
-          }).show({intent: Intent.DANGER, timeout: 3500, message: Messages.ASEInSubnet()});
-          return;
-       }
+    if(this.azureValidator.isGatewaySubnet(subnetCell)) {
+      Toaster.create({
+        position: Position.TOP,
+        autoFocus: false,
+        canEscapeKeyClear: true
+      }).show({intent: Intent.DANGER, timeout: 5000, message: Messages.NonVNetGwInGatewaySubnetError()});
+      return;
+    }
 
-    var subnetCenterPt = Utils.getCellCenterPoint(result.subnetCell);
+
+    var subnetCenterPt = Utils.getCellCenterPoint(subnetCell);
 
     var ase = new ASE();
     ase.GraphModel.Id = this.shortUID.randomUUID(6);
@@ -1912,7 +1999,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var aseJsonString = JSON.stringify(ase);
 
     this.graph.insertVertex
-      (result.subnetCell, ase.GraphModel.IconId ,aseJsonString, subnetCenterPt.x, subnetCenterPt.y, 35, 35,
+      (subnetCell, ase.GraphModel.IconId ,aseJsonString, subnetCenterPt.x, subnetCenterPt.y, 35, 35,
       "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.ASE());
   }
@@ -2280,6 +2367,17 @@ addUpDownLeftRightArrowToMoveCells() {
 
   addSQLMI = (dropContext) => {
 
+    var subnetCell = this.graph.getSelectionCell();
+    if(!this.azureValidator.isResourceinDedicatedSubnet(subnetCell))
+    {
+      Toaster.create({
+          position: Position.TOP,
+          autoFocus: false,
+          canEscapeKeyClear: true
+        }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.SQLMINotInDedicatedSubnetError()});
+        return;
+    }
+
     var model = new SQLMI();
     model.GraphModel.Id = this.shortUID.randomUUID(6);
     model.GraphModel.DisplayName = 'SQL Managed Instance'
@@ -2591,6 +2689,7 @@ addUpDownLeftRightArrowToMoveCells() {
  addFirewall = (dropContext) => {
 
     var subnetCell = this.graph.getSelectionCell();
+
     if(!this.azureValidator.isResourceinDedicatedSubnet(subnetCell))
     {
       Toaster.create({
@@ -2599,6 +2698,15 @@ addUpDownLeftRightArrowToMoveCells() {
           canEscapeKeyClear: true
         }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.FirewallNotInSubnetError()});
         return;
+    }
+
+    if(this.azureValidator.isGatewaySubnet(subnetCell)) {
+      Toaster.create({
+        position: Position.TOP,
+        autoFocus: false,
+        canEscapeKeyClear: true
+      }).show({intent: Intent.DANGER, timeout: 5000, message: Messages.NonVNetGwInGatewaySubnetError()});
+      return;
     }
 
     var dropContext = Utils.getCellCenterPoint(subnetCell);
@@ -2671,6 +2779,25 @@ addUpDownLeftRightArrowToMoveCells() {
           canEscapeKeyClear: true
         }).show({intent: Intent.DANGER, timeout: 5000, message: Messages.BastionNotInSubnetError()});
         return;
+    }
+
+    if(this.azureValidator.isGatewaySubnet(subnetCell)) {
+      Toaster.create({
+        position: Position.TOP,
+        autoFocus: false,
+        canEscapeKeyClear: true
+      }).show({intent: Intent.DANGER, timeout: 5000, message: Messages.NonVNetGwInGatewaySubnetError()});
+      return;
+    }
+
+    if(this.azureValidator.isVMinSubnetTakenByDedicatedSubnetResource(subnetCell))
+    {
+      Toaster.create({
+        position: Position.TOP,
+        autoFocus: false,
+        canEscapeKeyClear: true
+      }).show({intent: Intent.DANGER, timeout: 8000, message: Messages.ResourceInSubnetTakenByDedicatedSubnetResource()});
+      return;
     }
 
     var dropContext = Utils.getCellCenterPoint(subnetCell);
@@ -3136,39 +3263,10 @@ addUpDownLeftRightArrowToMoveCells() {
       window['mxUtils'] = mxUtils;
 
       var doc = mxUtils.parseXml(anonymousDiagramContext.DiagramXml);
+      
       var codec = new mxCodec(doc);
       
-     var changes = codec.decode(doc.documentElement, this.graph.getModel());
-
-      // var model =  codec.decode(doc.documentElement);
-
-      // this.graph.getModel().mergeChildren
-      // (model.getRoot().getChildAt(1).children, this.graph.getDefaultParent(), true);
-
-    //  for (var key in model.cells )
-    //   {
-    //     var cell = model.cells[key];
-
-    //     if(!Utils.IsNullOrUndefine(cell.geometry) && !Utils.IsNullOrUndefine(cell.style))
-    //     {
-    //       var cloned = cell.clone();
-    //       var parent;
-
-    //       if(cloned.getParent() == null)
-    //         parent = this.graph.getDefaultParent();
-    //       else
-    //         parent = cloned.getParent();
-
-    //       this.graph.addCell
-    //         (cloned, parent, cloned.getIndex(), cloned.source, cloned.target);
-    //     }
-    //   }
-
-     // Merges the response model with the client model
-    
-
-    //   this.graph.setEnabled(true);
-    //   this.graph.setCellsDeletable(true);
+      codec.decode(doc.documentElement, this.graph.getModel());
 
       //re-add cell overlays
       var cells =
@@ -3177,8 +3275,11 @@ addUpDownLeftRightArrowToMoveCells() {
         if(cells != undefined)
         {
             cells.map(cell => {
+              
+              var result = Utils.TryParseUserObject(cell.value);
 
-              if(JSON.parse(cell.value).GraphModel.ResourceType == 'vnet')
+              if(result.isUserObject &&
+                 JSON.parse(cell.value).GraphModel.ResourceType == 'vnet')
               {
                 this.graph.removeCellOverlays(cell);
 
@@ -3302,7 +3403,7 @@ addUpDownLeftRightArrowToMoveCells() {
     this.diagramService.saveDiagramToWorkspace(diagramContext,
       function onSuccess() {
 
-        this.Index.showProgress(false);
+        thisComp.Index.showProgress(false);
         thisComp.setState({unsavedChanges: false});
 
         Toaster.create({
@@ -3313,7 +3414,7 @@ addUpDownLeftRightArrowToMoveCells() {
         return;
       },
       function onError(error) {
-        this.Index.showProgress(false);
+        thisComp.Index.showProgress(false);
         Toaster.create({
           position: Position.TOP,
           autoFocus: false,
@@ -3417,9 +3518,14 @@ addUpDownLeftRightArrowToMoveCells() {
     this.overlaySaveToWorkspace.current.show();
   }
 
-  previewGraph = () => {
-    var bounds =  this.graph.getGraphBounds();
-    mxUtils.show(this.graph, null, bounds.x, bounds.y , bounds.width + 50, bounds.height + 50);
+  showPreviewDiagramOverlay = () => {
+    mxUtils.show(this.graph, null);
+    // var htmlDoc = this.previewOverlay.current.show();
+    // mxUtils.show(this.graph, htmlDoc);
+  }
+
+  loadGraphInOverlay(htmlDoc) {
+    
   }
 
   clearGraph() {

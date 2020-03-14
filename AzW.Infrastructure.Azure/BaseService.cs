@@ -11,18 +11,20 @@ namespace AzW.Infrastructure.AzureServices
 {
     public abstract class BaseService
     {
-        public BaseService(AzSDKCredentials azSDKCred)
+        public BaseService(string accessToken, WorkbenchSecret secret) //(AzSDKCredentials azSDKCred)
         {
-            var azureCreds = new AzureCredentials
-                (azSDKCred, azSDKCred, azSDKCred.TenantId, AzureEnvironment.AzureGlobalCloud);
+            var sdkCred =
+                new AzSDKCredentials(accessToken, "common", secret.ClientId, secret.ClientSecret);
 
-            IAuthenticated azAuthClient =
-                Azure.Configure().Authenticate(azureCreds);
+            var azureCreds = new AzureCredentials
+                (sdkCred, null, "common", AzureEnvironment.AzureGlobalCloud);
+
+            _azClient = Azure.Configure().Authenticate(azureCreds);
         }
 
         private AzSDKCredentials _azCred;
 
-        private IAuthenticated _azAuthClient { get; set; }
-        public IAuthenticated AzAuthClient { get {return _azAuthClient;} }
+        private IAuthenticated _azClient { get; set; }
+        public IAuthenticated AzClient { get {return _azClient;} }
     }
 }

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { PopoverInteractionKind, Popover, Menu, Position, MenuItem,MenuDivider, Classes, Icon } from "@blueprintjs/core";
+import {  PopoverInteractionKind, Popover, Menu, Position, MenuItem,MenuDivider, Classes, Icon } from "@blueprintjs/core";
 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -75,6 +75,21 @@ export default class Header extends Component {
               Azure Workbench
             </Typography>
             <section style={this.style.rightToolbar}>
+            {/* <Popover content=
+               { 
+                   <Menu className={Classes.ELEVATION_1}>
+                     <MenuItem  text="Save to Browser" onClick={this.saveToLocal} />
+                     <MenuDivider />
+                     <MenuItem  text="Export as SVG" onClick={this.exportDiagramAsSVG} />
+
+                   </Menu>
+               } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.HOVER}>
+                <IconButton color="inherit" aria-label="Edit">
+                <Icon icon="delta" />
+                </IconButton>
+              </Popover> */}
+
+           
               <IconButton color="inherit" aria-label="Edit">
                 <Tippy content="My Space" followCursor={true} placement="bottom">
                   <CloudIcon onClick={this.showWorkspace} />

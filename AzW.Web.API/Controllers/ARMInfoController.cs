@@ -18,25 +18,23 @@ using System.Threading.Tasks;
 namespace AzW.Web.API
 {
     [Authorize(AuthenticationSchemes = AzureADDefaults.BearerAuthenticationScheme)]
-    [Route("api/arm")]
+    [Route("api/info/arm")]
     public class ARMInfoController : BaseController
     {
         public ARMInfoController(WorkbenchSecret secret)
         {
-            _secret = secret;
+            string accessToken = GetUserIdentity().AccessToken;
+
+            _armService = new ARMService(accessToken, secret);
         }
 
         [HttpGet("subs")]
         public async Task<IEnumerable<AzSubscription>> GetSubscriptions()
         {   
-            var accessToken = GetUserIdentity().AccessToken;
 
-            var rmsvc = new ARMLogic(new AzSDKCredentials(accessToken,
-                    _secret.TenantId, _secret.ClientId, _secret.ClientSecret), _secret);
+            var subs = await _armService.GetSubscriptions();
 
-            var subscriptions = await rmsvc.GetSubscriptions();
-
-            return subscriptions;
+            return null;
         }
 
         [Authorize]
@@ -55,7 +53,6 @@ namespace AzW.Web.API
             //return _armService.GetRegions();
         }
 
-
-        private WorkbenchSecret _secret;
+        private ARMService _armService;
     }
 }

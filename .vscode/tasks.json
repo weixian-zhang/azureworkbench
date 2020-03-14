@@ -91,6 +91,19 @@
                 }
             },
             "problemMatcher": []
+        },
+        {
+            "label": "Publish Portal - Local Build Folder",
+            "command": "npm run build",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/AzW.Web.Portal",
+                "env": {
+                    "env": "dev"
+                }
+            },
+            "problemMatcher": []
         }
     ]
 }

@@ -159,11 +159,12 @@ export default class DiagramService
           },
           headers: {
             'Authorization': 'Bearer ' + user.AccessToken,
-            'Content-Type': 'application/json'
+            'Content-Type': 'text/plain'
           }
         })
         .then(function (response) {
-          successCallback(response.data);
+          var xmlString = response.data;
+          successCallback(xmlString);
         })
         .catch(function (error) {
           console.log(error);

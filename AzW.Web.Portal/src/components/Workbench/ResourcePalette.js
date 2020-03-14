@@ -58,7 +58,6 @@ import { ReactComponent as PublicIp } from "../../assets/azure_icons/Networking 
 import { ReactComponent as ExpressRoute } from "../../assets/azure_icons/Networking Service Color/ExpressRoute Circuits.svg";
 import { ReactComponent as TrafficManager } from "../../assets/azure_icons/Networking Service Color/Traffic Manager Profiles.svg";
 import { ReactComponent as VNetGateway } from "../../assets/azure_icons/Networking Service Color/Virtual Network Gateways.svg";
-import { ReactComponent as CDN } from "../../assets/azure_icons/Networking Service Color/CDN Profiles.svg";
 import { ReactComponent as ASG } from "../../assets/azure_icons/Networking Service Color/Application Security Groups.svg";
 import { ReactComponent as NIC } from "../../assets/azure_icons/Networking Service Color/Network Interfaces.svg";
 
@@ -126,6 +125,7 @@ export default class ResourcePalette extends Component {
     this.curveArrow = React.createRef();
     this.label = React.createRef();
     this.rectangle = React.createRef();
+    this.roundedrectangle = React.createRef();
     this.circle = React.createRef();
     this.cylinder = React.createRef();
     this.hexagon = React.createRef();
@@ -278,6 +278,11 @@ export default class ResourcePalette extends Component {
               <div class="tile-panel" ref={this.rectangle}>
                 <Tippy content="Rectangle" followCursor={true} placement="bottom">
                   <img src={require('../../assets/azure_icons/shape-rectangle.png')} width="25" height="25" />
+                </Tippy>
+              </div>
+              <div class="tile-panel" ref={this.roundedrectangle}>
+                <Tippy content="Rounded Rectangle" followCursor={true} placement="bottom">
+                  <img src={require('../../assets/azure_icons/shape-roundedrectangle.png')} width="35" height="35" />
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.triangle}>
@@ -501,7 +506,7 @@ export default class ResourcePalette extends Component {
               </div>
               <div class="tile-panel" ref={this.cdnIcon}>
                 <Tippy content="Azure CDN" followCursor={true} placement="bottom">
-                  <CDN class="azure-rsc-icon" />
+                  <img src={require('../../assets/azure_icons/Networking Service Color/CDN Profiles.png')} width="30" height="30" />
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.asgIcon}>
@@ -898,6 +903,8 @@ export default class ResourcePalette extends Component {
     
     this.graphManager.makeIconDraggable(this.label.current, "label", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.rectangle.current, "rectangle", thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.roundedrectangle.current, "roundedrectangle", thisComponent.props.addResourceToDiagramEditor);
+    
     this.graphManager.makeIconDraggable(this.triangle.current, "triangle", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.circle.current, "circle", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.user.current, "user", thisComponent.props.addResourceToDiagramEditor);

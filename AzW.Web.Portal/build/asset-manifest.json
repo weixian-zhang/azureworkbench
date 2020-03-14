@@ -1,18 +1,18 @@
 {
   "files": {
-    "main.css": "/static/css/main.335a436c.chunk.css",
-    "main.js": "/static/js/main.d0172ffa.chunk.js",
-    "main.js.map": "/static/js/main.d0172ffa.chunk.js.map",
+    "main.css": "/static/css/main.5dc84c5d.chunk.css",
+    "main.js": "/static/js/main.0193ace7.chunk.js",
+    "main.js.map": "/static/js/main.0193ace7.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.fb71ee71.js",
     "runtime-main.js.map": "/static/js/runtime-main.fb71ee71.js.map",
-    "static/css/2.fb5d921b.chunk.css": "/static/css/2.fb5d921b.chunk.css",
-    "static/js/2.fe14fbdf.chunk.js": "/static/js/2.fe14fbdf.chunk.js",
-    "static/js/2.fe14fbdf.chunk.js.map": "/static/js/2.fe14fbdf.chunk.js.map",
+    "static/css/2.9195dcc9.chunk.css": "/static/css/2.9195dcc9.chunk.css",
+    "static/js/2.7921aeeb.chunk.js": "/static/js/2.7921aeeb.chunk.js",
+    "static/js/2.7921aeeb.chunk.js.map": "/static/js/2.7921aeeb.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.f118fa50b03fbd43bf8e19097183f08f.js": "/precache-manifest.f118fa50b03fbd43bf8e19097183f08f.js",
+    "precache-manifest.633a38304b65404fb11b276b5f6cb2cb.js": "/precache-manifest.633a38304b65404fb11b276b5f6cb2cb.js",
     "service-worker.js": "/service-worker.js",
-    "static/css/2.fb5d921b.chunk.css.map": "/static/css/2.fb5d921b.chunk.css.map",
-    "static/css/main.335a436c.chunk.css.map": "/static/css/main.335a436c.chunk.css.map",
+    "static/css/2.9195dcc9.chunk.css.map": "/static/css/2.9195dcc9.chunk.css.map",
+    "static/css/main.5dc84c5d.chunk.css.map": "/static/css/main.5dc84c5d.chunk.css.map",
     "static/media/AD FS.452b802e.svg": "/static/media/AD FS.452b802e.svg",
     "static/media/API Management Services.917c5bb0.svg": "/static/media/API Management Services.917c5bb0.svg",
     "static/media/Active Directory.11e922fe.svg": "/static/media/Active Directory.11e922fe.svg",
@@ -42,7 +42,6 @@
     "static/media/Azure Service Bus Relays.00022ae0.svg": "/static/media/Azure Service Bus Relays.00022ae0.svg",
     "static/media/Azure Service Bus.1aad9a75.svg": "/static/media/Azure Service Bus.1aad9a75.svg",
     "static/media/Blob Storage.5d2504d6.svg": "/static/media/Blob Storage.5d2504d6.svg",
-    "static/media/CDN Profiles.c361dc62.svg": "/static/media/CDN Profiles.c361dc62.svg",
     "static/media/Container Instances.20e525b2.svg": "/static/media/Container Instances.20e525b2.svg",
     "static/media/Container Registries.9cb05d04.svg": "/static/media/Container Registries.9cb05d04.svg",
     "static/media/DDOS Protection Plans.f82b16bb.svg": "/static/media/DDOS Protection Plans.f82b16bb.svg",
@@ -99,9 +98,9 @@
   },
   "entrypoints": [
     "static/js/runtime-main.fb71ee71.js",
-    "static/css/2.fb5d921b.chunk.css",
-    "static/js/2.fe14fbdf.chunk.js",
-    "static/css/main.335a436c.chunk.css",
-    "static/js/main.d0172ffa.chunk.js"
+    "static/css/2.9195dcc9.chunk.css",
+    "static/js/2.7921aeeb.chunk.js",
+    "static/css/main.5dc84c5d.chunk.css",
+    "static/js/main.0193ace7.chunk.js"
   ]
 }

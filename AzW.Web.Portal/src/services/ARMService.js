@@ -1,19 +1,29 @@
 import Subscription from "../models/services/Subscription";
 import axios from "axios";
+import AuthService from './AuthService';
 
 export default class ARMService
 {
-    constructor(){}
+    constructor(){
 
-    static async getSubscriptions(accessToken, callback){
-        const token = null; //await authProvider.getAccessToken();
-      
-        //axios.defaults.baseURL = 'https://localhost:5001';
-        //axios.defaults.headers.common['Authorization'] = token.accessToken;
-        axios.get('/api/arm/subs', {headers: {
-          "Authorization" : "Bearer " + accessToken
-        }
-      })
+        this.authService = new AuthService();
+    }
+
+    async getSubscriptions(onSuccess, onFailure){
+
+        if(!this.authService.isUserLogin())
+            return;
+            
+        var user = this.authService.getUserProfile();
+
+        axios.get('/api/arm/subs', 
+        {
+          headers: {
+  
+            'Authorization': 'Bearer ' + user.AccessToken,
+            'Content-Type': 'application/json'
+          }
+        })
         .then(function (response) {
           if(response.data != null)
           {
@@ -25,13 +35,16 @@ export default class ARMService
               sub.SubscriptionId = s.SubscriptionId;
 
               subs.push(sub)
-            })
+            });
+
+            onSuccess(subs);
           }
           else
-            callback(response.data);
+          onFailure(response.data);
         })
         .catch(function (error) {
           console.log(error);
+          onFailure(error)
         })
         .finally(function () {
           // always executed

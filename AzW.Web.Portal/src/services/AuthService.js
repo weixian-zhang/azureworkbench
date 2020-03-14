@@ -103,6 +103,10 @@ export default class AuthService
 
     isSessionExpired() {
         var userProfile = this.getUserProfile();
+        
+        if(userProfile.AccessTokenExpiresOn == null)
+          return true;
+
         var accessTokenExpireOn = userProfile.AccessTokenExpiresOn;
         var CurrentDate = new Date();
         if(accessTokenExpireOn < CurrentDate)
