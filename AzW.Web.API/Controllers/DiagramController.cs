@@ -24,6 +24,8 @@ using Syncfusion.Pdf;
 using Svg;
 using AzW.Secret;
 using System.Text.RegularExpressions;
+using Serilog.Core;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace AzW.Web.API
 {
@@ -31,19 +33,29 @@ namespace AzW.Web.API
     public class DiagramController : BaseController
     {
         public DiagramController
-            (IDiagramLogic diagramLogic, IDiagramRepository repo, WorkbenchSecret secret)
+            (IDiagramLogic diagramLogic, IDiagramRepository repo,
+             WorkbenchSecret secret, Logger logger, SynchronizedConverter html2pdfConverter)
         {
             _diagramLogic = diagramLogic;
             _diagramRepo = repo;
             _secret = secret;
+            _logger = logger;
+            _html2pdfConverter = html2pdfConverter;
         }
 
         [HttpPost("dia/anony/share")]
         public async Task<string> GenerateDiagramLink([FromBody]AnonyDiagramShareContext context)
-        {
-            string shareLink =
-                await _diagramLogic.GenerateShareLinkForAnonyDiagramAsync(context);
+        {            
+             string shortUUID = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
             
+            string shareLink =
+                QueryHelpers.AddQueryString(_secret.PortalUrl, "id", shortUUID);
+            
+            context.UID = shortUUID;
+            context.SharedLink = shareLink; 
+            
+            await _diagramRepo.SaveAnonymousDiagram(context);
+
             return shareLink;
 
         }
@@ -73,8 +85,16 @@ namespace AzW.Web.API
         public async Task<IEnumerable<WorkspaceDiagramContextResult>>
             GetDiagramsFromWorkspace(string emailId)
         {
-          var diagramContexts = await _diagramRepo.GetDiagramsFromWorkspace(emailId);
-          return diagramContexts;
+            try
+            {
+                var diagramContexts = await _diagramRepo.GetDiagramsFromWorkspace(emailId);
+                return diagramContexts;
+            }
+            catch(Exception ex)
+            {
+                _logger.Error($"{ex.ToString()}");
+                throw ex;
+            }
         }
 
         [Authorize()]
@@ -95,26 +115,34 @@ namespace AzW.Web.API
         [HttpGet("wrkspace/colls")]
         public async Task<IEnumerable<Collection>> GetCollectionFromWorkspace([FromQuery] string emailId)
         {
-           var collections = await _diagramRepo.GetCollectionFromWorkspaceAsync(emailId);
+            try
+            {
+                var collections = await _diagramRepo.GetCollectionFromWorkspaceAsync(emailId);
 
-           var collectionDistinct = collections.ToList().Distinct();
+                var collectionDistinct = collections.ToList().Distinct();
 
-           var collList = new List<Collection>();
+                var collList = new List<Collection>();
 
-            if(collections.Count() <= 0)
+                    if(collections.Count() <= 0)
+                        return collList;
+
+                    collList.Add(new Collection(){Name = "All"});
+
+                foreach(var coll in collectionDistinct)
+                {
+                    collList.Add(new Collection()
+                    {
+                        Name = coll
+                    });
+                }
+
                 return collList;
-
-            collList.Add(new Collection(){Name = "All"});
-
-           foreach(var coll in collectionDistinct)
-           {
-               collList.Add(new Collection()
-               {
-                   Name = coll
-               });
-           }
-
-           return collList;
+            }
+            catch(Exception ex)
+            {
+                _logger.Error($"{ex.ToString()}");
+                throw ex;
+            }
         }
 
         [AllowAnonymous()]
@@ -137,7 +165,7 @@ namespace AzW.Web.API
                         {
                             GlobalSettings = {
                                 ColorMode = DinkToPdf.ColorMode.Color,
-                                PaperSize = PaperKind.A4,
+                                PaperSize = PaperKind.A3,
                                 Orientation = Orientation.Landscape,
                             },
                             Objects = {
@@ -148,9 +176,7 @@ namespace AzW.Web.API
                             }
                         };
                     
-                    var converter = new SynchronizedConverter(new PdfTools());
-                    
-                    byte[] pdf = converter.Convert(htmlDoc);
+                    byte[] pdf = _html2pdfConverter.Convert(htmlDoc);
 
                     return new FileContentResult(pdf, "application/octet-stream");
                 }
@@ -158,6 +184,8 @@ namespace AzW.Web.API
             }              
             catch (Exception ex)
             {
+                _logger.Error(ex, ex.Message);
+
                 throw ex;
             }
         }
@@ -166,6 +194,8 @@ namespace AzW.Web.API
         private IDiagramLogic _diagramLogic;
         private IDiagramRepository _diagramRepo;
         private WorkbenchSecret _secret;
+        private Logger _logger;
+        private SynchronizedConverter _html2pdfConverter;
     }
 
     public class ExportPngParam

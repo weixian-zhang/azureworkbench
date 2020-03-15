@@ -19,6 +19,12 @@ using AzW.Application;
 using System.IdentityModel.Tokens.Jwt;
 using AzW.Infrastructure;
 using AzW.Infrastructure.Data;
+using Serilog;
+using Serilog.Core;
+using Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters;
+using System.Reflection;
+using System.IO;
+using DinkToPdf;
 
 namespace AzW.Web.API
 {
@@ -29,9 +35,12 @@ namespace AzW.Web.API
         public Startup(IConfiguration configuration)
         {
             var builder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                .AddEnvironmentVariables()
+                .AddUserSecrets("7211aa50-115d-4544-9cf0-c4499c5f2e9f");
+                //.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
         
             Configuration = builder.Build();
+
         }
 
         public IConfiguration Configuration { get; }
@@ -42,19 +51,24 @@ namespace AzW.Web.API
             // Add CORS policy
             services.AddCors(options =>
             {
-                options.AddPolicy(AllowAllOriginsPolicy, // I introduced a string constant just as a label "AllowAllOriginsPolicy"
+                options.AddPolicy(AllowAllOriginsPolicy,
                 builder =>
                 {
-                    builder.AllowAnyOrigin();
+                     builder
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
                 });
             });
- 
+
 
             services.AddControllers();
 
             services.AddSwaggerGen();
 
             InitSecrets();
+
+            InitSerilog();
 
             ConfigureAzureAdAuth(services);
 
@@ -65,26 +79,25 @@ namespace AzW.Web.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-           
 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors(AllowAllOriginsPolicy);
+
+            app.ConfigureExceptionHandler(_logger);
             
             app.UseAuthentication();
 
             app.UseSwagger();
 
-            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-
             app.UseHttpsRedirection();
-
-            
 
             app.UseRouting();
 
-            app.UseCors(AllowAllOriginsPolicy);
+            
 
             app.UseAuthorization();
 
@@ -174,17 +187,62 @@ namespace AzW.Web.API
         private void ConfigureDependencies(IServiceCollection services)
         {          
             services.AddSingleton<WorkbenchSecret>(sp => {return _secrets ;} );
-
+            services.AddSingleton<Logger>(sp => {return _logger ;} );
             services.AddTransient<IDiagramLogic, DiagramLogic>();
             services.AddTransient<IDiagramRepository, DiagramRepository>();
 
+            var html2pdfConverter = CreateDink2PDFLibwkhtmltoxConverter();
+             services.AddSingleton<SynchronizedConverter>(sp => {return html2pdfConverter ;} );
         }
 
         private void InitSecrets()
         {
-            _secrets = SecretManagerFactory.Create().GetSecret<WorkbenchSecret>();
+            _secrets = new WorkbenchSecret(){
+                ClientId = Configuration.GetValue<string>("ClientId"),
+                ClientSecret = Configuration.GetValue<string>("ClientSecret"),
+                AzCosmonMongoConnectionString = Configuration.GetValue<string>("AzCosmonMongoConnectionString"),
+                PortalUrl = Configuration.GetValue<string>("PortalUrl"),
+                TenantId = Configuration.GetValue<string>("TenantId"),
+                AppInsightsKey = Configuration.GetValue<string>("AppInsightsKey"),
+                LibwkhtmltoxPath = Configuration.GetValue<string>("LibwkhtmltoxPath")
+
+            };
+            //_secrets = SecretManagerFactory.Create().GetSecret<WorkbenchSecret>();
+        
+        }
+
+        private void InitSerilog()
+        {
+            _logger = new LoggerConfiguration()
+                .WriteTo
+                .ApplicationInsights(_secrets.AppInsightsKey, new TraceTelemetryConverter())
+                .CreateLogger();
+        }
+
+        private SynchronizedConverter CreateDink2PDFLibwkhtmltoxConverter()
+        {
+            string dllPath;
+            
+            _logger.Information($"At Startup.CreateDink2PDFLibwkhtmltoxConverter, env var: {_secrets.LibwkhtmltoxPath}");
+            
+            if(!string.IsNullOrEmpty(_secrets.LibwkhtmltoxPath))
+                dllPath = _secrets.LibwkhtmltoxPath;     
+            else
+            {
+                //local debug only
+                dllPath =
+                    Path.Combine(Directory.GetCurrentDirectory(), "AzW.Web.API", "libwkhtmltox.dll");
+            }
+
+            CustomAssemblyLoadContext context = new CustomAssemblyLoadContext(_logger);
+            context.LoadUnmanagedLibrary(dllPath);
+
+            var converter = new SynchronizedConverter(new PdfTools());
+
+            return converter;
         }
 
         private WorkbenchSecret _secrets;
+        private Logger _logger;
     }
 }

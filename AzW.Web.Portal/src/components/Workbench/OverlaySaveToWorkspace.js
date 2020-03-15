@@ -3,6 +3,7 @@ import {Toaster, Card,Elevation,Position, FormGroup, InputGroup, Button, Overlay
 import AuthService from '../../services/AuthService';
 import Messages from './Helpers/Messages';
 import Utils from './Helpers/Utils';
+import { Typography } from "@material-ui/core";
 
 export default class OverlaySaveToWorkspace extends Component {
     constructor(props) {
@@ -37,8 +38,11 @@ export default class OverlaySaveToWorkspace extends Component {
                          value={this.state.diagramName}
                          onChange={this.diagramNameOnChange}/>
                     </FormGroup>
-                    <Button intent={Intent.PRIMARY} alignText='center' text="Save" icon="saved"
+                    <Button intent={Intent.PRIMARY} text="Save" icon="saved"
                      onClick={this.saveToWorkspace}/>
+                    <Typography variant="body1">
+                        *Note: Same Collection and Diagram name will override your saved diagram
+                    </Typography>
                 </Card>
             </Overlay>
         )

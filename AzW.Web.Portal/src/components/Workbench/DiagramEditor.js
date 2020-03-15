@@ -186,6 +186,7 @@ import ComputeService from "../../services/ComputeService";
 
     this.armsvc = new ARMService(); //test to remove
     this.comsvc = new ComputeService();
+
   }
 
   componentDidMount() {   
@@ -236,6 +237,7 @@ import ComputeService from "../../services/ComputeService";
     this.initRef();
 
     this.loadSharedDiagram();
+
   }
 
   render() {
@@ -3205,13 +3207,11 @@ addUpDownLeftRightArrowToMoveCells() {
       if(Utils.IsNullOrUndefine(this.state.queryString)) //querystring is object contains path and querystring
         return;
 
-      var pathName = this.state.queryString.pathname;
       var parsedQS =  queryString.parse(this.state.queryString.search)
       var anonyDiagramId = parsedQS.id
 
-      if(!Utils.IsNullOrUndefine(pathName) && !Utils.IsNullOrUndefine(anonyDiagramId)
-          && pathName != '/shareanonydia')
-          return;
+      if(Utils.IsNullOrUndefine(anonyDiagramId))
+      return;
       
       this.graph.removeCells(this.graph.getChildVertices(this.graph.getDefaultParent()));
 
@@ -3225,9 +3225,22 @@ addUpDownLeftRightArrowToMoveCells() {
             adc.DiagramXml = response.data.DiagramXml;
             adc.SharedLink = response.data.SharedLink;
             thisComp.importXmlAsDiagram(adc);
+
+            Toaster.create({
+              position: Position.TOP,
+              autoFocus: false,
+              canEscapeKeyClear: true
+            }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.ShareLinkLoadedSuccess()});
+            return;
         })
         .catch(function (error) {
           console.log(error);
+          Toaster.create({
+            position: Position.TOP,
+            autoFocus: false,
+            canEscapeKeyClear: true
+          }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.ShareLinkLoadedError()});
+          return;
         })
         .finally(function () {
           
@@ -3484,6 +3497,7 @@ addUpDownLeftRightArrowToMoveCells() {
         const url = window.URL.createObjectURL(new Blob([pdfByteArray]));
           const link = document.createElement('a');
           link.href = url;
+          link.target = "iframePdfViewer"; //name of iframe
           link.setAttribute('download', 'diagram.pdf');
           document.body.appendChild(link);
           link.click();

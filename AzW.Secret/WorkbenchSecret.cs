@@ -14,6 +14,8 @@ namespace AzW.Secret
 
         public string PortalUrl { get; set; }
 
-        public string LocalPath { get; set; }
+        public string AppInsightsKey { get; set; }
+
+        public string LibwkhtmltoxPath { get; set; }
     }
 }

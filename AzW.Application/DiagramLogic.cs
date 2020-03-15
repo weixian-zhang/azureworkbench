@@ -21,7 +21,7 @@ namespace AzW.Application
             string shortUUID = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
             
             string shareLink =
-                QueryHelpers.AddQueryString(_secret.PortalUrl + "shareanonydia", "id", shortUUID);
+                QueryHelpers.AddQueryString(_secret.PortalUrl, "id", shortUUID);
             
             context.UID = shortUUID;
             context.SharedLink = shareLink; 

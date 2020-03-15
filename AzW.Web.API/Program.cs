@@ -15,18 +15,6 @@ namespace AzW.Web.API
     {
         public static void Main(string[] args)
         {
-            string path = string.Empty;
-
-            if(!IsDevEnvironment())
-                path = Path.Combine(@"D:\home\site\wwwroot", "libwkhtmltox.dll");
-            else
-            {
-                path = Path.Combine
-                    (Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "libwkhtmltox.dll");
-            }
-            
-            var loader = new CustomAssemblyLoadContext().LoadUnmanagedLibrary($"{path}");
-
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -37,14 +25,6 @@ namespace AzW.Web.API
                     webBuilder.UseUrls("http://*:8089");
                     webBuilder.UseStartup<Startup>();
                 });
-    
-        private static bool IsDevEnvironment() {
-            string env = Environment.GetEnvironmentVariable("env");
 
-            if(env != "dev")
-                return false;
-            else
-                return true;
-        }
     }
 }

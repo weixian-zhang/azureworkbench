@@ -24,7 +24,7 @@ namespace AzW.Infrastructure.Data
                 new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
                 var mongoClient = new MongoClient(settings);
 
-                return mongoClient.GetDatabase("azworkbench-dev");
+                return mongoClient.GetDatabase("azworkbench");
             }
             catch(Exception ex)
             {

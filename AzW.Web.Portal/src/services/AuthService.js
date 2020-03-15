@@ -92,6 +92,7 @@ export default class AuthService
     logout(){
         this.msalApp.logout();
         SessionStorage.remove(SessionStorage.KeyNames.UserProfile);
+        document.cookie = "cookieName=; Path=/; domain=azureworkbench.com; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
     }
 
     isUserLogin(){
@@ -103,7 +104,7 @@ export default class AuthService
 
     isSessionExpired() {
         var userProfile = this.getUserProfile();
-        
+
         if(userProfile.AccessTokenExpiresOn == null)
           return true;
 

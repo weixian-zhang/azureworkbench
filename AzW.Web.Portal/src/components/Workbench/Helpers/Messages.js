@@ -5,6 +5,8 @@ export default class Messages {
     static ResourceInSubnetTakenByDedicatedSubnetResource() {return 'This subnet is occupied by a resource that requires dedicated subnet. Please select another subnet or remove existing resource in this subnet' ; }
     static SharedDiagramLoadError() {return "Unable to load shared diagram";}
     static NoCellOnGraph() {return "There is no resource on canvas";}
+    static ShareLinkLoadedSuccess() {return "Shared link is loaded successfully";}
+    static ShareLinkLoadedError() {return "Error occured while loading shared link";}
     static SharedDiagramLinkCopied() {return "Link copied";}
     static AppGatewayNotInSubnetError() {return "Application Gateway must be in a dedicated subnet with no other resource";}
     static KubeNotInSubnetError() {return "Kubernetes Service must be in a dedicated subnet with no other resource";}

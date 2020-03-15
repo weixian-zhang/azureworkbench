@@ -67,6 +67,16 @@
             "problemMatcher": []
         },
         {
+            "label": "Publish API Local Publish Folder",
+            "command": "dotnet publish -c Release -o ./publish",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/AzW.Web.API"
+            },
+            "problemMatcher": []
+        },
+        {
             "label": "build Infra Data",
             "command": "dotnet build",
             "type": "shell",

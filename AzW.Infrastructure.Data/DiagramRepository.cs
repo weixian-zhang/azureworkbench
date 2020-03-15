@@ -48,18 +48,33 @@ namespace AzW.Infrastructure.Data
 
         public async Task SaveDiagramToWorkspace(WorkspaceDiagramContext context)
         {
-            var db = CosmosDbHelper.GetDatabase(_secret);
+            try
+            {
+                var db = CosmosDbHelper.GetDatabase(_secret);
 
-            var coll = db.GetCollection<WorkspaceDiagramContext>(CollectionName.Workspace);
+                var coll = db.GetCollection<WorkspaceDiagramContext>(CollectionName.Workspace);
 
-            var existingReplacedDiagram =coll.FindOneAndReplace(x => 
-                x.CollectionName == context.CollectionName &&
-                x.DiagramName == context.DiagramName,
-                context
-            );
+               
+                var existingDiagram = coll.FindSync(x => 
+                    x.CollectionName == context.CollectionName &&
+                    x.DiagramName == context.DiagramName
+                ).SingleOrDefault();
 
-            if(existingReplacedDiagram == null)
-                await coll.InsertOneAsync(context);
+                if(existingDiagram == null)
+                    await coll.InsertOneAsync(context);
+                else
+                {
+                    existingDiagram.DiagramXml = context.DiagramXml;
+                    existingDiagram.DateTimeSaved = DateTime.Now;
+
+                    await coll.ReplaceOneAsync
+                        (x => x.Id == existingDiagram.Id, existingDiagram);
+                }
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<IEnumerable<WorkspaceDiagramContextResult>>

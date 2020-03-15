@@ -29,16 +29,30 @@ export default class OverlayTutorial extends Component {
                         Add Azure services into Subnet
                     </Typography>
                     <Typography variant="body1" align="left" gutterBottom>
-                        Certain services like Firewall, App Service Environment, Bastion to name a Firewall
+                        Certain services like Firewall, App Service Environment, Bastion to name a few
                         must reside in a dedicated subnet. I like to call these services "PaaS-in-VNet"
                         and Azure workbench validates this.
                         To add these services to Subnet, click on Subnet, then drag the service onto canvas
                     </Typography>
                     <Typography variant="h6" align="left" color="primary" gutterBottom>
+                        Copy & Paste
+                    </Typography>
+                    <Typography variant="body1" align="left" gutterBottom>
+                        "Ctrl C" on one or multi-selected Icons and "Ctrl V" duplicate Icons .
+                    </Typography>
+                    <Typography variant="body1" align="left" gutterBottom>
+                        You can copy stencils from Microsoft Visio and do <b>"Ctrl V"</b> to paste on Canvas
+                    </Typography>
+                    <Typography variant="body1" align="left" gutterBottom>
+                        You can copy any images from other websites and do <b>"Ctrl V"</b> to paste on Canvas, in cases when you can't find an Icon that suits your need
+                    </Typography>
+                    <Typography variant="h6" align="left" color="primary" gutterBottom>
                         Panning
                     </Typography>
                     <Typography variant="body1" align="left" gutterBottom>
-                        Hold on to the "Right mouse button" and drag canvas.
+                        Hold on to the "Right mouse button" and drag canvas tp drag Icons into view.
+                    </Typography>
+                    <Typography variant="body1" align="left" gutterBottom>
                         Canvas has unlimited amount of space to work with.
                     </Typography>
                     <Typography variant="h6" align="left" color="primary" gutterBottom>
