@@ -4,7 +4,7 @@ export default class Config
     }
 
     static BaseAPIUrl() {
-        return  'https://api.azureworkbench.com';
+        return  'https://beta-api.azureworkbench.com';
         //'http://localhost:8089';
         //'https://beta-api.azureworkbench.com';
         //'https://api.azureworkbench.com'; 

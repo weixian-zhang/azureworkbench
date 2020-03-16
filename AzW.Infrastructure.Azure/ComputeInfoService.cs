@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AzW.Infrastructure.AzureServices;
 using AzW.Model;
 using AzW.Secret;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
 
 namespace AzW.Infrastructure.AzureServices
 {
@@ -13,10 +14,13 @@ namespace AzW.Infrastructure.AzureServices
             
         }
 
-        public async Task<IEnumerable<VMImageReference>> GetImageReferences(string subscription)
+        public async Task<IEnumerable<VMImage>> GetImageReferences(string subscription)
         {
-            var skus = await AzClient.WithSubscription
-                (subscription).ComputeSkus.ListAsync();
+            //https://github.com/Azure/azure-libraries-for-net/blob/master/Samples/Compute/ListVirtualMachineImages.cs
+
+            var publishers = AzClient.WithSubscription(subscription)
+                .VirtualMachineImages.Publishers.ListByRegion(Region.AsiaSouthEast);
+
 
             return null;
         }

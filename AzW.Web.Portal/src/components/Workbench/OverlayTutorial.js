@@ -62,6 +62,17 @@ export default class OverlayTutorial extends Component {
                         Hold "Shift" key and mouse wheel up/down to zoom in/out
                     </Typography>
                     <Typography variant="h6" align="left" color="primary" gutterBottom>
+                        Grouping Stencils
+                    </Typography>
+                    <Typography variant="body1" align="left" gutterBottom>
+                        When you group (right-click context menu) stencils, a hidden group cell is created to wrap your selected stencils.
+                        *Just a note, to move stencils as a group, in a group, you have to select the "hidden" cell wrapping your grouped stencils
+                        by clicking slightly outside the edge of outer-most stencil. You should then see a selected hidden cell, move this hidden cell to move grouped stencils.
+                    </Typography>
+                    <Typography variant="body1" align="left" gutterBottom>
+                        *Caution: Delete a group will delete all child stencils, 
+                    </Typography>
+                    <Typography variant="h6" align="left" color="primary" gutterBottom>
                         Rename Icons and Azure services
                     </Typography>
                     <Typography variant="body1" align="left" gutterBottom>

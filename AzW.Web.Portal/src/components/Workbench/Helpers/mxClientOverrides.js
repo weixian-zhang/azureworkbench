@@ -89,9 +89,11 @@ import {
                 // Adds the children into the group and moves
                 index = this.graph.model.getChildCount(group);
                 this.graph.cellsAdded(cells, group, index, null, null, false, false, false);
-                this.graph.cellsMoved(cells, -bounds.x, -bounds.y, false, false, false);
+                this.graph.cellsMoved(cells, -bounds.x + 7, -bounds.y + 7, false, false, false);
 
                 // Resizes the group
+                bounds.width += 14;
+                bounds.height += 14;
                 this.graph.cellsResized([group], [bounds], false);
 
                 // this.graph.fireEvent(new mxEventObject(mxEvent.GROUP_CELLS,

@@ -6,6 +6,6 @@ namespace AzW.Infrastructure.AzureServices
 {
     public interface IComputeInfoService
     {
-        Task<IEnumerable<VMImageReference>> GetImageReferences(string subscription);
+        Task<IEnumerable<VMImage>> GetImageReferences(string subscription);
     }
 }

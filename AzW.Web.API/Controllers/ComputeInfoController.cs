@@ -21,11 +21,11 @@ namespace AzW.Web.API
         }
 
         [HttpGet("vmsku")]
-        public Task<IEnumerable<VMImageReference>> GetVMSkus(string subscription)
+        public Task<IEnumerable<VMImage>> GetVMSkus(string subscription)
         {
         string accessToken = GetUserIdentity().AccessToken;
 
-        _computeInfoSvc = new ComputeInfoService(accessToken, _secret);
+            _computeInfoSvc = new ComputeInfoService(accessToken, _secret);
 
            var skus = _computeInfoSvc.GetImageReferences(subscription);
 
