@@ -56,10 +56,9 @@ namespace AzW.Infrastructure.AzureServices
 
             var props = TypeDescriptor.GetProperties(typeof(Region));
 
-            foreach(PropertyDescriptor prop in props)
+            foreach(Region reg in Region.Values)
             {
-                if(!prop.Name.ToLowerInvariant().Contains("government"))
-                    regions.Add(prop.Name);
+                regions.Add(reg.Name);
             }
 
             return regions;

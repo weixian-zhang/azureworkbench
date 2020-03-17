@@ -6,7 +6,6 @@
   <ItemGroup>
     <ProjectReference Include="..\AzW.Secret\AzW.Secret.csproj"/>
     <ProjectReference Include="..\AzW.Model\AzW.Model.csproj"/>
-    <ProjectReference Include="..\AzW.Application\AzW.Application.csproj"/>
     <ProjectReference Include="..\AzW.Infrastructure.Azure\AzW.Infrastructure.Azure.csproj"/>
     <ProjectReference Include="..\AzW.Infrastructure.Data\AzW.Infrastructure.Data.csproj"/>
   </ItemGroup>
@@ -28,5 +27,16 @@
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.13.1"/>
     <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="3.1.0"/>
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0"/>
+    <PackageReference Include="AutoMapper" Version="9.0.0"/>
+
+     <PackageReference Include="Microsoft.Azure.Management.ResourceManager" Version="2.3.0-preview"/>
+    <PackageReference Include="Microsoft.Azure.Management.Compute" Version="30.1.0"/>
+    <PackageReference Include="Microsoft.Azure.Management.Monitor" Version="0.22.0-preview"/>
+    <PackageReference Include="Microsoft.Azure.Management.OperationalInsights" Version="0.19.0-preview"/>
+    <PackageReference Include="Microsoft.Azure.Management.SecurityCenter" Version="1.0.0"/>
+    <PackageReference Include="Microsoft.Azure.Management.ManagedNetwork" Version="1.0.1-preview"/>
+    <PackageReference Include="Microsoft.Azure.Management.Fluent" Version="1.29.0"/>
+    <PackageReference Include="Microsoft.Azure.Management.ResourceManager.Fluent" Version="1.29.0"/>
+    <PackageReference Include="Microsoft.Azure.Management.Network.Fluent" Version="1.29.0"/>
   </ItemGroup>
 </Project>

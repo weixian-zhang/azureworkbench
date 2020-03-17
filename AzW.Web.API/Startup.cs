@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using AzW.Application;
 using System.IdentityModel.Tokens.Jwt;
 using AzW.Infrastructure;
 using AzW.Infrastructure.Data;
@@ -188,7 +187,6 @@ namespace AzW.Web.API
         {          
             services.AddSingleton<WorkbenchSecret>(sp => {return _secrets ;} );
             services.AddSingleton<Logger>(sp => {return _logger ;} );
-            services.AddTransient<IDiagramLogic, DiagramLogic>();
             services.AddTransient<IDiagramRepository, DiagramRepository>();
 
             var html2pdfConverter = CreateDink2PDFLibwkhtmltoxConverter();

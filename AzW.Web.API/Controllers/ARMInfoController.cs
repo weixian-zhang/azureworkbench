@@ -1,6 +1,3 @@
-using AzW.Application;
-using AzW.Dto;
-using AzW.Infrastructure;
 using AzW.Infrastructure.AzureServices;
 using AzW.Model;
 using AzW.Secret;
@@ -9,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Management.ResourceManager.Fluent;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -23,9 +21,7 @@ namespace AzW.Web.API
     {
         public ARMInfoController(WorkbenchSecret secret)
         {
-            string accessToken = GetUserIdentity().AccessToken;
-
-            _armService = new ARMService(accessToken, secret);
+           _secret = secret;
         }
 
         [HttpGet("subs")]
@@ -34,25 +30,41 @@ namespace AzW.Web.API
 
             var subs = await _armService.GetSubscriptions();
 
-            return null;
+            var azSubs = ObjectMapper.Mapper
+                .Map<IEnumerable<ISubscription>, IEnumerable<AzSubscription>>(subs);
+
+
+            return azSubs;
         }
 
         [Authorize]
         [HttpGet("rg")]
-        public JsonResult GetSResourceGroups()
+        public async Task<IEnumerable<AzResourceGroup>> GetResourceGroups(string subscription)
         {
-            //var resourceGroups = _azsvc.ArmService.GetResourceGroups();
+            string accessToken = GetUserIdentity().AccessToken;
 
-            return new JsonResult(null);
+            _armService = new ARMService(accessToken, _secret);
+
+            var irgs = await _armService.GetResourceGroups(subscription);
+
+            var azRGs = ObjectMapper.Mapper
+                .Map<IEnumerable<IResourceGroup>, IEnumerable<AzResourceGroup>>(irgs);
+
+            return azRGs;
         }
 
-        [Route("loc")]
+        [Authorize]
+        [HttpGet("loc")]
         public IEnumerable<string> GetLocations()
         {
-            return null;
-            //return _armService.GetRegions();
+            string accessToken = GetUserIdentity().AccessToken;
+
+            _armService = new ARMService(accessToken, _secret);
+
+            return _armService.GetLocations();
         }
 
         private ARMService _armService;
+        private WorkbenchSecret _secret;
     }
 }

@@ -189,10 +189,28 @@ import ComputeService from "../../services/ComputeService";
 
   }
 
-  componentDidMount() {   
+  componentDidMount() {  
+    
+    //   this.armsvc.getRegions(
+    //   function onSuccess(regions){
+    //     var locations = regions;
+    //   },
+    //   function onFailure(error){
+
+    //   }
+    // );
+
+    // this.armsvc.getResourceGroups( '0ab40889-880a-4261-95e1-600c60074519',
+    //   function onSuccess(rgs){
+    //     var resourceGroups = rgs;
+    //   },
+    //   function onFailure(error){
+
+    //   }
+    // );
 
     //test to remove
-    // this.comsvc.getVMSku(
+    // this.comsvc.getVMImages(
     //   '0ab40889-880a-4261-95e1-600c60074519',
     //   function onSuccess(subs){
     //     var subscriptions = subs;
@@ -444,22 +462,8 @@ import ComputeService from "../../services/ComputeService";
       evt.consume();
     });
     this.graph.addListener(mxEvent.CELLS_REMOVED, function (sender, evt) {
-
-      // var delcell = evt.properties.cells[0];
-      // if(Utils.IsNullOrUndefine(delcell.parent))
-      // {
-      //   thisComp.graph.getModel().remove(delcell);
-        
-      //   //addCell(delcell, thisComp.graph.getDefaultParent());
-      //   //this.graph.insertVertex(, null, node, 0, 0, 0, 0);
-      // }
-
       if(thisComp.state.unsavedChanges) { evt.consume(); return;}
         thisComp.setState({unsavedChanges: true});
-      evt.consume();
-
-      // if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-      // thisComp.setState({unsavedChanges: true});
       evt.consume();
     });
     this.graph.addListener(mxEvent.GROUP_CELLS, function (sender, evt) {
@@ -476,30 +480,6 @@ import ComputeService from "../../services/ComputeService";
       keyHandler.bindKey(46, (evt) =>
         { 
           thisComp.graph.removeCells();
-
-          // var celltodel = thisComp.graph.getSelectionCell();
-          // if(celltodel.parent == null){
-          //   thisComp.graph.getModel().add(thisComp.graph.getDefaultParent(), celltodel); 
-          // }
-          // celltodel.vertex = true;
-          // thisComp.graphManager.graph.getModel().beginUpdate();
-          // thisComp.graph.removeCells();
-          // thisComp.graphManager.graph.getModel().endUpdate();
-          // thisComp.graph.refresh();
-          // cells.map(cell => {
-          //   if(thisComp.azureValidator.isSubnet(cell.parent))
-          //   {
-          
-          //     thisComp.graph.removeCells(cells);
-              
-          //     //thisComp.graph.removeCells(cell);
-          //   }
-          //   else
-          //     thisComp.graph.removeCells(cell);
-          // });
-          // this.graphManager.graph.getModel().beginUpdate();
-          // thisComp.graph.removeCells(thisComp.graph.getSelectionCells(), true);
-          // this.graphManager.graph.getModel().endUpdate();
         });
   }
 

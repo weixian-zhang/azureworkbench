@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using AzW.Application;
 using AzW.Infrastructure.Data;
 using AzW.Model;
 using DinkToPdf;
@@ -33,10 +32,9 @@ namespace AzW.Web.API
     public class DiagramController : BaseController
     {
         public DiagramController
-            (IDiagramLogic diagramLogic, IDiagramRepository repo,
+            (IDiagramRepository repo,
              WorkbenchSecret secret, Logger logger, SynchronizedConverter html2pdfConverter)
         {
-            _diagramLogic = diagramLogic;
             _diagramRepo = repo;
             _secret = secret;
             _logger = logger;
@@ -64,7 +62,7 @@ namespace AzW.Web.API
         public async Task<string> GetSharedDiagram([FromQuery]string anonyDiagramId)
         {
             var anonyDiagram =
-                await _diagramLogic.GetSharedDiagramAsync(anonyDiagramId);
+                await _diagramRepo.GetSharedDiagramAsync(anonyDiagramId);
             
             return JsonConvert.SerializeObject(anonyDiagram);
         }
@@ -191,7 +189,6 @@ namespace AzW.Web.API
         }
 
         private readonly IConverter _pdfConverter;
-        private IDiagramLogic _diagramLogic;
         private IDiagramRepository _diagramRepo;
         private WorkbenchSecret _secret;
         private Logger _logger;

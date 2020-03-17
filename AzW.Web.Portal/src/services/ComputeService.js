@@ -8,13 +8,13 @@ export default class ComputeService
         this.authService = new AuthService();
     }
 
-    async getVMSku(subscription, onSuccess, onFailure){
+    async getVMImages(subscription, onSuccess, onFailure){
         if(!this.authService.isUserLogin())
         return;
 
         var user = this.authService.getUserProfile();
 
-        axios.get('/api/info/compute/vmsku', 
+        axios.get('/api/info/compute/images', 
         {
           params: {
             subscription: subscription

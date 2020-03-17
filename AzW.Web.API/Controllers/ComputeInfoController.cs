@@ -1,5 +1,4 @@
 
-using AzW.Application;
 using AzW.Infrastructure.AzureServices;
 using AzW.Model;
 using AzW.Secret;
@@ -20,16 +19,16 @@ namespace AzW.Web.API
             _secret = secret;
         }
 
-        [HttpGet("vmsku")]
-        public Task<IEnumerable<VMImage>> GetVMSkus(string subscription)
+        [HttpGet("images")]
+        public IEnumerable<VMImage> GetVMImages(string subscription)
         {
-        string accessToken = GetUserIdentity().AccessToken;
+            string accessToken = GetUserIdentity().AccessToken;
 
             _computeInfoSvc = new ComputeInfoService(accessToken, _secret);
 
-           var skus = _computeInfoSvc.GetImageReferences(subscription);
+           var vmImages = _computeInfoSvc.GetImageReferences(subscription);
 
-           return null;
+           return vmImages;
         }
 
         private ComputeInfoService _computeInfoSvc;

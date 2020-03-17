@@ -1,6 +1,3 @@
-using System;
-using System.Net.Http;
-using AzW.Application;
 using AzW.Secret;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
