@@ -6,10 +6,12 @@
 
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AzW.Model\AzW.Model.csproj" />
-    <ProjectReference Include="..\AzW.Secret\AzW.Secret.csproj" />
+    <ProjectReference Include="..\AzW.Model\AzW.Model.csproj"/>
+    <ProjectReference Include="..\AzW.Secret\AzW.Secret.csproj"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MongoDB.Driver" Version="2.10.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.10.0"/>
+    <PackageReference Include="StackExchange.Redis" Version="2.1.0"/>
+    <PackageReference Include="StackExchange.Redis.Extensions.Newtonsoft" Version="5.5.0"/>
   </ItemGroup>
 </Project>

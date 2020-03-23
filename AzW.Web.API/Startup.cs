@@ -33,13 +33,7 @@ namespace AzW.Web.API
 
         public Startup(IConfiguration configuration)
         {
-            var builder = new ConfigurationBuilder()
-                .AddEnvironmentVariables()
-                .AddUserSecrets("7211aa50-115d-4544-9cf0-c4499c5f2e9f");
-                //.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-        
-            Configuration = builder.Build();
-
+            Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
@@ -188,6 +182,11 @@ namespace AzW.Web.API
             services.AddSingleton<WorkbenchSecret>(sp => {return _secrets ;} );
             services.AddSingleton<Logger>(sp => {return _logger ;} );
             services.AddTransient<IDiagramRepository, DiagramRepository>();
+            services.AddTransient<ICacheRepository>(x => {
+                return new CacheRepository
+                    (_secrets.RedisConnString, _secrets.RedisHost, _secrets.RedisPassword);
+            });
+
 
             var html2pdfConverter = CreateDink2PDFLibwkhtmltoxConverter();
              services.AddSingleton<SynchronizedConverter>(sp => {return html2pdfConverter ;} );
@@ -202,11 +201,11 @@ namespace AzW.Web.API
                 PortalUrl = Configuration.GetValue<string>("PortalUrl"),
                 TenantId = Configuration.GetValue<string>("TenantId"),
                 AppInsightsKey = Configuration.GetValue<string>("AppInsightsKey"),
-                LibwkhtmltoxPath = Configuration.GetValue<string>("LibwkhtmltoxPath")
-
+                LibwkhtmltoxPath = Configuration.GetValue<string>("LibwkhtmltoxPath"),
+                RedisConnString = Configuration.GetValue<string>("RedisConnString"),
+                RedisHost = Configuration.GetValue<string>("RedisHost"),
+                RedisPassword = Configuration.GetValue<string>("RedisPassword")
             };
-            //_secrets = SecretManagerFactory.Create().GetSecret<WorkbenchSecret>();
-        
         }
 
         private void InitSerilog()

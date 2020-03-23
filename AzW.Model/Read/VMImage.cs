@@ -6,6 +6,8 @@ namespace AzW.Model
 {
     public class VMImage
     {
+        public string DisplayName { get; set; }
+        
         public string Publisher { get; set; }
 
         public string Offer { get; set; }

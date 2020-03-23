@@ -1,5 +1,6 @@
 
 using AzW.Infrastructure.AzureServices;
+using AzW.Infrastructure.Data;
 using AzW.Model;
 using AzW.Secret;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
@@ -12,26 +13,25 @@ namespace AzW.Web.API
 {
     [Authorize(AuthenticationSchemes = AzureADDefaults.BearerAuthenticationScheme)]
     [Route("api/info/compute")]
-    public class ComputeInfoController : BaseController
+    public class ComputeInfoController : Controller
     {
-        public ComputeInfoController(WorkbenchSecret secret)
+        public ComputeInfoController(ICacheRepository cache) //, WorkbenchSecret secret)
         {
-            _secret = secret;
+            //_secret = secret;
+            _cache = cache;
         }
 
-        [HttpGet("images")]
-        public IEnumerable<VMImage> GetVMImages(string subscription)
+        [HttpGet("search/images")]
+        public async Task<IEnumerable<VMImage>> SearchVMImages(string pattern)
         {
-            string accessToken = GetUserIdentity().AccessToken;
+            //string accessToken = GetUserIdentity().AccessToken;
 
-            _computeInfoSvc = new ComputeInfoService(accessToken, _secret);
-
-           var vmImages = _computeInfoSvc.GetImageReferences(subscription);
+           var vmImages = await _cache.SearchVMImagesAsync(pattern);
 
            return vmImages;
         }
 
-        private ComputeInfoService _computeInfoSvc;
-        private WorkbenchSecret _secret;
+        private ICacheRepository _cache;
+        //private WorkbenchSecret _secret;
     }
 }

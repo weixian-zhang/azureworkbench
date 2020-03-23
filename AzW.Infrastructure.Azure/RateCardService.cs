@@ -1,1 +1,0 @@
-//https://channel9.msdn.com/Series/cspdev/Module-14-Azure-RateCard-REST-API

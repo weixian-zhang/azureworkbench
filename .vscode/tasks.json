@@ -114,6 +114,30 @@
                 }
             },
             "problemMatcher": []
+        },
+        {
+            "label": "Build Func Job CacheHydrator",
+            "command": "dotnet build",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/Jobs/AzW.Job.CacheHydrator",
+                "env": {
+                    "env": "dev"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Func Start Job CacheHydrator",
+            "type": "func",
+            "dependsOn": "Build Func Job CacheHydrator",
+            "options": {
+                "cwd": "${workspaceFolder}/Jobs/AzW.Job.CacheHydrator/bin/Debug/netcoreapp2.1"
+            },
+            "command": "host start",
+            "isBackground": true,
+            "problemMatcher": "$func-watch"
         }
     ]
 }

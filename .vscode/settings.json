@@ -1,4 +1,21 @@
 {
     "appService.defaultWebAppToDeploy": "None",
-    "appService.deploySubpath": ""
+    "appService.deploySubpath": "",
+    "azureFunctions.deploySubpath": "Jobs/bin/Release/netcoreapp2.1/publish",
+    "azureFunctions.projectLanguage": "C#",
+    "azureFunctions.projectRuntime": "~2",
+    "debug.internalConsoleOptions": "neverOpen",
+    "azureFunctions.preDeployTask": "publish",
+    "redisXplorer.config": {
+        "profiles": [
+            {
+                "name": "RedisWorkbenchDev",
+                "host": "redis-azworkbench-dev.redis.cache.windows.net",
+                "accessKey": "9rqrRizYuQCtdDESI+B6qSey73uOmtee7XgGcq0vFCQ=",
+                "filter": "*",
+                "port": "6379"
+            }
+        ],
+        "scanLimit": 200
+    }
 }
