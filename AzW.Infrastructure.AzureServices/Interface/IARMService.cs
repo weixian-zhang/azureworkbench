@@ -17,6 +17,5 @@ namespace AzW.Infrastructure.AzureServices
         Task CreateResourceGroup(string subscription, string location, string rgName);
         Task<IEnumerable<ISubscription>> GetSubscriptions();
         Task<IEnumerable<IResourceGroup>> GetResourceGroups(string subscription);
-         IEnumerable<string> GetLocations();
     }
 }

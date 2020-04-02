@@ -1,0 +1,23 @@
+import React, { Component } from "react";
+import {Toaster, Position } from "@blueprintjs/core";
+
+
+export const AppToaster = Toaster.create({
+    autoFocus: false,
+    canEscapeKeyClear: true,
+    position: Position.TOP,
+});
+
+
+export default class Toast extends Component {
+    constructor(props) {
+      super(props);
+    }
+  
+    static show = (intent, duration, message) => {
+      if(!intent || !duration)
+        AppToaster.show({intent: 'primary', message: message});
+      else
+        AppToaster.show({intent: intent,timeout: duration, message: message});
+    }
+  }

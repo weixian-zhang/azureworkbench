@@ -43,8 +43,10 @@ export default class Utils
 
     static IsNullOrUndefine(obj) {
 
-        if(obj == null || obj == undefined)
+        if(!obj || 0 === obj.length || obj == "")
             return true;
+        //if(obj == null || obj == undefined)
+            //return true;
         
         if(Array.isArray(obj) && obj.length <= 0)
             return true;
@@ -61,5 +63,18 @@ export default class Utils
             x: x,
             y: y
         };
+    }
+
+    static limitTextLength(text, lengthToLimit) { 
+        if(text)
+        {
+            var limitedText = String(text).substring(0, lengthToLimit);
+            if(String(text).length == lengthToLimit)
+                return limitedText
+            else
+                return limitedText + "...";
+        }
+        else
+            return '';
     }
 }

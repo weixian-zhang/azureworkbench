@@ -1,26 +1,22 @@
 import ResourceType from './ResourceType'
-export default class VNet
+export default class NSG
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.VNet(),
+            ResourceType: ResourceType.NSG(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.VNet(),
+            ResourceType: ResourceType.NSG(),
             Deployable: true,
             HighCost: false,
             
-            Name: '',
-            Location: '',
-            ResourceGroupName: '',
-            AddressSpace: '',
-            Subnets: []
+            Name: ''
         }; 
         this.CalculatorContext = {
-            IsFree: true,
+            IsFree: false,
             Tier: ''
         }
     }

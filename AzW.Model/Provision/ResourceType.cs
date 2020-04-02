@@ -1,0 +1,85 @@
+
+namespace AzW.Model
+ {
+     public static class ResourceType
+     {
+        	public const string WindowsVM = "vmWindows";
+            public const string LinuxVM = "vmLinux";
+            public const string VM = "vm";
+            public const string VMSS = "vmss";
+            public const string AppService = "appsvc";
+            public const string ASE = "ase";
+            public const string Function = "func";
+            public const string VNet = "vnet";
+            public const string Subnet = "subnet";
+            public const string NLB = "nlb";
+            public const string AppGw = "appgw";
+            public const string DNSPrivateZone = "dnsprivatezone";
+            public const string AzureSearch = "search";
+            public const string SignalR = "signalr";
+            public const string AppServiceCert = "appsvccert";
+            public const string AppServiceDomain = "appsvcdomain";
+            public const string SharedImageGallery = "sig";
+            public const string FrontDoor = "frontdoor";
+            public const string PublicIp = "pip";
+            public const string ExpressRouteCircuit = "expressroute";
+            public const string TrafficManager = "trafficmanager";
+            public const string DevTestLab = "devtestlab";
+            public const string VirtualNetworkGateway = "vnetgateway";
+            public const string CDN = "cdn";
+            public const string ASG = "asg";
+            public const string NIC = "nic";
+            public const string BlobStorage = "blobstorage";
+            public const string AzFile = "azfile";
+            public const string AzFileSync = "azfilesync";
+            public const string NetAppFile = "netappfile";
+            public const string QueueStorage = "queuestorage";
+            public const string TableStorage = "tablestorage";
+            public const string Databox = "databox";
+            public const string PostgreSQL = "postgresql";
+            public const string MariaDB = "maria";
+            public const string SQLDB = "sqldb";
+            public const string CosmosDB = "cosmos";
+            public const string MySQL = "mysql";
+            public const string SQLElasticPool = "sqlelasticpool";
+            public const string SQLMI = "sqlmi";
+            public const string SQLStretchDB = "sqlstretchdb";
+            public const string Redis = "redis";
+            public const string DataLakeStorage = "datalakestorage";
+            public const string Synapse = "synapse";
+            public const string DataExplorer = "dataexplorer";
+            public const string Databricks = "databricks";
+            public const string DataFactory = "datafactory";
+            public const string DataLakeAnalytics = "datalakeanalytics";
+            public const string HdInsight = "hdinsight";
+            public const string ContainerInstance = "containerinstance";
+            public const string ContainerRegistry = "containerregistry";
+            public const string Kubernetes = "kube";
+            public const string APIM = "apim";
+            public const string ASB = "asb";
+            public const string Relay = "relay";
+            public const string LogicApp = "logicapp";
+            public const string ISE = "ise";
+            public const string EventGridTopic = "egtopic";
+            public const string EventGridSubscription = "egsubscription";
+            public const string StreamAnalytics = "streamanalytics";
+            public const string SendGrid = "sendgrid";
+            public const string AppConfig = "appconfig";
+            public const string Firewall = "firewall";
+            public const string Sentinel = "sentinel";
+            public const string KeyVault = "keyvault";
+            public const string SecurityCenter = "asc";
+            public const string DDoSStandard = "ddosstandard";
+            public const string Bastion = "bastion";
+            public const string RecoveryServiceVault = "recoveryservicevault";
+            public const string AppInsights = "appinsights";
+            public const string LogAnalytics = "loganalytics";
+            public const string Automation = "automation";
+            public const string AAD = "aad";
+            public const string AADB2C = "aadb2c";
+            public const string IoTHub = "iothub";
+            public const string IoTCentral = "iotcentral";
+            public const string AzureMaps = "maps";
+            public const string TimeSeriesInsights = "timeseriesinsights";
+     }
+ }

@@ -7,26 +7,36 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 
 namespace AzW.Web.API
 {
-    [Authorize(AuthenticationSchemes = AzureADDefaults.BearerAuthenticationScheme)]
-    [Route("api/info/arm")]
+    [Authorize(AuthenticationSchemes = "AzureADJwtBearer")]
+    [Route("api")]
     public class ARMInfoController : BaseController
     {
+        private const string AuthSchemes =
+            AzureADDefaults.BearerAuthenticationScheme + "," +
+            AzureADDefaults.JwtBearerAuthenticationScheme;
+
         public ARMInfoController(WorkbenchSecret secret)
         {
            _secret = secret;
         }
 
-        [HttpGet("subs")]
+        
+        [HttpGet("arm/subs")]
         public async Task<IEnumerable<AzSubscription>> GetSubscriptions()
         {   
+            string accessToken = GetUserIdentity().AccessToken;
+
+            _armService = new ARMService(accessToken, _secret);
 
             var subs = await _armService.GetSubscriptions();
 
@@ -37,8 +47,18 @@ namespace AzW.Web.API
             return azSubs;
         }
 
-        [Authorize]
-        [HttpGet("rg")]
+        [HttpPost("arm/rg")]
+        public async Task CreateResourceGroup
+            (string subscriptionId, string location, string rgName)
+        {
+             string accessToken = GetUserIdentity().AccessToken;
+
+            _armService = new ARMService(accessToken, _secret);
+
+            await _armService.CreateResourceGroup(subscriptionId, location, rgName);
+        }
+
+        [HttpGet("arm/rg")]
         public async Task<IEnumerable<AzResourceGroup>> GetResourceGroups(string subscription)
         {
             string accessToken = GetUserIdentity().AccessToken;
@@ -53,15 +73,20 @@ namespace AzW.Web.API
             return azRGs;
         }
 
-        [Authorize]
-        [HttpGet("loc")]
+        [AllowAnonymous]
+        [HttpGet("arms/loc")]
         public IEnumerable<string> GetLocations()
         {
-            string accessToken = GetUserIdentity().AccessToken;
+            var regions = new List<string>();
 
-            _armService = new ARMService(accessToken, _secret);
+            var props = TypeDescriptor.GetProperties(typeof(Region));
 
-            return _armService.GetLocations();
+            foreach(Region reg in Region.Values)
+            {
+                regions.Add(reg.Name);
+            }
+
+            return regions;
         }
 
         private ARMService _armService;

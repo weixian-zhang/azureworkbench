@@ -50,20 +50,6 @@ namespace AzW.Infrastructure.AzureServices
             }
         }
 
-        public IEnumerable<string> GetLocations()
-        {
-            var regions = new List<string>();
-
-            var props = TypeDescriptor.GetProperties(typeof(Region));
-
-            foreach(Region reg in Region.Values)
-            {
-                regions.Add(reg.Name);
-            }
-
-            return regions;
-        }
-
         private ServiceClientOBOCredentials _sdkCreds;
     }
 }

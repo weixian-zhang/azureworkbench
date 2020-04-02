@@ -27,13 +27,15 @@
                     "command": "xdg-open"
                 }
             },
-            "env": {
-                "env": "dev"
-            },
             "sourceFileMap": {
                 "/Views": "${workspaceRoot}/Views"
             }
         },
+        {
+            "env": {
+                "env" : "dev"
+            }
+        }
         {
             "name": "Debug Job CacheHydrator",
             "type": "coreclr",

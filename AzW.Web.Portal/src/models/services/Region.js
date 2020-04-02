@@ -1,4 +1,4 @@
-export default class Region
+export default class Location
 {
     constructor()
     {

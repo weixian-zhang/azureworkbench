@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+import React, { Component } from "reactn";
+import {useGlobal} from 'reactn';
 import {  PopoverInteractionKind, Popover, Menu, Position, MenuItem,MenuDivider, Classes, Icon } from "@blueprintjs/core";
 
 import AppBar from '@material-ui/core/AppBar';
@@ -13,11 +14,13 @@ import HelpIcon from '@material-ui/icons/Help';
 
 import OverlayTutorial from './OverlayTutorial';
 import OverlayAbout from './OverlayAbout';
+import OverlayProvision from './OverlayProvision';
 
 import Tippy from '@tippy.js/react';
 import 'tippy.js/dist/tippy.css';
 
 import AuthService from '../../services/AuthService';
+
 
 export default class Header extends Component {
 
@@ -41,8 +44,7 @@ export default class Header extends Component {
     this.acctIconRef = React.createRef();
     this.overlayTutorial = React.createRef();
     this.overlayAbout = React.createRef();
-
-    this.diagramEditor = this.props.Workbench.current;
+    this.overlayProvision = React.createRef();
   }
 
   componentWillMount() {
@@ -53,7 +55,7 @@ export default class Header extends Component {
         },
         rightToolbar: {
           marginLeft: 'auto',
-          marginRight: -12,
+          marginRight: -12
         }
     };
 
@@ -66,8 +68,9 @@ export default class Header extends Component {
   render() {
     return (
       <div style={this.style.root}>
-        <OverlayTutorial ref={this.overlayTutorial} />
+        <OverlayTutorial ref={this.overlayTutorial}  />
         <OverlayAbout ref={this.overlayAbout} />
+        <OverlayProvision ref={this.overlayProvision} OnOverlayProvisionClose={this.onOverlayProvisionClose}/>
         <AppBar position="static" style={{ background: '#2E3B55' }}>
           <Toolbar variant='dense'>
             <Typography color="inherit">
@@ -75,24 +78,15 @@ export default class Header extends Component {
               Azure Workbench
             </Typography>
             <section style={this.style.rightToolbar}>
-            {/* <Popover content=
-               { 
-                   <Menu className={Classes.ELEVATION_1}>
-                     <MenuItem  text="Save to Browser" onClick={this.saveToLocal} />
-                     <MenuDivider />
-                     <MenuItem  text="Export as SVG" onClick={this.exportDiagramAsSVG} />
-
-                   </Menu>
-               } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.HOVER}>
-                <IconButton color="inherit" aria-label="Edit">
-                <Icon icon="delta" />
+              <Tippy content={(this.global.currentSubscription == null) ? 'No Subscription Selected' : 'Selected subscription: ' + this.global.currentSubscription.Name} followCursor={true} placement="bottom">
+                <IconButton color="inherit" aria-label="Edit" onClick={this.showProvisionOverlay}> 
+                    <Icon icon="delta"  />  
                 </IconButton>
-              </Popover> */}
+              </Tippy>
 
-           
-              <IconButton color="inherit" aria-label="Edit">
+              <IconButton color="inherit" aria-label="Edit" onClick={this.showWorkspace}>
                 <Tippy content="My Space" followCursor={true} placement="bottom">
-                  <CloudIcon onClick={this.showWorkspace} />
+                  <CloudIcon  />
                 </Tippy>
               </IconButton>
 
@@ -137,7 +131,8 @@ export default class Header extends Component {
                     this.state.userProfile == null ?
                       <AccountCircle onClick={this.handleAcctMenu}/>
                     :
-                      <Tippy content={this.state.userProfile != null ? 'Logged in as: ' + this.state.userProfile.UserName : ''} followCursor={false} placement="bottom">
+                      <Tippy content={this.state.userProfile == null ? 'Not logged in' :
+                        'Welcome, ' + this.state.userProfile.UserName} followCursor={false} placement="bottom">
                         <AccountCircle onClick={this.handleAcctMenu}/>
                       </Tippy>
                   }
@@ -194,6 +189,11 @@ export default class Header extends Component {
   diagramEditor.exportAsSvg();
 }
 
+deployDiagramToAzure(subscription) {
+  var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
+  diagramEditor.deployDiagramToAzure(subscription);
+}
+
  clearGraph = () => {
      var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
     diagramEditor.clearGraph();
@@ -203,6 +203,14 @@ showTutorial = () => {
   this.overlayTutorial.current.show();
 }
 
+showProvisionOverlay = () => {
+    this.overlayProvision.current.show(this);
+}
+
+onOverlayProvisionClose = () => {
+  if(this.global.currentSubscription != null)
+    this.forceUpdate();
+}
 
 showAboutOverlay = () => {
   this.overlayAbout.current.show();

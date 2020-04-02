@@ -15,10 +15,7 @@ export default class Subnet
             HighCost: false,
             
             Name: '',
-            IsGatewaySubnet: false,
-            VNetName: '',
-            CIDR: '',
-            NSG: []
+            CIDR: ''
         };
         this.CalculatorContext = {
             IsFree: true,

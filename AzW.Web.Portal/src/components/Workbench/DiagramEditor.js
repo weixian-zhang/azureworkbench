@@ -14,6 +14,7 @@ import {mxChildChangeCodec,mxCellCodec, mxChildChange, mxGraphSelectionModel, mx
 import Subnet from "../../models/Subnet";
 import LoadAnonyDiagramContext from "../../models/LoadAnonyDiagramContext";
 import DiagramService from '../../services/DiagramService';
+import ProvisionService from '../../services/ProvisionService';
 import queryString from 'query-string';
 import AzureValidator from './Helpers/AzureValidator';
 import LocalStorage from '../../services/LocalStorage';
@@ -170,8 +171,6 @@ import ComputeService from "../../services/ComputeService";
     this.graph = null;
     this.azureIcons = AzureIcons;
 
-    this.Index = this.props.Index; //Index component contains progress Comp
-
     //state
     this.state = {
         showShareDiagramPopup: false,
@@ -184,50 +183,16 @@ import ComputeService from "../../services/ComputeService";
         queryString: this.props.queryString
     }
 
+    this.Index = this.props.Index; //Index component contains progress Comp
+
     this.armsvc = new ARMService(); //test to remove
     this.comsvc = new ComputeService();
 
   }
 
-  componentDidMount() {  
+  componentDidMount() {
+
     
-    //   this.armsvc.getRegions(
-    //   function onSuccess(regions){
-    //     var locations = regions;
-    //   },
-    //   function onFailure(error){
-
-    //   }
-    // );
-
-    // this.armsvc.getResourceGroups( '0ab40889-880a-4261-95e1-600c60074519',
-    //   function onSuccess(rgs){
-    //     var resourceGroups = rgs;
-    //   },
-    //   function onFailure(error){
-
-    //   }
-    // );
-
-    //test to remove
-    // this.comsvc.getVMImages(
-    //   '0ab40889-880a-4261-95e1-600c60074519',
-    //   function onSuccess(subs){
-    //     var subscriptions = subs;
-    //   },
-    //   function onFailure(error){
-
-    //   }
-    // );
-    
-    // this.armsvc.getSubscriptions(
-    //   function onSuccess(subs){
-    //     var subscriptions = subs;
-    //   },
-    //   function onFailure(error){
-
-    //   }
-    // );
 
     this.graphManager = new MxGraphManager(document.getElementById("diagramEditor"));
     this.graphManager.initGraph();
@@ -238,6 +203,7 @@ import ComputeService from "../../services/ComputeService";
 
     //services
     this.diagramService = new DiagramService();
+    this.provisionService = new ProvisionService();
 
     this.addDblClickEventToOpenPropPanel();
     this.addDeleteKeyEventToDeleteVertex();
@@ -255,6 +221,9 @@ import ComputeService from "../../services/ComputeService";
     this.initRef();
 
     this.loadSharedDiagram();
+  }
+
+  returnDiagramEditor(){
 
   }
 
@@ -3498,11 +3467,93 @@ addUpDownLeftRightArrowToMoveCells() {
   getDiagramSvg(){
     return document.getElementById('diagramEditor').lastChild;
   }
+
+  deployDiagramToAzure(subscription) {
+
+      var resources = this.getAzResourceObjects();
+
+      if(Utils.IsNullOrUndefine(resources))
+      {
+        Toaster.create({
+          position: Position.TOP,
+          autoFocus: false,
+          canEscapeKeyClear: true
+        }).show({intent: Intent.WARNING, timeout: 2000, message: Messages.NoResourceToProvision()});
+        return;
+      }
+
+      this.provisionService.provisionDiagram(subscription, resources,
+        function onSuccess() {
+
+        },
+        function onFailure(error) {
+
+        }
+      );
+
+     
+
+  }
+
+  getAzResourceObjects = () => {
+
+    var cells = this.graph.getChildVertices(this.graph.getDefaultParent());
+
+    if(Utils.IsNullOrUndefine(cells))
+    {
+      Toaster.create({
+        position: Position.TOP,
+        autoFocus: false,
+        canEscapeKeyClear: true
+      }).show({intent: Intent.WARNING, timeout: 2000, message: Messages.NoCellOnGraph()});
+      return;
+    }
+
+    var resources = [];
+    var thisComp = this;
+
+    cells.map(cell => {
+
+        var result = Utils.TryParseUserObject(cell.value);
+
+        if(result.isUserObject)
+        {
+
+            this.getVNetObjectToDeploy(result.userObject, cell, resources);
+            
+        }
+
+        
+    });
+  }
+
+  getVNetObjectToDeploy = function(vnetUserObject, cell, resources) {
+          
+    if(vnetUserObject.ProvisionContext.ResourceType == ResourceType.VNet())
+    {
+        var subnetCells = this.graph.getChildVertices(cell);
+
+        if(Utils.IsNullOrUndefine(subnetCells))
+          return [];
+        
+          var subnets = [];
+
+          subnetCells.map(cell => {
+              var subnet = Utils.TryParseUserObject(cell.value);
+              subnets.push(subnet.userObject);
+        });
+
+        vnetUserObject.ProvisionContext.Subnets = subnets;
+
+        resources.push(vnetUserObject);
+    }
+
+    return resources;
+  }
   
   showLoading(toShow){
     this.setState({isLoading: toShow});
   }
-
 
   showWorkspace () {
     this.workspace.current.show();
@@ -3514,12 +3565,6 @@ addUpDownLeftRightArrowToMoveCells() {
 
   showPreviewDiagramOverlay = () => {
     mxUtils.show(this.graph, null);
-    // var htmlDoc = this.previewOverlay.current.show();
-    // mxUtils.show(this.graph, htmlDoc);
-  }
-
-  loadGraphInOverlay(htmlDoc) {
-    
   }
 
   clearGraph() {

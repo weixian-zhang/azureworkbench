@@ -36,7 +36,7 @@ export default class AuthService
     login = (loginResponseCallback) => {
 
         const loginRequest = {
-            scopes: [Config.Scope()] //["api://16afdc21-ffd3-4cf8-aeae-63bebf9e327e/azworkbench-azure-deploy"]
+            scopes: [Config.Scope()]
           }
 
         this.msalApp.loginPopup(loginRequest)
@@ -44,7 +44,6 @@ export default class AuthService
         {
             var tokenRequest = {
               scopes: [Config.Scope()],
-              //scopes: ["api://16afdc21-ffd3-4cf8-aeae-63bebf9e327e/.default"],
               prompt: 'consent'
             };
 
@@ -105,7 +104,7 @@ export default class AuthService
     isSessionExpired() {
         var userProfile = this.getUserProfile();
 
-        if(userProfile.AccessTokenExpiresOn == null)
+        if(userProfile == null || userProfile.AccessTokenExpiresOn == null)
           return true;
 
         var accessTokenExpireOn = userProfile.AccessTokenExpiresOn;

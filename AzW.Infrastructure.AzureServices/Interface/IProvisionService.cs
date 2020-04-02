@@ -1,12 +1,14 @@
 ﻿using AzW.Model;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace AzW.Infrastructure.AzureServices
 {
     public interface IProvisionService
     {
-        void Provision(ProvisionContext provisionContext);
+        Task ProvisionAsync(JArray resourceIcons);
     }
 }

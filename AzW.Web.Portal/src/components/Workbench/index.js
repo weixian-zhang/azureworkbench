@@ -15,20 +15,21 @@ export default class MainWorkbench extends Component {
 
     this.state = {
       showProgress: false,
-      progressMessage: ''
+      progressMessage: '',
+      diagramEditor: null
     };
   }
 
-  componentDidMount(){
+  componentDidMount() {
       this.progress = React.createRef();
+      this.diagramEditor = this.getDiagramEditor();
   }
 
   render() {
     return (
       <div className="container">
         <Header ActionBar={this.actionBar} Workbench={this.workbench} Index={this} />
-        {/* <ActionBar ref={this.actionBar} Workbench={this.workbench} /> */}
-        <Workbench Index={this} queryString={this.props.location} ref={this.workbench} />
+        <Workbench queryString={this.props.location} ref={this.workbench} Index={this} />
         {
           this.state.showProgress ? 
           <Card ref={this.progress} style={{position:'absolute', marginLeft: '45%', marginTop: '20%'}}>
@@ -43,8 +44,12 @@ export default class MainWorkbench extends Component {
     );
   }
 
-  getDiagramEditor = () => {
-    return this.workbench.current.getDiagramEditor();
+  getDiagramEditor = (diagramEditor) => {
+      return this.workbench.current.state.diagramEditor;
+  }
+  
+  deployDiagramToAzure(subscription) {
+    this.workbench.current.deployDiagramToAzure(subscription);
   }
 
   shareDiagram = () => {

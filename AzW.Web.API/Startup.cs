@@ -102,80 +102,81 @@ namespace AzW.Web.API
 
         private void ConfigureAzureAdAuth(IServiceCollection services)
         {
-            //services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
-            services.AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
-
-            .AddAzureADBearer(options => {
-                //https://docs.microsoft.com/bs-latn-ba/azure/active-directory/develop/scenario-protected-web-api-app-configuration
-                options.Instance = "https://login.microsoftonline.com";
-                options.TenantId = "common";
-                options.ClientId = "16afdc21-ffd3-4cf8-aeae-63bebf9e327e"; //3b606e44-5ceb-4473-84c6-5f9b1119a2fc";
-                //"3b606e44-5ceb-4473-84c6-5f9b1119a2fc";
-            });
-            Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
-
-            services.Configure<JwtBearerOptions>(AzureADDefaults.JwtBearerAuthenticationScheme, options =>
-            {
-                // This is a Microsoft identity platform web API.
-                options.Authority += "/v2.0";
-                options.Audience = "16afdc21-ffd3-4cf8-aeae-63bebf9e327e"; //"";
-
-                // The web API accepts as audiences both the Client ID (options.Audience) and api://{ClientID}.
-                options.TokenValidationParameters.ValidAudiences = new []
-                {
-                    options.Audience,
-                    $"api://{options.Audience}"
-                };
-
-                options.SaveToken = true;
-                options.TokenValidationParameters.ValidateLifetime = true;
-                options.TokenValidationParameters.ValidateIssuer = false;
-                options.TokenValidationParameters.SignatureValidator =
-                    delegate(string token, TokenValidationParameters parameters)
+            services
+                .AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
+                .AddAzureADBearer(options => {
+                    
+                    //https://docs.microsoft.com/bs-latn-ba/azure/active-directory/develop/scenario-protected-web-api-app-configuration
+                    options.Instance = "https://login.microsoftonline.com";
+                    options.TenantId = "common";
+                    options.ClientId = "16afdc21-ffd3-4cf8-aeae-63bebf9e327e";
+                    Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
+                });
+            
+            services.Configure<JwtBearerOptions>
+                (AzureADDefaults.JwtBearerAuthenticationScheme, options =>
                     {
-                        var jwt = new JwtSecurityToken(token);
-
-                        return jwt;
-                    };
-                
-                options.Events = new JwtBearerEvents
-                {
-                    OnChallenge = context => {
-                        return Task.CompletedTask;
-                    },
-                    OnAuthenticationFailed = failContext => {
-                        return Task.CompletedTask;
-                    },
-                    OnTokenValidated = context =>
-                    {
-                        var jwtToken = context.SecurityToken as JwtSecurityToken;
-                        var ui = new UserIdentity();
-                        ui.AccessToken = jwtToken.RawData;
-                        ui.ValidFrom = jwtToken.ValidFrom;
-                        ui.ValidTo = jwtToken.ValidTo;
-                        foreach(var claim in jwtToken.Claims)
+                        // This is a Microsoft identity platform web API.
+                        options.Authority += "/v2.0";
+                        options.Audience = "16afdc21-ffd3-4cf8-aeae-63bebf9e327e";
+                    
+                        // The web API accepts as audiences both the Client ID (options.Audience) and api://{ClientID}.
+                        options.TokenValidationParameters.ValidAudiences = new []
                         {
-                            if(claim.Type == "upn")
-                                ui.Email = claim.Value;
-                            if(claim.Type == "aud")
-                                ui.Audience = claim.Value;
-                            if(claim.Type == "name")
-                                ui.Name = claim.Value;
-                            if(claim.Type == "ipaddr")
-                                ui.ClientIP = claim.Value;
-                        }
-
-                        context.Principal.AddIdentity(ui);
+                            options.Audience,
+                            $"api://{options.Audience}"
+                        };
                         
-                        return Task.CompletedTask;
-                    }
-                };
-                // Instead of using the default validation (validating against a single tenant,
-                // as we do in line-of-business apps),
-                // we inject our own multitenant validation logic (which even accepts both v1 and v2 tokens).
-                //options.TokenValidationParameters.IssuerValidator = AadIssuerValidator.GetIssuerValidator(options.Authority).Validate;
-            });
-        }
+
+                        options.SaveToken = true;
+                        options.TokenValidationParameters.ValidateLifetime = true;
+                        options.TokenValidationParameters.ValidateIssuer = false;
+                        options.TokenValidationParameters.SignatureValidator =
+                            delegate(string token, TokenValidationParameters parameters)
+                            {
+                                var jwt = new JwtSecurityToken(token);
+
+                                return jwt;
+                            };
+                        
+                        options.Events = new JwtBearerEvents
+                        {
+                            OnMessageReceived= context => {
+                                return Task.CompletedTask;
+                            },
+                            OnChallenge = context => {
+                                return Task.CompletedTask;
+                            },
+                            OnAuthenticationFailed = failContext => {
+                                return Task.CompletedTask;
+                            },
+                            OnTokenValidated = context =>
+                            {
+                                var jwtToken = context.SecurityToken as JwtSecurityToken;
+                                var ui = new UserIdentity();
+                                ui.AccessToken = jwtToken.RawData;
+                                ui.ValidFrom = jwtToken.ValidFrom;
+                                ui.ValidTo = jwtToken.ValidTo;
+                                foreach(var claim in jwtToken.Claims)
+                                {
+                                    if(claim.Type == "upn")
+                                        ui.Email = claim.Value;
+                                    if(claim.Type == "aud")
+                                        ui.Audience = claim.Value;
+                                    if(claim.Type == "name")
+                                        ui.Name = claim.Value;
+                                    if(claim.Type == "ipaddr")
+                                        ui.ClientIP = claim.Value;
+                                }
+
+                                context.Principal.AddIdentity(ui);
+                                
+                                return Task.CompletedTask;
+                            }
+                        };
+                    });
+    }
+        
 
         private void ConfigureDependencies(IServiceCollection services)
         {          

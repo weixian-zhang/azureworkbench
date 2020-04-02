@@ -15,18 +15,18 @@ export default class Workbench extends Component {
 
     this.state = {
       renderResourcePalette: false,
-      queryString: this.props.queryString
+      queryString: this.props.queryString,
+      diagramEditor: null
     }
     
-    this.DiagramEditor = React.createRef();
+    this.Index = this.props.Index;
+
     this.graphContainer = null;
     this.dropContext = null;
-
-    this.Index = this.props.Index;
   }
 
   componentDidMount() {
-    
+    this.diagramEditor = React.createRef();
   }
 
   render = () => {
@@ -34,17 +34,21 @@ export default class Workbench extends Component {
     return (
         <div className="workbenchgrid-container">
           { renderResourcePalette ? <ResourcePalette mxgraphManager={this.graphManager}  addResourceToDiagramEditor={this.addResourceToDiagramEditor} /> : '' }
-          <DiagramEditor Index={this.Index} queryString={this.state.queryString} ref={this.DiagramEditor} mxgraphManagerReadyCallback={this.mxgraphManagerReadyCallback} Workbench={this} />
+          <DiagramEditor ref={this.diagramEditor} Index={this.Index} queryString={this.state.queryString}  mxgraphManagerReadyCallback={this.mxgraphManagerReadyCallback} Workbench={this} />
         </div>
     );
   }
 
   addResourceToDiagramEditor = (dropContext) => {
-      this.DiagramEditor.current.addResourceToEditorFromPalette(dropContext);
+      this.diagramEditor.current.addResourceToEditorFromPalette(dropContext);
+  }
+
+  deployDiagramToAzure = (subscription) => {
+    this.diagramEditor.current.deployDiagramToAzure(subscription);
   }
 
   getDiagramEditor = () => {
-    return this.DiagramEditor.current;
+    return this.diagramEditor.current;
   }
 
   mxgraphManagerReadyCallback = (mxgraphManager) => {
@@ -57,6 +61,6 @@ export default class Workbench extends Component {
 
   //called at ActionBar Share button
   shareDiagram() {
-    this.DiagramEditor.current.shareDiagram();
+    this.diagramEditor.current.shareDiagram();
   }
 }

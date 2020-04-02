@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import {Card,Elevation, Alignment, Button,Label, MenuItem, H4, Toaster, Intent, Overlay, Position} from "@blueprintjs/core";
-import {Select, ItemRenderer } from "@blueprintjs/select";
+import {Select } from "@blueprintjs/select";
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -86,7 +86,7 @@ export default class Workspace extends Component {
                                 items={this.state.collections}
                                 itemRenderer={this.renderCollection}
                                 noResults={<MenuItem disabled={true}
-                                text={this.authService.isUserLogin() ? "No collection found" : "Login first..."} />}
+                                text={this.authService.isUserLogin() ? "No collection found" : "Login required..."} />}
                                 
                                 filterable={false}>
                                 {/* children become the popover target; render value here */}

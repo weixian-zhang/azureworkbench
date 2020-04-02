@@ -1,12 +1,14 @@
-import React, { Component } from "react";
+import React, { Component } from "reactn";
 import VNet from '../../../models/VNet';
-import { FormGroup, Drawer, Tooltip, Intent, Button } from "@blueprintjs/core";
+import { Card, Label, FormGroup, Drawer, Tooltip, Intent, Button } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Grid from "@material-ui/core/Grid";
 import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
+import SelectLocation from '../SelectLocation';
+import SelectResourceGroup from '../SelectResourceGroup';
 
 export default class VNetPropPanel extends Component {
   constructor(props) {
@@ -46,7 +48,7 @@ export default class VNetPropPanel extends Component {
                       <Tab label="Calculator" value="calculator" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'calculator' ? "bold" : "" }}/>
                     </Tabs>
                   </AppBar>
-                  <Typography
+                    <div
                       className = "propPanelTabContent"
                       hidden={this.state.value !== 'diagram'}>
                         <FormGroup
@@ -63,29 +65,81 @@ export default class VNetPropPanel extends Component {
                                 />
                               </div>
                         </FormGroup>
-                    </Typography>
-                    <Typography
-                        className = "propPanelTabContent"
-                        hidden={this.state.value !== 'provision'}>
-                    Provisioning Properties, coming soon...
-                    </Typography>
-                    <Typography
+                    </div>
+                    
+                     {this.renderProvisionTab()}
+                            
+                    
+                    <div
                         className = "propPanelTabContent"
                         hidden={this.state.value !== 'calculator'}>
                     Calculator Properties, coming soon...
-                    </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  
+                    </div>
                 </Grid>
               </Grid>
-              {/* <Button alignText="center" className="buttonStretch" text="Save" onClick={this.saveForm} /> */}
       </Drawer>
     );
   }
 
   show = (userObject, saveCallback) => {
     this.setState({ isOpen: true, userObject: userObject, saveCallback: saveCallback });
+  }
+
+  renderProvisionTab() {
+    if(this.state.value != 'provision')
+      return null;
+    
+    return (
+        <div className = "propPanelTabContent">
+          <FormGroup
+                label="Name"
+                inline={false} intent={Intent.PRIMARY}>
+            <input id="icon-display-name" type="text" class="bp3-input .modifier"
+            value={this.state.userObject.ProvisionContext.Name} 
+            onChange={(e) => {
+              var uo = this.state.userObject;
+              uo.ProvisionContext.Name = e.target.value
+              this.setState({userObject:uo});
+            }} />
+          </FormGroup>
+
+          <FormGroup
+                label="Resource Group"
+                inline={false} intent={Intent.PRIMARY}>
+            <SelectResourceGroup onValueChange={
+              (rg) => {
+                var uo = this.state.userObject;
+                uo.ProvisionContext.ResourceGroupName = rg
+                this.setState({userObject:uo});
+              }
+            }/>
+          </FormGroup>
+
+          <FormGroup
+                label="Location"
+                inline={false} intent={Intent.PRIMARY}>
+            <SelectLocation onValueChange={
+              (location) => {
+                var uo = this.state.userObject;
+                uo.ProvisionContext.Location = location
+                this.setState({userObject:uo});
+              }
+            }/>
+          </FormGroup>
+
+          <FormGroup
+                label="Address Space"
+                inline={false} intent={Intent.PRIMARY}>
+            <input id="icon-display-name" type="text" class="bp3-input .modifier"
+            value={this.state.userObject.ProvisionContext.AddressSpace} 
+            onChange={(e) => {
+              var uo = this.state.userObject;
+              uo.ProvisionContext.AddressSpace = e.target.value
+              this.setState({userObject:uo});
+            }} />
+          </FormGroup>
+      </div>
+    );
   }
 
   onDiagramIconNameChange = (e) => {

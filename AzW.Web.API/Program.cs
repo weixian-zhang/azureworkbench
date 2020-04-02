@@ -34,10 +34,15 @@ namespace AzW.Web.API
 
         private static void LoadConfiguration()
         {
-            var builder = new ConfigurationBuilder()
-                .AddEnvironmentVariables()
-                .AddUserSecrets("7211aa50-115d-4544-9cf0-c4499c5f2e9f");
-        
+            string env = Environment.GetEnvironmentVariable("env");
+
+            var builder = new ConfigurationBuilder();
+
+            if(string.IsNullOrEmpty(env) || env == "dev")
+                builder.AddUserSecrets("7211aa50-115d-4544-9cf0-c4499c5f2e9f");
+            else
+                builder.AddEnvironmentVariables();
+                
             _configuration = builder.Build();
         }
     }
