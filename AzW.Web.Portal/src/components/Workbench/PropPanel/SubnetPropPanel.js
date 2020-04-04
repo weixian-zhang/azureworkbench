@@ -64,16 +64,10 @@ export default class SubnetPropPanel extends Component {
                               </div>
                         </FormGroup>
                     </Typography>
-                    <Typography
-                        className = "propPanelTabContent"
-                        hidden={this.state.value !== 'provision'}>
-                    Provisioning Properties, coming soon...
-                    </Typography>
-                    <Typography
-                        className = "propPanelTabContent"
-                        hidden={this.state.value !== 'calculator'}>
-                    Calculator Properties, coming soon...
-                    </Typography>
+                    
+                    {this.renderProvisionTab()}
+
+                    {this.renderCalculatorTab()}
                 </Grid>
                 <Grid item xs={12}>
                   
@@ -88,6 +82,61 @@ export default class SubnetPropPanel extends Component {
     this.setState({ isOpen: true, userObject: userObject, saveCallback: saveCallback });
   }
 
+  renderProvisionTab() {
+    if(this.state.value != 'provision')
+      return null;
+
+      return (
+        <div className = "propPanelTabContent">
+          <Grid
+              container
+              direction="row"
+              justify="center"
+              alignItems="center"
+              spacing={1} style={{marginTop: '15px', width: '100%'}}>
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+                <Grid item sm={3}>
+                    <label>Subnet Name</label>
+                </Grid>
+                <Grid item>
+                  <input id="icon-display-name" type="text" class="bp3-input .modifier"
+                    value={this.state.userObject.ProvisionContext.Name} 
+                    onChange={(e) => {
+                      var uo = this.state.userObject;
+                      uo.ProvisionContext.Name = e.target.value
+                      this.setState({userObject:uo});
+                    }} />
+                </Grid>
+              </Grid>
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+                <Grid item sm={3}>
+                    <label>Address Space</label>
+                </Grid>
+                <Grid item>
+                  <input id="icon-display-name" type="text" class="bp3-input .modifier"
+                    value={this.state.userObject.ProvisionContext.AddressSpace} 
+                    onChange={(e) => {
+                      var uo = this.state.userObject;
+                      uo.ProvisionContext.AddressSpace = e.target.value
+                      this.setState({userObject:uo});
+                    }} />
+                </Grid>
+              </Grid>
+            </Grid>
+      </div>
+    );
+  }
+
+  renderCalculatorTab() {
+    return (
+      <div
+      className = "propPanelTabContent"
+      hidden={this.state.value !== 'calculator'}>
+        Calculator Properties, coming soon...
+      </div>
+    );
+  }
+  
   onDiagramIconNameChange = (e) => {
     var propName = e.target.getAttribute('prop');
     var userObj = this.state.userObject;

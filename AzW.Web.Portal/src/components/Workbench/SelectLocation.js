@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from "reactn";
 import {Toaster, MenuItem, Card,Elevation,Position, FormGroup, InputGroup, Button, Overlay, Intent} from "@blueprintjs/core";
 import AuthService from '../../services/AuthService';
 import ARMService from '../../services/ARMService';
@@ -16,10 +16,12 @@ export default class SelectLocation extends Component {
 
         this.state = {
             searchQuery: '',
-            filteredLocations: [],
-            locations: [],
             selectedValue: ''
         }
+
+        if(Utils.IsNullOrUndefine(this.global.locations) ||
+            Utils.IsNullOrUndefine(this.global.filteredLocations))
+            this.setGlobal({locations: [], filteredLocations: []});
     }
 
     componentDidMount(){
@@ -29,25 +31,25 @@ export default class SelectLocation extends Component {
     render = () => {
         return (
             <Select
-                items={this.state.filteredLocations}
+                items={this.global.filteredLocations}
                 itemRenderer={this.renderLocation}
                 filterable={true}
                 query={this.state.searchQuery}
                 onQueryChange={this.searchQueryChange}
                 popoverProps={true}
                 noResults={<MenuItem disabled={true} text="No Locations" />}>
-                <Button text={this.state.selectedValue == '' ? 'southeastasia' : this.state.selectedValue}
-                    rightIcon="double-caret-vertical"/>
+                <Button text={this.state.selectedValue == '' ? 'Location' : this.state.selectedValue}
+                    rightIcon="double-caret-vertical" style={{width: '110px', maxWidth: '110px'}}/>
             </Select>
         );
     }
 
     getLocations() {
         var thisComp = this;
-        if(this.state.locations.length == 0)
+        if(Utils.IsNullOrUndefine(this.global.locations))
             this.armService.getRegions(
                 function onSuccess(regions){
-                    thisComp.setState({locations: regions, filteredLocations: regions});
+                    thisComp.setGlobal({locations: regions, filteredLocations: regions});
                 },
                 function onFailure(error) {
                    Toaster.create({
@@ -71,21 +73,21 @@ export default class SelectLocation extends Component {
 
     searchQueryChange = (newQuery) => {
         if(newQuery === "")
-            this.setState({filteredLocations: this.state.locations});
+            this.setGlobal({filteredLocations: this.global.locations});
         else
         {
-            this.setState({filteredLocations: this.state.locations.filter(x => String(x.Name).startsWith(newQuery))});
+            this.setGlobal({filteredLocations: this.global.locations.filter(x => String(x.Name).startsWith(newQuery))});
         }
-    }
-
-    filterLocation(query, location, index) {
-        var a;
     }
 
     onLocationSelect = (sender) => {
         var location = sender.currentTarget.dataset.location;
         this.setState({selectedValue:location});
         this.props.onValueChange(location);
+
+        //reset filteredLocations, if not, other components using SelectLocations will see
+        //filtered query
+        this.setGlobal({filteredLocations: this.global.locations}); 
     }
 
     getCurrentValue() {

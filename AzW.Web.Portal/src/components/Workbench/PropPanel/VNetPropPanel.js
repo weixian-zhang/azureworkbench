@@ -70,11 +70,7 @@ export default class VNetPropPanel extends Component {
                      {this.renderProvisionTab()}
                             
                     
-                    <div
-                        className = "propPanelTabContent"
-                        hidden={this.state.value !== 'calculator'}>
-                    Calculator Properties, coming soon...
-                    </div>
+                     {this.renderCalculatorTab()}
                 </Grid>
               </Grid>
       </Drawer>
@@ -91,53 +87,79 @@ export default class VNetPropPanel extends Component {
     
     return (
         <div className = "propPanelTabContent">
-          <FormGroup
-                label="Name"
-                inline={false} intent={Intent.PRIMARY}>
-            <input id="icon-display-name" type="text" class="bp3-input .modifier"
-            value={this.state.userObject.ProvisionContext.Name} 
-            onChange={(e) => {
-              var uo = this.state.userObject;
-              uo.ProvisionContext.Name = e.target.value
-              this.setState({userObject:uo});
-            }} />
-          </FormGroup>
+           <Grid
+              container
+              direction="row"
+              justify="center"
+              alignItems="center"
+              spacing={1} style={{marginTop: '15px', width: '100%'}}>
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+                <Grid item sm={3}>
+                    <label>Name</label>
+                </Grid>
+                <Grid item>
+                  <input id="icon-display-name" type="text" class="bp3-input .modifier"
+                    value={this.state.userObject.ProvisionContext.Name} 
+                    onChange={(e) => {
+                      var uo = this.state.userObject;
+                      uo.ProvisionContext.Name = e.target.value
+                      this.setState({userObject:uo});
+                    }} />
+                </Grid>
+              </Grid>
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+                <Grid item sm={3}>
+                    <label>Resource Group</label>
+                </Grid>
+                <Grid item>
+                  <SelectResourceGroup onValueChange={
+                    (rg) => {
+                      var uo = this.state.userObject;
+                      uo.ProvisionContext.ResourceGroupName = rg
+                      this.setState({userObject:uo});
+                    }
+                  }/>
+                </Grid>
+              </Grid>
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+                <Grid item sm={3}>
+                    <label>Location</label>
+                </Grid>
+                <Grid item>
+                  <SelectLocation onValueChange={
+                    (location) => {
+                      var uo = this.state.userObject;
+                      uo.ProvisionContext.Location = location
+                      this.setState({userObject:uo});
+                    }
+                  }/>
+                </Grid>
+              </Grid>
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+                <Grid item sm={3}>
+                    <label>Address Space</label>
+                </Grid>
+                <Grid item>
+                  <input id="icon-display-name" type="text" class="bp3-input .modifier"
+                    value={this.state.userObject.ProvisionContext.AddressSpace} 
+                    onChange={(e) => {
+                      var uo = this.state.userObject;
+                      uo.ProvisionContext.AddressSpace = e.target.value
+                      this.setState({userObject:uo});
+                    }} />
+                </Grid>
+              </Grid>
+            </Grid>
+      </div>
+    );
+  }
 
-          <FormGroup
-                label="Resource Group"
-                inline={false} intent={Intent.PRIMARY}>
-            <SelectResourceGroup onValueChange={
-              (rg) => {
-                var uo = this.state.userObject;
-                uo.ProvisionContext.ResourceGroupName = rg
-                this.setState({userObject:uo});
-              }
-            }/>
-          </FormGroup>
-
-          <FormGroup
-                label="Location"
-                inline={false} intent={Intent.PRIMARY}>
-            <SelectLocation onValueChange={
-              (location) => {
-                var uo = this.state.userObject;
-                uo.ProvisionContext.Location = location
-                this.setState({userObject:uo});
-              }
-            }/>
-          </FormGroup>
-
-          <FormGroup
-                label="Address Space"
-                inline={false} intent={Intent.PRIMARY}>
-            <input id="icon-display-name" type="text" class="bp3-input .modifier"
-            value={this.state.userObject.ProvisionContext.AddressSpace} 
-            onChange={(e) => {
-              var uo = this.state.userObject;
-              uo.ProvisionContext.AddressSpace = e.target.value
-              this.setState({userObject:uo});
-            }} />
-          </FormGroup>
+  renderCalculatorTab() {
+    return (
+      <div
+      className = "propPanelTabContent"
+      hidden={this.state.value !== 'calculator'}>
+        Calculator Properties, coming soon...
       </div>
     );
   }

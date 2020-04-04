@@ -3,13 +3,15 @@ import {MenuItem, Card,Elevation,Position, FormGroup, InputGroup, Button, Overla
 import AuthService from '../../services/AuthService';
 import ARMService from '../../services/ARMService';
 import Subscription from '../../models/services/Subscription';
-
+import Grid from "@material-ui/core/Grid";
+import Divider from '@material-ui/core/Divider';
 import Toast from './Helpers/Toast';
 import Messages from './Helpers/Messages';
 import SelectLocation from './SelectLocation';
 import Utils from './Helpers/Utils';
 import {Select } from "@blueprintjs/select";
 import { Typography } from "@material-ui/core";
+
 
 export default class OverlayProvision extends Component {
     constructor(props) {
@@ -28,42 +30,92 @@ export default class OverlayProvision extends Component {
       }
     }
 
+    componentDidMount(){
+        this.rgNameInput = React.createRef();
+    }
+
     render = () => {
         return (
             <Overlay isOpen={this.state.isOpen} onClose={this.handleClose}>
                 <Card className='provision-overlay-box' interactive={false} elevation={Elevation.ONE}>
-                    <Select
-                        items={this.state.subscriptions}
-                        itemRenderer={this.renderSubscriptions}
-                        noResults={<MenuItem disabled={true}
-                        text={this.authService.isUserLogin() ? "No Subscription" : "Login required..."} />}
-                        
-                        filterable={false}>
-                        {/* children become the popover target; render value here */}
-                        <Button text={this.global.currentSubscription == null ? 'Subscription' : Utils.limitTextLength(this.global.currentSubscription.Name, 15) }
-                           style={{maxWidth:'180px'}} rightIcon="double-caret-vertical"/>
-                    </Select>
-                    <Button intent={Intent.NONE} text="" icon="refresh"
-                            onClick={this.getSubscriptions} style={{marginLeft: '5px'}}/>
-
-                    <Button intent={Intent.PRIMARY} text="Deploy" icon="delta"
-                            onClick={this.provisionDiagram} style={{marginLeft: '20px'}}/>
-
-                    <FormGroup
-                            label="Resource Group Name"
-                            inline={false} intent={Intent.PRIMARY}>
-                        <input id="icon-display-name" type="text" class="bp3-input .modifier"
-                        onChange={(e) => {
-                            this.setState({newRGName: e.target.value})
-                        }}/>
-                        <SelectLocation onValueChange={(loc) => {this.setState({location: loc}); }} />
-                        <Button intent={Intent.PRIMARY} text="Create New Resource Group" icon="new-layers"
-                            onClick={this.createNewRG} style={{marginLeft: '20px'}}/>
-                    </FormGroup>
-
-                    <Typography variant="body2" style={{marginTop: '30px'}}>
-                        *Azure Workbench can deploy your diagram to your Azure subscription, choose a subscription to deploy.
+                    <Typography variant="h6">
+                        Azure Settings
                     </Typography>
+                    <Grid
+                        container
+                        direction="row"
+                        justify="center"
+                        alignItems="center"
+                        spacing={1} style={{marginTop: '15px', width: '100%'}}>
+                            <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+                                <Grid item sm={3}>
+                                    <label>Subscription</label>
+                                </Grid>
+                                <Grid item>
+                                    <Select
+                                            items={this.state.subscriptions}
+                                            itemRenderer={this.renderSubscriptions}
+                                            noResults={<MenuItem disabled={true}
+                                            text={this.authService.isUserLogin() ? "No Subscription" : "Login required..."} />}
+                                            filterable={false} >
+                                            
+                                            <Button text={this.global.currentSubscription == null ? 'Subscription' : Utils.limitTextLength(this.global.currentSubscription.Name, 15) }
+                                                style={{maxWidth:'180px'}} rightIcon="double-caret-vertical"/>
+                                        </Select>
+                                        
+                                </Grid>
+                                <Grid item>
+                                    <Button intent={Intent.NONE} text="" icon="refresh"
+                                                    onClick={this.getSubscriptions} style={{marginLeft: '5px'}}/>
+                                </Grid>
+                            </Grid>
+                           
+                            <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+                                <Grid item sm={12}/>
+                                <Grid item sm={12}/>
+                                <Grid item sm={12}>
+                                    <Button intent={Intent.PRIMARY} text="Deploy Diagram to Azure" icon="delta"
+                                            onClick={this.provisionDiagram} style={{marginLeft: '20px'}}/>
+                                </Grid>
+                                <Grid item sm={12}>
+                                    <div className="bp3-running-text" variant="body1">
+                                        *Azure Workbench can deploy your diagram to your Azure subscription, choose a subscription to deploy.
+                                    </div>
+                                </Grid>
+                            </Grid>
+                            <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+                                <Grid item sm={12}/>
+                                <Grid item sm={12}/>
+                                <Grid item sm={12}/>
+                                <Grid item sm={12}><Divider /></Grid>
+                                <Grid item sm={12} />
+                                <Grid item sm={3}>
+                                    <label>Resource Group</label>
+                                </Grid>
+                                <Grid item>
+                                    <input ref={this.rgNameInput} type="text" placeholder="new resource group name"  class="bp3-input .modifier"
+                                            onChange={(e) => {
+                                                this.setState({newRGName: e.target.value})}}/>
+                                </Grid>
+                            </Grid>
+                            <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+                                <Grid item sm={3} />
+                                <Grid item>
+                                        <SelectLocation onValueChange={(loc) => {
+                                            this.setState({location: loc})
+                                        }} />
+                                </Grid>
+                                <Grid item>
+                                    <Button intent={Intent.PRIMARY} text="Create" icon="new-layers"
+                                    onClick={this.createNewRG} style={{marginLeft: '8px'}}/>
+                                </Grid>
+                                <Grid item sm={12}>
+                                    <div className="bp3-running-text" variant="body1">
+                                        A handy feature to create a new Resource Group
+                                    </div>
+                                </Grid>
+                            </Grid>
+                        </Grid>
                 </Card>
             </Overlay>
         )
@@ -102,6 +154,7 @@ export default class OverlayProvision extends Component {
             this.armService.getSubscriptions(
                 function onSuccess(subs) {
                     thisComp.setState({subscriptions: subs});
+                    thisComp.rgNameInput.current.value = '';
                 },
                 function onFailure(error) {
                     Toast.show(Intent.DANGER,8000, error);
@@ -118,19 +171,25 @@ export default class OverlayProvision extends Component {
         this.state.header.deployDiagramToAzure(this.global.currentSubscription);
     }
 
-    createNewRG() {
-        if(!this.state.newRGName)
+    createNewRG = () => {
+        if(!this.state.newRGName || !this.state.location || !this.global.currentSubscription)
         {
-            Toast.show('warning', 2000, "Enter a new resource group name");
+            Toast.show('warning', 4000, "Subscription, Resource group name and Location are needed to create resource group");
             return;
         }
+
+        var thisComp = this;
 
         this.armService.createNewResourceGroup
             (
                 this.global.currentSubscription.SubscriptionId,
                 this.state.location,
                 this.state.newRGName,
-                function onSuccess(){},
+                function onSuccess(){
+                    thisComp.rgNameInput.current.value = '';
+                    thisComp.setState({newRGName: ''})
+                    Toast.show('success', 2000, "Resource Group created successfully");
+                },
                 function onFailure(error){
                     Toast.show('danger', 8000, Messages.GeneralHttpError());
                 }

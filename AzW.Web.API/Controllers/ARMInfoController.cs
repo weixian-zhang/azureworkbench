@@ -47,15 +47,15 @@ namespace AzW.Web.API
             return azSubs;
         }
 
-        [HttpPost("arm/rg")]
-        public async Task CreateResourceGroup
-            (string subscriptionId, string location, string rgName)
+        [HttpPost("arm/rg/new")]
+        public async Task CreateResourceGroup([FromBody] NewRGParameter parameters)
         {
              string accessToken = GetUserIdentity().AccessToken;
 
             _armService = new ARMService(accessToken, _secret);
 
-            await _armService.CreateResourceGroup(subscriptionId, location, rgName);
+            await _armService.CreateResourceGroup
+                (parameters.SubscriptionId, parameters.Location, parameters.RGName);
         }
 
         [HttpGet("arm/rg")]

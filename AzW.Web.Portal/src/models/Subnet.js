@@ -11,11 +11,9 @@ export default class Subnet
 
         this.ProvisionContext = {
             ResourceType: ResourceType.Subnet(),
-            Deployable: true,
-            HighCost: false,
-            
+
             Name: '',
-            CIDR: ''
+            AddressSpace: ''
         };
         this.CalculatorContext = {
             IsFree: true,

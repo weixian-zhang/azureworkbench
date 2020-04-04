@@ -10,9 +10,7 @@ export default class VNet
 
         this.ProvisionContext = {
             ResourceType: ResourceType.VNet(),
-            Deployable: true,
-            HighCost: false,
-            
+           
             Name: '',
             Location: '',
             ResourceGroupName: '',

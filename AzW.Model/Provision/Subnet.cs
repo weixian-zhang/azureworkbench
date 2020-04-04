@@ -5,6 +5,6 @@ namespace AzW.Model
      {
          public string Name { get; set; }
 
-         public string CIDR { get; set; }
+         public string AddressSpace { get; set; }
      }
  }

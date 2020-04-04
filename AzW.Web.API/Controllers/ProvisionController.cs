@@ -14,7 +14,7 @@ using Newtonsoft.Json.Linq;
 
 namespace AzW.Web.API
 {
-    [Authorize(AuthenticationSchemes = AzureADDefaults.BearerAuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = "AzureADJwtBearer")]
     [Route("api")]
     public class ProvisionController : BaseController
     {
@@ -24,14 +24,14 @@ namespace AzW.Web.API
         }
 
         [HttpPost("deploy")]
-        public async Task Provision
-            ([FromBody] AzSubscription subscription, [FromBody]JArray resourceIcons)
+        public async Task Provision([FromBody] ProvisionParameters parameters)
         {
             string accessToken = GetUserIdentity().AccessToken;
 
-            IProvisionService provisionSvc = new ProvisionService(subscription, accessToken, _secret);
+            IProvisionService provisionSvc =
+                new ProvisionService(parameters.SubscriptionId, accessToken, _secret);
 
-            await provisionSvc.ProvisionAsync(resourceIcons);
+            await provisionSvc.ProvisionAsync(parameters.ProvisionContexts);
         }
 
         private WorkbenchSecret _secret;

@@ -14,64 +14,65 @@ namespace AzW.Infrastructure.AzureServices
 {
     public class ProvisionService : BaseService, IProvisionService
     {
-        public ProvisionService(AzSubscription subscription, string accessToken, WorkbenchSecret secret) : base(accessToken, secret)
+        public ProvisionService(string subscriptionId, string accessToken, WorkbenchSecret secret) : base(accessToken, secret)
         {
-            _subscription = subscription;
+            _subscriptionId = subscriptionId;
         }
 
-        public async Task ProvisionAsync(JArray resourceIcons)
+        public async Task ProvisionAsync(dynamic[] provisionContexts)
         {
             
-            foreach(var jobj in resourceIcons.Children<JObject>())
+            foreach(dynamic context in provisionContexts)
             {
-                string resourceType = (string)jobj.SelectToken("ProvisionContext.ResourceType");
+                JObject jObj = JObject.Parse(context.ToString());
+                string resourceType = jObj["ResourceType"].ToString();
 
-                switch(resourceType){
+                switch(resourceType)
+                {
                     case ResourceType.VNet:
-                    await CreateVNet(jobj.ToObject<VNet>());
+                        VNet vnet = jObj.ToObject<VNet>();
+                        await CreateVNetAsync(vnet);
                     break;
                 }
             }
-
-            // AzAuthClient.WithSubscription("").Networks.Define("").WithRegion("")
-            // .WithExistingResourceGroup("").WithAddressSpace("")
-            // .WithSubnet()
-
-
-            // AzAuthClient.WithDefaultSubscription().VirtualMachines.Define("")
-            // .WithRegion("")
-            // .WithExistingResourceGroup("")
-            // .WithExistingPrimaryNetwork(vnet)
-            // .WithSubnet("")
-            // .WithPrimaryPrivateIPAddressDynamic()
-            // .WithNewPrimaryPublicIPAddress()
-            // .WithLatestWindowsImage("publisher", "offer", "sku")
-            // //.WithLatestLinuxImage("publisher", "offer", "sku")
-
-            throw new System.NotImplementedException();
         }
 
-        private async Task CreateVNet(VNet vnet)
+        private async Task CreateVNetAsync(VNet vnet)
         {
-           await CreateResourceGroupIfNotExistAsync(vnet.ResourceGroup, vnet.Region);
+        //    await CreateResourceGroupIfNotExistAsync
+        //     (vnet.ResourceGroupName, vnet.);
+        
+           var subnets = GetSubnets(vnet.Subnets);
 
-           AzClient.WithSubscription(_subscription.SubscriptionId)
-                .Networks.Define("")
-                .WithRegion(vnet.Region)
-                .WithExistingResourceGroup(vnet.ResourceGroup)
+           await AzClient.WithSubscription(_subscriptionId)
+                .Networks.Define(vnet.Name)
+                .WithRegion(vnet.Location)
+                .WithExistingResourceGroup(vnet.ResourceGroupName)
                 .WithAddressSpace(vnet.AddressSpace)
-                .WithSubnets(new Dictionary<string,string>(){{"",""}})
-                .Create();
+                .WithSubnets(subnets)
+                .CreateAsync();
+        }
+
+        private Dictionary<string,string> GetSubnets(IEnumerable<Subnet> subnets)
+        {
+            var dictionary = new Dictionary<string,string>();
+
+            foreach(var subnet in subnets)
+            {
+                dictionary.Add(subnet.Name, subnet.AddressSpace);
+            }
+
+            return dictionary;
         }
     
         private async Task<bool> CreateResourceGroupIfNotExistAsync(string rgName, string region)
         {
             bool exists = await AzClient
-                .WithSubscription(_subscription.SubscriptionId)
+                .WithSubscription(_subscriptionId)
                 .ResourceGroups.ContainAsync(rgName);
             if(!exists)
                 await AzClient
-                    .WithSubscription(_subscription.SubscriptionId)
+                    .WithSubscription(_subscriptionId)
                     .ResourceGroups.Define(rgName)
                     .WithRegion(region)
                     .CreateAsync();
@@ -79,6 +80,6 @@ namespace AzW.Infrastructure.AzureServices
             return exists;
         }
 
-        private AzSubscription _subscription;
+        private string _subscriptionId;
     }
 }

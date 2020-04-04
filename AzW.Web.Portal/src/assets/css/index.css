@@ -61,8 +61,8 @@ inline {
   background-color: #fff;
   border: 1px solid #000;
   text-align:center;
-  height: 200px;/*height needs to be set*/
-  width: 380px;
+  height: 370px;/*height needs to be set*/
+  width: 400px;
   margin: auto;
   position: fixed;
   top: 0;
@@ -204,6 +204,13 @@ div.mxRubberband {
   background-color: white;
   height: 100%;
   padding-top: 30px;
+}
+
+.formLayout {
+  display: block;
+  padding:4px 2px;
+  width:100%;
+  margin:2px 0 20px 10px;
 }
 
 /*blueprintjs button style override*/

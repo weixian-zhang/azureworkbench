@@ -54,13 +54,18 @@ export default class ARMService
       var user = this.authService.getUserProfile();
       var thisComp = this;
 
-      axios.post('api/arm/rg', subscriptionId, location, rgName,
+      var params = {
+        subscriptionId: subscriptionId,
+        location: location,
+        rgName: rgName
+      };
+      //subscriptionId, location, rgName,
+      axios.post('api/arm/rg/new', JSON.stringify(params),
         {
           headers: {
             'Authorization': 'Bearer ' + user.AccessToken,
-            'Accept': 'application/octet-stream'
-          },
-          responseType: 'blob',
+            'Content-Type': 'application/json'
+          }
         })
         .then(function (response) {
           onSuccess(response.data);
@@ -68,7 +73,7 @@ export default class ARMService
         .catch(function (error) {
           console.log(error);
           onFailure(Messages.GeneralHttpError());
-        })
+        });
    }
 
    async getResourceGroups(subscription, onSuccess, onFailure){

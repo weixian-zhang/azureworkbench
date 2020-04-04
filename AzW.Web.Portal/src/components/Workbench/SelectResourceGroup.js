@@ -38,7 +38,7 @@ export default class SelectResourceGroup extends Component {
                 popoverProps={true}
                 noResults={<MenuItem disabled={true} text="No Resource Group" />}>
                 <Button text={this.state.selectedValue == '' ? 'Resource Group' : Utils.limitTextLength(this.state.selectedValue, 15)}
-                    rightIcon="double-caret-vertical" style={{maxWidth: '180px', maxHeight: '50px'}}/>
+                    rightIcon="double-caret-vertical" style={{width: '170px', maxWidth: '170px'}}/>
             </Select>
         );
     }

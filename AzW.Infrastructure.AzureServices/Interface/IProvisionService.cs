@@ -9,6 +9,6 @@ namespace AzW.Infrastructure.AzureServices
 {
     public interface IProvisionService
     {
-        Task ProvisionAsync(JArray resourceIcons);
+        Task ProvisionAsync(dynamic[] provisionContexts);
     }
 }

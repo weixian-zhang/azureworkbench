@@ -160,9 +160,10 @@ import TimeSeriesPropPanel from "./PropPanel/TimeSeriesPropPanel";
 import IoTCentralPropPanel from "./PropPanel/IoTCentralPropPanel";
 
 import OverlayPreviewDiagram from "./OverlayPreviewDiagram";
-
 import ARMService from "../../services/ARMService";
 import ComputeService from "../../services/ComputeService";
+import ProvisionHelper from './Helpers/ProvisionHelper';
+import Toast from './Helpers/Toast';
 
  export default class DiagramEditor extends Component {
   constructor(props) {
@@ -204,6 +205,7 @@ import ComputeService from "../../services/ComputeService";
     //services
     this.diagramService = new DiagramService();
     this.provisionService = new ProvisionService();
+    this.provisionHelper = new ProvisionHelper();
 
     this.addDblClickEventToOpenPropPanel();
     this.addDeleteKeyEventToDeleteVertex();
@@ -3470,19 +3472,23 @@ addUpDownLeftRightArrowToMoveCells() {
 
   deployDiagramToAzure(subscription) {
 
-      var resources = this.getAzResourceObjects();
+      var cells = this.graph.getChildVertices(this.graph.getDefaultParent());
 
-      if(Utils.IsNullOrUndefine(resources))
+      if(Utils.IsNullOrUndefine(cells))
       {
-        Toaster.create({
-          position: Position.TOP,
-          autoFocus: false,
-          canEscapeKeyClear: true
-        }).show({intent: Intent.WARNING, timeout: 2000, message: Messages.NoResourceToProvision()});
+        Toast.show(Intent.WARNING, 2000, Messages.NoCellOnGraph());
         return;
       }
 
-      this.provisionService.provisionDiagram(subscription, resources,
+      var contexts = this.provisionHelper.ExtractProvisionContexts(this.graph);
+
+      if(Utils.IsNullOrUndefine(contexts))
+      {
+        Toast.show(Intent.WARNING, 2000, Messages.NoResourceToProvision());
+        return;
+      }
+
+      this.provisionService.provisionDiagram(subscription.SubscriptionId, contexts,
         function onSuccess() {
 
         },
@@ -3497,59 +3503,11 @@ addUpDownLeftRightArrowToMoveCells() {
 
   getAzResourceObjects = () => {
 
-    var cells = this.graph.getChildVertices(this.graph.getDefaultParent());
+    
 
-    if(Utils.IsNullOrUndefine(cells))
-    {
-      Toaster.create({
-        position: Position.TOP,
-        autoFocus: false,
-        canEscapeKeyClear: true
-      }).show({intent: Intent.WARNING, timeout: 2000, message: Messages.NoCellOnGraph()});
-      return;
-    }
-
-    var resources = [];
-    var thisComp = this;
-
-    cells.map(cell => {
-
-        var result = Utils.TryParseUserObject(cell.value);
-
-        if(result.isUserObject)
-        {
-
-            this.getVNetObjectToDeploy(result.userObject, cell, resources);
-            
-        }
-
-        
-    });
+    
   }
 
-  getVNetObjectToDeploy = function(vnetUserObject, cell, resources) {
-          
-    if(vnetUserObject.ProvisionContext.ResourceType == ResourceType.VNet())
-    {
-        var subnetCells = this.graph.getChildVertices(cell);
-
-        if(Utils.IsNullOrUndefine(subnetCells))
-          return [];
-        
-          var subnets = [];
-
-          subnetCells.map(cell => {
-              var subnet = Utils.TryParseUserObject(cell.value);
-              subnets.push(subnet.userObject);
-        });
-
-        vnetUserObject.ProvisionContext.Subnets = subnets;
-
-        resources.push(vnetUserObject);
-    }
-
-    return resources;
-  }
   
   showLoading(toShow){
     this.setState({isLoading: toShow});

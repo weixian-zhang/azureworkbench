@@ -23,7 +23,7 @@ export default class AuthService
               clientId: Config.AADClientId(), 
               authority: Config.Authority(), 
               validateAuthority: true,
-              postLogoutRedirectUri: Config.BaseAPIUrl(),
+              postLogoutRedirectUri: Config.PortalUrl(),
               navigateToLoginRequestUrl: false
             },
             cache: {
