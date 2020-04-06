@@ -3500,14 +3500,6 @@ addUpDownLeftRightArrowToMoveCells() {
      
 
   }
-
-  getAzResourceObjects = () => {
-
-    
-
-    
-  }
-
   
   showLoading(toShow){
     this.setState({isLoading: toShow});

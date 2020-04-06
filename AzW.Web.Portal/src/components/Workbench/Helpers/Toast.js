@@ -16,7 +16,7 @@ export default class Toast extends Component {
   
     static show = (intent, duration, message) => {
       if(!intent || !duration)
-        AppToaster.show({intent: 'primary', message: message});
+        AppToaster.show({intent: 'primary', timeout: 2000, message: message});
       else
         AppToaster.show({intent: intent,timeout: duration, message: message});
     }

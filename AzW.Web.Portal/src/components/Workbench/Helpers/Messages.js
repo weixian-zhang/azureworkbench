@@ -1,7 +1,7 @@
 export default class Messages {
-    static GeneralHttpError() {return "Error occured while contacting Workbench server: " +
-    "This could be expired login session, or no 'Admin Consent' from your Azure AD Global Admin. " +
-    "Try logging out and re-login or make sure Azure Workbench has admin consent authorized by Azure AD Global Admin"; }
+    static GeneralHttpError() {return "Error occured on Http request: " +
+    "This could be expired login session, or no 'ADMIN CONSENT' from your Azure AD Global Admin. " +
+    "Try sigining out and login again or make sure Azure Workbench has ADMIN CONSENT authorized by Azure AD Global Admin"; }
     static SubscriptionNotSelectedError() {return "Please select a subscription at Header-Menu before Resource Group can be retrieved" ;}
     static VMInSubnet() {return "A VM or VM Scale Sets must be in a subnet, select the subnet then drag VM onto canvas";}
     static ASEInSubnet() {return "App Service Environment must be in a dedicated subnet, select the subnet then drag ASE onto canvas";}

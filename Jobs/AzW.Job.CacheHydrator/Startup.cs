@@ -49,7 +49,7 @@ namespace AzW.Job.CacheHydrator
             builder.Services.AddSingleton<ICacheRepository>(prov =>
             {
                 return new CacheRepository
-                  (secret.RedisHost, secret.RedisPassword, secret.RedisConnString);
+                  ( secret.RedisConnString, secret.RedisHost, secret.RedisPassword);
             });
 
         }

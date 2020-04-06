@@ -40,7 +40,7 @@ export default class TrafficManagerPropPanel extends Component {
               <Grid container spacing={12} className="propPanelGrid">
                 <Grid item xs={12}>
                   <AppBar position="static" color = "transparent">
-                    <Tabs onChange={this.handleChange} >
+                    <Tabs value={this.state.value}  onChange={this.handleChange} >
                       <Tab label="Diagram" value="diagram" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'diagram' ? "bold" : "" }}/>
                       <Tab label="Provision" value="provision" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'provision' ? "bold" : "" }}/>
                       <Tab label="Calculator" value="calculator" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'calculator' ? "bold" : "" }}/>

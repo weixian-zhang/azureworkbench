@@ -11,27 +11,23 @@ using System.Threading.Tasks;
 
 namespace AzW.Web.API
 {
-    [Authorize(AuthenticationSchemes = AzureADDefaults.BearerAuthenticationScheme)]
-    [Route("api/info/compute")]
+    [Authorize(AuthenticationSchemes = "AzureADJwtBearer")]
+    [Route("api/compute")]
     public class ComputeInfoController : Controller
     {
         public ComputeInfoController(ICacheRepository cache) //, WorkbenchSecret secret)
         {
-            //_secret = secret;
             _cache = cache;
         }
 
         [HttpGet("search/images")]
-        public async Task<IEnumerable<VMImage>> SearchVMImages(string pattern)
+        public async Task<IEnumerable<VMImage>> SearchVMImages(string searchPattern)
         {
-            //string accessToken = GetUserIdentity().AccessToken;
-
-           var vmImages = await _cache.SearchVMImagesAsync(pattern);
+           var vmImages = await _cache.SearchVMImagesAsync(searchPattern);
 
            return vmImages;
         }
 
         private ICacheRepository _cache;
-        //private WorkbenchSecret _secret;
     }
 }

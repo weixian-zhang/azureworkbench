@@ -15,7 +15,7 @@ namespace AzW.Infrastructure.Data
     public class CacheRepository : ICacheRepository
     {
         public CacheRepository
-            (string redisHost, string redisPassword, string redisConnString)
+            (string redisConnString, string redisHost, string redisPassword)
         {
             _redisHost = redisHost;
             _redisPassword = redisPassword;

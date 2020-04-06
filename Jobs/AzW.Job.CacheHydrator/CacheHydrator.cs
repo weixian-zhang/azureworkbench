@@ -32,7 +32,7 @@ namespace AzW.Job.CacheHydrator
         }
 
         [FunctionName("CacheHydrator")]
-        public async Task Run([TimerTrigger("* */30 * * * *")]TimerInfo myTimer, Microsoft.Extensions.Logging.ILogger log)
+        public async Task Run([TimerTrigger("*/5 * * * * *")]TimerInfo myTimer, Microsoft.Extensions.Logging.ILogger log)
         {
             
             if(!await _cache.IsVMImageCacheExistAsync())
@@ -41,7 +41,7 @@ namespace AzW.Job.CacheHydrator
                 {
                     try
                     {
-                        await _cache.SetVMImageAsync(vmImg.DisplayName, vmImg);
+                        await _cache.SetVMImageAsync(vmImg.SearchPattern, vmImg);
                     }
                     catch(Exception ex)
                     {
@@ -100,13 +100,15 @@ namespace AzW.Job.CacheHydrator
                             limit++;
 
                             //using space and remove "-" and underscores from sku name for easy searching
-                            string skuNameWithoutHyphen = sku.Name.Replace('-', ' ');
-                            string skuNameWithoutHyphenUnderScore = skuNameWithoutHyphen.Replace('_', ' ');
-                            string displayName = publisher.Name + " " + skuNameWithoutHyphenUnderScore;
-
+                            //string skuNameWithoutHyphen = sku.Name.Replace('-', ' ');
+                            //string skuNameWithoutHyphenUnderScore = skuNameWithoutHyphen.Replace('_', ' ');
+                            //string displayName = publisher.Name + " " + skuNameWithoutHyphenUnderScore;
+                            string searchPattern = publisher.Name + " " + offer.Name + " " + sku.Name;
+                            string displayName = publisher.Name + "|" + offer.Name + "|" + sku.Name;
                             yield return new VMImage()
                                 {
                                     DisplayName = displayName,
+                                    SearchPattern = searchPattern,
                                     Publisher = publisher.Name,
                                     Offer = offer.Name,
                                     Sku = sku.Name,

@@ -1,5 +1,6 @@
 import Utils from "./Utils";
 import ResourceType from '../../../models/ResourceType';
+import VM from "../../../models/VM";
 
 export default class ProvisionHelper
 {
@@ -15,14 +16,14 @@ export default class ProvisionHelper
 
             if(result.isUserObject)
             {
-                this.getVNetContext(result.userObject, cell, contexts);
+                this.getVNetAndVMContext(result.userObject, cell, contexts);
             }
         });
 
         return contexts;
     }
 
-    getVNetContext = (vnetUserObject, cell, contexts) => {
+    getVNetAndVMContext = (vnetUserObject, cell, contexts) => {
           
         if(vnetUserObject.ProvisionContext.ResourceType == ResourceType.VNet())
         {
@@ -45,4 +46,15 @@ export default class ProvisionHelper
     
         return contexts;
       }
+    
+    getVMContexts(graph, subnetCell, resources) {
+        var vms = graph.getChildVertices(subnetCell);
+
+        if(!Utils.IsNullOrUndefine(vms))
+            return resources;
+        
+        vms.map(vm => {
+            var vm = new VM();
+        })
+    }
 }

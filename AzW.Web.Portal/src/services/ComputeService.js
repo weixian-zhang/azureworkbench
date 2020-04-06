@@ -1,4 +1,4 @@
-import Subscription from "../models/services/Subscription";
+import VMimage from "../models/services/VMimage";
 import axios from "axios";
 import AuthService from './AuthService';
 
@@ -8,16 +8,16 @@ export default class ComputeService
         this.authService = new AuthService();
     }
 
-    async getVMImages(subscription, onSuccess, onFailure){
+    async searchVMImages(searchPattern, onSuccess, onFailure){
         if(!this.authService.isUserLogin())
         return;
 
         var user = this.authService.getUserProfile();
 
-        axios.get('/api/info/compute/images', 
+        axios.get('api/compute/search/images', 
         {
           params: {
-            subscription: subscription
+            searchPattern: searchPattern
           },
           headers: {
   
@@ -28,10 +28,20 @@ export default class ComputeService
         .then(function (response) {
           if(response.data != null)
           {
-            onSuccess(response.data);
+            var images= [];
+            response.data.map(vmimg => {
+              
+              var vmImage = new VMimage();
+              vmImage.DisplayName = vmimg.displayName;
+              vmImage.Publisher = vmimg.publisher;
+              vmImage.Offer = vmimg.offer;
+              vmImage.Sku = vmimg.sku;
+              vmImage.Version = vmimg.version;
+              images.push(vmImage)
+
+            })
+            onSuccess(images);
           }
-          else
-            onFailure(response.data);
         })
         .catch(function (error) {
           console.log(error);
