@@ -19,12 +19,15 @@ export default class SelectResourceGroup extends Component {
             searchQuery: '',
             filteredRGs: [],
             rgs: [],
-            selectedValue: ''
+            selectedValue: '',
+            loading: false
         }
     }
 
     componentDidMount(){
         this.getRGs();
+        
+        this.initPreviouslySelectedValue();
     }
 
     render = () => {
@@ -38,7 +41,7 @@ export default class SelectResourceGroup extends Component {
                 popoverProps={true}
                 noResults={<MenuItem disabled={true} text="No Resource Group" />}>
                 <Button text={this.state.selectedValue == '' ? 'Resource Group' : Utils.limitTextLength(this.state.selectedValue, 15)}
-                    rightIcon="double-caret-vertical" style={{width: '170px', maxWidth: '170px'}}/>
+                     loading={this.state.loading} alignText='left' rightIcon="double-caret-vertical" style={{width: '170px', maxWidth: '170px'}}/>
             </Select>
         );
     }
@@ -47,6 +50,7 @@ export default class SelectResourceGroup extends Component {
         if(!this.IsSubscriptionSelected())
             return;
 
+        this.setState({loading: true});
         var thisComp = this;
         var subscriptionId = this.global.currentSubscription.SubscriptionId;
         
@@ -54,19 +58,21 @@ export default class SelectResourceGroup extends Component {
             this.armService.getResourceGroups(
                 subscriptionId,
                 function onSuccess(rscGroups){
+                    thisComp.setState({loading: false});
                     thisComp.setState({rgs: rscGroups, filteredRGs: rscGroups});
                 },
                 function onFailure(error) {
+                    thisComp.setState({loading: false});
                     Toast.show(Intent.DANGER, 6000, error)
                 }
             );
     }
 
-    renderRGs = (location, { handleClick, modifiers }) => {
+    renderRGs = (rg, { handleClick, modifiers }) => {
         return (
             <MenuItem
-                text={location.Name}
-                data-rg={location.Name}
+                text={rg.Name}
+                data-rg={rg.Name}
                 onClick={this.onRGSelect}
             />
         );
@@ -87,8 +93,11 @@ export default class SelectResourceGroup extends Component {
         this.props.onValueChange(selectedRG);
     }
 
-    getCurrentValue() {
-        return this.state.currentLocation;
+    initPreviouslySelectedValue = () =>{
+        var previouslySelectedValue = this.props.SelectedResourceGroup;
+
+        if(!Utils.IsNullOrUndefine(previouslySelectedValue))
+            this.setState({selectedValue:previouslySelectedValue});
     }
 
     IsSubscriptionSelected() {

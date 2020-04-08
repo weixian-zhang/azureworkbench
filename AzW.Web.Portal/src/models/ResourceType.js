@@ -8,6 +8,7 @@ export default class ResourceType
     static ASE() {return 'ase'; }
     static Function() {return 'func'; }
     static VNet() {return 'vnet'; }
+    static PrivateEndpoint() {return 'privateendpoint'; }
     static Subnet() {return 'subnet'; }
     static NLB() {return 'nlb'; }
     static AppGw() {return 'appgw'; }

@@ -22,6 +22,7 @@ export default class OverlayProvision extends Component {
 
       this.state = {
         isOpen: false,
+        loading: false,
         currentSubscription: null,
         subscriptions: [],
         header: null,
@@ -60,7 +61,7 @@ export default class OverlayProvision extends Component {
                                             filterable={false} >
                                             
                                             <Button text={this.global.currentSubscription == null ? 'Subscription' : Utils.limitTextLength(this.global.currentSubscription.Name, 15) }
-                                                style={{maxWidth:'180px'}} rightIcon="double-caret-vertical"/>
+                                                loading={this.state.loading} alignText='left' style={{maxWidth:'180px'}} rightIcon="double-caret-vertical"/>
                                         </Select>
                                         
                                 </Grid>
@@ -149,14 +150,18 @@ export default class OverlayProvision extends Component {
     getSubscriptions = () => {
         if(this.authService.isUserLogin())
         {
+            this.setState({loading:true});
+
             var thisComp = this;
 
             this.armService.getSubscriptions(
                 function onSuccess(subs) {
-                    thisComp.setState({subscriptions: subs});
+                    thisComp.setState({subscriptions: subs, loading: false});
                     thisComp.rgNameInput.current.value = '';
                 },
                 function onFailure(error) {
+                    this.setState({loading: false});
+
                     Toast.show(Intent.DANGER,8000, error);
                     return;
                 }

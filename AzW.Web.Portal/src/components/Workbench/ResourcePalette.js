@@ -160,6 +160,7 @@ export default class ResourcePalette extends Component {
     this.nicIcon = React.createRef();
     this.azfw = React.createRef();
     this.vnetIcon = React.createRef();
+    this.privateEndpointIcon = React.createRef();
     this.nlbIcon = React.createRef();
     this.dnsprivatezoneIcon = React.createRef();
     this.appgwIcon = React.createRef();
@@ -243,11 +244,8 @@ export default class ResourcePalette extends Component {
       this.makeIconsDraggable();
   }
 
- 
-
   render(){
     
-
     return (
       <div className='sidebar'>
         <div className="resourcePalette">
@@ -517,6 +515,11 @@ export default class ResourcePalette extends Component {
               <div class="tile-panel" ref={this.nicIcon}>
                 <Tippy content="Network Interface Card" followCursor={true} placement="bottom">
                   <NIC class="azure-rsc-icon" />
+                </Tippy>
+              </div>
+              <div class="tile-panel" ref={this.privateEndpointIcon}>
+                <Tippy content="Private Endpoint" followCursor={true} placement="bottom">
+                  <img src={require('../../assets/azure_icons/Networking Service Color/private-endpoint.png')} width="30" height="30" />
                 </Tippy>
               </div>
             </Typography>
@@ -937,6 +940,7 @@ export default class ResourcePalette extends Component {
     this.graphManager.makeIconDraggable(this.vmssIcon.current, ResourceType.VMSS(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.devtestlabIcon.current, ResourceType.DevTestLab(), thisComponent.props.addResourceToDiagramEditor);
 
+    this.graphManager.makeIconDraggable(this.privateEndpointIcon.current, ResourceType.PrivateEndpoint(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.vnetIcon.current, ResourceType.VNet(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.nlbIcon.current, ResourceType.NLB(), thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.appgwIcon.current, ResourceType.AppGw(), thisComponent.props.addResourceToDiagramEditor);

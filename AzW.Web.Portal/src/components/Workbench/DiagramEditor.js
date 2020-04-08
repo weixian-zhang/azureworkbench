@@ -22,6 +22,7 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
 import mxClientOverrides from './Helpers/mxClientOverrides';
 
 //models
+import PrivateEndpoint from "../../models/PrivateEndpoint";
 import IoTCentral from "../../models/IoTCentral";
 import LogAnalytics from "../../models/LogAnalytics";
 import AppConfig from "../../models/AppConfig";
@@ -831,6 +832,9 @@ addUpDownLeftRightArrowToMoveCells() {
         this.addVMSS(dropContext, 'vmss');
         break;
 
+      case ResourceType.PrivateEndpoint():
+        this.addPrivateEndpoint(dropContext);
+        break;
       case 'vnet':
         this.addVNet(dropContext);
         break;
@@ -1583,7 +1587,35 @@ addUpDownLeftRightArrowToMoveCells() {
       this.azureIcons.OnPremDBServer());
   }
   
-  
+  addPrivateEndpoint = (dropContext) => {
+
+      this.graphManager.graph.getModel().beginUpdate();
+      try
+      {
+          //overlay event listener
+          https://stackoverflow.com/questions/45708656/drag-event-on-mxgraph-overlay
+          // Creates a new overlay with an image and a tooltip
+
+          var model = new PrivateEndpoint();
+          model.resourceType = ResourceType.PrivateEndpoint();
+          model.GraphModel.Id = this.shortUID.randomUUID(6);
+          model.ProvisionContext.Name = 'privateendpoint_' + model.GraphModel.Id;
+          model.GraphModel.DisplayName = 'Private Endpoint';
+              var jsonModel = JSON.stringify(model);
+          
+          var parent = this.graph.getDefaultParent();
+
+          this.graph.insertVertex
+          (parent, model.GraphModel.IconId ,jsonModel, dropContext.x, dropContext.y, 30, 30,
+          "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/png," +
+            this.azureIcons.PrivateEndpoint());
+    }
+    finally
+    {
+      // Updates the display
+      this.graphManager.graph.getModel().endUpdate();
+    }
+  }
 
   addVNet = (dropContext) => {
 

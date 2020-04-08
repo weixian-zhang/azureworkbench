@@ -79,44 +79,97 @@ namespace AzW.Job.CacheHydrator
 
             var vmImages = new List<VMImage>();
 
-            foreach (var publisher in publishers.OrderByDescending(a => a.Name))
+            foreach (var publisher in publishers)
             {
-                //to avoid Offer retrieval error on this publisher 
-                if(publisher.Name == "TrendMicro.DeepSecurity.Test")
-                    continue;
-
-                foreach (var offer in publisher.Offers.List())
-                {
-                    foreach (var sku in offer.Skus.List())
-                    {
-                        foreach (var image in sku.Images.List())
+                if(StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "Canonical") || 
+                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "SUSE") ||
+                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "RedHat") ||
+                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "Debian") ||
+                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "MicrosoftWindowsServer") ||
+                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "MicrosoftWindowsDesktop") || 
+                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "Oracle") || 
+                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "MicrosoftSharePoint") || 
+                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "MicrosoftVisualStudio") || 
+                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "MicrosoftDynamicsAX") || 
+                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "MicrosoftSQLServer") ||
+                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "center-for-internet-security-inc") ||
+                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "paloaltonetworks") ||
+                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "checkpoint") ||
+                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "barracudanetworks"))
+                   {
+                        foreach (var offer in publisher.Offers.List())
                         {
-                            if(limit == 6000) //12000 limit for Azure Rest, cont after 300secs
+                            foreach (var sku in offer.Skus.List())
                             {
-                                Thread.Sleep(300000);
-                                limit = 0;
-                            }
-
-                            limit++;
-
-                            //using space and remove "-" and underscores from sku name for easy searching
-                            //string skuNameWithoutHyphen = sku.Name.Replace('-', ' ');
-                            //string skuNameWithoutHyphenUnderScore = skuNameWithoutHyphen.Replace('_', ' ');
-                            //string displayName = publisher.Name + " " + skuNameWithoutHyphenUnderScore;
-                            string searchPattern = publisher.Name + " " + offer.Name + " " + sku.Name;
-                            string displayName = publisher.Name + "|" + offer.Name + "|" + sku.Name;
-                            yield return new VMImage()
+                                foreach (var image in sku.Images.List())
                                 {
-                                    DisplayName = displayName,
-                                    SearchPattern = searchPattern,
-                                    Publisher = publisher.Name,
-                                    Offer = offer.Name,
-                                    Sku = sku.Name,
-                                    Version = image.Version
-                                };
+                                    if(limit == 6000) //12000 limit for Azure Rest, cont after 300secs
+                                    {
+                                        Thread.Sleep(300000);
+                                        limit = 0;
+                                    }
+
+                                    limit++;
+
+                                    //using space and remove "-" and underscores from sku name for easy searching
+                                    string publisherWithoutHyphen = publisher.Name.Replace('-', ' ');
+                                    string publisherWithoutHyphenUnderScore = publisherWithoutHyphen.Replace('_', ' ');
+                                    string offerWithoutHyphen = offer.Name.Replace('-', ' ');
+                                    string offerWithoutHyphenUnderScore = offerWithoutHyphen.Replace('_', ' ');
+                                    string skuNameWithoutHyphen = sku.Name.Replace('-', ' ');
+                                    string skuNameWithoutHyphenUnderScore = skuNameWithoutHyphen.Replace('_', ' ');
+                                    
+                                    string searchPattern = "";
+
+                                    if(publisher.Name == "Canonical")
+                                        searchPattern = "ubuntu";
+                                    else if(publisher.Name == "SUSE")
+                                        searchPattern = "suse";
+                                    else if(publisher.Name == "RedHat")
+                                        searchPattern = "redhat";
+                                    else if(publisher.Name == "Debian")
+                                        searchPattern = "debian";
+                                    else if(publisher.Name == "Oracle")
+                                        searchPattern = "debian";
+                                    else if(publisher.Name == "MicrosoftWindowsServer")
+                                        searchPattern = "microsoft windows server";
+                                    else if(publisher.Name == "MicrosoftSQLServer")
+                                        searchPattern = "microsoft sql server";
+                                    else if(publisher.Name == "MicrosoftWindowsDesktop")
+                                        searchPattern = "microsoft windows 10 desktop";
+                                    else if(publisher.Name == "Oracle")
+                                        searchPattern = "oracle";
+                                    else if(publisher.Name == "MicrosoftSharePoint")
+                                        searchPattern = "microsoft sharepoint";
+                                    else if(publisher.Name == "MicrosoftVisualStudio")
+                                        searchPattern = "visual studio";
+                                    else if(publisher.Name == "MicrosoftDynamicsAX")
+                                        searchPattern = "microsoft dynamics";
+                                    else if(publisher.Name == "center-for-internet-security-inc")
+                                        searchPattern = "cis";
+                                    else if(publisher.Name == "paloaltonetworks")
+                                        searchPattern = "palo alto";
+                                    else if(publisher.Name == "checkpoint")
+                                        searchPattern = "check checkpoint";
+                                    else if(publisher.Name == "barracudanetworks")
+                                        searchPattern = "barracuda";
+                                            
+                                    string displayName =
+                                        offerWithoutHyphenUnderScore + " " + skuNameWithoutHyphenUnderScore;
+
+                                    yield return new VMImage()
+                                        {
+                                            DisplayName = displayName,
+                                            SearchPattern = searchPattern + " " + offer.Name + "_" + sku.Name,
+                                            Publisher = publisher.Name,
+                                            Offer = offer.Name,
+                                            Sku = sku.Name,
+                                            Version = image.Version
+                                        };
+                                }
+                            }
                         }
-                    }
-                }
+                   }
             }
         }
         

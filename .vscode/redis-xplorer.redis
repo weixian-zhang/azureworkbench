@@ -5,12 +5,12 @@ os:Windows
 arch_bits:64
 multiplexing_api:winsock_IOCP
 run_id:78920f0aed91337d19636b953d47f53a867ff777
-uptime_in_seconds:1585518
-uptime_in_days:18
+uptime_in_seconds:1735651
+uptime_in_days:20
 hz:10
 
 # Clients
-connected_clients:55
+connected_clients:17
 maxclients:256
 client_longest_output_list:0
 client_biggest_input_buf:0
@@ -19,17 +19,17 @@ client_total_sent_bytes_outstanding:0
 blocked_clients:0
 
 # Memory
-used_memory:3884104
-used_memory_human:3.70M
-used_memory_rss:7344128
-used_memory_rss_human:7.00M
-used_memory_peak:5985216
-used_memory_peak_human:5.71M
-used_memory_peak_perc:64.89%
-used_memory_overhead:1707298
+used_memory:885504
+used_memory_human:864.75K
+used_memory_rss:4939776
+used_memory_rss_human:4.71M
+used_memory_peak:7955872
+used_memory_peak_human:7.59M
+used_memory_peak_perc:11.13%
+used_memory_overhead:626678
 used_memory_startup:244384
-used_memory_dataset:2176806
-used_memory_dataset_perc:59.81%
+used_memory_dataset:258826
+used_memory_dataset_perc:40.37%
 used_memory_lua:37888
 maxmemory:285000000
 maxmemory_reservation:0
@@ -41,8 +41,8 @@ maxmemory_policy:volatile-lru
 mem_allocator:jemalloc-4.0.3
 
 # Stats
-total_connections_received:1105732
-total_commands_processed:1114271
+total_connections_received:1217680
+total_commands_processed:1458788
 instantaneous_ops_per_sec:0
 bytes_received_per_sec:0
 bytes_sent_per_sec:0
@@ -51,8 +51,8 @@ bytes_sent_per_sec_human:0B
 rejected_connections:0
 expired_keys:0
 evicted_keys:0
-keyspace_hits:14536
-keyspace_misses:798
+keyspace_hits:110631
+keyspace_misses:2689
 pubsub_channels:1
 pubsub_patterns:0
 total_oom_messages:0
@@ -61,13 +61,13 @@ total_oom_messages:0
 role:master
 
 # CPU
-used_cpu_sys:99.28
-used_cpu_user:85.91
+used_cpu_sys:115.28
+used_cpu_user:104.59
 used_cpu_avg_ms_per_sec:3
-server_load:0.03
+server_load:0.06
 event_wait:0
 event_no_wait:0
-event_wait_count:8
+event_wait_count:9
 event_no_wait_count:0
 
 # Cluster
@@ -75,4 +75,4 @@ cluster_enabled:0
 cluster_myself_name:
 
 # Keyspace
-db0:keys=5515,expires=5515,avg_ttl=2578889110
+db0:keys=636,expires=636,avg_ttl=2591745032

@@ -1,6 +1,8 @@
 import VMimage from "../models/services/VMimage";
 import axios from "axios";
 import AuthService from './AuthService';
+import Toast from '../components/Workbench/Helpers/Toast';
+import Messages from '../components/Workbench/Helpers/Messages';
 
 export default class ComputeService
 {
@@ -10,7 +12,10 @@ export default class ComputeService
 
     async searchVMImages(searchPattern, onSuccess, onFailure){
         if(!this.authService.isUserLogin())
-        return;
+        {
+          Toast.show("warning", 2000, "Please login/re-login...")
+          return;
+        }
 
         var user = this.authService.getUserProfile();
 
@@ -44,7 +49,7 @@ export default class ComputeService
           }
         })
         .catch(function (error) {
-          console.log(error);
+          Toast.show("warning", 4000, Messages.GeneralHttpError());
           onFailure(error)
         })
         .finally(function () {

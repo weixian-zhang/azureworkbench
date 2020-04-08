@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import VM from '../../../models/VM';
-import { FormGroup, Drawer, Switch, Intent, InputGroup } from "@blueprintjs/core";
+import { FormGroup, Drawer, Switch, Intent, InputGroup, Tooltip, Button } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -22,6 +22,8 @@ export default class VMPropPanel extends Component {
         withPublicIP: false,
         value: 'diagram', //tabs
 
+        showPassword: false,
+
         saveCallback: function () {},
       }
   }
@@ -41,7 +43,7 @@ export default class VMPropPanel extends Component {
           usePortal= {true}
           size= {'560px'}
           className="propPanelDrawer">
-              <Grid container spacing={12} className="propPanelGrid">
+              <Grid container  className="propPanelGrid">
                 <Grid item xs={12}>
                   <AppBar position="static" color = "transparent">
                     <Tabs value={this.state.value} onChange={this.handleChange} >
@@ -94,7 +96,7 @@ export default class VMPropPanel extends Component {
               justify="center"
               alignItems="center"
               spacing={1} style={{marginTop: '15px', width: '100%'}}>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
                 <Grid item sm={3}>
                     <label>Name</label>
                 </Grid>
@@ -108,12 +110,13 @@ export default class VMPropPanel extends Component {
                     }} />
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
                 <Grid item sm={3}>
                     <label>Resource Group</label>
                 </Grid>
                 <Grid item>
-                  <SelectResourceGroup onValueChange={
+                  <SelectResourceGroup SelectedResourceGroup={this.state.userObject.ProvisionContext.ResourceGroupName}
+                   onValueChange={
                     (rg) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.ResourceGroupName = rg
@@ -122,12 +125,13 @@ export default class VMPropPanel extends Component {
                   }/>
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
                 <Grid item sm={3}>
                     <label>Location</label>
                 </Grid>
                 <Grid item>
-                  <SelectLocation onValueChange={
+                  <SelectLocation SelectedLocation={this.state.userObject.ProvisionContext.Location}
+                   onValueChange={
                     (location) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.Location = location
@@ -136,14 +140,14 @@ export default class VMPropPanel extends Component {
                   }/>
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
                 <Grid item sm={3}>
-                <Switch checked={this.state.userObject.ProvisionContext.HasPublicIP} label="Public"
-                  onChange={(e) => {
-                      var uo = this.state.userObject;
-                      uo.ProvisionContext.HasPublicIP = e.target.checked
-                      this.setState({userObject:uo});
-                  }} />
+                  <Switch checked={this.state.userObject.ProvisionContext.HasPublicIP} label="Public"
+                    onChange={(e) => {
+                        var uo = this.state.userObject;
+                        uo.ProvisionContext.HasPublicIP = e.target.checked
+                        this.setState({userObject:uo});
+                    }} />
                 </Grid>
                 <Grid item>
                   <InputGroup
@@ -158,21 +162,33 @@ export default class VMPropPanel extends Component {
                   />
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="flex-start">
+              <Grid container item direction="row" xs="12" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
                 <Grid item sm={3}>
+                  <label>VM Images</label>
+                </Grid>
+                <Grid item >
                   <SelectVMImage onValueChange={
                       (vm) => {
                         var uo = this.state.userObject;
-                        uo.ProvisionContext.VMPublisher = vm.Publisher;
-                        uo.ProvisionContext.VMOffer = vm.Offer;
-                        uo.ProvisionContext.VMSKU = vm.Sku;
-                        uo.ProvisionContext.VMVersion = vm.Version;
-                        this.setState({userObject:uo});
+                        if(vm != null) {
+                          uo.ProvisionContext.VMPublisher = vm.Publisher;
+                          uo.ProvisionContext.VMOffer = vm.Offer;
+                          uo.ProvisionContext.VMSKU = vm.Sku;
+                          uo.ProvisionContext.VMVersion = vm.Version;
+                          this.setState({userObject:uo});
+                        }
+                        else {
+                          uo.ProvisionContext.VMPublisher = '';
+                          uo.ProvisionContext.VMOffer = '';
+                          uo.ProvisionContext.VMSKU = '';
+                          uo.ProvisionContext.VMVersion = '';
+                          this.setState({userObject:uo});
+                        }
                       }
                     }/>
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
                 <Grid item sm={3}>
                     <label>Admin Username</label>
                 </Grid>
@@ -186,18 +202,42 @@ export default class VMPropPanel extends Component {
                     }} />
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
                 <Grid item sm={3}>
                     <label>Admin Password</label>
                 </Grid>
                 <Grid item>
-                  <input id="icon-display-name" type="text" class="bp3-input .modifier"
+                  <InputGroup
+                      placeholder="Enter your password..."
+                      value={this.state.userObject.ProvisionContext.AdminPassword}
+                      onChange={(e) => {
+                        var uo = this.state.userObject;
+                        uo.ProvisionContext.AdminPassword = e.target.value
+                        this.setState({userObject:uo});
+                      }}
+                      rightElement={
+                        <Tooltip content={`${this.state.showPassword ? "Hide" : "Show"} Password`}>
+                            <Button
+                                icon={this.state.showPassword ? "unlock" : "lock"}
+                                intent={Intent.WARNING}
+                                minimal={true}
+                                onClick={this.handleLockClick}
+                            />
+                        </Tooltip>
+                      }
+                      type={this.state.showPassword ? "text" : "password"} />
+                  
+                  {/* <input id="icon-display-name" type="text" class="bp3-input .modifier"
                     value={this.state.userObject.ProvisionContext.AdminPassword} 
                     onChange={(e) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.AdminPassword = e.target.value
                       this.setState({userObject:uo});
-                    }} />
+                    }} /> */}
+                </Grid>
+                <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+                  <Typography fontSize={6}>(Workbench will NOT persist your username and password,
+                  only use them for provisioning)</Typography>
                 </Grid>
               </Grid>
             </Grid>
@@ -229,12 +269,25 @@ export default class VMPropPanel extends Component {
     }
     this.setState({userObject: userObj});
   }
-  saveForm = () => {
-      this.drawerClose();
+
+  lockButton = () => {
+      return (
+        <Tooltip content={`${this.state.showPassword ? "Hide" : "Show"} Password`}>
+            <Button
+                icon={this.state.showPassword ? "unlock" : "lock"}
+                intent={Intent.WARNING}
+                minimal={true}
+                onClick={this.handleLockClick}
+            />
+        </Tooltip>
+      );
   }
+  handleLockClick = () => this.setState({ showPassword: !this.state.showPassword });
+
+
   drawerClose = () => {
     this.state.saveCallback(this.state.userObject);
-      this.setState({ isOpen: false});
+    this.setState({ isOpen: false});
   }
 
   handleChange = (event, newVal) => {

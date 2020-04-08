@@ -27,24 +27,27 @@ namespace AzW.Infrastructure.Data
         public async Task<bool> IsVMImageCacheExistAsync()
         {
            //check first key exist
-           var exist = await _redis.ExistsAsync(VMImageKeyPrefix + "128technology 128t networking platform");
+           var exist = await _redis.ExistsAsync("128technology 128t networking platform");
            if(exist)
                 return true;
            else
                 return false;
         }
 
-        public async Task SetVMImageAsync(string skuName, VMImage value)
+        public async Task SetVMImageAsync(string key, VMImage value)
         {   
-            string vmimgKey = VMImageKeyPrefix + skuName;
-            await _redis.AddAsync<VMImage>(vmimgKey, value, TimeSpan.FromDays(30));
+            await _redis.AddAsync<VMImage>(key, value, TimeSpan.FromDays(30));
         }
 
         public async Task<IEnumerable<VMImage>> SearchVMImagesAsync(string skuNamePattern)
         {
-            var keys = await _redis.SearchKeysAsync("*" + skuNamePattern + "*");
-            //var vmImagesKV = await _redis.GetAllAsync<VMImage>(keys);
+            IEnumerable<string> keys = await _redis.SearchKeysAsync(skuNamePattern + "*");
+
+            if(keys.Count() == 0)
+                keys = await _redis.SearchKeysAsync("*" + skuNamePattern + "*");
+
             var vmImagesKV = await _redis.GetAllAsync<VMImage>(keys);
+
             return vmImagesKV.Values;
         }
 
