@@ -115,7 +115,8 @@ export default class VMPropPanel extends Component {
                     <label>Resource Group</label>
                 </Grid>
                 <Grid item>
-                  <SelectResourceGroup SelectedResourceGroup={this.state.userObject.ProvisionContext.ResourceGroupName}
+                  <SelectResourceGroup
+                   SelectedResourceGroup={this.state.userObject.ProvisionContext.ResourceGroupName}
                    onValueChange={
                     (rg) => {
                       var uo = this.state.userObject;
@@ -130,7 +131,8 @@ export default class VMPropPanel extends Component {
                     <label>Location</label>
                 </Grid>
                 <Grid item>
-                  <SelectLocation SelectedLocation={this.state.userObject.ProvisionContext.Location}
+                  <SelectLocation
+                   SelectedLocation={this.state.userObject.ProvisionContext.Location}
                    onValueChange={
                     (location) => {
                       var uo = this.state.userObject;
@@ -153,6 +155,7 @@ export default class VMPropPanel extends Component {
                   <InputGroup
                   disabled={!this.state.userObject.ProvisionContext.HasPublicIP}
                   leftIcon="cloud"
+                  value={this.state.userObject.ProvisionContext.PublicIPName}
                   onChange={(e) => {
                     var uo = this.state.userObject;
                     uo.ProvisionContext.PublicIPName = e.target.value
@@ -167,7 +170,9 @@ export default class VMPropPanel extends Component {
                   <label>VM Images</label>
                 </Grid>
                 <Grid item >
-                  <SelectVMImage onValueChange={
+                  <SelectVMImage
+                   SelectedImageName = {this.state.userObject.ProvisionContext.VMSKU}
+                   onValueChange={
                       (vm) => {
                         var uo = this.state.userObject;
                         if(vm != null) {
@@ -226,14 +231,6 @@ export default class VMPropPanel extends Component {
                         </Tooltip>
                       }
                       type={this.state.showPassword ? "text" : "password"} />
-                  
-                  {/* <input id="icon-display-name" type="text" class="bp3-input .modifier"
-                    value={this.state.userObject.ProvisionContext.AdminPassword} 
-                    onChange={(e) => {
-                      var uo = this.state.userObject;
-                      uo.ProvisionContext.AdminPassword = e.target.value
-                      this.setState({userObject:uo});
-                    }} /> */}
                 </Grid>
                 <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
                   <Typography fontSize={6}>(Workbench will NOT persist your username and password,

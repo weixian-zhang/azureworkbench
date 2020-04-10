@@ -24,14 +24,14 @@ namespace AzW.Web.API
         }
 
         [HttpPost("deploy")]
-        public async Task Provision([FromBody] ProvisionParameters parameters)
+        public async Task<ProvisionResult> Provision([FromBody] ProvisionParameters parameters)
         {
             string accessToken = GetUserIdentity().AccessToken;
 
             IProvisionService provisionSvc =
                 new ProvisionService(parameters.SubscriptionId, accessToken, _secret);
 
-            await provisionSvc.ProvisionAsync(parameters.ProvisionContexts);
+            return await provisionSvc.ProvisionAsync(parameters.ProvisionContexts);
         }
 
         private WorkbenchSecret _secret;

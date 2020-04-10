@@ -1,12 +1,9 @@
 import React, { Component } from "react";
 import { Switch } from "react-router-dom";
 import { connect } from "react-redux";
-import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import MainWorkbench from "./components/Workbench"
 import { msalLoginAsync } from "./redux/actions";
-import {addDiagram, deleteDiagram, addVertex} from './redux/actions/graphActions';
-import { Route, Link, BrowserRouter as Router } from 'react-router-dom'
-import axios from "axios";
+import { Route, BrowserRouter as Router } from 'react-router-dom'
 
 
 class App extends Component {

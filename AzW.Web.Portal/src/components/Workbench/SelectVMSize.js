@@ -1,12 +1,12 @@
 import React, { Component } from "reactn";
-import {MenuItem, MenuDivider} from "@blueprintjs/core";
+import { MenuItem, MenuDivider} from "@blueprintjs/core";
 import ComputeService from '../../services/ComputeService';
 
 import Utils from './Helpers/Utils';
 import {Suggest} from "@blueprintjs/select";
 import VMimage from "../../models/services/VMimage";
 
-export default class SelectVMImage extends Component {
+export default class SelectVMSize extends Component {
     constructor(props) {
         super(props);
 

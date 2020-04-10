@@ -188,7 +188,6 @@ namespace AzW.Web.API
                     (_secrets.RedisConnString, _secrets.RedisHost, _secrets.RedisPassword);
             });
 
-
             var html2pdfConverter = CreateDink2PDFLibwkhtmltoxConverter();
              services.AddSingleton<SynchronizedConverter>(sp => {return html2pdfConverter ;} );
         }

@@ -14,11 +14,12 @@ namespace AzW.Model
           public bool HasPublicIP { get; set; }
           public string PublicIPName { get; set; }
 
-          public string Publisher { get; set; }
-          public string Offer { get; set; }
-          public string SKU { get; set; }
-          public string Version { get; set; }
+          public string VMPublisher { get; set; }
+          public string VMOffer { get; set; }
+          public string VMSKU { get; set; }
+          public string VMVersion { get; set; }
           public string AdminUsername { get; set; }
           public string AdminPassword { get; set; }
+          public string SizeName { get; set; }
      }
  }

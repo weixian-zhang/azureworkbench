@@ -15,12 +15,14 @@ export default class NLB
             
             Name: '',
             Location: '',
-            Tags: [],
-
-            PublicIP: false,
-            IsInternal: false,
-            VNetAddress: '',
-            SubnetName: ''
+            ResourceGroupName: '',
+            IsInternalNLB: false,
+            IsStandardSku: true,
+            VNetName: '',
+            SubnetName: '',
+            FrontendPort: 443,
+            BackendpoolName: '',
+            LoadBalancingRuleName: ''
         }; 
         this.CalculatorContext = {
             IsFree: false,

@@ -9,6 +9,6 @@ namespace AzW.Infrastructure.AzureServices
 {
     public interface IProvisionService
     {
-        Task ProvisionAsync(dynamic[] provisionContexts);
+        Task<ProvisionResult> ProvisionAsync(dynamic[] provisionContexts);
     }
 }

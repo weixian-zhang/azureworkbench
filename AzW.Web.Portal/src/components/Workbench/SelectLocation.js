@@ -109,8 +109,4 @@ export default class SelectLocation extends Component {
         if(!Utils.IsNullOrUndefine(previouslySelectedValue))
             this.setState({selectedValue:previouslySelectedValue});
     }
-
-    // getCurrentValue() {
-    //     return this.state.currentLocation;
-    // }
 }

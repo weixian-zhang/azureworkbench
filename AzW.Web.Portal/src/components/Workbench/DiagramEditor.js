@@ -1,6 +1,6 @@
 
 import React, { Component } from "react";
-import Workspace from './Workspace';
+import MySpace from './MySpace';
 import OverlaySaveToWorkspace from './OverlaySaveToWorkspace';
 import {InputGroup, Classes, Button, Intent, Overlay, Toaster, Position} from "@blueprintjs/core";
 
@@ -236,7 +236,7 @@ import Toast from './Helpers/Toast';
         <OverlayPreviewDiagram ref={this.previewOverlay} />
         <StylePropPanel ref={this.stylePanel} MxGraphManager={this.graphManager} />
         <OverlaySaveToWorkspace ref={this.overlaySaveToWorkspace} DiagramEditor={this} />
-        <Workspace ref={this.workspace} DiagramEditor={this} Index={this.Index} />
+        <MySpace ref={this.workspace} DiagramEditor={this} Index={this.Index} />
         <AppServicePropPanel ref={this.appsvcPropPanel} />
         <ASEPropPanel ref={this.asePropPanel} />
         <FuncPropPanel ref={this.funcPropPanel} />
@@ -1740,23 +1740,35 @@ addUpDownLeftRightArrowToMoveCells() {
 
   addNLB = (dropContext) => {
       
-      var parent = this.graph.getDefaultParent();
-      var parentCell = this.graph.getCellAt(dropContext.x, dropContext.y);
+      // var parent = this.graph.getDefaultParent();
+      // var parentCell = this.graph.getCellAt(dropContext.x, dropContext.y);
 
-      if(parentCell != null){
-        var cellType = JSON.parse(parentCell.value).GraphModel.ResourceType;
-        if(cellType == 'subnet')
-            parent = parentCell;
-      }
-      
-      var dropContext = this.graphManager.translateToParentGeometryPoint(dropContext, parent);
+      // if(parentCell != null){
+      //   var cellType = JSON.parse(parentCell.value).GraphModel.ResourceType;
+      //   if(cellType == 'subnet')
+      //       parent = parentCell;
+      // }
 
       var nlb = new NLB();
         nlb.GraphModel.ResourceType = 'nlb';
         nlb.GraphModel.Id = this.shortUID.randomUUID(6);
+        nlb.GraphModel.DisplayName = 'azure load balancer';
         nlb.ProvisionContext.Name = "azlb_" + nlb.GraphModel.Id;
-        nlb.GraphModel.DisplayName = 'azure load balancer'
-        var nlbJsonString = JSON.stringify(nlb);
+        
+      var result = this.azureValidator.isResourceDropinSubnet();
+
+      var parent = this.graph.getDefaultParent(); //set default parent, external NLB
+
+      if(result.isInSubnet)
+      {
+          nlb.ProvisionContext.IsInternalNLB = true;
+          parent = result.subnetCell;
+          var subnetCenterPt = Utils.getCellCenterPoint(result.subnetCell);
+          dropContext.x = subnetCenterPt.x;
+          dropContext.y = subnetCenterPt.y;
+      }
+      
+      var nlbJsonString = JSON.stringify(nlb);
 
       this.graph.insertVertex
         (parent, nlb.GraphModel.IconId ,nlbJsonString, dropContext.x, dropContext.y, 30, 30,
@@ -3502,7 +3514,7 @@ addUpDownLeftRightArrowToMoveCells() {
     return document.getElementById('diagramEditor').lastChild;
   }
 
-  deployDiagramToAzure(subscription) {
+  deployDiagramToAzure = (subscription) => {
 
       var cells = this.graph.getChildVertices(this.graph.getDefaultParent());
 
@@ -3522,10 +3534,10 @@ addUpDownLeftRightArrowToMoveCells() {
 
       this.provisionService.provisionDiagram(subscription.SubscriptionId, contexts,
         function onSuccess() {
-
+          //Toast.show("success", 2000, 'Diagram successfully deployed');
         },
         function onFailure(error) {
-
+          //Toast.show("danger", 6000, error);
         }
       );
 

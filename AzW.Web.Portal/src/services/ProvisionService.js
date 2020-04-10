@@ -14,6 +14,9 @@ export default class ProvisionService
         if(!this.authService.isUserLogin())
             return;
         
+        var thisComp = this;
+        Toast.show("none", 2000, "Diagram sent to server for provisioning, you can continue your work")
+
         var user = this.authService.getUserProfile();
 
         var param = {
@@ -29,14 +32,18 @@ export default class ProvisionService
             }
         })
         .then(function (response) {
-            onSuccess();
+            var result = response.data;
+
+            if(result.isSuccessful) {
+                Toast.show('success', 2000, 'Diagram deployed successfully');
+            }
+            else { 
+                Toast.show('danger', 5000, result.errorMessage);
+            }
+                
         })
         .catch(function (error) {
-          console.log(error);
-          onFailure(Messages.GeneralHttpError());
+            Toast.show('danger', 3000, Messages.GeneralHttpError());
         })
-        .finally(function () {
-          
-        });
     }
 }

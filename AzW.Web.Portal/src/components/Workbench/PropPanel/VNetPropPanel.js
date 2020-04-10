@@ -111,7 +111,9 @@ export default class VNetPropPanel extends Component {
                     <label>Resource Group</label>
                 </Grid>
                 <Grid item>
-                  <SelectResourceGroup onValueChange={
+                  <SelectResourceGroup
+                   SelectedResourceGroup={this.state.userObject.ProvisionContext.ResourceGroupName}
+                   onValueChange={
                     (rg) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.ResourceGroupName = rg
@@ -125,7 +127,9 @@ export default class VNetPropPanel extends Component {
                     <label>Location</label>
                 </Grid>
                 <Grid item>
-                  <SelectLocation onValueChange={
+                  <SelectLocation
+                  SelectedLocation={this.state.userObject.ProvisionContext.Location}
+                  onValueChange={
                     (location) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.Location = location

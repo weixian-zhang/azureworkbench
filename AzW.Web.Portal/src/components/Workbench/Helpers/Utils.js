@@ -1,4 +1,5 @@
 import ResourceType from '../../../models/ResourceType';
+import { mxCell } from 'mxgraph-js';
 
 export default class Utils
 {
@@ -7,8 +8,14 @@ export default class Utils
         try {
             if(str == null)
               return {isUserObject: false, userObject: null};
+            
+            var usrObj = null;
 
-            var usrObj = JSON.parse(str);
+            if(str instanceof mxCell)
+                usrObj = JSON.parse(str.value)
+            else if((typeof str) == "string")
+                usrObj = JSON.parse(str);
+
             return {isUserObject: true, userObject: usrObj};
         } 
         catch (e) {

@@ -1,4 +1,5 @@
 import VMimage from "../models/services/VMimage";
+import VMSize from "../models/services/VMSize";
 import axios from "axios";
 import AuthService from './AuthService';
 import Toast from '../components/Workbench/Helpers/Toast';
@@ -9,6 +10,43 @@ export default class ComputeService
     constructor(){
         this.authService = new AuthService();
     }
+
+    async getVMSizes( onSuccess, onFailure) {
+      if(!this.authService.isUserLogin())
+      {
+        Toast.show("warning", 2000, "Please login/re-login...")
+        return;
+      }
+
+      var user = this.authService.getUserProfile();
+
+      axios.get('api/compute/size', 
+      {
+        headers: {
+
+          'Authorization': 'Bearer ' + user.AccessToken,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(function (response) {
+        if(response.data != null)
+        {
+          var vmsizes= [];
+          response.data.map(vmsize => {
+            
+            var vmsize = new VMSize();
+            vmsize.Name = vmsize.Name;
+            vmsizes.push(vmsize);
+          });
+          onSuccess(vmsizes);
+        }
+      })
+      .catch(function (error) {
+        Toast.show("warning", 4000, Messages.GeneralHttpError());
+        onFailure(error)
+      }); 
+
+    } 
 
     async searchVMImages(searchPattern, onSuccess, onFailure){
         if(!this.authService.isUserLogin())

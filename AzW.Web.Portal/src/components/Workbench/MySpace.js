@@ -18,7 +18,7 @@ import AuthService from '../../services/AuthService';
 import LocalStorage from '../../services/LocalStorage';
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
 
-export default class Workspace extends Component {
+export default class MySpace extends Component {
     constructor(props) {
       super(props);
         
@@ -75,7 +75,7 @@ export default class Workspace extends Component {
                      </div>
                     }
                     <hr />
-                    <H4 align={Alignment.LEFT}>Diagrams in your Workspace</H4> 
+                    <H4 align={Alignment.LEFT}>Diagrams in My Space</H4> 
                     {
                         (!this.authService.isUserLogin()) ? 
                         <Label>

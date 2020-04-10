@@ -1,5 +1,5 @@
 import React, { Component  } from "reactn";
-import {MenuItem, Card,Elevation,Position, FormGroup, InputGroup, Button, Overlay, Intent} from "@blueprintjs/core";
+import {MenuItem, Card,Elevation, Button, Overlay, Intent} from "@blueprintjs/core";
 import AuthService from '../../services/AuthService';
 import ARMService from '../../services/ARMService';
 import Subscription from '../../models/services/Subscription';
@@ -23,11 +23,13 @@ export default class OverlayProvision extends Component {
       this.state = {
         isOpen: false,
         loading: false,
+        provisionBtnLoading: false,
         currentSubscription: null,
         subscriptions: [],
         header: null,
         newRGName: '',
         location: ''
+        
       }
     }
 
@@ -40,7 +42,7 @@ export default class OverlayProvision extends Component {
             <Overlay isOpen={this.state.isOpen} onClose={this.handleClose}>
                 <Card className='provision-overlay-box' interactive={false} elevation={Elevation.ONE}>
                     <Typography variant="h6">
-                        Azure Settings
+                        Subscription & Resource Group
                     </Typography>
                     <Grid
                         container
@@ -76,7 +78,7 @@ export default class OverlayProvision extends Component {
                                 <Grid item sm={12}/>
                                 <Grid item sm={12}>
                                     <Button intent={Intent.PRIMARY} text="Deploy Diagram to Azure" icon="delta"
-                                            onClick={this.provisionDiagram} style={{marginLeft: '20px'}}/>
+                                            loading={this.state.provisionBtnLoading} onClick={this.provisionDiagram} style={{marginLeft: '20px'}}/>
                                 </Grid>
                                 <Grid item sm={12}>
                                     <div className="bp3-running-text" variant="body1">
@@ -160,7 +162,7 @@ export default class OverlayProvision extends Component {
                     thisComp.rgNameInput.current.value = '';
                 },
                 function onFailure(error) {
-                    this.setState({loading: false});
+                    thisComp.setState({loading: false});
 
                     Toast.show(Intent.DANGER,8000, error);
                     return;
@@ -170,8 +172,12 @@ export default class OverlayProvision extends Component {
     }
 
     provisionDiagram = () => {
+
         if(Utils.IsNullOrUndefine(this.global.currentSubscription))
+        {
+            Toast.show('none', 2000, "Please select a subscription");
             return;
+        }
 
         this.state.header.deployDiagramToAzure(this.global.currentSubscription);
     }
