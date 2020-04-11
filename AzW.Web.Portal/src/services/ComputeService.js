@@ -20,7 +20,7 @@ export default class ComputeService
 
       var user = this.authService.getUserProfile();
 
-      axios.get('api/compute/size', 
+      axios.get('api/compute/vmsize', 
       {
         headers: {
 
@@ -32,14 +32,18 @@ export default class ComputeService
         if(response.data != null)
         {
           var vmsizes= [];
-          response.data.map(vmsize => {
-            
+          response.data.map(x => {
             var vmsize = new VMSize();
-            vmsize.Name = vmsize.Name;
+            vmsize.Name = x.name;
+            vmsize.MemoryInMB = x.memoryInMB
+            vmsize.NumberOfCores = x.numberOfCores;
+            vmsize.MaxNoOfDataDisks = x.maxNoOfDataDisks;
             vmsizes.push(vmsize);
           });
           onSuccess(vmsizes);
         }
+        else
+        onSuccess([]);
       })
       .catch(function (error) {
         Toast.show("warning", 4000, Messages.GeneralHttpError());

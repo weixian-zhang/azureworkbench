@@ -27,7 +27,10 @@ export default class VM
             VMPublisher: '',
             VMOffer: '',
             VMSKU: '',
-            VMVersion: ''
+            VMVersion: '',
+
+            SizeName: '',
+            IsLinux: false
         };
         this.CalculatorContext = {
             IsFree: false,

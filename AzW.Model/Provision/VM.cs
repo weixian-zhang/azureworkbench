@@ -21,5 +21,6 @@ namespace AzW.Model
           public string AdminUsername { get; set; }
           public string AdminPassword { get; set; }
           public string SizeName { get; set; }
+          public bool IsLinux { get; set; }
      }
  }

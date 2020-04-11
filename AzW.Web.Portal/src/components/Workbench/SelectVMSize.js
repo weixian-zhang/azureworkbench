@@ -1,9 +1,10 @@
 import React, { Component } from "reactn";
-import { MenuItem, MenuDivider} from "@blueprintjs/core";
+import { MenuItem, MenuDivider, Card, Button} from "@blueprintjs/core";
+import Typography from '@material-ui/core/Typography';
 import ComputeService from '../../services/ComputeService';
 
 import Utils from './Helpers/Utils';
-import {Suggest} from "@blueprintjs/select";
+import {Select} from "@blueprintjs/select";
 import VMimage from "../../models/services/VMimage";
 
 export default class SelectVMSize extends Component {
@@ -11,101 +12,114 @@ export default class SelectVMSize extends Component {
         super(props);
 
         this.state = {
-            vmImages: [],
-            searchQuery: '',
+            vmSizes: [],
+            filteredVMSizes: [],
+            //searchQuery: '',
             inputValue: '',
             isLoading: false,
-            selectedImage: ''
+            selectedValue: '',
+            isSelectPopoverOpen: false
         };
 
         this.computeSvc = new ComputeService();
     }
 
     componentDidMount() {
+        this.getVMSizes();
         this.initPreviouslySelectedValue();
     }
 
     render = () => {
         return (
-            <Suggest
-                items={this.state.vmImages}
-                itemRenderer={this.renderImages}
-                inputValueRenderer={this.searchboxValueRenderer}
+            <Select
+                items={this.state.filteredVMSizes}
+                itemRenderer={this.renderSizes}
+                filterable={true}
+                escape
                 noResults={<MenuItem disabled={true} text="No images" />}
-                query={this.state.searchQuery}
-                onQueryChange={this.onSearchTextChange}
+                //query={this.state.searchQuery}
+                onQueryChange={this.searchQueryChange}
                 onItemSelect={this.onImageSelected}
                 closeOnSelect={true}
                 fill={true}
-                inputProps={{type:"search", placeholder:"Search VM images...", leftIcon:'search'}}>
-    
-            </Suggest>
+                popoverProps={{isOpen:this.state.isSelectPopoverOpen,canEscapeKeyClose:true}}>
+                <Button text={this.state.selectedValue == '' ? 'VM Size' : Utils.limitTextLength(this.state.selectedValue,15)}
+                    onClick={this.vmSizeSelectBtnClock}
+                    alignText='left' loading={this.state.isLoading}
+                    rightIcon="double-caret-vertical" style={{width: '170px', maxWidth: '170px'} }/>
+            </Select>
         );
     }
 
-    onSearchTextChange = (searchText, event) => {
+    searchQueryChange = (newQuery) => {
+        if(newQuery === "")
+            this.setState({filteredVMSizes: this.state.vmSizes});
+        else
+        {
+            this.setState({filteredVMSizes: this.state.vmSizes.filter(x => String(x.Name).toLowerCase().includes(newQuery))});
+        }
+    }
 
+    vmSizeSelectBtnClock = () => {
+        if(!this.state.isSelectPopoverOpen)
+            this.setState({isSelectPopoverOpen:true});
+        else
+            this.setState({isSelectPopoverOpen:false});
+    }
+
+    getVMSizes = () => {
+
+        this.setState({isLoading: true});
         var thisComp = this;
 
-        if(!Utils.IsNullOrUndefine(searchText) && String(searchText).length >= 3)
-            {
-                this.setState({isLoading: true});
+        this.computeSvc.getVMSizes(
+            function onSuccess(vmSizes) {
+                thisComp.setState({isLoading: false});
 
-                this.setState({vmImages: []}, () => { //get new images after setstate takes effect
-                    this.computeSvc.searchVMImages(searchText,
-                        function onSuccess(vmImgs){
-                            //thisComp.setState({isLoading: false});
-                            thisComp.setState({vmImages: vmImgs});
-                        },
-                        function onFailure(error) {
-                            //thisComp.setState({isLoading: false});
-                        })
-                });
+                thisComp.setState({vmSizes: vmSizes, filteredVMSizes: vmSizes});
+            },
+            function onFailure() {
+                thisComp.setState({isLoading: false});
             }
+        );
     }
 
-    searchboxValueRenderer = (vmImg) => {
-        return vmImg.Sku;
-    }
-
-    renderImages = (img, {handleClick}) => {
+    renderSizes = (size, {handleClick}) => {
         return (
-            <div>
-                <MenuItem 
-                    text={img.DisplayName }
-                    data-displayname={img.DisplayName}
-                    data-publisher={img.Publisher}
-                    data-offer={img.Offer}
-                    data-sku={img.Sku}
-                    data-version={img.Version}
-                    onClick={this.onImageSelected}>
-                </MenuItem>
+            <div data-sizename={size.Name} onClick={this.onSizeSelected} style={{marginBottom:'5px'}}>
+                <Typography variant='button' style={{fontWeight:'bold'}}>
+                    {size.Name}
+                </Typography>
+                <Typography style={{fontSize:11}}>
+                    MemoryInGB: { Math.ceil(size.MemoryInMB / 1000) }                
+                </Typography>
+                <Typography style={{fontSize:11}}>
+                    NoOfCores: {size.NumberOfCores}                
+                </Typography>
+                <Typography style={{fontSize:11}}>
+                    MaxNoOfDataDisks: {size.MaxNoOfDataDisks}                
+                </Typography>
                 <MenuDivider />
             </div>
             
         );
     }
 
-    onImageSelected = (item, event) => {
+    onSizeSelected = (item, event) => {
 
-        var vmImg = new VMimage
-
-        var displayName = item.currentTarget.dataset.displayname;
-        vmImg.Publisher = item.currentTarget.dataset.publisher;
-        vmImg.Offer = item.currentTarget.dataset.offer;
-        vmImg.Sku = item.currentTarget.dataset.sku;
-        vmImg.Version = item.currentTarget.dataset.version;
+        var sizeName = item.currentTarget.dataset.sizename;
         
-        this.setState({
-            searchQuery: displayName});
+        this.setState({selectedValue: sizeName});
 
-        this.props.onValueChange(vmImg);
+        this.props.onValueChange(sizeName);
+
+        this.setState({isSelectPopoverOpen: false});
     }
 
     initPreviouslySelectedValue = () =>{
-        var previouslySelectedValue = this.props.SelectedImageName;
+        var previouslySelectedValue = this.props.SelectedSizeName;
 
         if(!Utils.IsNullOrUndefine(previouslySelectedValue))
-            this.setState({searchQuery:previouslySelectedValue});
+            this.setState({selectedValue:previouslySelectedValue});
     }
 }

@@ -31,31 +31,12 @@ namespace AzW.Web.API
            return vmImages;
         }
 
-        [HttpGet("size")]
-        public async Task<IEnumerable<VMSize>> SearchVMSizes(string location, string subscription)
+        [HttpGet("vmsize")]
+        public async Task<IEnumerable<VMSize>> SearchVMSizes()
         {
-           string accessToken = GetUserIdentity().AccessToken;
+           var sizes = await _cache.GetVMSizeAsync();
 
-           IComputeInfoService computeInfoService=
-                new ComputeInfoService(accessToken, _secret);
-
-           var vmSizes =
-            await computeInfoService.GetVMSizes(location, subscription);
-        
-            var vmSizeList = new List<VMSize>();
-
-            foreach(var size in vmSizes)
-            {
-                vmSizeList.Add(new VMSize() 
-                {
-                    Name = size.Name,
-                    MemoryInMB = size.MemoryInMB,
-                    NumberOfCores =  size.NumberOfCores,
-                    MaxNoOfDataDisks = size.MaxDataDiskCount
-                });
-            }
-
-           return vmSizeList;
+           return sizes;
         }
 
         private ICacheRepository _cache;

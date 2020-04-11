@@ -61,6 +61,15 @@ namespace AzW.Infrastructure.Data
             return vmImagesKV.Values;
         }
 
+        public async Task<IEnumerable<VMSize>> GetVMSizeAsync()
+        {
+            IEnumerable<string> keys = await _redis.SearchKeysAsync("vmsize*");
+
+            var vmSizeKV = await _redis.GetAllAsync<VMSize>(keys);
+
+            return vmSizeKV.Values;
+        }
+
         private void InitRedisClient()
         {
             var redisConfiguration = new RedisConfiguration()

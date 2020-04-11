@@ -123,12 +123,24 @@ namespace AzW.Infrastructure.AzureServices
             }
             else
                 vmContDefinition = withPip.WithoutPrimaryPublicIPAddress();
-
-            await vmContDefinition.WithSpecificWindowsImageVersion(imgRef)
-            .WithAdminUsername(vm.AdminUsername)
-            .WithAdminPassword(vm.AdminPassword)
-            .WithSize(vm.SizeName)
-            .CreateAsync();
+            
+            if(vm.IsLinux)
+            {
+                await vmContDefinition.WithSpecificLinuxImageVersion(imgRef)
+                    .WithRootUsername(vm.AdminUsername)
+                    .WithRootPassword(vm.AdminPassword)
+                    .WithSize(vm.SizeName)
+                    .CreateAsync();
+            }
+            else
+            {
+                await vmContDefinition.WithSpecificWindowsImageVersion(imgRef)
+                    .WithAdminUsername(vm.AdminUsername)
+                    .WithAdminPassword(vm.AdminPassword)
+                    .WithSize(vm.SizeName)
+                    .CreateAsync();
+            }
+            
         }
     
         private async Task CreateNLBAsync(NLB nlb)

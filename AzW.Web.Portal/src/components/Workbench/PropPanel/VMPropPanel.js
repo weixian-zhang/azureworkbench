@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import SelectLocation from '../SelectLocation';
 import SelectResourceGroup from '../SelectResourceGroup';
 import SelectVMImage from '../SelectVMImage';
+import SelectVMSize from '../SelectVMSize';
 
 export default class VMPropPanel extends Component {
   constructor(props) {
@@ -191,6 +192,32 @@ export default class VMPropPanel extends Component {
                         }
                       }
                     }/>
+                </Grid>
+              </Grid>
+              <Grid container item direction="row" xs="12" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
+                <Grid item sm={3}>
+                  <label>VM Size</label>
+                </Grid>
+                <Grid item >
+                  <SelectVMSize
+                   SelectedSizeName = {this.state.userObject.ProvisionContext.SizeName}
+                   onValueChange={
+                      (sizeName) => {
+                        var uo = this.state.userObject;
+                        uo.ProvisionContext.SizeName = sizeName;
+                        this.setState({userObject:uo});
+                      }
+                    }/>
+                </Grid>
+              </Grid>
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
+                <Grid item>
+                  <Switch checked={this.state.userObject.ProvisionContext.IsLinux} label="Is Linux"
+                    onChange={(e) => {
+                        var uo = this.state.userObject;
+                        uo.ProvisionContext.IsLinux = e.target.checked
+                        this.setState({userObject:uo});
+                    }} />
                 </Grid>
               </Grid>
               <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>

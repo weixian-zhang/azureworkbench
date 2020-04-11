@@ -15,5 +15,7 @@ namespace AzW.Infrastructure.Data
         Task SetVMSizeAsync(string key, VMSize value);
 
         Task<IEnumerable<VMImage>> SearchVMImagesAsync(string keyPattern);
+
+        Task<IEnumerable<VMSize>> GetVMSizeAsync();
     }
 }
