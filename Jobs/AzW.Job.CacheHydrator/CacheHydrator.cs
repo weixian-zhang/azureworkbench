@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,8 +33,9 @@ namespace AzW.Job.CacheHydrator
         }
 
         [FunctionName("CacheHydrator")]
-        public async Task Run([TimerTrigger("*/5 * * * * *")]TimerInfo myTimer, Microsoft.Extensions.Logging.ILogger log)
+        public async Task Run([TimerTrigger("* */30 * * * *")]TimerInfo myTimer, Microsoft.Extensions.Logging.ILogger log)
         {
+            await HydrateVMSizes();
             
             if(!await _cache.IsVMImageCacheExistAsync())
             {
@@ -50,6 +52,60 @@ namespace AzW.Job.CacheHydrator
                     }
                 }
             }
+        }
+
+        public async Task HydrateVMSizes() 
+        {
+            if(await _cache.IsVMSizeExistAsync())
+                return;
+
+            var sdkCred =
+                    new ServiceClientCredential(_secret.TenantId, _secret.ClientId, _secret.ClientSecret);
+
+            var azureCreds = new AzureCredentials
+                (sdkCred, null, _secret.TenantId, AzureEnvironment.AzureGlobalCloud);
+            
+            var azure = Azure.Configure().Authenticate(azureCreds);
+
+            var vmSizes = await azure
+                    .WithSubscription(_secret.SubscriptionId)
+                    .VirtualMachines.Sizes.ListByRegionAsync("southeastasia");
+                    
+                foreach(var size in vmSizes)
+                {
+                    var vmSize = new VMSize() 
+                    {
+                        Name = size.Name,
+                        MemoryInMB = size.MemoryInMB,
+                        NumberOfCores =  size.NumberOfCores,
+                        MaxNoOfDataDisks = size.MaxDataDiskCount
+                    };
+
+                    string cacheKey = "vmsize" + " " +  size.Name;
+                    await _cache.SetVMSizeAsync(cacheKey, vmSize);
+                }
+
+            // var props = TypeDescriptor.GetProperties(typeof(Region));
+
+            // foreach(Region reg in Region.Values)
+            // {
+            //     if(reg.Name.Contains("gov"))
+            //         continue;
+
+            //    IEnumerable<IVirtualMachineSize> vmSizes;
+
+            //    try
+            //    {
+                  
+            //    }
+            //    catch
+            //    {
+            //        continue;
+            //    }
+               
+                 
+            // }
+
         }
 
         public IEnumerable<VMImage> GetImageReferences()

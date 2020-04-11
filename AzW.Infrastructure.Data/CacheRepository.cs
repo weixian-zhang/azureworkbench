@@ -34,9 +34,19 @@ namespace AzW.Infrastructure.Data
                 return false;
         }
 
+        public async Task<bool> IsVMSizeExistAsync()
+        {
+           return await _redis.ExistsAsync("vmsize Basic_A0");
+        }
+
         public async Task SetVMImageAsync(string key, VMImage value)
         {   
             await _redis.AddAsync<VMImage>(key, value, TimeSpan.FromDays(30));
+        }
+
+        public async Task SetVMSizeAsync(string key, VMSize value)
+        {   
+            await _redis.AddAsync<VMSize>(key, value, TimeSpan.FromDays(31));
         }
 
         public async Task<IEnumerable<VMImage>> SearchVMImagesAsync(string skuNamePattern)
