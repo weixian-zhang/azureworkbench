@@ -57,6 +57,10 @@ export default class StylePropPanel extends Component {
           key: mxConstants.STYLE_DASHED,
           value: ''
         },
+        shapeRounded: {
+          key: mxConstants.STYLE_ROUNDED,
+          value: ''
+        },
         saveCallback: null,
 
         colors: ["transparent","#ffffff", "#cccccc", "#ededed", "#B2B2B2", "#4C4C4C", "#000000", "#f44336", "#e91e63", "#ddd3ee", "#9c27b0", "#673ab7", "#e6f3f7", "#3f51b5", "#2196f3", "#03a9f4", "#00bcd4", "#009688", "#4caf50", "#8bc34a", "#cddc39", "#ffeb3b", "#ffc107", "#ff9800", "#ff5722", "#795548", "#607d8b"]
@@ -95,7 +99,7 @@ export default class StylePropPanel extends Component {
                  this.renderUIByCellType()
               }
          </Grid>
-         <Grid
+         {/* <Grid
           container
           direction="row"
           justify="center"
@@ -106,7 +110,7 @@ export default class StylePropPanel extends Component {
             <Grid item md={12}>
               <Button alignText="center" className="buttonStretch" text="Save" onClick={this.saveStyle} />
             </Grid>
-          </Grid>
+          </Grid> */}
       </Drawer>
     );
   }
@@ -164,18 +168,22 @@ export default class StylePropPanel extends Component {
     else {
         return (
           <div>
-            <h4>Stroke Color</h4>
-            <CirclePicker colors={this.state.colors} onChangeComplete={this.onShapeStrokeColorChange} />
-            <h4>Background Color</h4>
-            <CirclePicker colors={this.state.colors} onChangeComplete={this.onShapeFillColorChange} />
             <div>
               <br />
               <Switch checked={this.state.shapeBorderDash.value == '1' ? true : false} label="Border Dashed" onChange={this.onShapeBorderDashChange} />
             </div>
             <div>
+              <br />
+              <Switch checked={this.state.shapeRounded.value == '1' ? true : false} label="Border Rounded" onChange={this.onShapeBorderRoundedChange} />
+            </div>
+            <h4>Stroke Color</h4>
+            <CirclePicker colors={this.state.colors} onChangeComplete={this.onShapeStrokeColorChange} />
+            <h4>Background Color</h4>
+            <CirclePicker colors={this.state.colors} onChangeComplete={this.onShapeFillColorChange} />
+            <div>
               <h4>Font Color</h4>
               <CirclePicker colors={this.state.colors} onChangeComplete={this.onFontColorChange} />
-          </div>
+            </div>
           </div>
         );
     }
@@ -242,20 +250,24 @@ export default class StylePropPanel extends Component {
 
       //style for shapes, vnet and subnet
       let propShapeBorderDash =
-      Object.getOwnPropertyDescriptor(styleObj, mxConstants.STYLE_DASHED);
-      this.onShapeBorderDashChange(null, propShapeBorderDash.value);
+        Object.getOwnPropertyDescriptor(styleObj, mxConstants.STYLE_DASHED);
+        this.onShapeBorderDashChange(null, propShapeBorderDash.value);
+
+      let propShapeBorderRounded =
+        Object.getOwnPropertyDescriptor(styleObj, mxConstants.STYLE_ROUNDED);
+        this.onShapeBorderRoundedChange(null, propShapeBorderRounded.value);
 
       let propShapeFill =
-      Object.getOwnPropertyDescriptor(styleObj, mxConstants.STYLE_FILLCOLOR);
-      this.onShapeFillColorChange(null, null, propShapeFill.value);
+        Object.getOwnPropertyDescriptor(styleObj, mxConstants.STYLE_FILLCOLOR);
+        this.onShapeFillColorChange(null, null, propShapeFill.value);
 
       let propShapeStroke =
-      Object.getOwnPropertyDescriptor(styleObj, mxConstants.STYLE_STROKECOLOR);
-      this.onShapeStrokeColorChange(null, null, propShapeStroke.value);
+        Object.getOwnPropertyDescriptor(styleObj, mxConstants.STYLE_STROKECOLOR);
+        this.onShapeStrokeColorChange(null, null, propShapeStroke.value);
 
       let propShapeFontColor =
-      Object.getOwnPropertyDescriptor(styleObj, mxConstants.STYLE_FONTCOLOR);
-      this.onFontColorChange(null, null, propShapeFontColor.value);
+        Object.getOwnPropertyDescriptor(styleObj, mxConstants.STYLE_FONTCOLOR);
+        this.onFontColorChange(null, null, propShapeFontColor.value);
 
       return;
   }
@@ -375,6 +387,20 @@ export default class StylePropPanel extends Component {
     this.setState({shapeBorderDash: shapeBorderDash});
   }
 
+  onShapeBorderRoundedChange = (sender, hydrateFromExisting) => {
+    if(!Utils.IsNullOrUndefine(hydrateFromExisting))
+    {
+      var shapeBorderRounded = this.state.shapeRounded;
+      shapeBorderRounded.value = hydrateFromExisting;
+      this.setState({shapeRounded: shapeBorderRounded});
+      return;
+    }
+
+    var shapeBorderRounded = this.state.shapeRounded;
+    shapeBorderRounded.value = sender.target.checked == true ? '1' : '0';
+    this.setState({shapeRounded: shapeBorderRounded});
+  }
+
   saveStyle = () => {
 
       var cell = this.state.cell;
@@ -398,7 +424,7 @@ export default class StylePropPanel extends Component {
           this.state.strokeColor.key, { value: this.state.strokeColor.value });
 
         this.state.saveCallback(styleObj);
-        this.drawerClose();
+
         return;
       }
 
@@ -411,13 +437,16 @@ export default class StylePropPanel extends Component {
           this.state.fontSize.key, { value: this.state.fontSize.value });
 
         this.state.saveCallback(styleObj);
-        this.drawerClose();
+
         return;
       }
 
       //style for shapes, vnet and subnet
       Object.defineProperty(styleObj, 
         this.state.shapeBorderDash.key, { value: this.state.shapeBorderDash.value });
+
+      Object.defineProperty(styleObj, 
+        this.state.shapeRounded.key, { value: this.state.shapeRounded.value });
 
       Object.defineProperty(styleObj, 
         this.state.shapeFillColor.key, { value: this.state.shapeFillColor.value });
@@ -429,10 +458,10 @@ export default class StylePropPanel extends Component {
         this.state.fontColor.key, { value: this.state.fontColor.value });
         
       this.state.saveCallback(styleObj);
-      this.drawerClose();
   }
 
   drawerClose = () => {
+      this.saveStyle();
       this.setState({ isOpen: false});
   }
 }

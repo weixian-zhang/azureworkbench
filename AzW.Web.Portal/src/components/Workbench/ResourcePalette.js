@@ -4,6 +4,7 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Typography from '@material-ui/core/Typography';
+import Badge from '@material-ui/core/Badge';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { ReactComponent as Circle } from "../../assets/azure_icons/shape-circle.svg";
@@ -420,14 +421,20 @@ export default class ResourcePalette extends Component {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <Typography component={'span'} variant={'body2'}>
-              <div class="tile-panel" ref={this.vmWindowsIcon}>
-                <Tippy content="Windows VM" followCursor={true} placement="bottom">
-                  <VirtualMachine class="azure-rsc-icon" />
-                </Tippy>
-              </div>
+             
+                <div class="tile-panel" ref={this.vmWindowsIcon}>
+                  <Tippy content="Windows VM" followCursor={true} placement="bottom">
+                    <Badge badgeContent={'P'} color="error">
+                      <VirtualMachine class="azure-rsc-icon" />
+                    </Badge>
+                  </Tippy>
+                </div>
+              
               <div class="tile-panel" ref={this.vmLinuxIcon}>
                 <Tippy content="Linux VM" followCursor={true} placement="bottom">
-                  <LinuxVirtualMachine class="azure-rsc-icon" />
+                  <Badge badgeContent={'P'} color="error">
+                    <LinuxVirtualMachine class="azure-rsc-icon" />
+                  </Badge>
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.vmssIcon}>
@@ -459,12 +466,16 @@ export default class ResourcePalette extends Component {
             <Typography component={'span'} variant={'body2'}>
               <div class="tile-panel" ref={this.vnetIcon}>
                 <Tippy content="Virtual Network" followCursor={true} placement="bottom">
-                  <VirtualNetwork class="azure-rsc-icon" />
+                  <Badge badgeContent={'P'} color="error">
+                    <VirtualNetwork class="azure-rsc-icon" />
+                  </Badge>
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.nlbIcon}>
                 <Tippy content="Load Balancer" followCursor={true} placement="bottom">
-                  <LoadBalancer class="azure-rsc-icon" />
+                  <Badge badgeContent={'P'} color="error">
+                    <LoadBalancer class="azure-rsc-icon" />
+                  </Badge>
               </Tippy>
               </div>
               <div class="tile-panel" ref={this.appgwIcon}>
