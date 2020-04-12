@@ -14,6 +14,9 @@ using Microsoft.Azure.Management.Compute.Fluent.Models;
 using Microsoft.Azure.Management.Compute.Fluent.VirtualMachine.Definition;
 using System;
 using Microsoft.Azure.Management.Network.Fluent.Models;
+using Microsoft.Azure.Management.AppService.Fluent;
+using System.Reflection;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Core.ResourceActions;
 
 namespace AzW.Infrastructure.AzureServices
 {
@@ -48,6 +51,10 @@ namespace AzW.Infrastructure.AzureServices
                         case ResourceType.VM:
                             VM vm = jObj.ToObject<VM>();
                             await CreateVMAsync(vm);
+                        break;
+                        case ResourceType.AppService:
+                            WebApp webapp = jObj.ToObject<WebApp>();
+                            await CreateAppService(webapp);
                         break;
                     }
                 }
@@ -146,9 +153,28 @@ namespace AzW.Infrastructure.AzureServices
         private async Task CreateNLBAsync(NLB nlb)
         {
             var sku = LoadBalancerSkuType.Basic;
-
             if(nlb.IsStandardSku)
-                sku = LoadBalancerSkuType.Standard;
+               sku = LoadBalancerSkuType.Standard;
+            
+            ICreatable<IPublicIPAddress> pip = null;
+            if(!nlb.IsInternalNLB)
+            {
+                if(nlb.IsStandardSku)
+                    pip = AzClient.WithSubscription(_subscriptionId)
+                        .PublicIPAddresses
+                        .Define(nlb.PublicIPName)
+                        .WithRegion(nlb.Location)
+                        .WithExistingResourceGroup(nlb.ResourceGroupName)
+                        .WithSku(PublicIPSkuType.Standard)
+                        .WithStaticIP();
+                else
+                    pip = AzClient.WithSubscription(_subscriptionId)
+                        .PublicIPAddresses
+                        .Define(nlb.PublicIPName)
+                        .WithRegion(nlb.Location)
+                        .WithExistingResourceGroup(nlb.ResourceGroupName)
+                        .WithSku(PublicIPSkuType.Basic);
+            }
 
             var nlbDefWithProtocol = AzClient
                 .WithSubscription(_subscriptionId)
@@ -172,11 +198,66 @@ namespace AzW.Infrastructure.AzureServices
             }
             else
                 await nlbDefWithProtocol
-                    .FromNewPublicIPAddress()
+                    .FromNewPublicIPAddress(pip)
                     .FromFrontendPort(nlb.FrontendPort)
                     .ToBackend(nlb.BackendpoolName)
                     .Attach()
                     .WithSku(sku)
+                    .CreateAsync();
+        }
+
+        private async Task CreateAppService(WebApp webapp)
+        {
+
+           FieldInfo tier =
+            typeof(PricingTier).GetFields().FirstOrDefault(x => x.Name == webapp.PricingTier);
+           
+           PricingTier pricingTier = (PricingTier) tier.GetValue(null);
+
+           FieldInfo runtime =
+            typeof(RuntimeStack).GetFields().FirstOrDefault(x => x.Name == webapp.RuntimeStack);
+            
+            RuntimeStack runtimeStack = (RuntimeStack) runtime.GetValue(null);
+
+            var pricingTierDef = AzClient.WithSubscription(_subscriptionId)
+                .AppServices
+                .AppServicePlans
+                .Define(webapp.Name)
+                .WithRegion(webapp.Location)
+                .WithExistingResourceGroup(webapp.ResourceGroupName)
+                .WithPricingTier(pricingTier);
+            
+            ICreatable<IAppServicePlan> appServicePlan;
+
+            if(webapp.IsLinux)
+            {
+                appServicePlan = pricingTierDef.WithOperatingSystem
+                    (Microsoft.Azure.Management.AppService.Fluent.OperatingSystem.Linux);
+            }
+            else
+            {
+                appServicePlan = pricingTierDef.WithOperatingSystem
+                    (Microsoft.Azure.Management.AppService.Fluent.OperatingSystem.Windows);
+            }
+                
+
+            var apvsvcPlanDef = AzClient.WithSubscription(_subscriptionId)
+                .AppServices
+                .WebApps
+                .Define(webapp.Name)
+                .WithRegion(webapp.Location)
+                .WithExistingResourceGroup(webapp.ResourceGroupName);
+            
+            if(webapp.IsLinux)
+                 await apvsvcPlanDef
+                    .WithNewLinuxPlan(appServicePlan)
+                    .WithBuiltInImage(runtimeStack)
+                    .WithWebAppAlwaysOn(true)
+                    .CreateAsync();
+            else
+                await apvsvcPlanDef
+                    .WithNewWindowsPlan(appServicePlan)
+                    .WithWebAppAlwaysOn(true)
                     .CreateAsync();
         }
 

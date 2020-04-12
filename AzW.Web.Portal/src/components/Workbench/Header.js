@@ -1,6 +1,6 @@
 import React, { Component } from "reactn";
 import {useGlobal} from 'reactn';
-import {  PopoverInteractionKind, Popover, Menu, Position, MenuItem,MenuDivider, Classes, Icon } from "@blueprintjs/core";
+import {  PopoverInteractionKind, Popover, Menu, Position, MenuItem,MenuDivider, Classes, Icon, Utils } from "@blueprintjs/core";
 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -132,7 +132,8 @@ export default class Header extends Component {
                       <AccountCircle onClick={this.handleAcctMenu}/>
                     :
                       <Tippy content={this.state.userProfile == null ? 'Not logged in' :
-                        'Welcome, ' + this.state.userProfile.UserName} followCursor={false} placement="bottom">
+                        'welcome, ' + this.state.userProfile.UserName}
+                        followCursor={false} placement="bottom">
                         <AccountCircle onClick={this.handleAcctMenu}/>
                       </Tippy>
                   }

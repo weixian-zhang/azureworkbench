@@ -2,6 +2,7 @@ import { UserAgentApplication } from "msal";
 import UserProfile from '../models/UserProfile';
 import SessionStorage from './SessionStorage';
 import Config from "../../src/config";
+import Toast from '../components/Workbench/Helpers/Toast';
 
 export default class AuthService 
 {
@@ -107,10 +108,13 @@ export default class AuthService
         if(userProfile == null || userProfile.AccessTokenExpiresOn == null)
           return true;
 
-        var accessTokenExpireOn = userProfile.AccessTokenExpiresOn;
+        var accessTokenExpireOn = new Date(userProfile.AccessTokenExpiresOn);
         var CurrentDate = new Date();
         if(accessTokenExpireOn < CurrentDate)
-            return true;
+        {
+            Toast.show('warning', 3000, "Session expired, logging out... Please login again.")
+            this.logout();
+        }
         else
             return false;
     } 

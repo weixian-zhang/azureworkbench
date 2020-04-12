@@ -25,6 +25,8 @@ export default class ResourceType
     static DevTestLab() {return 'devtestlab'; }
     static VirtualNetworkGateway() {return 'vnetgateway'; }
     static CDN() {return 'cdn'; }
+    static NSG() {return 'nsg'; }
+    static RouteTable() {return 'routetable'; }
     static ASG() {return 'asg'; }
     static NIC() {return 'nic'; }
     static BlobStorage() {return 'blobstorage'; }

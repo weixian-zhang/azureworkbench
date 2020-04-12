@@ -46,7 +46,7 @@ export default class SubnetPropPanel extends Component {
                       <Tab label="Calculator" value="calculator" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'calculator' ? "bold" : "" }}/>
                     </Tabs>
                   </AppBar>
-                  <Typography
+                  <div
                       className = "propPanelTabContent"
                       hidden={this.state.value !== 'diagram'}>
                         <FormGroup
@@ -63,7 +63,7 @@ export default class SubnetPropPanel extends Component {
                                 />
                               </div>
                         </FormGroup>
-                    </Typography>
+                    </div>
                     
                     {this.renderProvisionTab()}
 

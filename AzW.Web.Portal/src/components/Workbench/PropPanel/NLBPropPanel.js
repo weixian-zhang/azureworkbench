@@ -137,9 +137,24 @@ export default class NLBPropPanel extends Component {
               </Grid>
               <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
                 <Grid item>
-                  <label>
+                  <label style={{fontWeight:'bold'}}>
                     {(this.state.userObject.ProvisionContext.IsInternalNLB) ? 'Internal Load Balancer' : 'External Load Balancer'}
                   </label>
+                </Grid>
+              </Grid>
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
+                <Grid item sm={3}>
+                    <label>Public IP Name</label>
+                </Grid>
+                <Grid item>
+                  <input id="icon-display-name" type="text" class="bp3-input .modifier"
+                    disabled={this.state.userObject.ProvisionContext.IsInternalNLB}
+                    value={this.state.userObject.ProvisionContext.PublicIPName} 
+                    onChange={(e) => {
+                      var uo = this.state.userObject;
+                      uo.ProvisionContext.PublicIPName = e.target.value
+                      this.setState({userObject:uo});
+                    }} />
                 </Grid>
               </Grid>
               <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>

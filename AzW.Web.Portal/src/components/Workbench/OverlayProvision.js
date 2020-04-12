@@ -63,6 +63,10 @@ export default class OverlayProvision extends Component {
                                             filterable={false} >
                                             
                                             <Button text={this.global.currentSubscription == null ? 'Subscription' : Utils.limitTextLength(this.global.currentSubscription.Name, 15) }
+                                                onClick={
+                                                    (Utils.IsNullOrUndefine(this.state.subscriptions)) ?
+                                                        this.getSubscriptions : null
+                                                }
                                                 loading={this.state.loading} alignText='left' style={{maxWidth:'180px'}} rightIcon="double-caret-vertical"/>
                                         </Select>
                                         
@@ -162,10 +166,9 @@ export default class OverlayProvision extends Component {
                     thisComp.rgNameInput.current.value = '';
                 },
                 function onFailure(error) {
+                    //it could fail if Overlay is closed while retrieving
+                    //purposely removed Toast to avoid spamming error
                     thisComp.setState({loading: false});
-
-                    Toast.show(Intent.DANGER,8000, error);
-                    return;
                 }
             );
         }
@@ -180,6 +183,7 @@ export default class OverlayProvision extends Component {
         }
 
         this.state.header.deployDiagramToAzure(this.global.currentSubscription);
+        this.handleClose();
     }
 
     createNewRG = () => {
@@ -209,7 +213,6 @@ export default class OverlayProvision extends Component {
 
     show = (header) => { 
         this.setState({ isOpen: true, header: header });
-        this.getSubscriptions();
     }
     handleClose = () => { 
         this.setState({ isOpen: false });

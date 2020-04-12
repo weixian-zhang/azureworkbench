@@ -370,7 +370,9 @@ export default class ResourcePalette extends Component {
             <Typography component={'span'} variant={'body2'}>
               <div class="tile-panel" ref={this.appsvcIcon}>
                 <Tippy content="App Service" followCursor={true} placement="bottom">
-                  <AppService class="azure-rsc-icon" />
+                  <Badge badgeContent={'P'} color="error">
+                    <AppService class="azure-rsc-icon" />
+                  </Badge>
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.aseIcon}>

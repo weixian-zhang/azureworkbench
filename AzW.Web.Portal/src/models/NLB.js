@@ -17,6 +17,7 @@ export default class NLB
             Location: '',
             ResourceGroupName: '',
             IsInternalNLB: false,
+            PublicIPName: '',
             IsStandardSku: true,
             VNetName: '',
             SubnetName: '',

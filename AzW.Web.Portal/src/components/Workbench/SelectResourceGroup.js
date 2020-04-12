@@ -7,6 +7,7 @@ import Toast from './Helpers/Toast';
 import Messages from './Helpers/Messages';
 import Utils from './Helpers/Utils';
 import {Select } from "@blueprintjs/select";
+import { Typography } from "@material-ui/core";
 
 export default class SelectResourceGroup extends Component {
     constructor(props) {
@@ -20,7 +21,8 @@ export default class SelectResourceGroup extends Component {
             filteredRGs: [],
             rgs: [],
             selectedValue: '',
-            loading: false
+            loading: false,
+            isSubscriptionSelected: false
         }
     }
 
@@ -42,6 +44,13 @@ export default class SelectResourceGroup extends Component {
                 noResults={<MenuItem disabled={true} text="No Resource Group" />}>
                 <Button text={this.state.selectedValue == '' ? 'Resource Group' : Utils.limitTextLength(this.state.selectedValue, 15)}
                      loading={this.state.loading} alignText='left' rightIcon="double-caret-vertical" style={{width: '170px', maxWidth: '170px'}}/>
+                {
+                    (!this.state.isSubscriptionSelected) ?
+                        <Typography style={{fontSize:10,color:'red',display:'block', marginTop:'3px'}} variant="body2">
+                            please select subscription before resource group can be retrieved
+                        </Typography>
+                    :   null
+                }
             </Select>
         );
     }
@@ -103,10 +112,13 @@ export default class SelectResourceGroup extends Component {
     IsSubscriptionSelected() {
         if(this.global.currentSubscription == null)
         {
-            Toast.show(Intent.WARNING, 3000, Messages.SubscriptionNotSelectedError());
+            this.setState({isSubscriptionSelected: false});
             return false;
         }
         else
+        {
+            this.setState({isSubscriptionSelected: true});
             return true;
+        } 
     }
 }

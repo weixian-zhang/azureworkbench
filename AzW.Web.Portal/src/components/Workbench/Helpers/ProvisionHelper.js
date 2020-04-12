@@ -23,6 +23,8 @@ export default class ProvisionHelper
                 this.getInternalNLBContexts(userObject, cell, provisionContexts);
 
                 this.getVMContexts(userObject, cell, provisionContexts);
+
+                this.getAllResourcesOutsideVNetContexts(userObject, cell, provisionContexts);
             }
         });
 
@@ -125,6 +127,16 @@ export default class ProvisionHelper
             }
         })
 
+        return provisionContexts;
+    }
+    
+    getAllResourcesOutsideVNetContexts = (userObject, cell, provisionContexts) => {
+
+        if(userObject.ProvisionContext.ResourceType != ResourceType.VNet())
+        {
+            var proContext = userObject.ProvisionContext;
+            provisionContexts.push(proContext);
+        }
         return provisionContexts;
     }
 
