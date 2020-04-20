@@ -111,10 +111,7 @@ export default class ARMService
       .catch(function (error) {
         console.log(error);
         onFailure(Messages.GeneralHttpError())
-      })
-      .finally(function () {
-        // always executed
-      });  
+      }) 
   }
 
     async getSubscriptions(onSuccess, onFailure){
@@ -152,9 +149,6 @@ export default class ARMService
         .catch(function (error) {
           console.log(error);
           onFailure(Messages.GeneralHttpError())
-        })
-        .finally(function () {
-          // always executed
-        });  
+        })  
     }
 } 

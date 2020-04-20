@@ -17,7 +17,6 @@ namespace AzW.Job.CacheHydrator
   {
     public override void Configure(IFunctionsHostBuilder builder)
         {
-          //appsettings either from local file for dev, env var for 
            var configBuilder = new ConfigurationBuilder()
                 .AddEnvironmentVariables()
                 .SetBasePath(Environment.CurrentDirectory)

@@ -17,6 +17,9 @@ using Microsoft.Azure.Management.Network.Fluent.Models;
 using Microsoft.Azure.Management.AppService.Fluent;
 using System.Reflection;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Core.ResourceActions;
+using Microsoft.Azure.Management.Network.Fluent.NetworkSecurityRule.Definition;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Core.GroupableResource.Definition;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Core.ChildResource.Definition;
 
 namespace AzW.Infrastructure.AzureServices
 {
@@ -40,9 +43,14 @@ namespace AzW.Infrastructure.AzureServices
 
                     switch(resourceType)
                     {
+                        //important vnet have to create first
                         case ResourceType.VNet:
                             VNet vnet = jObj.ToObject<VNet>();
                             await CreateVNetAsync(vnet, _vnets);
+                        break;
+                        case ResourceType.NSG:
+                            NSG nsg = jObj.ToObject<NSG>();
+                            await CreateNSGAsync(nsg);
                         break;
                         case ResourceType.NLB:
                             NLB nlb = jObj.ToObject<NLB>();
@@ -95,6 +103,146 @@ namespace AzW.Infrastructure.AzureServices
             }
 
             return dictionary;
+        }
+
+
+        private async Task CreateNSGAsync(NSG nsg)
+        {
+            string[] ports = new string[10];
+
+            var ruleDef = AzClient.WithSubscription(_subscriptionId)
+                .NetworkSecurityGroups
+                .Define(nsg.Name)
+                .WithRegion(nsg.Location)
+                .WithExistingResourceGroup(nsg.ResourceGroupName);
+
+            foreach(var inbound in nsg.InboundRules)
+            {
+                CreateNSGRule(ruleDef, inbound);
+            }
+
+            foreach(var outbound in nsg.OutboundRules)
+            {
+                CreateNSGRule(ruleDef, outbound);
+            }
+
+            INetworkSecurityGroup nsgCreated = await ruleDef.CreateAsync();
+
+
+            INetwork vnet =GetVNetByName(nsg.VNetName);
+
+            ISubnet subnet = vnet.Subnets.Values.FirstOrDefault(x => x.Name == nsg.SubnetName);
+
+            subnet.Inner.NetworkSecurityGroup.Id = nsgCreated.Id;              
+        }
+
+        private void CreateNSGRule
+            (Microsoft.Azure.Management.Network.Fluent.NetworkSecurityGroup.Definition.IWithCreate rscGrpDef,
+             NSGRule rule)
+        {
+            IWithSourcePort<
+                    Microsoft.Azure.Management.Network.Fluent
+                    .NetworkSecurityGroup.Definition.IWithCreate> srcPortDef;
+                
+                IWithSourceAddressOrSecurityGroup<
+                    Microsoft.Azure.Management.Network.Fluent
+                    .NetworkSecurityGroup.Definition.IWithCreate> fromAddrDef;
+                
+                IWithDestinationAddressOrSecurityGroup<
+                    Microsoft.Azure.Management.Network.Fluent
+                        .NetworkSecurityGroup.Definition.IWithCreate> toDestAddrDef = null;
+                
+                IWithDestinationPort<
+                    Microsoft.Azure.Management.Network.Fluent
+                        .NetworkSecurityGroup.Definition.IWithCreate> toDestPortDef;
+                
+                IWithProtocol<
+                    Microsoft.Azure.Management.Network.Fluent
+                        .NetworkSecurityGroup.Definition.IWithCreate> protocolDef;
+
+                //allow, deny def
+                if(rule.Allow)
+                    fromAddrDef = rscGrpDef.DefineRule(rule.Name).AllowInbound();
+                else
+                    fromAddrDef = rscGrpDef.DefineRule(rule.Name).DenyInbound();
+                
+                //src addr def
+                if(rule.ToAddresses.Contains("*"))
+                    srcPortDef = fromAddrDef.FromAnyAddress();
+                else if(rule.FromAddresses.Contains(","))
+                    srcPortDef = fromAddrDef.FromAddresses(rule.FromAddresses.Split(','));
+                else
+                    srcPortDef = fromAddrDef.FromAddress(rule.FromAddresses);
+
+                //src port def
+                if(rule.FromPorts == "*")
+                    srcPortDef.FromAnyPort();
+                else
+                {
+                    //e.g 434-455,80,443,8000-8005
+                    if(rule.FromPorts.Contains(","))
+                        toDestAddrDef = srcPortDef.FromPortRanges(rule.FromPorts.Split(','));
+                    
+                    //e.g 434-455
+                    else if(rule.FromPorts.Contains("-"))
+                    {
+                        string[] fromToSrcPorts = rule.FromPorts.Split('-');
+
+                        if(fromToSrcPorts.Length != 2)
+                            toDestAddrDef = srcPortDef.FromAnyPort();  //default to Any if received weird src ports with more than 1 hyphen
+                        else
+                        {
+                            toDestAddrDef = srcPortDef.FromPortRange
+                                (Convert.ToInt32(fromToSrcPorts[0]), Convert.ToInt32(fromToSrcPorts[1]));
+                        }
+                    }
+                    //single src port, 80
+                    else
+                        toDestAddrDef = srcPortDef.FromPort(Convert.ToInt32(rule.FromPorts));
+                }
+
+                //to dest address def
+                if(rule.ToAddresses.Contains("*"))
+                    toDestPortDef = toDestAddrDef.ToAnyAddress();
+                else if(rule.ToAddresses.Contains(","))
+                    toDestPortDef = toDestAddrDef.ToAddresses(rule.ToAddresses.Split(','));
+                else
+                    toDestPortDef = toDestAddrDef.ToAddress(rule.ToAddresses); //single IP or Cidr
+                    
+                //to dest port def
+                 if(rule.ToPorts == "*")
+                    protocolDef = toDestPortDef.ToAnyPort();
+                else
+                {
+                    //e.g 434-455,80,443,8000-8005
+                    if(rule.ToPorts.Contains(","))
+                        protocolDef = toDestPortDef.ToPortRanges(rule.ToPorts.Split(','));
+                    
+                    //e.g 434-455
+                    else if(rule.ToPorts.Contains("-"))
+                    {
+                        string[] fromToDestPorts = rule.ToPorts.Split('-');
+
+                        if(fromToDestPorts.Length != 2)
+                            protocolDef = toDestPortDef.ToAnyPort();  //default to Any if received weird src ports with more than 1 hyphen
+                        else
+                        {
+                            protocolDef = toDestPortDef.ToPortRange
+                                (Convert.ToInt32(fromToDestPorts[0]), Convert.ToInt32(fromToDestPorts[1]));
+                        }
+                    }
+                    //single src port, 80
+                    else
+                        protocolDef = toDestPortDef.ToPort(Convert.ToInt32(rule.ToPorts));
+                }
+
+                //protocol def
+                FieldInfo protocolField = typeof(SecurityRuleProtocol)
+                    .GetFields().FirstOrDefault(x => x.Name.ToLowerInvariant() == rule.Protocol.ToLowerInvariant());
+
+                SecurityRuleProtocol protocol = (SecurityRuleProtocol)protocolField.GetValue(null);
+
+                protocolDef.WithProtocol(protocol).Attach();
         }
 
         private async Task CreateVMAsync(VM vm)
@@ -208,7 +356,6 @@ namespace AzW.Infrastructure.AzureServices
 
         private async Task CreateAppService(WebApp webapp)
         {
-
            FieldInfo tier =
             typeof(PricingTier).GetFields().FirstOrDefault(x => x.Name == webapp.PricingTier);
            

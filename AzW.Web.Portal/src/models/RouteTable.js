@@ -1,23 +1,19 @@
 import ResourceType from './ResourceType'
-export default class NSG
+export default class ServiceBus
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.NSG(),
+            ResourceType: ResourceType.RouteTable(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.NSG(),
+            ResourceType: ResourceType.RouteTable(),
             
             Name: '',
-            Location: '',
             ResourceGroupName: '',
-            VNetName: '',
-            SubnetName: '',
-            InboundRules: [],
-            OutboundRules: []
+            Location: '',
         };
         this.CalculatorContext = {
             IsFree: false,

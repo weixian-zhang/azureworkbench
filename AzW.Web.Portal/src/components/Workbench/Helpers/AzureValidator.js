@@ -114,6 +114,46 @@ export default class AzureValidator {
         }
     }
 
+    subnetHasNSG(subnetCell) {
+        var childs = this.graph.getChildVertices(subnetCell);
+
+        if(!Utils.IsNullOrUndefine(childs))
+        {
+            for(var child of childs)
+            {
+                var result = Utils.TryParseUserObject(child.value);
+                
+                if(result.isUserObject &&
+                    result.userObject.ProvisionContext.ResourceType == ResourceType.NSG())
+                    {
+                        return true;
+                    }
+            }
+        }
+        else
+            return false;
+    }
+
+    subnetHasUDR(subnetCell) {
+        var childs = this.graph.getChildVertices(subnetCell);
+
+        if(!Utils.IsNullOrUndefine(childs))
+        {
+            for(var child of childs)
+            {
+                var result = Utils.TryParseUserObject(child.value);
+                
+                if(result.isUserObject &&
+                    result.userObject.ProvisionContext.ResourceType == ResourceType.RouteTable())
+                    {
+                        return true;
+                    }
+            }
+        }
+        else
+            return false;
+    }
+
     isGatewaySubnetExist(vnetCell){
         if(Utils.IsNullOrUndefine(vnetCell))
             return false;

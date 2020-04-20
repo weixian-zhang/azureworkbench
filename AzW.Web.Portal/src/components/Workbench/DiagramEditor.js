@@ -89,6 +89,8 @@ import AppService from "../../models/AppService";
 import AppGateway from "../../models/AppGateway";
 import ResourceType from '../../models/ResourceType';
 import ASE from "../../models/ASE";
+import NSG from "../../models/NSG";
+import RouteTable from "../../models/RouteTable";
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
 
 //property panels
@@ -159,6 +161,7 @@ import IoTHubPropPanel from "./PropPanel/IoTHubPropPanel";
 import MapsPropPanel from "./PropPanel/MapsPropPanel";
 import TimeSeriesPropPanel from "./PropPanel/TimeSeriesPropPanel";
 import IoTCentralPropPanel from "./PropPanel/IoTCentralPropPanel";
+import NSGPropPanel from "./PropPanel/NSGPropPanel";
 
 import OverlayPreviewDiagram from "./OverlayPreviewDiagram";
 import ARMService from "../../services/ARMService";
@@ -237,6 +240,7 @@ import Toast from './Helpers/Toast';
         <StylePropPanel ref={this.stylePanel} MxGraphManager={this.graphManager} />
         <OverlaySaveToWorkspace ref={this.overlaySaveToWorkspace} DiagramEditor={this} />
         <MySpace ref={this.workspace} DiagramEditor={this} Index={this.Index} />
+        <NSGPropPanel ref={this.nsgPropPanel} DiagramEditor={this} />
         <AppServicePropPanel ref={this.appsvcPropPanel} />
         <ASEPropPanel ref={this.asePropPanel} />
         <FuncPropPanel ref={this.funcPropPanel} />
@@ -322,6 +326,8 @@ import Toast from './Helpers/Toast';
   }
 
   initRef() {
+
+    this.nsgPropPanel = React.createRef();
     this.stylePanel = React.createRef();
     this.overlaySaveToWorkspace = React.createRef();
     this.previewOverlay = React.createRef();
@@ -600,7 +606,6 @@ addUpDownLeftRightArrowToMoveCells() {
           thisComponent.addSubnet(cell); // is vnetCell
         });
 
-
         //if true, hide option
         if(!thisComponent.azureValidator.isGatewaySubnetExist(cell)){
           menu.addItem('Add GatewaySubnet', '', function()
@@ -608,6 +613,20 @@ addUpDownLeftRightArrowToMoveCells() {
             thisComponent.addGatewaySubnet(cell); // is vnetCell
           });
         }
+        menu.addSeparator();
+      }
+
+      if(Utils.IsSubnet(cell))
+      {
+        menu.addItem('Add Network Security Group', '', function()
+        {
+            thisComponent.addNSG(cell);
+        });
+
+        menu.addItem('Add Route Table', '', function()
+        {
+            thisComponent.addUDR(cell);
+        });
         menu.addSeparator();
       }
       
@@ -1018,7 +1037,12 @@ addUpDownLeftRightArrowToMoveCells() {
     let thisComp = this;
 
     switch (userObject.GraphModel.ResourceType) {
-
+      
+      case ResourceType.NSG():
+        this.nsgPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
       case ResourceType.IoTCentral():
         this.iotcentralPropPanel.current.show(userObject, function(savedUserObject){
           thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
@@ -1663,10 +1687,10 @@ addUpDownLeftRightArrowToMoveCells() {
 
   addSubnet = (vnetCell, loadContext) => {
 
-        var nsgOverlay = new mxCellOverlay(
-          new mxImage(require('../../assets/azure_icons/Networking Service Color/Network Security Groups (Classic).svg'),20, 20),
-          null,  mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP
-        );
+        // var nsgOverlay = new mxCellOverlay(
+        //   new mxImage(require('../../assets/azure_icons/Networking Service Color/Network Security Groups (Classic).svg'),20, 20),
+        //   null,  mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP
+        // );
 
         var subnetLogoOverlay = new mxCellOverlay(
           new mxImage(require('../../assets/azure_icons/Networking Service Color/Subnet.svg'),20, 20),
@@ -1704,7 +1728,68 @@ addUpDownLeftRightArrowToMoveCells() {
         }
  
         this.graph.addCellOverlay(subnetVertex, subnetLogoOverlay);
-        this.graph.addCellOverlay(subnetVertex, nsgOverlay);
+       // this.graph.addCellOverlay(subnetVertex, nsgOverlay);
+  }
+
+  addNSG(subnetCell) {
+
+    if(this.azureValidator.subnetHasNSG(subnetCell))
+    {
+      Toast.show('warning', 2000, 'NSG exist for subnet')
+      return;
+    }
+
+    var nsg = new NSG();
+    nsg.GraphModel.Id = this.shortUID.randomUUID(6);
+    nsg.GraphModel.DisplayName = '';
+    nsg.ProvisionContext.Name = "nsg-" + nsg.GraphModel.Id;
+
+    var jsonstrNsg = JSON.stringify(nsg);
+
+    var nsgVertex = this.graph.insertVertex(
+      subnetCell,
+      nsg.GraphModel.Id,
+      jsonstrNsg,
+      0,
+      0, //subnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
+      22, //width
+      22, //height
+      "resizable=0;editable=0;shape=image;image=data:image/svg+xml," + this.azureIcons.NSG()
+    );
+
+    nsgVertex.geometry.offset = new mxPoint(-12, -15);
+    nsgVertex.geometry.relative = true;
+    this.graph.refresh();
+  }
+
+  addUDR(subnetCell) {
+
+    if(this.azureValidator.subnetHasUDR(subnetCell))
+    {
+      Toast.show('warning', 2000, 'Route Table exist for subnet')
+      return;
+    }
+
+    var udr = new RouteTable();
+    udr.GraphModel.Id = this.shortUID.randomUUID(6);
+    udr.GraphModel.DisplayName = '';
+    udr.ProvisionContext.Name = "udr-" + udr.GraphModel.Id;
+    var jsonstrUdr = JSON.stringify(udr);
+
+    var udrVertex = this.graph.insertVertex(
+      subnetCell,
+      udr.GraphModel.Id,
+      jsonstrUdr,
+      0,
+      0, //subnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
+      24, //width
+      24, //height
+      "resizable=0;editable=0;shape=image;image=data:image/svg+xml," + this.azureIcons.RouteTable()
+    );
+
+    udrVertex.geometry.offset = new mxPoint(-12, -17);
+    udrVertex.geometry.relative = true;
+    this.graph.refresh();
   }
 
   addGatewaySubnet(vnetCell){
@@ -3306,17 +3391,17 @@ addUpDownLeftRightArrowToMoveCells() {
                   childSubnets.map(subnet => {
                     this.graph.removeCellOverlays(subnet);
 
-                    var nsgOverlay = new mxCellOverlay(
-                      new mxImage(require('../../assets/azure_icons/Networking Service Color/Network Security Groups (Classic).svg'),20, 20),
-                      null,  mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP
-                    );
+                    // var nsgOverlay = new mxCellOverlay(
+                    //   new mxImage(require('../../assets/azure_icons/Networking Service Color/Network Security Groups (Classic).svg'),20, 20),
+                    //   null,  mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP
+                    // );
             
                     var subnetLogoOverlay = new mxCellOverlay(
                       new mxImage(require('../../assets/azure_icons/Networking Service Color/Subnet.svg'),15, 15),
                       'Subnet',  mxConstants.ALIGN_Right, mxConstants.ALIGN_TOP
                     );
     
-                    this.graph.addCellOverlay(subnet, nsgOverlay);
+                    //this.graph.addCellOverlay(subnet, nsgOverlay);
                     this.graph.addCellOverlay(subnet, subnetLogoOverlay);
 
                   })

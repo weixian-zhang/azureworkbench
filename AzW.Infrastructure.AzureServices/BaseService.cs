@@ -16,13 +16,13 @@ namespace AzW.Infrastructure.AzureServices
             var sdkCred =
                 new ServiceClientOBOCredentials(accessToken, "common", secret.ClientId, secret.ClientSecret);
 
-            var azureCreds = new AzureCredentials
+            AzureCreds = new AzureCredentials
                 (sdkCred, null, "common", AzureEnvironment.AzureGlobalCloud);
 
-            _azClient = Azure.Configure().Authenticate(azureCreds);
+            _azClient = Azure.Configure().Authenticate(AzureCreds);
         }
 
-        private ServiceClientOBOCredentials _azCred;
+        protected AzureCredentials AzureCreds;
 
         private IAuthenticated _azClient { get; set; }
         public IAuthenticated AzClient { get {return _azClient;} }

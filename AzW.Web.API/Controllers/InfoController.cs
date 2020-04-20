@@ -15,9 +15,9 @@ namespace AzW.Web.API
 {
     [Authorize(AuthenticationSchemes = "AzureADJwtBearer")]
     [Route("api/compute")]
-    public class ComputeInfoController : BaseController
+    public class InfoController : BaseController
     {
-        public ComputeInfoController(ICacheRepository cache, WorkbenchSecret secret)
+        public InfoController(ICacheRepository cache, WorkbenchSecret secret)
         {
             _cache = cache;
             _secret = secret;
@@ -37,6 +37,14 @@ namespace AzW.Web.API
            var sizes = await _cache.GetVMSizeAsync();
 
            return sizes;
+        }
+
+        [HttpGet("svctag")]
+        public async Task<IEnumerable<ServiceTag>> GetServiceTags()
+        {
+           var svctags = await _cache.GetServiceTagAsync();
+
+           return svctags;
         }
 
         private ICacheRepository _cache;

@@ -41,15 +41,15 @@ export default class OverlayProvision extends Component {
         return (
             <Overlay isOpen={this.state.isOpen} onClose={this.handleClose}>
                 <Card className='provision-overlay-box' interactive={false} elevation={Elevation.ONE}>
-                    <Typography variant="h6">
-                        Subscription & Resource Group
+                    <Typography variant="button" style={{fontSize:16,textAlign:'left'}}>
+                        Azure Tool Rack
                     </Typography>
                     <Grid
                         container
                         direction="row"
                         justify="center"
                         alignItems="center"
-                        spacing={1} style={{marginTop: '15px', width: '100%'}}>
+                        spacing={1} style={{marginTop: '15px', width: '100%', textAlign:'center'}}>
                             <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
                                 <Grid item sm={3}>
                                     <label>Subscription</label>
@@ -85,8 +85,10 @@ export default class OverlayProvision extends Component {
                                             loading={this.state.provisionBtnLoading} onClick={this.provisionDiagram} style={{marginLeft: '20px'}}/>
                                 </Grid>
                                 <Grid item sm={12}>
-                                    <div className="bp3-running-text" variant="body1">
-                                        *Azure Workbench can deploy your diagram to your Azure subscription, choose a subscription to deploy.
+                                    <div className="bp3-running-text" variant="body1" style={{color: '#FF6347'}}>
+                                        *Azure Workbench requires <a target="_blank" href="https://docs.microsoft.com/en-us/azure/active-directory/manage-apps/grant-admin-consent">Admin Consent </a>
+                                         to be able to retrieve Subscriptions, Resource Groups and perform deployment.
+                                        Workbench only creates and will NOT update/delete any resource in your subscription.
                                     </div>
                                 </Grid>
                             </Grid>
@@ -118,7 +120,7 @@ export default class OverlayProvision extends Component {
                                 </Grid>
                                 <Grid item sm={12}>
                                     <div className="bp3-running-text" variant="body1">
-                                        A handy feature to create a new Resource Group
+                                        Create new Resource Group
                                     </div>
                                 </Grid>
                             </Grid>

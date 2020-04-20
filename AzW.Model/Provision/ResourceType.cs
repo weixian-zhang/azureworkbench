@@ -11,6 +11,7 @@ namespace AzW.Model
             public const string ASE = "ase";
             public const string Function = "func";
             public const string VNet = "vnet";
+            public const string NSG = "nsg";
             public const string Subnet = "subnet";
             public const string NLB = "nlb";
             public const string AppGw = "appgw";

@@ -1,5 +1,6 @@
-import VMimage from "../models/services/VMimage";
+import ServiceTag from "../models/services/ServiceTag";
 import VMSize from "../models/services/VMSize";
+import VMimage from "../models/services/VMimage";
 import axios from "axios";
 import AuthService from './AuthService';
 import Toast from '../components/Workbench/Helpers/Toast';
@@ -50,7 +51,46 @@ export default class ComputeService
         onFailure(error)
       }); 
 
-    } 
+    }
+
+    async getServiceTags( onSuccess, onFailure) {
+      if(!this.authService.isUserLogin())
+      {
+        Toast.show("warning", 2000, "Please login/re-login...")
+        return;
+      }
+
+      var user = this.authService.getUserProfile();
+
+      if(!user)
+        return;
+
+      axios.get('api/compute/svctag', 
+      {
+        headers: {
+
+          'Authorization': 'Bearer ' + user.AccessToken,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(function (response) {
+        if(response.data != null)
+        {
+          var svcTags= [];
+          response.data.map(x => {
+            var svcTag = new ServiceTag();
+            svcTag.Id = x.id;
+            svcTag.Name = x.name
+            svcTags.push(svcTag);
+          });
+          onSuccess(svcTags);
+        }
+      })
+      .catch(function (error) {
+        onFailure(error)
+      }); 
+
+    }
 
     async searchVMImages(searchPattern, onSuccess, onFailure){
         if(!this.authService.isUserLogin())

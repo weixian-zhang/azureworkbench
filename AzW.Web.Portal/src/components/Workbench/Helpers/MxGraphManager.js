@@ -19,6 +19,7 @@ import {
   } from "mxgraph-js";
 
 import Utils from '../Helpers/Utils';
+import ResourceType from '../../../models/ResourceType';
 
 export default class MxGraphManager
 {
@@ -64,6 +65,8 @@ export default class MxGraphManager
         mxEvent.disableContextMenu(this.container);
 
         this.overrideRemoveCell();
+
+        this.overrideMxClientForChildInParentEdgeBoundary();
     
         this.initCodecBehaviour();
 
@@ -127,6 +130,180 @@ export default class MxGraphManager
 
         this.graph.panningHandler.addListener(mxEvent.PAN_END, 
             function() { this.graph.container.style.cursor = 'default'; });
+    }
+
+    overrideMxClientForChildInParentEdgeBoundary() {
+
+        var graph = this.graph;
+
+        // Replaces translation for relative children
+        mxGraph.prototype.translateCell = function(cell, dx, dy)
+        {
+            var result = Utils.TryParseUserObject(cell.value);
+
+            if(!result.isUserObject ||
+                result.userObject.ProvisionContext.ResourceType == ResourceType.NSG() ||
+                result.userObject.ProvisionContext.ResourceType == ResourceType.RouteTable())
+                {
+                    var rel = getRelativePosition(graph.view.getState(cell), dx * graph.view.scale, dy * graph.view.scale);
+                    
+                    if (rel != null)
+                    {
+                        var geo = this.model.getGeometry(cell);
+                        
+                        if (geo != null && geo.relative)
+                        {
+                            geo = geo.clone();
+                            geo.x = rel.x;
+                            geo.y = rel.y;
+                            
+                            this.model.setGeometry(cell, geo);
+                        }
+                    }
+                    else
+                    {
+                        mxGraph.prototype.translateCell.apply(this, arguments);
+                    }
+               }
+               else
+               {
+                   //origin codes from framework
+                   var geo = this.model.getGeometry(cell);
+
+                    if (geo != null)
+                    {
+                        dx = parseFloat(dx);
+                        dy = parseFloat(dy);
+                        geo = geo.clone();
+                        geo.translate(dx, dy);
+
+                        if (!geo.relative && this.model.isVertex(cell) && !this.isAllowNegativeCoordinates())
+                        {
+                            geo.x = Math.max(0, parseFloat(geo.x));
+                            geo.y = Math.max(0, parseFloat(geo.y));
+                        }
+                        
+                        if (geo.relative && !this.model.isEdge(cell))
+                        {
+                            var parent = this.model.getParent(cell);
+                            var angle = 0;
+                            
+                            if (this.model.isVertex(parent))
+                            {
+                                var state = this.view.getState(parent);
+                                var style = (state != null) ? state.style : this.getCellStyle(parent);
+                                
+                                angle = mxUtils.getValue(style, mxConstants.STYLE_ROTATION, 0);
+                            }
+                            
+                            if (angle != 0)
+                            {
+                                var rad = mxUtils.toRadians(-angle);
+                                var cos = Math.cos(rad);
+                                var sin = Math.sin(rad);
+                                var pt = mxUtils.getRotatedPoint(new mxPoint(dx, dy), cos, sin, new mxPoint(0, 0));
+                                dx = pt.x;
+                                dy = pt.y;
+                            }
+                            
+                            if (geo.offset == null)
+                            {
+                                geo.offset = new mxPoint(dx, dy);
+                            }
+                            else
+                            {
+                                geo.offset.x = parseFloat(geo.offset.x) + dx;
+                                geo.offset.y = parseFloat(geo.offset.y) + dy;
+                            }
+                        }
+
+                        this.model.setGeometry(cell, geo);
+                    }
+               }
+        };
+
+        // Enables moving of relative children
+        mxGraph.prototype.isCellLocked = function(cell)
+        {
+            return false;
+        };
+
+        // // Replaces move preview for relative children
+        mxGraph.prototype.getDelta = function(me)
+        {
+            var point = mxUtils.convertPoint(graph.container, me.getX(), me.getY());
+            var delta = new mxPoint(point.x - this.first.x, point.y - this.first.y);
+            
+            if (this.cells != null && this.cells.length > 0 && this.cells[0] != null)
+            {
+                var state = graph.view.getState(this.cells[0]);
+                var rel = getRelativePosition(state, delta.x, delta.y);
+                
+                if (rel != null)
+                {
+                    var pstate = graph.view.getState(graph.model.getParent(state.cell));
+                    
+                    if (pstate != null)
+                    {
+                        delta = new mxPoint(pstate.x + pstate.width * rel.x - state.getCenterX(),
+                                pstate.y + pstate.height * rel.y - state.getCenterY());
+                    }
+                }
+            }
+            
+            return delta;
+        };
+
+        //helper
+        function getRelativePosition(state, dx, dy)
+        {
+            if (state != null)
+            {
+                var model = graph.getModel();
+                var geo = model.getGeometry(state.cell);
+                
+                if (geo != null && geo.relative && !model.isEdge(state.cell))
+                {
+                    var parent = model.getParent(state.cell);
+                    
+                    if (model.isVertex(parent))
+                    {
+                        var pstate = graph.view.getState(parent);
+                        
+                        if (pstate != null)
+                        {
+                            var scale = graph.view.scale;
+                            var x = state.x + dx;
+                            var y = state.y + dy;
+                            
+                            if (geo.offset != null)
+                            {
+                                x -= geo.offset.x * scale;
+                                y -= geo.offset.y * scale;
+                            }
+                            
+                            x = (x - pstate.x) / pstate.width;
+                            y = (y - pstate.y) / pstate.height;
+                            
+                            if (Math.abs(y - 0.5) <= Math.abs((x - 0.5) / 2))
+                            {
+                                x = (x > 0.5) ? 1 : 0;
+                                y = Math.min(1, Math.max(0, y));
+                            }
+                            else
+                            {
+                                x = Math.min(1, Math.max(0, x));
+                                y = (y > 0.5) ? 1 : 0;
+                            }
+                            
+                            return new mxPoint(x, y);
+                        }
+                    }
+                }
+            }
+            
+            return null;
+        };
     }
 
     overrideRemoveCell() {
@@ -690,8 +867,8 @@ export default class MxGraphManager
         subnetCellStyle[mxConstants.STYLE_STROKEWIDTH] = '0.5';
         subnetCellStyle[mxConstants.STYLE_DASHED] = '0';
         subnetCellStyle[mxConstants.SHAPE_RECTANGLE] = 'rectangle';
-        subnetCellStyle[mxConstants.STYLE_ROUNDED] = '0';
-        subnetCellStyle[mxConstants.RECTANGLE_ROUNDING_FACTOR] = '0.0';
+        subnetCellStyle[mxConstants.STYLE_ROUNDED] = '1';
+        subnetCellStyle[mxConstants.RECTANGLE_ROUNDING_FACTOR] = '0.2';
         subnetCellStyle[mxConstants.STYLE_SHADOW] = false;
         subnetCellStyle[mxConstants.STYLE_FILLCOLOR] = '#f9f9f9';
         subnetCellStyle[mxConstants.STYLE_FONTCOLOR] = 'black';

@@ -6,6 +6,8 @@ using AzW.Model;
 using AzW.Secret;
 using Microsoft.Azure.Management.Compute.Fluent;
 using Microsoft.Azure.Management.Compute.Fluent.Models;
+using Microsoft.Azure.Management.Network.Fluent;
+using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
 
 namespace AzW.Infrastructure.AzureServices
@@ -26,5 +28,24 @@ namespace AzW.Infrastructure.AzureServices
             
             return sizes;
         }
+
+        // public async Task GetServiceTags(string location)
+        // {
+        //     var restClient = RestClient.Configure()
+        //         .WithEnvironment(AzureEnvironment.AzureGlobalCloud)
+        //         .WithCredentials(AzureCreds)
+        //         .Build();
+
+        //     using (var client = new NetworkManagementClient(restClient))
+        //     {
+        //         var tags = await client.ServiceTags.ListAsync(location);
+
+        //         foreach(var svcTagInfo in tags.Values)
+        //         {
+        //             svcTagInfo.Properties.
+        //         }
+        //     }
+
+        // }
     }
 }

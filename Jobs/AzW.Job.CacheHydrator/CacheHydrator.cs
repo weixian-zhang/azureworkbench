@@ -9,6 +9,8 @@ using AzW.Infrastructure.Data;
 using AzW.Model;
 using Microsoft.Azure.Management.Compute.Fluent;
 using Microsoft.Azure.Management.Fluent;
+using Microsoft.Azure.Management.Network.Fluent;
+using Microsoft.Azure.Management.Network.Fluent.Models;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
@@ -30,40 +32,28 @@ namespace AzW.Job.CacheHydrator
             _secret = secret;
             _cache = cache;
             _logger = logger;
+
+            sdkCred =
+                new ServiceClientCredential(_secret.TenantId, _secret.ClientId, _secret.ClientSecret);
+            
+            azureCreds = new AzureCredentials
+                (sdkCred, null, _secret.TenantId, AzureEnvironment.AzureGlobalCloud);
         }
 
         [FunctionName("CacheHydrator")]
-        public async Task Run([TimerTrigger("* */30 * * * *")]TimerInfo myTimer, Microsoft.Extensions.Logging.ILogger log)
+        public async Task Run([TimerTrigger("* */10 * * * *")]TimerInfo myTimer, Microsoft.Extensions.Logging.ILogger log)
         {
+            await HydrateServiceTag();
+
             await HydrateVMSizes();
-            
-            if(!await _cache.IsVMImageCacheExistAsync())
-            {
-                foreach(var vmImg in GetImageReferences())
-                {
-                    try
-                    {
-                        await _cache.SetVMImageAsync(vmImg.SearchPattern, vmImg);
-                    }
-                    catch(Exception ex)
-                    {
-                        _logger.Error(ex, ex.Message);
-                        continue;
-                    }
-                }
-            }
+
+            await HydrateVMImages();
         }
 
         public async Task HydrateVMSizes() 
         {
             if(await _cache.IsVMSizeExistAsync())
                 return;
-
-            var sdkCred =
-                    new ServiceClientCredential(_secret.TenantId, _secret.ClientId, _secret.ClientSecret);
-
-            var azureCreds = new AzureCredentials
-                (sdkCred, null, _secret.TenantId, AzureEnvironment.AzureGlobalCloud);
             
             var azure = Azure.Configure().Authenticate(azureCreds);
 
@@ -84,28 +74,63 @@ namespace AzW.Job.CacheHydrator
                     string cacheKey = "vmsize" + " " +  size.Name;
                     await _cache.SetVMSizeAsync(cacheKey, vmSize);
                 }
+        }
 
-            // var props = TypeDescriptor.GetProperties(typeof(Region));
+        private async Task HydrateServiceTag()
+        {
+            try
+            {
+                if(await _cache.IsServiceTagExistAsync())
+                    return;
 
-            // foreach(Region reg in Region.Values)
-            // {
-            //     if(reg.Name.Contains("gov"))
-            //         continue;
+                var restClient = RestClient.Configure()
+                    .WithEnvironment(AzureEnvironment.AzureGlobalCloud)
+                    .WithCredentials(azureCreds)
+                    .Build();
 
-            //    IEnumerable<IVirtualMachineSize> vmSizes;
+                using (var client = new NetworkManagementClient(restClient))
+                {
+                    client.SubscriptionId = _secret.SubscriptionId;
 
-            //    try
-            //    {
-                  
-            //    }
-            //    catch
-            //    {
-            //        continue;
-            //    }
-               
-                 
-            // }
+                    var nsg = new NetworkSecurityGroupInner();
+                    SecurityRuleInner ruleInner;
+        
+                    var tags = await client.ServiceTags.ListAsync("southeastasia");
 
+                    foreach(var svcTagInfo in tags.Values)
+                    {
+                        string cacheKey = "servicetag" + " " +  svcTagInfo.Id;
+                        await _cache.SetServiceTagAsync(cacheKey, new ServiceTag()
+                        {
+                            Id = svcTagInfo.Id,
+                            Name = svcTagInfo.Name
+                        });
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private async Task HydrateVMImages()
+        {
+            if(!await _cache.IsVMImageCacheExistAsync())
+            {
+                foreach(var vmImg in GetImageReferences())
+                {
+                    try
+                    {
+                        await _cache.SetVMImageAsync(vmImg.SearchPattern, vmImg);
+                    }
+                    catch(Exception ex)
+                    {
+                        _logger.Error(ex, ex.Message);
+                        continue;
+                    }
+                }
+            }
         }
 
         public IEnumerable<VMImage> GetImageReferences()
@@ -114,12 +139,6 @@ namespace AzW.Job.CacheHydrator
 
             try
             {     
-                var sdkCred =
-                    new ServiceClientCredential(_secret.TenantId, _secret.ClientId, _secret.ClientSecret);
-
-                var azureCreds = new AzureCredentials
-                    (sdkCred, null, _secret.TenantId, AzureEnvironment.AzureGlobalCloud);
-
                 var _azure = Azure.Configure().Authenticate(azureCreds);
                         
                 publishers = _azure.WithSubscription(_secret.SubscriptionId)
@@ -229,6 +248,8 @@ namespace AzW.Job.CacheHydrator
             }
         }
         
+        ServiceClientCredential sdkCred;
+        AzureCredentials azureCreds;
         private Secret _secret;
         private ICacheRepository _cache;
         private Serilog.Core.Logger _logger;

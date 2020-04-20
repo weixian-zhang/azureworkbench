@@ -48,6 +48,19 @@ export default class Utils
         return false;
     }
 
+    static IsSubnet(cell) {
+        if(cell != null && cell.value != null){
+            var result = this.TryParseUserObject(cell.value);
+
+            if(result.isUserObject &&
+                result.userObject.GraphModel.ResourceType == ResourceType.Subnet())
+              {
+                    return true;
+              }
+        }
+        return false;
+    }
+
     static IsNullOrUndefine(obj) {
 
         if(!obj || 0 === obj.length || obj == "")

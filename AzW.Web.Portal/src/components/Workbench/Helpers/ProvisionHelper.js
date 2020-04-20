@@ -24,6 +24,8 @@ export default class ProvisionHelper
 
                 this.getVMContexts(userObject, cell, provisionContexts);
 
+                this.getNSGs(userObject, cell, provisionContexts);
+
                 this.getAllResourcesOutsideVNetContexts(userObject, cell, provisionContexts);
             }
         });
@@ -130,6 +132,47 @@ export default class ProvisionHelper
         return provisionContexts;
     }
     
+    getNSGs = (userObject, cell, provisionContexts) => {
+
+        if(userObject.ProvisionContext.ResourceType != ResourceType.VNet())
+            return;
+
+        var subnetCells = this.getSubnetCells(userObject, cell);
+
+        if(Utils.IsNullOrUndefine(subnetCells.length))
+            return;
+        
+        var nsgs = [];
+
+        var cellsInSubnets = this.getCellsInSubnets(subnetCells);
+
+        if(Utils.IsNullOrUndefine(cellsInSubnets))
+            return provisionContexts;
+        
+        cellsInSubnets.map(cell => {
+
+            var result = Utils.TryParseUserObject(cell.value);
+
+            if(result.isUserObject &&
+               result.userObject.ProvisionContext.ResourceType == ResourceType.NSG())
+               {
+                    var nsgProContext = result.userObject.ProvisionContext;
+
+                    //get vnet name
+                    var vnetCell = cell.parent.parent;
+                    var vnetResult = Utils.TryParseUserObject(vnetCell.value);
+                    nsgProContext.VNetName = vnetResult.userObject.ProvisionContext.Name;
+
+                    //get subnet name
+                    var subnetCell = cell.parent;
+                    var subnetResult =  Utils.TryParseUserObject(subnetCell.value);
+                    nsgProContext.SubnetName = subnetResult.userObject.ProvisionContext.Name;
+
+                    provisionContexts.push(nsgProContext);
+               }
+        });
+    }
+
     getAllResourcesOutsideVNetContexts = (userObject, cell, provisionContexts) => {
 
         if(userObject.ProvisionContext.ResourceType != ResourceType.VNet())

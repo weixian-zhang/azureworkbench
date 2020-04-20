@@ -7,6 +7,7 @@ import ARMService from '../../services/ARMService';
 import Messages from './Helpers/Messages';
 import Utils from './Helpers/Utils';
 import {Select } from "@blueprintjs/select";
+import { Typography } from "@material-ui/core";
 
 export default class SelectLocation extends Component {
     constructor(props) {
@@ -64,12 +65,12 @@ export default class SelectLocation extends Component {
                     thisComp.setGlobal({locations: regions, filteredLocations: regions});
                 },
                 function onFailure(error) {
-                    thisComp.setState({loading:false});
-                   Toaster.create({
-                        position: Position.TOP,
-                        autoFocus: false,
-                        canEscapeKeyClear: true
-                      }).show({intent: Intent.DANGER, timeout: 6000, message: error});
+                   thisComp.setState({loading:false});
+                //    Toaster.create({
+                //         position: Position.TOP,
+                //         autoFocus: false,
+                //         canEscapeKeyClear: true
+                //       }).show({intent: Intent.DANGER, timeout: 6000, message: error});
                 }
             );
     }

@@ -27,7 +27,7 @@ namespace AzW.Infrastructure.Data
         public async Task<bool> IsVMImageCacheExistAsync()
         {
            //check first key exist
-           var exist = await _redis.ExistsAsync("128technology 128t networking platform");
+           var exist = await _redis.ExistsAsync("microsoft windows 10 desktop Windows-10_19h1-ent");
            if(exist)
                 return true;
            else
@@ -37,6 +37,16 @@ namespace AzW.Infrastructure.Data
         public async Task<bool> IsVMSizeExistAsync()
         {
            return await _redis.ExistsAsync("vmsize Basic_A0");
+        }
+
+        public async Task<bool> IsServiceTagExistAsync()
+        {
+           return await _redis.ExistsAsync("servicetag ApiManagement");
+        }
+
+        public async Task SetServiceTagAsync(string key, ServiceTag value)
+        {   
+            await _redis.AddAsync<ServiceTag>(key, value, TimeSpan.FromDays(30));
         }
 
         public async Task SetVMImageAsync(string key, VMImage value)
@@ -68,6 +78,15 @@ namespace AzW.Infrastructure.Data
             var vmSizeKV = await _redis.GetAllAsync<VMSize>(keys);
 
             return vmSizeKV.Values;
+        }
+
+        public async Task<IEnumerable<ServiceTag>> GetServiceTagAsync()
+        {
+             IEnumerable<string> keys = await _redis.SearchKeysAsync("servicetag*");
+
+            var stKV = await _redis.GetAllAsync<ServiceTag>(keys);
+
+            return stKV.Values;
         }
 
         private void InitRedisClient()
@@ -107,7 +126,6 @@ namespace AzW.Infrastructure.Data
             
             _redis = cache.Db0;
         }
-
 
         private string _redisHost;
         private string _redisConnString;
