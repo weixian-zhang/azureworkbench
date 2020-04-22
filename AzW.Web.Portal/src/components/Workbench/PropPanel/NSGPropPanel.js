@@ -82,6 +82,9 @@ export default class NSGPropPanel extends Component {
             <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginTop: '10px'}}>
               <Grid item sm={3}>
                   <label>Name</label>
+                  <Typography variant='body2' style={{fontSize:9,color:'blue'}}>
+                      *To reuse NSG, just enter same NSG name and rules can be empty
+                  </Typography>
               </Grid>
               <Grid item sm={3}>
                 <input id="icon-display-name" type="text" class="bp3-input .modifier"

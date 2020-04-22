@@ -36,36 +36,46 @@ namespace AzW.Infrastructure.AzureServices
 
             try
             {
-                foreach(dynamic context in provisionContexts)
+                IEnumerable<dynamic> nonNsgContexts;
+
+                var nsgContexts = SortoutNSGNonNSGContexts(provisionContexts, out nonNsgContexts);
+
+                //*important: NSG to create first
+                foreach(dynamic context in nsgContexts)
                 {
                     JObject jObj = JObject.Parse(context.ToString());
-                    string resourceType = jObj["ResourceType"].ToString();
-
-                    switch(resourceType)
-                    {
-                        //important vnet have to create first
-                        case ResourceType.VNet:
-                            VNet vnet = jObj.ToObject<VNet>();
-                            await CreateVNetAsync(vnet, _vnets);
-                        break;
-                        case ResourceType.NSG:
-                            NSG nsg = jObj.ToObject<NSG>();
-                            await CreateNSGAsync(nsg);
-                        break;
-                        case ResourceType.NLB:
-                            NLB nlb = jObj.ToObject<NLB>();
-                            await CreateNLBAsync(nlb);
-                        break;
-                        case ResourceType.VM:
-                            VM vm = jObj.ToObject<VM>();
-                            await CreateVMAsync(vm);
-                        break;
-                        case ResourceType.AppService:
-                            WebApp webapp = jObj.ToObject<WebApp>();
-                            await CreateAppService(webapp);
-                        break;
-                    }
+                    NSG nsg = jObj.ToObject<NSG>();
+                    await CreateNSGAsync(nsg);
                 }
+
+                if(nonNsgContexts != null)
+                {
+                    foreach(dynamic context in nonNsgContexts)
+                    {
+                        JObject jObj = JObject.Parse(context.ToString());
+                        string resourceType = jObj["ResourceType"].ToString();
+
+                        switch(resourceType)
+                        {
+                            case ResourceType.VNet:
+                                VNet vnet = jObj.ToObject<VNet>();
+                                await CreateVNetAsync(vnet, _vnets);
+                            break;
+                            case ResourceType.NLB:
+                                NLB nlb = jObj.ToObject<NLB>();
+                                await CreateNLBAsync(nlb);
+                            break;
+                            case ResourceType.VM:
+                                VM vm = jObj.ToObject<VM>();
+                                await CreateVMAsync(vm);
+                            break;
+                            case ResourceType.AppService:
+                                WebApp webapp = jObj.ToObject<WebApp>();
+                                await CreateAppService(webapp);
+                            break;
+                        }
+                    }
+                }              
 
                 provisionResult.IsSuccessful = true;
             }
@@ -78,67 +88,105 @@ namespace AzW.Infrastructure.AzureServices
             return provisionResult;
         }
 
+        private IEnumerable<dynamic> SortoutNSGNonNSGContexts
+            (dynamic[] provisionContexts, out IEnumerable<dynamic> otherContexts)
+        {
+            var nsgCons = new List<dynamic>();
+            var nonNsgCons = new List<dynamic>();
+
+            foreach(dynamic context in provisionContexts)
+            {
+                JObject jObj = JObject.Parse(context.ToString());
+                string resourceType = jObj["ResourceType"].ToString();
+
+                if(resourceType == ResourceType.NSG)
+                    nsgCons.Add(context);
+                else
+                    nonNsgCons.Add(context);
+            }
+
+            otherContexts = nonNsgCons;
+
+            return nsgCons;
+        }
+
         private async Task CreateVNetAsync(VNet vnet, Dictionary<string, INetwork> provisionedVNets)
         {      
-           var subnets = GetSubnets(vnet.Subnets);
-
-           INetwork virtualnetwork = await AzClient.WithSubscription(_subscriptionId)
+           var withCreateSubnet = AzClient.WithSubscription(_subscriptionId)
                 .Networks.Define(vnet.Name)
                 .WithRegion(vnet.Location)
                 .WithExistingResourceGroup(vnet.ResourceGroupName)
-                .WithAddressSpace(vnet.AddressSpace)
-                .WithSubnets(subnets)
-                .CreateAsync();
-        
+                .WithAddressSpace(vnet.AddressSpace);
+            
+            foreach(var subnet in vnet.Subnets)
+            {
+                if(!string.IsNullOrEmpty(subnet.NSGName))
+                {
+                    var nsg = GetNSGByName(subnet.NSGName);
+
+                    withCreateSubnet
+                            .DefineSubnet(subnet.Name)
+                            .WithAddressPrefix(subnet.AddressSpace)
+                            .WithExistingNetworkSecurityGroup(nsg)
+                            .Attach();
+                }
+                else
+                    withCreateSubnet
+                        .DefineSubnet(subnet.Name)
+                        .WithAddressPrefix(subnet.AddressSpace)
+                        .Attach();
+            }
+
+            INetwork virtualnetwork = await withCreateSubnet.CreateAsync();
+            
             provisionedVNets.Add(virtualnetwork.Name, virtualnetwork);
         }
 
-        private Dictionary<string,string> GetSubnets(IEnumerable<Subnet> subnets)
-        {
-            var dictionary = new Dictionary<string,string>();
+        // private Dictionary<string,string> GetSubnets(IEnumerable<Subnet> subnets)
+        // {
+        //     var dictionary = new Dictionary<string,string>();
 
-            foreach(var subnet in subnets)
-            {
-                dictionary.Add(subnet.Name, subnet.AddressSpace);
-            }
+        //     foreach(var subnet in subnets)
+        //     {
+        //         dictionary.Add(subnet.Name, subnet.AddressSpace);
+        //     }
 
-            return dictionary;
-        }
+        //     return dictionary;
+        // }
 
 
         private async Task CreateNSGAsync(NSG nsg)
         {
-            string[] ports = new string[10];
+            var existingNsg = GetNSGByName(nsg.Name);
+
+            if(existingNsg != null)
+                return;
 
             var ruleDef = AzClient.WithSubscription(_subscriptionId)
                 .NetworkSecurityGroups
                 .Define(nsg.Name)
                 .WithRegion(nsg.Location)
                 .WithExistingResourceGroup(nsg.ResourceGroupName);
+                
 
             foreach(var inbound in nsg.InboundRules)
             {
-                CreateNSGRule(ruleDef, inbound);
+                CreateNSGRule(ruleDef, inbound, true);
             }
 
             foreach(var outbound in nsg.OutboundRules)
             {
-                CreateNSGRule(ruleDef, outbound);
+                CreateNSGRule(ruleDef, outbound, false);
             }
 
             INetworkSecurityGroup nsgCreated = await ruleDef.CreateAsync();
 
-
-            INetwork vnet =GetVNetByName(nsg.VNetName);
-
-            ISubnet subnet = vnet.Subnets.Values.FirstOrDefault(x => x.Name == nsg.SubnetName);
-
-            subnet.Inner.NetworkSecurityGroup.Id = nsgCreated.Id;              
+            _nsgs.Add(nsgCreated.Name, nsgCreated);            
         }
 
         private void CreateNSGRule
             (Microsoft.Azure.Management.Network.Fluent.NetworkSecurityGroup.Definition.IWithCreate rscGrpDef,
-             NSGRule rule)
+             NSGRule rule, bool isInboundRule)
         {
             IWithSourcePort<
                     Microsoft.Azure.Management.Network.Fluent
@@ -160,11 +208,22 @@ namespace AzW.Infrastructure.AzureServices
                     Microsoft.Azure.Management.Network.Fluent
                         .NetworkSecurityGroup.Definition.IWithCreate> protocolDef;
 
+
                 //allow, deny def
-                if(rule.Allow)
-                    fromAddrDef = rscGrpDef.DefineRule(rule.Name).AllowInbound();
+                if(isInboundRule)
+                {
+                    if(rule.Allow)
+                        fromAddrDef = rscGrpDef.DefineRule(rule.Name).AllowInbound();
+                    else
+                        fromAddrDef = rscGrpDef.DefineRule(rule.Name).DenyInbound();
+                }
                 else
-                    fromAddrDef = rscGrpDef.DefineRule(rule.Name).DenyInbound();
+                {
+                     if(rule.Allow)
+                        fromAddrDef = rscGrpDef.DefineRule(rule.Name).AllowOutbound();
+                    else
+                        fromAddrDef = rscGrpDef.DefineRule(rule.Name).DenyOutbound();
+                }
                 
                 //src addr def
                 if(rule.ToAddresses.Contains("*"))
@@ -176,7 +235,7 @@ namespace AzW.Infrastructure.AzureServices
 
                 //src port def
                 if(rule.FromPorts == "*")
-                    srcPortDef.FromAnyPort();
+                    toDestAddrDef = srcPortDef.FromAnyPort();
                 else
                 {
                     //e.g 434-455,80,443,8000-8005
@@ -237,12 +296,23 @@ namespace AzW.Infrastructure.AzureServices
                 }
 
                 //protocol def
-                FieldInfo protocolField = typeof(SecurityRuleProtocol)
-                    .GetFields().FirstOrDefault(x => x.Name.ToLowerInvariant() == rule.Protocol.ToLowerInvariant());
+                if(rule.Protocol == "*")
+                    protocolDef
+                        .WithProtocol(SecurityRuleProtocol.Asterisk)
+                        .WithPriority(rule.Priority)
+                        .Attach();
+                else
+                {
+                    FieldInfo protocolField = typeof(SecurityRuleProtocol)
+                        .GetFields().FirstOrDefault(x => x.Name.ToLowerInvariant() == rule.Protocol.ToLowerInvariant());
 
-                SecurityRuleProtocol protocol = (SecurityRuleProtocol)protocolField.GetValue(null);
+                    SecurityRuleProtocol protocol = (SecurityRuleProtocol)protocolField.GetValue(null);
 
-                protocolDef.WithProtocol(protocol).Attach();
+                    protocolDef
+                        .WithProtocol(protocol)
+                        .WithPriority(rule.Priority)
+                        .Attach();
+                }
         }
 
         private async Task CreateVMAsync(VM vm)
@@ -412,8 +482,14 @@ namespace AzW.Infrastructure.AzureServices
         {
            return  _vnets.Values.FirstOrDefault(x => x.Name == vnetName);
         }
+
+        private INetworkSecurityGroup GetNSGByName(string nsgName)
+        {
+            return _nsgs.Values.FirstOrDefault(x => x.Name ==nsgName );
+        }
         
         private Dictionary<string, INetwork> _vnets = new Dictionary<string, INetwork>();
+        private Dictionary<string, INetworkSecurityGroup> _nsgs = new Dictionary<string, INetworkSecurityGroup>();
         private string _subscriptionId;
     }
 }

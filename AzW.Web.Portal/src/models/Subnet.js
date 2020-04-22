@@ -13,7 +13,8 @@ export default class Subnet
             ResourceType: ResourceType.Subnet(),
 
             Name: '',
-            AddressSpace: ''
+            AddressSpace: '',
+            NSGName: ''
         };
         this.CalculatorContext = {
             IsFree: true,

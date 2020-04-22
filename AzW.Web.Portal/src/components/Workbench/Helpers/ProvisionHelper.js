@@ -48,8 +48,12 @@ export default class ProvisionHelper
 
                 subnetCells.map(subnetCell => {
 
-                    var subnet = Utils.TryParseUserObject(subnetCell.value);
-                    subnetProContexts.push(subnet.userObject.ProvisionContext);
+                var subnet = Utils.TryParseUserObject(subnetCell.value);
+
+                var nsgName = this.getNSGNameForSubnet(subnetCell);
+                subnet.userObject.ProvisionContext.NSGName = nsgName;
+
+                subnetProContexts.push(subnet.userObject.ProvisionContext);
             });
 
             vnetUserObject.ProvisionContext.Subnets = subnetProContexts; //set subnets
@@ -158,16 +162,6 @@ export default class ProvisionHelper
                {
                     var nsgProContext = result.userObject.ProvisionContext;
 
-                    //get vnet name
-                    var vnetCell = cell.parent.parent;
-                    var vnetResult = Utils.TryParseUserObject(vnetCell.value);
-                    nsgProContext.VNetName = vnetResult.userObject.ProvisionContext.Name;
-
-                    //get subnet name
-                    var subnetCell = cell.parent;
-                    var subnetResult =  Utils.TryParseUserObject(subnetCell.value);
-                    nsgProContext.SubnetName = subnetResult.userObject.ProvisionContext.Name;
-
                     provisionContexts.push(nsgProContext);
                }
         });
@@ -184,6 +178,26 @@ export default class ProvisionHelper
     }
 
     //helper
+    getNSGNameForSubnet(subnetCell)
+    {
+        var children = this.graph.getChildVertices(subnetCell);
+
+        if(Utils.IsNullOrUndefine(children))
+            return '';
+        
+        for(var x of children)
+        {
+            var result = Utils.TryParseUserObject(x.value);
+
+            if(result.isUserObject &&
+                result.userObject.ProvisionContext.ResourceType == ResourceType.NSG())
+            {
+                return result.userObject.ProvisionContext.Name;
+            }
+        }
+        return '';
+    }
+
     getSubnetCells(userObject, cell) {
 
         if(userObject.ProvisionContext.ResourceType == ResourceType.VNet())

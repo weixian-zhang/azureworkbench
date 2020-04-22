@@ -7,11 +7,11 @@ export default class NSGRule
        this.Allow = false;
        this.FromAddressIsTag = false;
        this.FromAddresses = '';
-       this.FromPorts = '';
+       this.FromPorts = '*';
        this.ToAddressIsTag = false;
        this.ToAddresses = '';
-       this.ToPorts = '';
-       this.Protocol = ''; //tcp, udp, icmp, *
+       this.ToPorts = '*';
+       this.Protocol = '*'; //tcp, udp, icmp, *
        this.Priority = 100; //100 and 4096
     }
 }
