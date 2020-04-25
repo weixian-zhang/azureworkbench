@@ -27,9 +27,11 @@ namespace AzW.Web.API
         public async Task<ProvisionResult> Provision([FromBody] ProvisionParameters parameters)
         {
             string accessToken = GetUserIdentity().AccessToken;
+            _secret.AccessToken = accessToken;
+            _secret.UserUPN = GetUserIdentity().Email;
 
             IProvisionService provisionSvc =
-                new ProvisionService(parameters.SubscriptionId, accessToken, _secret);
+                new ProvisionService(parameters.SubscriptionId, _secret);
 
             return await provisionSvc.ProvisionAsync(parameters.ProvisionContexts);
         }

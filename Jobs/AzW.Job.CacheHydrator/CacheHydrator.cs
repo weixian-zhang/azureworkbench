@@ -41,7 +41,7 @@ namespace AzW.Job.CacheHydrator
         }
 
         [FunctionName("CacheHydrator")]
-        public async Task Run([TimerTrigger("* */10 * * * *")]TimerInfo myTimer, Microsoft.Extensions.Logging.ILogger log)
+        public async Task Run([TimerTrigger("*/2 * * * * *")]TimerInfo myTimer, Microsoft.Extensions.Logging.ILogger log)
         {
             await HydrateServiceTag();
 
@@ -106,6 +106,99 @@ namespace AzW.Job.CacheHydrator
                             Name = svcTagInfo.Name
                         });
                     }
+
+                    //add tags not found in Azure API
+                    await _cache.SetServiceTagAsync
+                        ("servicetag" + " " +  "ActionGroup", new ServiceTag()
+                    {
+                        Id = "ActionGroup",
+                        Name = "ActionGroup"
+                    });
+
+                    //add tags not found in Azure API
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "ApplicationInsightsAvailability", new ServiceTag()
+                    {
+                        Id = "ApplicationInsightsAvailability",
+                        Name = "ApplicationInsightsAvailability"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AppConfiguration", new ServiceTag()
+                    {
+                        Id = "AppConfiguration",
+                        Name = "AppConfiguration"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AzureActiveDirectory", new ServiceTag()
+                    {
+                        Id = "AzureActiveDirectory",
+                        Name = "AzureActiveDirectory"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AzureDevSpaces", new ServiceTag()
+                    {
+                        Id = "AzureDevSpaces",
+                        Name = "AzureDevSpaces"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AzureSignalR", new ServiceTag()
+                    {
+                        Id = "AzureSignalR",
+                        Name = "AzureSignalR"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AzureLoadBalancer", new ServiceTag()
+                    {
+                        Id = "AzureLoadBalancer",
+                        Name = "AzureLoadBalancer"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AzureSiteRecovery", new ServiceTag()
+                    {
+                        Id = "AzureSiteRecovery",
+                        Name = "AzureSiteRecovery"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "DataFactory", new ServiceTag()
+                    {
+                        Id = "DataFactory",
+                        Name = "DataFactory"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "LogicApps", new ServiceTag()
+                    {
+                        Id = "LogicApps",
+                        Name = "LogicApps"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "LogicAppsManagement", new ServiceTag()
+                    {
+                        Id = "LogicAppsManagement",
+                        Name = "LogicAppsManagement"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "VirtualNetwork", new ServiceTag()
+                    {
+                        Id = "VirtualNetwork",
+                        Name = "VirtualNetwork"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "Internet", new ServiceTag()
+                    {
+                        Id = "Internet",
+                        Name = "Internet"
+                    });
                 }
             }
             catch(Exception ex)

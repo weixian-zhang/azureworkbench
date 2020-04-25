@@ -67,6 +67,9 @@ import PostgreSQL from "../../models/PostgreSQL";
 import FileSync from "../../models/FileSync";
 import NetAppFile from "../../models/NetAppFile";
 import BlobStorage from "../../models/BlobStorage";
+import TableStorage from "../../models/TableStorage";
+import QueueStorage from "../../models/QueueStorage";
+import AzFile from "../../models/AzFile";
 import AzureCDN from "../../models/AzureCDN";
 import VirtualNetworkGateway from "../../models/VirtualNetworkGateway";
 import DevTestLab from "../../models/DevTestLab";
@@ -94,6 +97,7 @@ import RouteTable from "../../models/RouteTable";
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
 
 //property panels
+import AzStoragePropPanel from './PropPanel/AzStoragePropPanel';
 import StylePropPanel from './StylePropPanel';
 import SubnetPropPanel from "./PropPanel/SubnetPropPanel";
 import VNetPropPanel from "./PropPanel/VNetPropPanel";
@@ -197,8 +201,6 @@ import Toast from './Helpers/Toast';
 
   componentDidMount() {
 
-    
-
     this.graphManager = new MxGraphManager(document.getElementById("diagramEditor"));
     this.graphManager.initGraph();
     this.graph = this.graphManager.graph;
@@ -236,6 +238,7 @@ import Toast from './Helpers/Toast';
   render() {
     return (
       <div id="diagramEditor" className="diagramEditor">
+        <AzStoragePropPanel ref={this.azstoragePropPanel} />
         <OverlayPreviewDiagram ref={this.previewOverlay} />
         <StylePropPanel ref={this.stylePanel} MxGraphManager={this.graphManager} />
         <OverlaySaveToWorkspace ref={this.overlaySaveToWorkspace} DiagramEditor={this} />
@@ -326,7 +329,7 @@ import Toast from './Helpers/Toast';
   }
 
   initRef() {
-
+    this.azstoragePropPanel = React.createRef();
     this.nsgPropPanel = React.createRef();
     this.stylePanel = React.createRef();
     this.overlaySaveToWorkspace = React.createRef();
@@ -1037,7 +1040,26 @@ addUpDownLeftRightArrowToMoveCells() {
     let thisComp = this;
 
     switch (userObject.GraphModel.ResourceType) {
-      
+      case ResourceType.AzFile():
+        this.azstoragePropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.QueueStorage():
+        this.azstoragePropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.TableStorage():
+        this.azstoragePropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.BlobStorage():
+        this.azstoragePropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
       case ResourceType.NSG():
         this.nsgPropPanel.current.show(userObject, function(savedUserObject){
           thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
@@ -2316,9 +2338,14 @@ addUpDownLeftRightArrowToMoveCells() {
 
   addAzFile = (dropContext) => {
 
+    var model = new AzFile();
+    model.GraphModel.Id = this.shortUID.randomUUID(6);
+    model.GraphModel.DisplayName = 'Azure File'
+    var modelJson = JSON.stringify(model);
+
     this.graph.insertVertex
-      (this.graph.parent, '','Azure File', dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      (this.graph.parent, model.GraphModel.Id,modelJson, dropContext.x, dropContext.y, 35, 35,
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AzureFile());
   }
   
@@ -2349,16 +2376,28 @@ addUpDownLeftRightArrowToMoveCells() {
   }
 
   addQueueStorage = (dropContext) => {
+
+    var model = new QueueStorage();
+    model.GraphModel.Id = this.shortUID.randomUUID(6);
+    model.GraphModel.DisplayName = 'Queue Storage'
+    var modelJson = JSON.stringify(model);
+
     this.graph.insertVertex
-      (this.graph.parent, '','Queue Storage', dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      (this.graph.parent, model.GraphModel.Id, modelJson, dropContext.x, dropContext.y, 35, 35,
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.QueueStorage());
   }
   
   addTableStorage = (dropContext) => {
+
+    var model = new TableStorage();
+    model.GraphModel.Id = this.shortUID.randomUUID(6);
+    model.GraphModel.DisplayName = 'Table Storage'
+    var modelJson = JSON.stringify(model);
+
     this.graph.insertVertex
-      (this.graph.parent, '','Table Storage', dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      (this.graph.parent, model.GraphModel.Id, modelJson, dropContext.x, dropContext.y, 35, 35,
+      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.TableStorage());
   }
 

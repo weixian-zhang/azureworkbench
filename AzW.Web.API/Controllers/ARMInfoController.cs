@@ -35,8 +35,10 @@ namespace AzW.Web.API
         public async Task<IEnumerable<AzSubscription>> GetSubscriptions()
         {   
             string accessToken = GetUserIdentity().AccessToken;
+            _secret.AccessToken = accessToken;
+            _secret.UserUPN =  GetUserIdentity().Email;
 
-            _armService = new ARMService(accessToken, _secret);
+            _armService = new ARMService(_secret);
 
             var subs = await _armService.GetSubscriptions();
 
@@ -50,9 +52,11 @@ namespace AzW.Web.API
         [HttpPost("arm/rg/new")]
         public async Task CreateResourceGroup([FromBody] NewRGParameter parameters)
         {
-             string accessToken = GetUserIdentity().AccessToken;
+            string accessToken = GetUserIdentity().AccessToken;
+            _secret.AccessToken = accessToken;
+            _secret.UserUPN =  GetUserIdentity().Email;
 
-            _armService = new ARMService(accessToken, _secret);
+            _armService = new ARMService(_secret);
 
             await _armService.CreateResourceGroup
                 (parameters.SubscriptionId, parameters.Location, parameters.RGName);
@@ -62,8 +66,10 @@ namespace AzW.Web.API
         public async Task<IEnumerable<AzResourceGroup>> GetResourceGroups(string subscription)
         {
             string accessToken = GetUserIdentity().AccessToken;
+            _secret.AccessToken = accessToken;
+            _secret.UserUPN =  GetUserIdentity().Email;
 
-            _armService = new ARMService(accessToken, _secret);
+            _armService = new ARMService(_secret);
 
             var irgs = await _armService.GetResourceGroups(subscription);
 

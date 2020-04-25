@@ -1,18 +1,19 @@
 import ResourceType from './ResourceType'
-export default class LogicApp
+export default class TableStorage
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.LogicApp(),
+            ResourceType: ResourceType.TableStorage(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.LogicApp(),
+            ResourceType: ResourceType.TableStorage(),
             Name: '',
             Location: '',
             ResourceGroupName: '',
+            SkuName: ''
         };
         this.CalculatorContext = {
             IsFree: false,

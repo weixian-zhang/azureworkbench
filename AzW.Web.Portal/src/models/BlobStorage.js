@@ -10,12 +10,10 @@ export default class BlobStorage
 
         this.ProvisionContext = {
             ResourceType: ResourceType.BlobStorage(),
-            Deployable: true,
-            HighCost: false,
-            
             Name: '',
             Location: '',
-            Tags: [],
+            ResourceGroupName: '',
+            SkuName: ''
         };
         this.CalculatorContext = {
             IsFree: false,

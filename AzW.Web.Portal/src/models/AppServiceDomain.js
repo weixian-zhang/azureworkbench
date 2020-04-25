@@ -10,15 +10,9 @@ export default class AppServiceDomain
 
         this.ProvisionContext = {
             ResourceType: ResourceType.AppServiceDomain(),
-            Deployable: true,
-            HighCost: false,
-            
             Name: '',
             Location: '',
-            Tags: [],
-
-            VNetName: '',
-            SubnetName: ''
+            ResourceGroupName: '',
         };
         this.CalculatorContext = {
             IsFree: false,

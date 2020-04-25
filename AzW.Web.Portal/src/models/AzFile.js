@@ -1,18 +1,19 @@
 import ResourceType from './ResourceType'
-export default class LogicApp
+export default class AzFile
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.LogicApp(),
+            ResourceType: ResourceType.AzFile(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.LogicApp(),
+            ResourceType: ResourceType.AzFile(),
             Name: '',
             Location: '',
             ResourceGroupName: '',
+            SkuName: ''
         };
         this.CalculatorContext = {
             IsFree: false,

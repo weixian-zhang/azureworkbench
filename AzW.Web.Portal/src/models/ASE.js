@@ -10,12 +10,9 @@ export default class ASE
 
         this.ProvisionContext = {
             ResourceType: ResourceType.ASE(),
-            Deployable: true,
-            HighCost: true,
-            
             Name: '',
             Location: '',
-            Tags: [],
+            ResourceGroupName: '',
         };
         this.CalculatorContext = {
             IsFree: false,

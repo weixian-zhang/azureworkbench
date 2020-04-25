@@ -14,7 +14,7 @@ namespace AzW.Infrastructure.AzureServices
 {
     public class ComputeInfoService : BaseService, IComputeInfoService
     {
-        public ComputeInfoService(string accessToken, WorkbenchSecret secret) : base(accessToken, secret)
+        public ComputeInfoService(WorkbenchSecret secret) : base(secret)
         {
             
         }

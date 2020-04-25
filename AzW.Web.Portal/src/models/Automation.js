@@ -10,12 +10,9 @@ export default class Automation
 
         this.ProvisionContext = {
             ResourceType: ResourceType.Automation(),
-            Deployable: true,
-            HighCost: false,
-            
             Name: '',
             Location: '',
-            Tags: [],
+            ResourceGroupName: '',
         };
         this.CalculatorContext = {
             IsFree: false,

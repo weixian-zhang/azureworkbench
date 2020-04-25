@@ -20,12 +20,14 @@ using Microsoft.Azure.Management.ResourceManager.Fluent.Core.ResourceActions;
 using Microsoft.Azure.Management.Network.Fluent.NetworkSecurityRule.Definition;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Core.GroupableResource.Definition;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Core.ChildResource.Definition;
+using Microsoft.Azure.Management.Storage.Fluent;
+using System.Management.Automation;
 
 namespace AzW.Infrastructure.AzureServices
 {
     public class ProvisionService : BaseService, IProvisionService
     {
-        public ProvisionService(string subscriptionId, string accessToken, WorkbenchSecret secret) : base(accessToken, secret)
+        public ProvisionService(string subscriptionId, WorkbenchSecret secret) : base(secret)
         {
             _subscriptionId = subscriptionId;
         }
@@ -73,6 +75,27 @@ namespace AzW.Infrastructure.AzureServices
                                 WebApp webapp = jObj.ToObject<WebApp>();
                                 await CreateAppService(webapp);
                             break;
+                            case ResourceType.BlobStorage:
+                                StorageAccount blob = jObj.ToObject<StorageAccount>();
+                                await CreateStorageAccountAsync(blob);
+                            break;
+                            case ResourceType.QueueStorage:
+                                StorageAccount queue = jObj.ToObject<StorageAccount>();
+                                await CreateStorageAccountAsync(queue);
+                            break;
+                            case ResourceType.TableStorage:
+                                StorageAccount table = jObj.ToObject<StorageAccount>();
+                                await CreateStorageAccountAsync(table);
+                            break;
+                            case ResourceType.AzFile:
+                                StorageAccount file = jObj.ToObject<StorageAccount>();
+                                await CreateStorageAccountAsync(file);
+                            break;
+                            case ResourceType.LogAnalytics:
+                                LogAnalytics law = jObj.ToObject<LogAnalytics>();
+                                CreateLAW(law);
+                            break;
+                            
                         }
                     }
                 }              
@@ -141,19 +164,6 @@ namespace AzW.Infrastructure.AzureServices
             
             provisionedVNets.Add(virtualnetwork.Name, virtualnetwork);
         }
-
-        // private Dictionary<string,string> GetSubnets(IEnumerable<Subnet> subnets)
-        // {
-        //     var dictionary = new Dictionary<string,string>();
-
-        //     foreach(var subnet in subnets)
-        //     {
-        //         dictionary.Add(subnet.Name, subnet.AddressSpace);
-        //     }
-
-        //     return dictionary;
-        // }
-
 
         private async Task CreateNSGAsync(NSG nsg)
         {
@@ -476,6 +486,41 @@ namespace AzW.Infrastructure.AzureServices
                     .WithNewWindowsPlan(appServicePlan)
                     .WithWebAppAlwaysOn(true)
                     .CreateAsync();
+        }
+
+        private void CreateLAW(LogAnalytics law)
+        {
+            PowerShell ps = PowerShell.Create()
+                .AddCommand("Connect-AzureAD")
+                .AddParameter("TenantId", Secret.TenantId)
+                .AddParameter("AadAccessToken ", Secret.AccessToken)
+                .AddParameter("MsAccessToken  ", Secret.AccessToken)
+                .AddParameter("AccountId  ", Secret.UserUPN)
+                .AddCommand($"New-AzOperationalInsightsWorkspace -name {law.Name}" +
+                     $"-ResourceGroupName {law.ResourceGroupName} -Location {law.Location}");
+            
+            ps.Invoke();
+        }
+
+        private async Task CreateStorageAccountAsync(StorageAccount storage)
+        {
+            
+           var trafficAccessDef = AzClient.WithSubscription(_subscriptionId)
+                .StorageAccounts
+                .Define(storage.Name)
+                .WithRegion(storage.Location)
+                .WithExistingResourceGroup(storage.ResourceGroupName)
+                .WithAccessFromAllNetworks()
+                .WithOnlyHttpsTraffic();
+            
+            FieldInfo acctTypeField = typeof(StorageAccountSkuType)
+                    .GetFields().FirstOrDefault(x => x.Name.ToLowerInvariant() == storage.SkuName.ToLowerInvariant());
+
+            StorageAccountSkuType acctSku = (StorageAccountSkuType)acctTypeField.GetValue(null);
+
+            await trafficAccessDef.WithSku(acctSku)
+            .WithGeneralPurposeAccountKindV2()
+            .CreateAsync();
         }
 
         private INetwork GetVNetByName(string vnetName)

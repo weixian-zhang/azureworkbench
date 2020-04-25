@@ -12,6 +12,8 @@ namespace AzW.Secret
 
         public string AccessToken { get; set; }
 
+        public string UserUPN { get; set; }
+
         public string PortalUrl { get; set; }
 
         public string AppInsightsKey { get; set; }

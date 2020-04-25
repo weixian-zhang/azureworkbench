@@ -1,0 +1,78 @@
+# Server
+redis_version:4.0.14
+redis_mode:standalone
+os:Windows  
+arch_bits:64
+multiplexing_api:winsock_IOCP
+run_id:78920f0aed91337d19636b953d47f53a867ff777
+uptime_in_seconds:3025478
+uptime_in_days:35
+hz:10
+
+# Clients
+connected_clients:1
+maxclients:256
+client_longest_output_list:0
+client_biggest_input_buf:0
+client_total_writes_outstanding:0
+client_total_sent_bytes_outstanding:0
+blocked_clients:0
+
+# Memory
+used_memory:880480
+used_memory_human:859.84K
+used_memory_rss:4337664
+used_memory_rss_human:4.14M
+used_memory_peak:7955872
+used_memory_peak_human:7.59M
+used_memory_peak_perc:11.07%
+used_memory_overhead:525072
+used_memory_startup:244384
+used_memory_dataset:355408
+used_memory_dataset_perc:55.87%
+used_memory_lua:37888
+maxmemory:285000000
+maxmemory_reservation:0
+maxfragmentationmemory_reservation:0
+maxmemory_desired_reservation:0
+maxfragmentationmemory_desired_reservation:0
+maxmemory_human:271.80M
+maxmemory_policy:volatile-lru
+mem_allocator:jemalloc-4.0.3
+
+# Stats
+total_connections_received:2169391
+total_commands_processed:2320488
+instantaneous_ops_per_sec:0
+bytes_received_per_sec:0
+bytes_sent_per_sec:0
+bytes_received_per_sec_human:0B
+bytes_sent_per_sec_human:0B
+rejected_connections:0
+expired_keys:0
+evicted_keys:0
+keyspace_hits:325600
+keyspace_misses:4348
+pubsub_channels:0
+pubsub_patterns:0
+total_oom_messages:0
+
+# Replication
+role:master
+
+# CPU
+used_cpu_sys:206.08
+used_cpu_user:180.02
+used_cpu_avg_ms_per_sec:0
+server_load:0.08
+event_wait:0
+event_no_wait:0
+event_wait_count:8
+event_no_wait_count:0
+
+# Cluster
+cluster_enabled:0
+cluster_myself_name:
+
+# Keyspace
+db0:keys=1749,expires=1749,avg_ttl=1977299916

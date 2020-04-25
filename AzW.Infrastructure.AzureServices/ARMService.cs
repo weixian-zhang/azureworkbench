@@ -14,7 +14,7 @@ namespace AzW.Infrastructure.AzureServices
 {
     public class ARMService : BaseService, IARMService
     {
-        public ARMService(string accessToken, WorkbenchSecret secret) : base(accessToken, secret)
+        public ARMService(WorkbenchSecret secret) : base(secret)
         {  
         }
 

@@ -6,7 +6,7 @@ export default class Utils
     static TryParseUserObject(str) {
         
         try {
-            if(str == null)
+            if(str == null || str == "")
               return {isUserObject: false, userObject: null};
             
             var usrObj = null;
@@ -89,7 +89,7 @@ export default class Utils
         if(text)
         {
             var limitedText = String(text).substring(0, lengthToLimit);
-            if(String(text).length == lengthToLimit)
+            if(String(text).length <= lengthToLimit)
                 return limitedText
             else
                 return limitedText + "...";

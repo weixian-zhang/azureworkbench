@@ -38,7 +38,7 @@ export default class ProvisionService
                 Toast.show('success', 2000, 'Diagram deployed successfully');
             }
             else { 
-                Toast.show('danger', 5000, result.errorMessage);
+                Toast.show('danger', 8000, result.errorMessage);
             }
                 
         })

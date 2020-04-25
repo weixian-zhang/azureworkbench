@@ -239,6 +239,11 @@ export default class StylePropPanel extends Component {
       {
         let propFontColor =
           Object.getOwnPropertyDescriptor(styleObj, mxConstants.STYLE_FONTCOLOR);
+
+        //a workaround for Grouped parent cell
+        if(Utils.IsNullOrUndefine(propFontColor))
+          return;
+
         this.onFontColorChange(propFontColor.value);
 
         let propFontSize =

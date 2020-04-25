@@ -1,18 +1,19 @@
 import ResourceType from './ResourceType'
-export default class LogicApp
+export default class QueueStorage
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.LogicApp(),
+            ResourceType: ResourceType.QueueStorage(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.LogicApp(),
+            ResourceType: ResourceType.QueueStorage(),
             Name: '',
             Location: '',
             ResourceGroupName: '',
+            SkuName: ''
         };
         this.CalculatorContext = {
             IsFree: false,

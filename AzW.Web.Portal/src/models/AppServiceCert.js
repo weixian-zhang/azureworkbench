@@ -10,12 +10,9 @@ export default class AppServiceCert
 
         this.ProvisionContext = {
             ResourceType: ResourceType.AppServiceCert(),
-            Deployable: true,
-            HighCost: false,
-            
             Name: '',
             Location: '',
-            Tags: [],
+            ResourceGroupName: '',
         };
         this.CalculatorContext = {
             IsFree: false,

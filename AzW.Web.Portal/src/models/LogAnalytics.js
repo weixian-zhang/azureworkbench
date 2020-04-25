@@ -10,12 +10,9 @@ export default class LogAnalytics
 
         this.ProvisionContext = {
             ResourceType: ResourceType.LogAnalytics(),
-            Deployable: true,
-            HighCost: false,
-            
             Name: '',
             Location: '',
-            Tags: []
+            ResourceGroupName: '',
         };
         this.CalculatorContext = {
             IsFree: false,

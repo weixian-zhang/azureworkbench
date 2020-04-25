@@ -141,12 +141,19 @@ export default class MxGraphManager
         {
             var result = Utils.TryParseUserObject(cell.value);
 
-            if(!result.isUserObject ||
-                result.userObject.ProvisionContext.ResourceType == ResourceType.NSG() ||
-                result.userObject.ProvisionContext.ResourceType == ResourceType.RouteTable())
-                {
+            //original translate cell codes
+            if(result.isUserObject == false) {
+                mxGraphTranslateCellOriginal(graph,cell, dx, dy)
+            }
+            else if(result.isUserObject == true &&
+                result.userObject.ProvisionContext.ResourceType != ResourceType.NSG() &&
+                result.userObject.ProvisionContext.ResourceType != ResourceType.RouteTable())
+            {
+                mxGraphTranslateCellOriginal(graph,cell, dx, dy)
+            }
+            else {
                     var rel = getRelativePosition(graph.view.getState(cell), dx * graph.view.scale, dy * graph.view.scale);
-                    
+                        
                     if (rel != null)
                     {
                         var geo = this.model.getGeometry(cell);
@@ -160,66 +167,7 @@ export default class MxGraphManager
                             this.model.setGeometry(cell, geo);
                         }
                     }
-                    else
-                    {
-                        mxGraph.prototype.translateCell.apply(this, arguments);
-                    }
-               }
-               else
-               {
-                   //origin codes from framework
-                   var geo = this.model.getGeometry(cell);
-
-                    if (geo != null)
-                    {
-                        dx = parseFloat(dx);
-                        dy = parseFloat(dy);
-                        geo = geo.clone();
-                        geo.translate(dx, dy);
-
-                        if (!geo.relative && this.model.isVertex(cell) && !this.isAllowNegativeCoordinates())
-                        {
-                            geo.x = Math.max(0, parseFloat(geo.x));
-                            geo.y = Math.max(0, parseFloat(geo.y));
-                        }
-                        
-                        if (geo.relative && !this.model.isEdge(cell))
-                        {
-                            var parent = this.model.getParent(cell);
-                            var angle = 0;
-                            
-                            if (this.model.isVertex(parent))
-                            {
-                                var state = this.view.getState(parent);
-                                var style = (state != null) ? state.style : this.getCellStyle(parent);
-                                
-                                angle = mxUtils.getValue(style, mxConstants.STYLE_ROTATION, 0);
-                            }
-                            
-                            if (angle != 0)
-                            {
-                                var rad = mxUtils.toRadians(-angle);
-                                var cos = Math.cos(rad);
-                                var sin = Math.sin(rad);
-                                var pt = mxUtils.getRotatedPoint(new mxPoint(dx, dy), cos, sin, new mxPoint(0, 0));
-                                dx = pt.x;
-                                dy = pt.y;
-                            }
-                            
-                            if (geo.offset == null)
-                            {
-                                geo.offset = new mxPoint(dx, dy);
-                            }
-                            else
-                            {
-                                geo.offset.x = parseFloat(geo.offset.x) + dx;
-                                geo.offset.y = parseFloat(geo.offset.y) + dy;
-                            }
-                        }
-
-                        this.model.setGeometry(cell, geo);
-                    }
-               }
+                }
         };
 
         // Enables moving of relative children
@@ -255,6 +203,61 @@ export default class MxGraphManager
         };
 
         //helper
+        function mxGraphTranslateCellOriginal(graph, cell, dx, dy) {
+                //origin codes from framework
+                var geo = graph.model.getGeometry(cell);
+            
+                if (geo != null)
+                {
+                    dx = parseFloat(dx);
+                    dy = parseFloat(dy);
+                    geo = geo.clone();
+                    geo.translate(dx, dy);
+        
+                    if (!geo.relative && graph.model.isVertex(cell) && !graph.isAllowNegativeCoordinates())
+                    {
+                        geo.x = Math.max(0, parseFloat(geo.x));
+                        geo.y = Math.max(0, parseFloat(geo.y));
+                    }
+                    
+                    if (geo.relative && !graph.model.isEdge(cell))
+                    {
+                        var parent = this.model.getParent(cell);
+                        var angle = 0;
+                        
+                        if (graph.model.isVertex(parent))
+                        {
+                            var state = graph.view.getState(parent);
+                            var style = (state != null) ? state.style : graph.getCellStyle(parent);
+                            
+                            angle = mxUtils.getValue(style, mxConstants.STYLE_ROTATION, 0);
+                        }
+                        
+                        if (angle != 0)
+                        {
+                            var rad = mxUtils.toRadians(-angle);
+                            var cos = Math.cos(rad);
+                            var sin = Math.sin(rad);
+                            var pt = mxUtils.getRotatedPoint(new mxPoint(dx, dy), cos, sin, new mxPoint(0, 0));
+                            dx = pt.x;
+                            dy = pt.y;
+                        }
+                        
+                        if (geo.offset == null)
+                        {
+                            geo.offset = new mxPoint(dx, dy);
+                        }
+                        else
+                        {
+                            geo.offset.x = parseFloat(geo.offset.x) + dx;
+                            geo.offset.y = parseFloat(geo.offset.y) + dy;
+                        }
+                    }
+        
+                    graph.model.setGeometry(cell, geo);
+                }
+        }
+
         function getRelativePosition(state, dx, dy)
         {
             if (state != null)
@@ -305,6 +308,8 @@ export default class MxGraphManager
             return null;
         };
     }
+
+    
 
     overrideRemoveCell() {
         mxGraph.prototype.removeCells = function(cells, includeEdges)
