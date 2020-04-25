@@ -121,7 +121,6 @@ import ExpressRoutePropPanel from "./PropPanel/ExpressRoutePropPanel";
 import TrafficManagerPropPanel from "./PropPanel/TrafficManagerPropPanel";
 import VNetGatewayPropPanel from "./PropPanel/VNetGatewayPropPanel";
 import CDNPropPanel from "./PropPanel/CDNPropPanel";
-import StoragePropPanel from "./PropPanel/StoragePropPanel";
 import AzureFileSyncPropPanel from "./PropPanel/AzureFileSyncPropPanel";
 import NetAppFilePropPanel from "./PropPanel/NetAppFilePropPanel";
 import SynapsePropPanel from "./PropPanel/SynapsePropPanel";
@@ -261,7 +260,6 @@ import Toast from './Helpers/Toast';
         <TrafficManagerPropPanel ref={this.trafficmanagerPropPanel} />
         <VNetGatewayPropPanel ref={this.vnetgatewayPropPanel} />
         <CDNPropPanel ref={this.cdnPropPanel} />
-        <StoragePropPanel ref={this.storagePropPanel} />
         <AzureFileSyncPropPanel ref={this.filesyncPanel} />
         <NetAppFilePropPanel ref={this.netappfilePropPanel} />
         <SynapsePropPanel ref={this.synapsePropPanel} />

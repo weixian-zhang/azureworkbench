@@ -549,12 +549,16 @@ export default class ResourcePalette extends Component {
             <Typography component={'span'} variant={'body2'}>
               <div class="tile-panel" ref={this.blobstorageIcon}>
                 <Tippy content="Blob Storage" followCursor={true} placement="bottom">
-                  <Storage class="azure-rsc-icon" />
+                  <Badge badgeContent={'P'} color="error">
+                    <Storage class="azure-rsc-icon" />
+                  </Badge>
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.azfileIcon}>
                 <Tippy content="Azure Files" followCursor={true} placement="bottom">
-                  <img src={require('../../assets/azure_icons/azure-storage-files.png')} width="25" height="25" />
+                  <Badge badgeContent={'P'} color="error">
+                    <img src={require('../../assets/azure_icons/azure-storage-files.png')} width="25" height="25" />
+                  </Badge>
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.azfilesyncIcon}>
@@ -569,12 +573,16 @@ export default class ResourcePalette extends Component {
               </div>
               <div class="tile-panel" ref={this.queuestorageIcon}>
                 <Tippy content="Queue Storage" followCursor={true} placement="bottom">
-                  <QueueStorage class="azure-rsc-icon" />
+                  <Badge badgeContent={'P'} color="error">
+                    <QueueStorage class="azure-rsc-icon" />
+                  </Badge>
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.tablestorageIcon}>
                 <Tippy content="Table Storage" followCursor={true} placement="bottom">
-                  <TableStorage class="azure-rsc-icon" />
+                  <Badge badgeContent={'P'} color="error">
+                    <TableStorage class="azure-rsc-icon" />
+                  </Badge>
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.databoxIcon}>
@@ -838,7 +846,9 @@ export default class ResourcePalette extends Component {
                 </div>
                 <div class="tile-panel" ref={this.azloganalyticsIcon}>
                   <Tippy content="Log Analytics Workspace" followCursor={true} placement="bottom">
-                  <img src={require('../../assets/azure_icons/Management and Governance Service Color/Log Analytics Workspaces.png')} width="25" height="25" />
+                    <Badge badgeContent={'P'} color="error">
+                      <img src={require('../../assets/azure_icons/Management and Governance Service Color/Log Analytics Workspaces.png')} width="25" height="25" />
+                    </Badge>
                   </Tippy>
                 </div>
                 <div class="tile-panel" ref={this.automationIcon}>
