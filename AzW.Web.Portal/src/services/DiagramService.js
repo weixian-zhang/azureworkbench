@@ -1,12 +1,33 @@
 import axios from 'axios';
 import AnonymousDiagramContext from '../models/services/AnonymousDiagramContext';
 import WorkspaceDiagramContext from '../models/services/WorkspaceDiagramContext';
+import QuickstartDiagramContext from '../models/services/QuickstartDiagramContext';
+
 import AuthService from './AuthService';
 
 export default class DiagramService
 {
     constructor(){
       this.authService = new AuthService();
+    }
+
+    async loadQuickstartDiagram(category, name, onSuccess, onFailure) {
+      axios.get('/api/dia/qs',{
+        params: {
+          category: category,
+          name: name
+        }
+      })
+      .then(function (response) {
+        var qsDiagContext = new QuickstartDiagramContext();
+        qsDiagContext.Category = response.data.category;
+        qsDiagContext.Name = response.data.name;
+        qsDiagContext.DiagramXml = response.data.diagramXml;
+        onSuccess(qsDiagContext);
+      })
+      .catch(function (error) {
+        onFailure(error);
+      })
     }
 
     async saveAnonymousDiagram(anonyDiagramContext, respCallback, errCallback){

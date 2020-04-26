@@ -21,7 +21,8 @@ using Microsoft.Azure.Management.Network.Fluent.NetworkSecurityRule.Definition;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Core.GroupableResource.Definition;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Core.ChildResource.Definition;
 using Microsoft.Azure.Management.Storage.Fluent;
-using System.Management.Automation;
+using Microsoft.Azure.Management.OperationalInsights;
+using Microsoft.Azure.Management.OperationalInsights.Models;
 
 namespace AzW.Infrastructure.AzureServices
 {
@@ -76,24 +77,24 @@ namespace AzW.Infrastructure.AzureServices
                                 await CreateAppService(webapp);
                             break;
                             case ResourceType.BlobStorage:
-                                StorageAccount blob = jObj.ToObject<StorageAccount>();
+                                Model.StorageAccount blob = jObj.ToObject<Model.StorageAccount>();
                                 await CreateStorageAccountAsync(blob);
                             break;
                             case ResourceType.QueueStorage:
-                                StorageAccount queue = jObj.ToObject<StorageAccount>();
+                                Model.StorageAccount queue = jObj.ToObject<Model.StorageAccount>();
                                 await CreateStorageAccountAsync(queue);
                             break;
                             case ResourceType.TableStorage:
-                                StorageAccount table = jObj.ToObject<StorageAccount>();
+                                Model.StorageAccount table = jObj.ToObject<Model.StorageAccount>();
                                 await CreateStorageAccountAsync(table);
                             break;
                             case ResourceType.AzFile:
-                                StorageAccount file = jObj.ToObject<StorageAccount>();
+                                Model.StorageAccount file = jObj.ToObject<Model.StorageAccount>();
                                 await CreateStorageAccountAsync(file);
                             break;
                             case ResourceType.LogAnalytics:
                                 LogAnalytics law = jObj.ToObject<LogAnalytics>();
-                                CreateLAW(law);
+                                await CreateLAWAsync(law);
                             break;
                             
                         }
@@ -488,21 +489,18 @@ namespace AzW.Infrastructure.AzureServices
                     .CreateAsync();
         }
 
-        private void CreateLAW(LogAnalytics law)
+        private async Task  CreateLAWAsync(LogAnalytics law)
         {
-            PowerShell ps = PowerShell.Create()
-                .AddCommand("Connect-AzureAD")
-                .AddParameter("TenantId", Secret.TenantId)
-                .AddParameter("AadAccessToken ", Secret.AccessToken)
-                .AddParameter("MsAccessToken  ", Secret.AccessToken)
-                .AddParameter("AccountId  ", Secret.UserUPN)
-                .AddCommand($"New-AzOperationalInsightsWorkspace -name {law.Name}" +
-                     $"-ResourceGroupName {law.ResourceGroupName} -Location {law.Location}");
-            
-            ps.Invoke();
+            using(var omsClient = new OperationalInsightsManagementClient(AzureCreds))
+            {
+                omsClient.SubscriptionId = _subscriptionId;
+
+                await omsClient.Workspaces.CreateOrUpdateAsync
+                    (law.ResourceGroupName, law.Name,new Workspace(law.Location));
+            }
         }
 
-        private async Task CreateStorageAccountAsync(StorageAccount storage)
+        private async Task CreateStorageAccountAsync(Model.StorageAccount storage)
         {
             
            var trafficAccessDef = AzClient.WithSubscription(_subscriptionId)

@@ -16,6 +16,7 @@ import {
     mxConnectionHandler,
     mxCellEditor,
     mxEventObject,
+    mxCellState
   } from "mxgraph-js";
 
 import Utils from '../Helpers/Utils';
@@ -58,14 +59,13 @@ export default class MxGraphManager
         mxVertexHandler.prototype.rotationEnabled = true;
 
         this.initGlobalSettings();
-
-        //this.initMouseEvent();
 				
         // Disables built-in context menu
         mxEvent.disableContextMenu(this.container);
 
         this.overrideRemoveCell();
 
+        //NSG and RouteTable
         this.overrideMxClientForChildInParentEdgeBoundary();
     
         this.initCodecBehaviour();
@@ -309,7 +309,71 @@ export default class MxGraphManager
         };
     }
 
-    
+    //auto snap edge to terminal points. Some users might not like this
+    //but it solves a problem of edge not able to snap to port due to cursor blocking
+    autoSnapEdgeToPorts = (toAutoSnap) => {
+
+        if(!toAutoSnap)
+        {
+            //original intersects code
+            mxConstraintHandler.prototype.intersects = function(icon, mouse, source, existingEdge)
+            {
+                return mxUtils.intersects(icon.bounds, mouse);
+            };
+        }
+        else
+        {
+            mxConstraintHandler.prototype.intersects = function(icon, point, source, existingEdge)
+            {
+                return (!source || existingEdge) || mxUtils.intersects(icon.bounds, point);
+            };
+
+            // Special case: Snaps source of new connections to fixed points
+        // Without a connect preview in connectionHandler.createEdgeState mouseMove
+        // and getSourcePerimeterPoint should be overriden by setting sourceConstraint
+        // sourceConstraint to null in mouseMove and updating it and returning the
+        // nearest point (cp) in getSourcePerimeterPoint (see below)
+        var mxConnectionHandlerUpdateEdgeState = mxConnectionHandler.prototype.updateEdgeState;
+        mxConnectionHandler.prototype.updateEdgeState = function(pt, constraint)
+        {
+                if (pt != null && this.previous != null)
+                {
+                    var constraints = this.graph.getAllConnectionConstraints(this.previous);
+                    var nearestConstraint = null;
+                    var dist = null;
+                
+                    for (var i = 0; i < constraints.length; i++)
+                    {
+                        var cp = this.graph.getConnectionPoint(this.previous, constraints[i]);
+                        
+                        if (cp != null)
+                        {
+                            var tmp = (cp.x - pt.x) * (cp.x - pt.x) + (cp.y - pt.y) * (cp.y - pt.y);
+                        
+                            if (dist == null || tmp < dist)
+                            {
+                                nearestConstraint = constraints[i];
+                                dist = tmp;
+                            }
+                        }
+                    }
+                    
+                    if (nearestConstraint != null)
+                    {
+                        this.sourceConstraint = nearestConstraint;
+                    }
+                    
+                    // In case the edge style must be changed during the preview:
+                    // this.edgeState.style['edgeStyle'] = 'orthogonalEdgeStyle';
+                    // And to use the new edge style in the new edge inserted into the graph,
+                    // update the cell style as follows:
+                    //this.edgeState.cell.style = mxUtils.setStyle(this.edgeState.cell.style, 'edgeStyle', this.edgeState.style['edgeStyle']);
+                }
+            
+                mxConnectionHandlerUpdateEdgeState.apply(this, arguments);
+            };
+        }
+    }
 
     overrideRemoveCell() {
         mxGraph.prototype.removeCells = function(cells, includeEdges)
@@ -712,7 +776,10 @@ export default class MxGraphManager
     }
 
     initGraphStyle(){
+
         
+        mxConstants.CURSOR_MOVABLE_VERTEX = 'pointer';
+        mxConstants.CURSOR_MOVABLE_EDGE   = 'pointer';
         //rubberband selection style
         mxConstants.HANDLE_FILLCOLOR = '#99ccff';
         mxConstants.HANDLE_STROKECOLOR = '#0088cf';
@@ -909,7 +976,7 @@ export default class MxGraphManager
         
         // Replaces the port image
         mxConstraintHandler.prototype.pointImage =
-            new mxImage(require('../../../assets/azure_icons/vertex-port.gif'), 5, 5);
+            new mxImage(require('../../../assets/azure_icons/vertex-port.gif'), 8, 8);
         
         var graph = this.graph;
         

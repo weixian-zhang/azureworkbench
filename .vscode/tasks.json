@@ -20,7 +20,7 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/AzW.Infrastructure.Azure",
+                "cwd": "${workspaceFolder}/AzW.Infrastructure.AzureServices",
                 "env": {
                     "ASPNETCORE_ENVIRONMENT": "Development"
                 }

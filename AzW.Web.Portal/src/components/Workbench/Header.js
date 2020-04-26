@@ -11,10 +11,11 @@ import CloudIcon from '@material-ui/icons/Cloud';
 import FolderIcon from '@material-ui/icons/Folder';
 import ShareIcon from '@material-ui/icons/Share';
 import HelpIcon from '@material-ui/icons/Help';
-
+import QuickStart from '@material-ui/icons/FlashOn';
 import OverlayTutorial from './OverlayTutorial';
 import OverlayAbout from './OverlayAbout';
 import OverlayProvision from './OverlayProvision';
+import DiagramService from '../../services/DiagramService';
 
 import Tippy from '@tippy.js/react';
 import 'tippy.js/dist/tippy.css';
@@ -29,6 +30,7 @@ export default class Header extends Component {
     super(props);
 
     this.authService = new AuthService();
+    this.diagService = new DiagramService();
 
     this.state = {
         isLogin: this.authService.isUserLogin(),
@@ -36,7 +38,7 @@ export default class Header extends Component {
         isTutorialOpen: false,
         isFeedbackOpen: false,
         isAboutOpen: false,
-
+        quickstart: {category:'', name:''},
         acctMenuAnchor: null,
         acctMenuOpen: false
     }
@@ -84,15 +86,12 @@ export default class Header extends Component {
                 </IconButton>
               </Tippy>
 
-              <IconButton color="inherit" aria-label="Edit" onClick={this.showWorkspace}>
-                <Tippy content="My Space" followCursor={true} placement="bottom">
-                  <CloudIcon  />
-                </Tippy>
-              </IconButton>
-
+              {/* //file */}
               <Popover content=
                { 
                    <Menu className={Classes.ELEVATION_1}>
+                     <MenuItem  text="Share" onClick={this.shareDiagram} />
+                     <MenuDivider />
                      <MenuItem  text="Save to Browser" onClick={this.saveToLocal} />
                      <MenuItem  text="Save to Workspace" onClick={this.savetoWorkspace} />
                      <MenuDivider />
@@ -105,17 +104,42 @@ export default class Header extends Component {
                 </IconButton>
               </Popover>
               
-              <IconButton color="inherit" aria-label="Save">
-                <Tippy content="Share" followCursor={true} placement="bottom">
-                  <ShareIcon onClick={this.shareDiagram} />
+              <IconButton color="inherit" aria-label="Edit" onClick={this.showWorkspace}>
+                <Tippy content="My Space" followCursor={true} placement="bottom">
+                  <CloudIcon  />
                 </Tippy>
               </IconButton>
-        
-              <IconButton color="inherit" aria-label="Save">
-                <Tippy content="Help" followCursor={true} placement="bottom">
-                  <HelpIcon onClick={this.showTutorial} />
-                </Tippy>
-              </IconButton>
+
+              {/* quickstart */}
+              <Popover content=
+               { 
+                   <Menu className={Classes.ELEVATION_1}>
+                     <Typography variant="button" style={{fontSize:11,textAlign:'center'}}>
+                       Quickstart Template
+                     </Typography>
+                     <MenuDivider />
+                     <MenuItem  text="WebApp">
+                        <MenuItem text="Basic Web App" />
+                        <MenuItem text="N-Tier App Service Environment"
+                          onClick={
+                            () => {
+                              var qs = this.state.quickstart;
+                              qs.category = 'WebApp';
+                              qs.name = 'NTier-ASE';
+                              this.setState({quickstart:qs});
+                              this.loadQuickstartDiagram();
+                            }
+                          }/>
+                     </MenuItem>
+                     <MenuItem  text="Kubernetes">
+                        <MenuItem text="Azure Kubernetes Private Cluster" />
+                     </MenuItem>
+                   </Menu>
+               } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.HOVER}>
+                <IconButton color="inherit" aria-label="Edit">
+                  <QuickStart  />
+                </IconButton>
+              </Popover>
             
                 <Popover content=
                { 
@@ -188,6 +212,13 @@ export default class Header extends Component {
  exportDiagramAsSVG = () => {
   var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
   diagramEditor.exportAsSvg();
+}
+
+loadQuickstartDiagram = () => {
+  var category = this.state.quickstart.category;
+  var name = this.state.quickstart.name;
+  var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
+  diagramEditor.loadQuickstartDiagram(category, name);
 }
 
 deployDiagramToAzure(subscription) {

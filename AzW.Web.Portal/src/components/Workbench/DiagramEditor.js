@@ -1,5 +1,5 @@
 
-import React, { Component } from "react";
+import React, { Component } from "reactn";
 import MySpace from './MySpace';
 import OverlaySaveToWorkspace from './OverlaySaveToWorkspace';
 import {InputGroup, Classes, Button, Intent, Overlay, Toaster, Position} from "@blueprintjs/core";
@@ -169,8 +169,11 @@ import NSGPropPanel from "./PropPanel/NSGPropPanel";
 import OverlayPreviewDiagram from "./OverlayPreviewDiagram";
 import ARMService from "../../services/ARMService";
 import ComputeService from "../../services/ComputeService";
+import QuickstartDiagramContext from '../../models/services/QuickstartDiagramContext';
 import ProvisionHelper from './Helpers/ProvisionHelper';
 import Toast from './Helpers/Toast';
+
+import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
 
  export default class DiagramEditor extends Component {
   constructor(props) {
@@ -191,11 +194,14 @@ import Toast from './Helpers/Toast';
         queryString: this.props.queryString
     }
 
+    //global state
+    this.setGlobal({autoSnapEdgeToPort:false});
+
     this.Index = this.props.Index; //Index component contains progress Comp
 
-    this.armsvc = new ARMService(); //test to remove
+    this.armsvc = new ARMService();
     this.comsvc = new ComputeService();
-
+    this.diagService = new DiagramService();
   }
 
   componentDidMount() {
@@ -583,10 +589,10 @@ addUpDownLeftRightArrowToMoveCells() {
   
     var moveCell = function (cell, geo, x, y) {
   
-       //var geo = thisComp.graph.getCellGeometry(selectedCell).clone();
-       geo.x = x;
-       geo.y = y;
-       thisComp.graph.model.setGeometry(cell, geo);
+       var newGeo = thisComp.graph.getCellGeometry(cell).clone();
+       newGeo.x = x;
+       newGeo.y = y;
+       thisComp.graph.model.setGeometry(cell, newGeo);
        thisComp.graph.refresh();
     }
 
@@ -703,6 +709,25 @@ addUpDownLeftRightArrowToMoveCells() {
           thisComponent.showPreviewDiagramOverlay();
         });
       }
+
+      var showTickForAutoSnap = '';
+      if(thisComponent.global.autoSnapEdgeToPort)
+        showTickForAutoSnap = BlackTickPNG;
+      else
+        showTickForAutoSnap = '';
+
+      //auto snap edge to port
+      menu.addItem('Auto snap line to connection points',
+      showTickForAutoSnap, //tick image
+      function() {
+        if(!thisComponent.global.autoSnapEdgeToPort)
+          thisComponent.setGlobal({autoSnapEdgeToPort:true});
+        else
+          thisComponent.setGlobal({autoSnapEdgeToPort:false});
+
+          thisComponent.graphManager.autoSnapEdgeToPorts
+            (thisComponent.global.autoSnapEdgeToPort);
+      });
     };
   }
 
@@ -3063,6 +3088,19 @@ addUpDownLeftRightArrowToMoveCells() {
   fromVMPropPanelSaveModel(vmModel) {
       var vmCell = this.graph.getModel().getCell(vmModel.GraphModel.Id);
       vmCell.value.ProvisionContext = vmModel.ProvisionContext; 
+  }
+
+  loadQuickstartDiagram(category, name) {
+      var thisComp = this;
+      this.diagService.loadQuickstartDiagram
+        (category, name,
+          function onSuccess(qsDiagContext) {
+            thisComp.importXmlAsDiagram(qsDiagContext);
+          },
+          function onFailure(error) {
+              Toast.show('danger', 3000, error);
+          }
+        )
   }
 
   groupCells(){

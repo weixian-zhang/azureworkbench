@@ -16,6 +16,8 @@ namespace AzW.Infrastructure.Data
 
         Task<IEnumerable<WorkspaceDiagramContextResult>> GetDiagramsFromWorkspace(string emailId);
 
+        Task<QuickstartDiagramContext> GetQuickstartDiagramContext(string category, string name);
+
         Task<string> LoadDiagramFromWorkspace
             (string emailId, string collectionName, string UID);
 

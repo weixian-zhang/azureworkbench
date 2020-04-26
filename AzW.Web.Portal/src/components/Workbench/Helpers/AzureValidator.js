@@ -50,12 +50,22 @@ export default class AzureValidator {
 
         if(result.isInSubnet)
         {
-           var childCellCount = this.graph.getModel().getChildCount(subnetCell);
+           var childs = this.graph.getChildVertices(subnetCell);
 
-           if(childCellCount > 0)
-              return false;
-            else
-              return true;
+           for(var cell of childs)
+           {
+               var result = Utils.TryParseUserObject(cell);
+
+               if(result.isUserObject)
+               {
+                    if(result.userObject.ProvisionContext.ResourceType != ResourceType.NSG()
+                       && result.userObject.ProvisionContext.ResourceType != ResourceType.RouteTable())
+                    {
+                        return false;
+                    }
+               }
+           }
+           return true;
         }
         else
             return false;

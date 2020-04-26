@@ -41,6 +41,16 @@ namespace AzW.Web.API
             _html2pdfConverter = html2pdfConverter;
         }
 
+        [HttpGet("dia/qs")]
+        public async Task<QuickstartDiagramContext> GetQuickstartDiagram
+            (string category, string name)
+        {
+            var diagContext =
+                await _diagramRepo.GetQuickstartDiagramContext(category, name);
+            
+            return diagContext;
+        }
+
         [HttpPost("dia/anony/share")]
         public async Task<string> GenerateDiagramLink([FromBody]AnonyDiagramShareContext context)
         {            

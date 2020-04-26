@@ -127,6 +127,7 @@ namespace AzW.Infrastructure.Data
             return collectionNames;
         }
 
+        
         public async Task<string> LoadDiagramFromWorkspace
             (string emailId, string collectionName, string diagramName)
         {
@@ -159,6 +160,18 @@ namespace AzW.Infrastructure.Data
             }
 
             return true;
+        }
+
+        public async Task<QuickstartDiagramContext> GetQuickstartDiagramContext(string category, string name)
+        {
+            var db = CosmosDbHelper.GetDatabase(_secret);
+
+            var coll = db.GetCollection<QuickstartDiagramContext>(CollectionName.Quickstart);
+
+            var qsDiagram = await coll.FindSync<QuickstartDiagramContext>
+                (x => x.Category == category && x.Name == name).SingleOrDefaultAsync();
+            
+            return qsDiagram;
         }
 
         private WorkbenchSecret _secret;
