@@ -97,6 +97,7 @@ import RouteTable from "../../models/RouteTable";
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
 
 //property panels
+import PrivateEndpointPropPanel from './PropPanel/PrivateEndpointPropPanel';
 import AzStoragePropPanel from './PropPanel/AzStoragePropPanel';
 import StylePropPanel from './StylePropPanel';
 import SubnetPropPanel from "./PropPanel/SubnetPropPanel";
@@ -243,6 +244,7 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
   render() {
     return (
       <div id="diagramEditor" className="diagramEditor">
+        <PrivateEndpointPropPanel ref={this.privateendpointPropPanel} />
         <AzStoragePropPanel ref={this.azstoragePropPanel} />
         <OverlayPreviewDiagram ref={this.previewOverlay} />
         <StylePropPanel ref={this.stylePanel} MxGraphManager={this.graphManager} />
@@ -333,6 +335,7 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
   }
 
   initRef() {
+    this.privateendpointPropPanel = React.createRef();
     this.azstoragePropPanel = React.createRef();
     this.nsgPropPanel = React.createRef();
     this.stylePanel = React.createRef();
@@ -652,10 +655,6 @@ addUpDownLeftRightArrowToMoveCells() {
         menu.addSeparator();
         menu.addItem('Delete', '', function()
         {
-          var cell = thisComponent.graph.getSelectionCell();
-          cell.setVertex(true);
-          cell.connectable = true;
-
           thisComponent.graph.removeCells(); 
         });
         
@@ -690,18 +689,18 @@ addUpDownLeftRightArrowToMoveCells() {
 
       //is cell exist on canvas
       if(thisComponent.graphManager.isCellExist()){
-          
+        
         //style for shapes only
-          if(thisComponent.graphManager.isNonAzureShape(cell) ||
-          thisComponent.azureValidator.isSubnet(cell) ||
-          thisComponent.azureValidator.isVNet(cell))
+        if(thisComponent.graphManager.isNonAzureShape(cell) ||
+        thisComponent.azureValidator.isSubnet(cell) ||
+        thisComponent.azureValidator.isVNet(cell))
+        {
+          menu.addSeparator();
+          menu.addItem('Style', '', function()
           {
-            menu.addSeparator();
-            menu.addItem('Style', '', function()
-            {
-              thisComponent.openStylePanel(cell);
-            });
-          }
+            thisComponent.openStylePanel(cell);
+          });
+        }
 
         //preview diagram in new window
         menu.addItem('Preview Diagram', '', function()
@@ -1063,6 +1062,12 @@ addUpDownLeftRightArrowToMoveCells() {
     let thisComp = this;
 
     switch (userObject.GraphModel.ResourceType) {
+
+      case ResourceType.PrivateEndpoint():
+        this.privateendpointPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
       case ResourceType.AzFile():
         this.azstoragePropPanel.current.show(userObject, function(savedUserObject){
           thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
@@ -3098,7 +3103,7 @@ addUpDownLeftRightArrowToMoveCells() {
             thisComp.importXmlAsDiagram(qsDiagContext);
           },
           function onFailure(error) {
-              Toast.show('danger', 3000, error);
+            Toast.show("danger", 2000, error.message);
           }
         )
   }

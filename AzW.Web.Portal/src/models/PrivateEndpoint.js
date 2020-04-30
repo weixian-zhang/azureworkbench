@@ -13,7 +13,7 @@ export default class PrivateEndpoint
             
             Name: '',
             Location: '',
-
+            ResourceGroupName: '',
             VNetAddress: '',
             SubnetName: ''
         };

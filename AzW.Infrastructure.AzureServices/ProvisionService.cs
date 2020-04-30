@@ -135,7 +135,7 @@ namespace AzW.Infrastructure.AzureServices
         }
 
         private async Task CreateVNetAsync(VNet vnet, Dictionary<string, INetwork> provisionedVNets)
-        {      
+        {                 
            var withCreateSubnet = AzClient.WithSubscription(_subscriptionId)
                 .Networks.Define(vnet.Name)
                 .WithRegion(vnet.Location)
@@ -162,7 +162,7 @@ namespace AzW.Infrastructure.AzureServices
             }
 
             INetwork virtualnetwork = await withCreateSubnet.CreateAsync();
-            
+    
             provisionedVNets.Add(virtualnetwork.Name, virtualnetwork);
         }
 

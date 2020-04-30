@@ -2,7 +2,6 @@ import axios from 'axios';
 import AnonymousDiagramContext from '../models/services/AnonymousDiagramContext';
 import WorkspaceDiagramContext from '../models/services/WorkspaceDiagramContext';
 import QuickstartDiagramContext from '../models/services/QuickstartDiagramContext';
-
 import AuthService from './AuthService';
 
 export default class DiagramService
@@ -26,6 +25,7 @@ export default class DiagramService
         onSuccess(qsDiagContext);
       })
       .catch(function (error) {
+        
         onFailure(error);
       })
     }

@@ -119,7 +119,6 @@ export default class Header extends Component {
                      </Typography>
                      <MenuDivider />
                      <MenuItem  text="WebApp">
-                        <MenuItem text="Basic Web App" />
                         <MenuItem text="N-Tier App Service Environment"
                           onClick={
                             () => {
@@ -132,8 +131,9 @@ export default class Header extends Component {
                           }/>
                      </MenuItem>
                      <MenuItem  text="Kubernetes">
-                        <MenuItem text="Azure Kubernetes Private Cluster" />
+                        <MenuItem text="coming soon.." />
                      </MenuItem>
+                     <MenuItem  text="More templates coming..."></MenuItem>
                    </Menu>
                } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.HOVER}>
                 <IconButton color="inherit" aria-label="Edit">

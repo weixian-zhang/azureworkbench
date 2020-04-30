@@ -836,9 +836,13 @@ export default class MxGraphManager
         rectStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
         rectStyle[mxConstants.STYLE_DASHED] = '0';
         rectStyle[mxConstants.STYLE_SHAPE] = 'rectangle';
+        rectStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "middle";
+        rectStyle[mxConstants.STYLE_ALIGN] = "center";
+        rectStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "none";//out-bounds
         this.graph.getStylesheet().putCellStyle('rectstyle', rectStyle);
 
         var roundedRectStyle = new Object();
+        roundedRectStyle[mxConstants.STYLE_ARCSIZE] = 8;
         roundedRectStyle[mxConstants.STYLE_PERIMETER] = mxConstants.PERIMETER_RECTANGLE;
         roundedRectStyle[mxConstants.STYLE_STROKECOLOR] = 'darkblue';
         roundedRectStyle[mxConstants.STYLE_FILLCOLOR] = 'none';
@@ -852,6 +856,11 @@ export default class MxGraphManager
         roundedRectStyle[mxConstants.RECTANGLE_ROUNDING_FACTOR] = 0.1;
         roundedRectStyle[mxConstants.STYLE_ROUNDED] = 1;
         roundedRectStyle[mxConstants.STYLE_SHAPE] = 'rectangle';
+        roundedRectStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "middle";
+        roundedRectStyle[mxConstants.STYLE_ALIGN] = "center";
+        roundedRectStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "none";//out-bounds
+        //roundedRectStyle[mxConstants.STYLE_LABEL_POSITION] = "top";//control out-bounds
+       
         this.graph.getStylesheet().putCellStyle('roundedrectstyle', roundedRectStyle);
 
         //triangle style
@@ -867,6 +876,9 @@ export default class MxGraphManager
         triangleStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
         triangleStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
         triangleStyle[mxConstants.STYLE_SHAPE] = 'triangle';
+        triangleStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "middle";
+        triangleStyle[mxConstants.STYLE_ALIGN] = "center";
+        triangleStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "none";//out-bounds
         this.graph.getStylesheet().putCellStyle('trianglestyle', triangleStyle);
 
         //ellipse style
@@ -882,6 +894,9 @@ export default class MxGraphManager
         ellipseStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
         ellipseStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
         ellipseStyle['shape'] = 'ellipse';
+        ellipseStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "middle";
+        ellipseStyle[mxConstants.STYLE_ALIGN] = "center";
+        ellipseStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "none";//out-bounds
         this.graph.getStylesheet().putCellStyle('ellipsestyle', ellipseStyle);
 
         //cylinder
@@ -897,6 +912,9 @@ export default class MxGraphManager
         cylinderStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
         cylinderStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
         cylinderStyle['shape'] = 'cylinder';
+        cylinderStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "middle";
+        cylinderStyle[mxConstants.STYLE_ALIGN] = "center";
+        cylinderStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "none";//out-bounds
         this.graph.getStylesheet().putCellStyle('cylinderstyle', cylinderStyle);
 
         //hexagon
@@ -912,32 +930,36 @@ export default class MxGraphManager
         hexagonStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
         hexagonStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
         hexagonStyle['shape'] = 'hexagon';
+        hexagonStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "middle";
+        hexagonStyle[mxConstants.STYLE_ALIGN] = "center";
+        hexagonStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "none";//out-bounds
         this.graph.getStylesheet().putCellStyle('hexagonstyle', hexagonStyle);
 
         //vnet style
         var vnetCellStyle  = new Object();
+        vnetCellStyle[mxConstants.STYLE_ARCSIZE] = 8;
         vnetCellStyle[mxConstants.STYLE_STROKECOLOR] = 'none';
         vnetCellStyle[mxConstants.SHAPE_RECTANGLE] = 'rectangle';
         vnetCellStyle[mxConstants.STYLE_DASHED] = '0';
         vnetCellStyle[mxConstants.STYLE_ROUNDED] = '0';
-        vnetCellStyle[mxConstants.RECTANGLE_ROUNDING_FACTOR] = '0.0';
         vnetCellStyle[mxConstants.STYLE_SHADOW] = false;
         vnetCellStyle[mxConstants.STYLE_FILLCOLOR] = '#ededed';
         vnetCellStyle[mxConstants.STYLE_GRADIENTCOLOR] = 'none';
         vnetCellStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
         vnetCellStyle[mxConstants.STYLE_FONTSIZE] = '12';
         vnetCellStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
-        vnetCellStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "TOP";
+        vnetCellStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "top";
         vnetCellStyle[mxConstants.STYLE_ALIGN] = "right";
-        vnetCellStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "TOP";
+        vnetCellStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "none";//out-bounds
         vnetCellStyle[mxConstants.STYLE_EDITABLE] = '0';
         vnetCellStyle[mxConstants.STYLE_FOLDABLE] = '0';
         this.graph.getStylesheet().putCellStyle('vnetstyle', vnetCellStyle);
 
         var subnetCellStyle  = new Object();
-        subnetCellStyle[mxConstants.STYLE_STROKECOLOR] = 'none';
+        subnetCellStyle[mxConstants.STYLE_ARCSIZE] = 8;
+        subnetCellStyle[mxConstants.STYLE_STROKECOLOR] = '#2196f3';
         subnetCellStyle[mxConstants.STYLE_STROKEWIDTH] = '0.5';
-        subnetCellStyle[mxConstants.STYLE_DASHED] = '0';
+        subnetCellStyle[mxConstants.STYLE_DASHED] = '1';
         subnetCellStyle[mxConstants.SHAPE_RECTANGLE] = 'rectangle';
         subnetCellStyle[mxConstants.STYLE_ROUNDED] = '1';
         subnetCellStyle[mxConstants.RECTANGLE_ROUNDING_FACTOR] = '0.2';
@@ -947,9 +969,10 @@ export default class MxGraphManager
         subnetCellStyle[mxConstants.STYLE_FONTSIZE] = '12';
         subnetCellStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
         subnetCellStyle[mxConstants.STYLE_EDITABLE] = '0';
-        subnetCellStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "ALIGN_BOTTOM";
-        subnetCellStyle[mxConstants.STYLE_ALIGN] = "ALIGN_LEFT";
-        subnetCellStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "ALIGN_TOP";
+        subnetCellStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "top";
+        subnetCellStyle[mxConstants.STYLE_ALIGN] = "left";
+        subnetCellStyle[mxConstants.STYLE_VERTICAL_LABEL_POSITION] = "none";//out-bounds
+
         this.graph.getStylesheet().putCellStyle('subnetstyle', subnetCellStyle);
     }
 
