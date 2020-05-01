@@ -9,7 +9,6 @@ import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import CloudIcon from '@material-ui/icons/Cloud';
 import FolderIcon from '@material-ui/icons/Folder';
-import ShareIcon from '@material-ui/icons/Share';
 import HelpIcon from '@material-ui/icons/Help';
 import QuickStart from '@material-ui/icons/FlashOn';
 import OverlayTutorial from './OverlayTutorial';
@@ -144,7 +143,12 @@ export default class Header extends Component {
                   <QuickStart  />
                 </IconButton>
               </Popover>
-            
+
+              <IconButton color="inherit" aria-label="Edit" onClick={this.showTutorial}>
+                <Tippy content="Tutorial" followCursor={true} placement="bottom">
+                  <HelpIcon  />
+                </Tippy>
+              </IconButton>
                 <Popover content=
                { 
                    <Menu className={Classes.ELEVATION_1}>
