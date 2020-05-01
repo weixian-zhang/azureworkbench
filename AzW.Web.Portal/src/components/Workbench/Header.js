@@ -16,7 +16,7 @@ import OverlayTutorial from './OverlayTutorial';
 import OverlayAbout from './OverlayAbout';
 import OverlayProvision from './OverlayProvision';
 import DiagramService from '../../services/DiagramService';
-
+import fileDialog from 'file-dialog'
 import Tippy from '@tippy.js/react';
 import 'tippy.js/dist/tippy.css';
 
@@ -43,6 +43,7 @@ export default class Header extends Component {
         acctMenuOpen: false
     }
 
+    this.fileInput = React.createRef();
     this.acctIconRef = React.createRef();
     this.overlayTutorial = React.createRef();
     this.overlayAbout = React.createRef();
@@ -64,7 +65,7 @@ export default class Header extends Component {
   }
 
   componentDidMount() { 
-    
+      
   }
 
   render() {
@@ -95,8 +96,11 @@ export default class Header extends Component {
                      <MenuItem  text="Save to Browser" onClick={this.saveToLocal} />
                      <MenuItem  text="Save to Workspace" onClick={this.savetoWorkspace} />
                      <MenuDivider />
+                     <MenuItem  text="Import Workbench file(.azwb)" onClick={this.importWorkbenchFormat} />
+                     <MenuDivider />
                      <MenuItem  text="Export as SVG" onClick={this.exportDiagramAsSVG} />
                      <MenuItem  text="Export as PDF" onClick={this.exportDiagramAsPDF} />
+                     <MenuItem  text="Export as Workbench file(.azwb)" onClick={this.exportWorkbenchFormat} />
                    </Menu>
                } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.HOVER}>
                 <IconButton color="inherit" aria-label="Edit">
@@ -212,6 +216,19 @@ export default class Header extends Component {
  exportDiagramAsSVG = () => {
   var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
   diagramEditor.exportAsSvg();
+}
+
+importWorkbenchFormat = (e) => {
+  fileDialog({ accept: 'azwb/*' })
+    .then(file => {
+        var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
+        diagramEditor.importWorkbenchFormat(file[0]);
+    })
+}
+
+exportWorkbenchFormat = () => {
+  var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
+  diagramEditor.exportWorkbenchFormat();
 }
 
 loadQuickstartDiagram = () => {

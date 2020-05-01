@@ -1455,6 +1455,12 @@ addUpDownLeftRightArrowToMoveCells() {
           cell.edge = true;
         var straigthArrow= this.graph.addCell(cell, parent);
 
+      var state = this.graph.view.getState(cell);
+			state.shape.node.getElementsByTagName('path')[0].removeAttribute('visibility');
+			state.shape.node.getElementsByTagName('path')[0].setAttribute('stroke-width', '6');
+			state.shape.node.getElementsByTagName('path')[0].setAttribute('stroke', 'lightGray');
+			state.shape.node.getElementsByTagName('path')[1].setAttribute('class', 'animateTrafficFlow');
+
         this.graph.scrollCellToVisible(straigthArrow);
       }
       finally
@@ -3551,6 +3557,42 @@ addUpDownLeftRightArrowToMoveCells() {
 
     var diagramInXml = mxUtils.getXml(node, true);
     return diagramInXml;
+  }
+
+  importWorkbenchFormat(azwbFile) {
+
+    var thisComp = this;
+    
+    const reader = new FileReader();
+    reader.readAsText(azwbFile);
+    reader.onload = function() {
+      const xml = reader.result;
+      var diagContext = new AnonymousDiagramContext();
+      diagContext.DiagramXml = xml;
+      thisComp.importXmlAsDiagram(diagContext);
+    };
+  
+    reader.onerror = function() {
+      Toast.show('warning',2000, reader.error);
+    };
+  }
+
+  exportWorkbenchFormat() {
+    if(!this.graphManager.isCellExist())
+    {
+      Toast.show('primary', 2000, Messages.NoCellOnGraph());
+      return;
+    }
+
+    var xmlString = this.getDiagramAsXml();
+
+    const url = window.URL.createObjectURL(new Blob([xmlString]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.target = "azwbFileDownloader"; //name of iframe
+          link.setAttribute('download', 'diagram.azwb');
+          document.body.appendChild(link);
+          link.click();
   }
 
   saveDiagramToWorkspace(collectionName, diagramName) {

@@ -3,10 +3,12 @@ import ReactDOM from "react-dom";
 import { BrowserRouter as Router } from "react-router-dom";
 import App from "./App";
 import Config from "../src/config";
+
 import "normalize.css";
 import "@blueprintjs/core/lib/css/blueprint.css"; 
 import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 import "./assets/css/index.css";
+import "./assets/css/overlays.css";
 
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";

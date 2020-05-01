@@ -1,3 +1,14 @@
+.animateTrafficFlow {
+  stroke-dasharray: 8;
+  animation: dash 0.5s linear;
+  animation-iteration-count: infinite;
+}
+@keyframes dash {
+  to {
+    stroke-dashoffset: -16;
+  }
+}
+
 html, body, #root, .container, #root > div {
   height: 100%;
   display: flex;
@@ -33,94 +44,13 @@ inline {
   border-bottom: solid;
   display: flex;
   -ms-flex-align: center;
-      align-items: center;
+  align-items: center;
   line-height: 22px;
   padding: 2px 2px;
   color: #666;
   cursor: pointer;
   margin: 0px;
 }
-
-
-
-.workspace-overlay-box {
-  background-color: #fff;
-  border: 1px solid #000;
-  text-align:center;
-  height: 750px;/*height needs to be set*/
-  width: 900px;
-  margin: auto;
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  overflow: auto;
-  }
-.provision-overlay-box {
-  background-color: #fff;
-  border: 1px solid #000;
-
-  height: 420px;/*height needs to be set*/
-  width: 460px;
-  margin: auto;
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
-.saveto-workspace-overlay-box {
-    background-color: #fff;
-    border: 1px solid #000;
-    text-align:center;
-    height: 250px;/*height needs to be set*/
-    width: 450px;
-    margin: auto;
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    }
-  .workspace-deletediagramdialog-overlay-box {
-    background-color: #fff;
-    border: 1px solid #000;
-    text-align:center;
-    height: 100px;/*height needs to be set*/
-    width: 350px;
-    margin: auto;
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-  }
-  .workspace-overlay-about {
-    background-color: #fff;
-    border: 1px solid #000;
-    text-align:center;
-    height: 300px;/*height needs to be set*/
-    width: 600px;
-    margin: auto;
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    overflow: auto;
-  }
-
-  .overlay-preview {
-    background-color: #fff;
-    height: 700px;/*height needs to be set*/
-    width: 800px;
-    margin: auto;
-    position: fixed;
-    padding: 5px;
-    overflow: auto;
-  }
-
 
 /* mxGraph css overrides */
 /* popupMenuHandler */

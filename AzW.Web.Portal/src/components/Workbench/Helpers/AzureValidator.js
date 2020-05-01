@@ -245,4 +245,8 @@ export default class AzureValidator {
         else
             return false;
     }
+
+    removePasswordFromVMProvisionContext() {
+        
+    }
 }
