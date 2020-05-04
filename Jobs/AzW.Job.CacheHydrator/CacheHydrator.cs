@@ -17,11 +17,15 @@ using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
-using Microsoft.Identity.Client;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Newtonsoft.Json;
 using Serilog;
 using Serilog.Core;
 using Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters;
+using System.Net.Http;
+using System.Net;
+using System.IO;
+using System.Text;
 
 namespace AzW.Job.CacheHydrator
 {
@@ -38,16 +42,69 @@ namespace AzW.Job.CacheHydrator
             
             azureCreds = new AzureCredentials
                 (sdkCred, null, _secret.TenantId, AzureEnvironment.AzureGlobalCloud);
+                
+                
         }
 
         [FunctionName("CacheHydrator")]
-        public async Task Run([TimerTrigger("*/2 * * * * *")]TimerInfo myTimer, Microsoft.Extensions.Logging.ILogger log)
+        public async Task Run([TimerTrigger("*/5 * * * * *")]TimerInfo myTimer, Microsoft.Extensions.Logging.ILogger log)
         {
-            await HydrateServiceTag();
+            await GetRateCardPricings();
 
-            await HydrateVMSizes();
+            //await HydrateServiceTag();
 
-            await HydrateVMImages();
+            //await HydrateVMSizes();
+
+            //await HydrateVMImages();
+        }
+
+        private async Task GetRateCardPricings()
+        {
+            try
+            {
+
+               var authenticationContext =
+                    new AuthenticationContext(  String.Format("{0}/{1}",
+                            "https://login.microsoftonline.com/",
+                            "microsoft.onmicrosoft.com"));
+
+           
+            //Ask the logged in user to authenticate, so that this client app can get a token on his behalf
+            var result = await authenticationContext.AcquireTokenAsync
+                ("https://management.azure.com", new ClientCredential(_secret.ClientId, _secret.ClientSecret));
+
+                string accessToken = result.AccessToken;
+
+                string requestURL = String.Format("{0}/{1}/{2}/{3}",
+                        "https://management.azure.com",
+                        "subscriptions",
+                        _secret.SubscriptionId,
+                        "providers/Microsoft.Commerce/RateCard?api-version=2016-08-31-preview&$filter=OfferDurableId eq 'MS-AZR-0003P' and Currency eq 'USD' and Locale eq 'en-US' and RegionInfo eq 'US'");
+                
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(requestURL);
+
+                // Add the OAuth Authorization header, and Content Type header
+                request.Headers.Add(HttpRequestHeader.Authorization, "Bearer " + accessToken);
+                request.ContentType = "application/json";
+
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                
+                Stream receiveStream = response.GetResponseStream();
+
+                StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8);
+                string rateCardJson = readStream.ReadToEnd();
+                
+                File.WriteAllText(@"C:\Users\weixzha\Desktop\ratecard.json", rateCardJson);
+
+                // Convert the Stream to a strongly typed RateCardPayload object.  
+                // You can also walk through this object to manipulate the individuals member objects. 
+                RateCardPayload payload =
+                    JsonConvert.DeserializeObject<RateCardPayload>(rateCardJson);
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task HydrateVMSizes() 

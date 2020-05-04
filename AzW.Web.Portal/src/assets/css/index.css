@@ -1,11 +1,24 @@
-.animateTrafficFlow {
+.animateTrafficFlowLeft2Right {
   stroke-dasharray: 8;
   animation: dash 0.5s linear;
   animation-iteration-count: infinite;
+  animation-name: flowLeftToRight;
 }
-@keyframes dash {
+@keyframes flowLeftToRight {
   to {
-    stroke-dashoffset: -16;
+    stroke-dashoffset: 15;
+  }
+}
+
+.animateTrafficFlowRight2Left {
+  stroke-dasharray: 8;
+  animation: dash 0.5s linear;
+  animation-iteration-count: infinite;
+  animation-name: flowRightToLeft;
+}
+@keyframes flowRightToLeft {
+  to {
+    stroke-dashoffset: -15;
   }
 }
 

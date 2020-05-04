@@ -76,6 +76,7 @@ export default class MxGraphManager
       }
 
     initGlobalSettings(){
+
         //global settings
         //contrain drag boundary of child within parent
         mxGraphHandler.prototype.removeCellsFromParent = false
@@ -938,15 +939,15 @@ export default class MxGraphManager
         //vnet style
         var vnetCellStyle  = new Object();
         vnetCellStyle[mxConstants.STYLE_ARCSIZE] = 8;
-        vnetCellStyle[mxConstants.STYLE_STROKECOLOR] = 'none';
+        vnetCellStyle[mxConstants.STYLE_STROKECOLOR] = '#00B0F0';
         vnetCellStyle[mxConstants.SHAPE_RECTANGLE] = 'rectangle';
         vnetCellStyle[mxConstants.STYLE_DASHED] = '0';
         vnetCellStyle[mxConstants.STYLE_ROUNDED] = '0';
         vnetCellStyle[mxConstants.STYLE_SHADOW] = false;
-        vnetCellStyle[mxConstants.STYLE_FILLCOLOR] = '#ededed';
+        vnetCellStyle[mxConstants.STYLE_FILLCOLOR] = 'none';
         vnetCellStyle[mxConstants.STYLE_GRADIENTCOLOR] = 'none';
         vnetCellStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
-        vnetCellStyle[mxConstants.STYLE_FONTSIZE] = '12';
+        vnetCellStyle[mxConstants.STYLE_FONTSIZE] = '13';
         vnetCellStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
         vnetCellStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "top";
         vnetCellStyle[mxConstants.STYLE_ALIGN] = "right";
@@ -957,16 +958,16 @@ export default class MxGraphManager
 
         var subnetCellStyle  = new Object();
         subnetCellStyle[mxConstants.STYLE_ARCSIZE] = 8;
-        subnetCellStyle[mxConstants.STYLE_STROKECOLOR] = '#2196f3';
+        subnetCellStyle[mxConstants.STYLE_STROKECOLOR] = '#2F528F';
         subnetCellStyle[mxConstants.STYLE_STROKEWIDTH] = '0.5';
-        subnetCellStyle[mxConstants.STYLE_DASHED] = '1';
+        subnetCellStyle[mxConstants.STYLE_DASHED] = '0';
         subnetCellStyle[mxConstants.SHAPE_RECTANGLE] = 'rectangle';
         subnetCellStyle[mxConstants.STYLE_ROUNDED] = '1';
         subnetCellStyle[mxConstants.RECTANGLE_ROUNDING_FACTOR] = '0.2';
         subnetCellStyle[mxConstants.STYLE_SHADOW] = false;
-        subnetCellStyle[mxConstants.STYLE_FILLCOLOR] = '#e6f3f7';
+        subnetCellStyle[mxConstants.STYLE_FILLCOLOR] = 'none';
         subnetCellStyle[mxConstants.STYLE_FONTCOLOR] = 'black';
-        subnetCellStyle[mxConstants.STYLE_FONTSIZE] = '12';
+        subnetCellStyle[mxConstants.STYLE_FONTSIZE] = '13';
         subnetCellStyle[mxConstants.STYLE_FONTFAMILY] = 'Segoe UI';
         subnetCellStyle[mxConstants.STYLE_EDITABLE] = '0';
         subnetCellStyle[mxConstants.STYLE_VERTICAL_ALIGN] = "top";
@@ -1336,9 +1337,7 @@ export default class MxGraphManager
 
             Object.defineProperty(styleObj, keyVal[0], { value: keyVal[1] })
         });
-        
-        //var styleObj = this.graph.getStylesheet().getCellStyle(styleString);
-        
+                
         return styleObj;;
     }
 

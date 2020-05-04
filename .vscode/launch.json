@@ -31,14 +31,11 @@
                 "/Views": "${workspaceRoot}/Views"
             }
         },
-        {
-            "env": {
-                "env" : "dev"
-            }
-        }
+
         {
             "name": "Debug Job CacheHydrator",
             "type": "coreclr",
+            "preLaunchTask": "Func Start Job CacheHydrator",
             "request": "attach",
             "processId": "${command:azureFunctions.pickProcess}"
         }

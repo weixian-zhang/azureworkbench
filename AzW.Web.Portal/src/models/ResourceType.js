@@ -84,4 +84,5 @@ export default class ResourceType
     static IoTCentral() {return 'iotcentral'; }
     static AzureMaps() {return 'maps'; }
     static TimeSeriesInsights() {return 'timeseriesinsights'; }
+    static Edge() {return 'edge'; }
 }

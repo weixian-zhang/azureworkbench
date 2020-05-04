@@ -22,6 +22,7 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
 import mxClientOverrides from './Helpers/mxClientOverrides';
 
 //models
+//import Edge from "../../models/Edge";
 import PrivateEndpoint from "../../models/PrivateEndpoint";
 import IoTCentral from "../../models/IoTCentral";
 import LogAnalytics from "../../models/LogAnalytics";
@@ -427,34 +428,59 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
         });  
   }
 
-  canvasChangeEvent() {
+  canvasChangeEvent = () => {
     var thisComp = this;
     this.graph.addListener(mxEvent.CELLS_ADDED, function (sender, evt) {
+      //set unsave state
       if(thisComp.state.unsavedChanges) { evt.consume(); return;}
       thisComp.setState({unsavedChanges: true});
       evt.consume();
     });
-    this.graph.addListener(mxEvent.CELLS_MOVED, function (sender, evt) {
+    this.graph.addListener(mxEvent.CELLS_MOVED, function (sender, evt) {    
+      //set unsave state
+      if(thisComp.state.unsavedChanges) { evt.consume(); return;}
+      thisComp.setState({unsavedChanges: true});
+      evt.consume();
+    });
+    this.graph.addListener(mxEvent.CONNECT_CELL, function (sender, evt) {
+      //set unsave state
+      if(thisComp.state.unsavedChanges) { evt.consume(); return;}
+      thisComp.setState({unsavedChanges: true});
+      evt.consume();
+    });
+    this.graph.addListener(mxEvent.RESIZE, function (sender, evt) {
+      //re-add animation for connected edge
+      if(evt.properties.edge != undefined &&
+        evt.properties.edge.source != null &&
+        evt.properties.edge.target != null) {
+
+        thisComp.animateTrafficFlow(evt.properties.edge, null);
+      }
+      //set unsave state
       if(thisComp.state.unsavedChanges) { evt.consume(); return;}
       thisComp.setState({unsavedChanges: true});
       evt.consume();
     });
     this.graph.addListener(mxEvent.CELLS_RESIZED, function (sender, evt) {
+      //set unsave state
       if(thisComp.state.unsavedChanges) { evt.consume(); return;}
       thisComp.setState({unsavedChanges: true});
       evt.consume();
     });
     this.graph.addListener(mxEvent.CELL_CONNECTED, function (sender, evt) {
+      //set unsave state
       if(thisComp.state.unsavedChanges) { evt.consume(); return;}
       thisComp.setState({unsavedChanges: true});
       evt.consume();
     });
     this.graph.addListener(mxEvent.CELLS_REMOVED, function (sender, evt) {
+      //set unsave state
       if(thisComp.state.unsavedChanges) { evt.consume(); return;}
         thisComp.setState({unsavedChanges: true});
       evt.consume();
     });
     this.graph.addListener(mxEvent.GROUP_CELLS, function (sender, evt) {
+      //set unsave state
       if(thisComp.state.unsavedChanges) { evt.consume(); return;}
       thisComp.setState({unsavedChanges: true});
       evt.consume();
@@ -688,7 +714,7 @@ addUpDownLeftRightArrowToMoveCells() {
       }
 
       //is cell exist on canvas
-      if(thisComponent.graphManager.isCellExist()){
+      if(thisComponent.graphManager.isCellExist()) {
         
         //style for shapes only
         if(thisComponent.graphManager.isNonAzureShape(cell) ||
@@ -702,8 +728,30 @@ addUpDownLeftRightArrowToMoveCells() {
           });
         }
 
-        //preview diagram in new window
-        menu.addItem('Preview Diagram', '', function()
+      // if(cell!= null && cell.isEdge()) //animate flow
+      // {
+      //   menu.addSeparator();
+
+      //   var atfMenu = menu.addItem('Animate traffic flow');
+      //   menu.addItem('Left 2 Right', null, function()
+      //   {
+      //     thisComponent.animateTrafficFlow(cell,'l2r');
+      //   },atfMenu);
+      //   menu.addItem('Right 2 Left', null, function()
+      //   {
+      //     thisComponent.animateTrafficFlow(cell,'r2l');
+      //   },atfMenu);
+      //   menu.addItem('No animation', null, function()
+      //   {
+      //     thisComponent.animateTrafficFlow(cell,'off');
+      //   },atfMenu);
+
+      //   menu.addSeparator();
+      // }
+
+      //preview diagram in new window
+      menu.addSeparator();  
+      menu.addItem('Preview Diagram', null, function()
         {
           thisComponent.showPreviewDiagramOverlay();
         });
@@ -716,6 +764,7 @@ addUpDownLeftRightArrowToMoveCells() {
         showTickForAutoSnap = '';
 
       //auto snap edge to port
+      menu.addSeparator();
       menu.addItem('Auto snap line to connection points',
       showTickForAutoSnap, //tick image
       function() {
@@ -738,9 +787,6 @@ addUpDownLeftRightArrowToMoveCells() {
         break;
       case 'straightarrow':
         this.addStraightArrow(dropContext);
-        break;
-      case 'dashedarrow':
-        this.addDashedArrow(dropContext);
         break;
       case 'cylinder':
         this.addCylinder(dropContext);
@@ -1443,23 +1489,21 @@ addUpDownLeftRightArrowToMoveCells() {
       try
       {
         var parent = this.graph.getDefaultParent();
-        var randomId = this.shortUID.randomUUID(6);
+
+        // var edgeModel = new Edge();
+        // edgeModel.GraphModel.IconId = this.shortUID.randomUUID(6);
+
 
         var styleString = this.graphManager.getDefaultStraightEdgeStyleString();
 
-        var cell = new mxCell(randomId,
+        var cell = new mxCell(this.shortUID.randomUUID(6),
           new mxGeometry(dropContext.x, dropContext.y, 50, 50), styleString);
           cell.geometry.setTerminalPoint(new mxPoint(dropContext.x, dropContext.y), false);
           cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), true);
           cell.geometry.points =  [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
           cell.edge = true;
-        var straigthArrow= this.graph.addCell(cell, parent);
 
-      var state = this.graph.view.getState(cell);
-			state.shape.node.getElementsByTagName('path')[0].removeAttribute('visibility');
-			state.shape.node.getElementsByTagName('path')[0].setAttribute('stroke-width', '6');
-			state.shape.node.getElementsByTagName('path')[0].setAttribute('stroke', 'lightGray');
-			state.shape.node.getElementsByTagName('path')[1].setAttribute('class', 'animateTrafficFlow');
+        var straigthArrow= this.graph.addCell(cell, parent);
 
         this.graph.scrollCellToVisible(straigthArrow);
       }
@@ -1470,23 +1514,26 @@ addUpDownLeftRightArrowToMoveCells() {
       }
   }
 
-  addElbowArrow(dropContext){
+  addElbowArrow(dropContext) {
 
       this.graphManager.graph.getModel().beginUpdate();
       try
       {
         var parent = this.graph.getDefaultParent();
 
+        // var edgeModel = new Edge();
+        // edgeModel.GraphModel.IconId = this.shortUID.randomUUID(6);
+
         var styleString = this.graphManager.getDefaultElbowEdgeStyleString();
 
-        var randomId = this.shortUID.randomUUID(6);
-        var cell = new mxCell(randomId,
+        var cell = new mxCell(this.shortUID.randomUUID(6),
           new mxGeometry(dropContext.x, dropContext.y, 50, 50), styleString);
         cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 30, dropContext.y + 30), true);
         cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
         cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
         cell.geometry.relative = true;
         cell.edge = true;
+
         var elbowArrow = this.graph.addCell(cell, parent);
 
         this.graph.scrollCellToVisible(elbowArrow);
@@ -1614,56 +1661,56 @@ addUpDownLeftRightArrowToMoveCells() {
   addUser = (dropContext) => {
     this.graph.insertVertex
           (this.graph.getDefaultParent(), null, 'user', dropContext.x, dropContext.y, 50, 50,
-          "verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+          "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
           this.azureIcons.User());
   }
 
   addOnpremDC = (dropContext) => {
     this.graph.insertVertex
           (this.graph.getDefaultParent(), null, '<p style="margin: 0px auto">datacenter</p>', dropContext.x, dropContext.y, 50, 50,
-          "verticalLabelPosition=bottom;verticalAlign=top;fontSize=13;editable=1;verticalLabelPosition=bottom;shape=image;image=" +
+          "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontSize=13;editable=1;verticalLabelPosition=bottom;shape=image;image=" +
           require('../../assets/azure_icons/shape-dc.png'));
   }
 
   addInternet = (dropContext) => {
     this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'internet', dropContext.x, dropContext.y, 60, 60,
-    "verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+    "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
       this.azureIcons.Internet());
   }
 
   addClientDevice = (dropContext) => {
     this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'laptop', dropContext.x, dropContext.y, 60, 60,
-    "verticalLabelPosition=bottom;verticalAlign=top;editable=1;shape=image;image=data:image/svg+xml," +
+    "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;shape=image;image=data:image/svg+xml," +
       this.azureIcons.ClientDevice());
   }
 
   addADFSDevice = (dropContext) => {
     this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'ADFS', dropContext.x, dropContext.y, 60, 60,
-    "verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+    "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
       this.azureIcons.ADFS());
   }
 
   addAndriodDevice = (dropContext) => {
     this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'Andriod', dropContext.x, dropContext.y, 60, 60,
-    "verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+    "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
       this.azureIcons.Andriod());
   }
 
   addiPhoneDevice = (dropContext) => {
     this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'iPhone', dropContext.x, dropContext.y, 60, 60,
-    "verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+    "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
       this.azureIcons.iPhone());
   }
 
   addOnPremDBServerDevice = (dropContext) => {
     this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'On-Prem DB Server', dropContext.x, dropContext.y, 60, 60,
-    "verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+    "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
       this.azureIcons.OnPremDBServer());
   }
   
@@ -1687,7 +1734,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
           this.graph.insertVertex
           (parent, model.GraphModel.IconId ,jsonModel, dropContext.x, dropContext.y, 30, 30,
-          "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/png," +
+          "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/png," +
             this.azureIcons.PrivateEndpoint());
     }
     finally
@@ -1913,7 +1960,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
       this.graph.insertVertex
         (parent, nlb.GraphModel.IconId ,nlbJsonString, dropContext.x, dropContext.y, 30, 30,
-        "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/svg+xml," +
+        "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/svg+xml," +
           this.azureIcons.NLB());
   }
 
@@ -1940,7 +1987,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
       this.graph.insertVertex
         (subnetCell, appgw.GraphModel.IconId ,appgwJsonString, dropContext.x, dropContext.y, 35, 35,
-        "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+        "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
           this.azureIcons.AppGateway());
   }
 
@@ -1957,7 +2004,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
       this.graph.insertVertex
         (parent, dnsPrivateZone.GraphModel.IconId ,dnsPrivateZoneJsonString, dropContext.x, dropContext.y, 35, 35,
-        "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/svg+xml," +
+        "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/svg+xml," +
           this.azureIcons.DNSPrivateZone());
   }
 
@@ -2024,7 +2071,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
         var vm = this.graph.insertVertex
           (result.subnetCell, vmModel.GraphModel.IconId, JSON.stringify(vmModel), subnetCenterPt.x, subnetCenterPt.y, 30, 30,
-          "verticalLabelPosition=bottom;verticalAlign=top;editable=0;shape=image;image=data:image/svg+xml," + iconByOS);
+          "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=0;shape=image;image=data:image/svg+xml," + iconByOS);
     }
      finally
      {
@@ -2080,7 +2127,7 @@ addUpDownLeftRightArrowToMoveCells() {
         var vmss = this.graph.insertVertex
           (result.subnetCell, vmssModel.GraphModel.IconId ,userObj,
            subnetCenterPt.x, subnetCenterPt.y, 40, 40,
-          "verticalLabelPosition=bottom;verticalAlign=top;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + this.azureIcons.VMSS());
+          "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + this.azureIcons.VMSS());
     }
      finally
      {
@@ -2101,7 +2148,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (parent, appsvc.GraphModel.IconId ,appsvcJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AppService());
   }
 
@@ -2138,7 +2185,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (subnetCell, ase.GraphModel.IconId ,aseJsonString, subnetCenterPt.x, subnetCenterPt.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.ASE());
   }
 
@@ -2151,7 +2198,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, func.GraphModel.IconId ,funcJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/png," +
         this.azureIcons.FunctionApp());
   }
 
@@ -2164,7 +2211,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, azsearch.GraphModel.IconId ,azsearchJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AzureSearch());
   }
   
@@ -2177,7 +2224,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, signalr.GraphModel.IconId ,signalrJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.SignalR());
   }
 
@@ -2190,7 +2237,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, appsvccert.GraphModel.IconId ,appsvccertJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AppServiceCert());
   }
 
@@ -2203,7 +2250,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, appsvcdomain.GraphModel.IconId ,appsvcdomainJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AppServiceDomain());
   }
 
@@ -2216,7 +2263,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.SharedImageGallery());
   }
 
@@ -2229,7 +2276,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AppConfig());
   }
   
@@ -2243,7 +2290,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.PublicIp());
   }
   
@@ -2257,7 +2304,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.FrontDoor());
   }
   
@@ -2270,7 +2317,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.ExpressRouteCircuit());
   }
 
@@ -2283,7 +2330,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.TrafficManager());
   }
   
@@ -2296,7 +2343,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.DevTestLab());
   }
 
@@ -2326,7 +2373,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (result.subnetCell, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.VNetGateway());
   }
 
@@ -2339,21 +2386,21 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.CDN());
   }
 
   addASG = (dropContext) => {
     this.graph.insertVertex
       (this.graph.parent, '','Application Security Group', dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.ASG());
   }
 
   addNIC = (dropContext) => {
     this.graph.insertVertex
       (this.graph.parent, '','Network Interface', dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.NIC());
   }
 
@@ -2366,7 +2413,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId, modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.BlobStorage());
   }
 
@@ -2379,7 +2426,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.Id,modelJson, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AzureFile());
   }
   
@@ -2392,7 +2439,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.FileSync());
   }
   
@@ -2405,7 +2452,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.NetAppFile());
   }
 
@@ -2418,7 +2465,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.Id, modelJson, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.QueueStorage());
   }
   
@@ -2431,14 +2478,14 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.Id, modelJson, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.TableStorage());
   }
 
   addDatabox = (dropContext) => {
     this.graph.insertVertex
       (this.graph.parent, '','Data box', dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Databox());
   }
 
@@ -2451,7 +2498,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.PostgreSQL());
   }
 
@@ -2464,7 +2511,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.MariaDB());
   }
 
@@ -2477,7 +2524,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.SQLDB());
   }
   
@@ -2490,7 +2537,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Cosmos());
   }
 
@@ -2503,7 +2550,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.MySQL());
   }
 
@@ -2516,7 +2563,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.SQLElasticPool());
   }
 
@@ -2540,7 +2587,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.SQLMI());
   }
 
@@ -2548,7 +2595,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, '', 'SQL Stretch DB', dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.SQLStretchDB());
   }
 
@@ -2561,7 +2608,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Redis());
   }
 
@@ -2574,7 +2621,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.DataLakeStorage());
   }
 
@@ -2587,7 +2634,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Synapse());
   }
 
@@ -2600,7 +2647,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.DataExplorer());
   }
 
@@ -2613,7 +2660,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Databricks());
   }
 
@@ -2626,7 +2673,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.DataFactory());
   }
 
@@ -2639,7 +2686,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.DataLakeAnalytics());
   }
 
@@ -2652,7 +2699,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.HdInsight());
   }
 
@@ -2665,7 +2712,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.ContainerInstance());
   }
 
@@ -2678,7 +2725,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.ContainerRegistry());
   }
 
@@ -2704,7 +2751,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (subnetCell, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Kubernetes());
   }
 
@@ -2718,7 +2765,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.APIM());
   }
 
@@ -2731,7 +2778,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.ASB());
   }
 
@@ -2744,7 +2791,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.LogicApp());
   }
 
@@ -2770,7 +2817,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (subnetCell, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.ISE());
     
     Toaster.create({
@@ -2789,7 +2836,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.EventGridTopic());
   }
 
@@ -2802,7 +2849,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.EventGridSubscription());
   }
 
@@ -2815,7 +2862,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.StreamAnalytics());
   }
 
@@ -2823,7 +2870,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, '','SendGrid', dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.SendGrid());
   }
    
@@ -2836,7 +2883,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Relay());
 
  }
@@ -2873,7 +2920,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (subnetCell, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Firewall());
   }
 
@@ -2886,7 +2933,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Sentinel());
   }
 
@@ -2899,14 +2946,14 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.KeyVault());
   }
 
   addSecurityCenter = (dropContext) => {
     this.graph.insertVertex
       (this.graph.parent, '','Security Center', dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.SecurityCenter());
   }
 
@@ -2919,7 +2966,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.DDoSStandard());
   }
 
@@ -2964,7 +3011,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (subnetCell, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Bastion());
   }
 
@@ -2977,7 +3024,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.RecoveryServiceVault());
   }
 
@@ -2990,7 +3037,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AppInsights());
   }
 
@@ -3003,7 +3050,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.LogAnalytics());
   }
 
@@ -3016,7 +3063,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Automation());
   }
 
@@ -3024,7 +3071,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, '', 'Azure AD', dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AAD());
   }
 
@@ -3037,7 +3084,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AADB2C());
   }
 
@@ -3050,7 +3097,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.IoTHub());
   }
 
@@ -3063,7 +3110,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.IoTCentral());
   }
 
@@ -3077,7 +3124,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AzureMaps());
   }
 
@@ -3090,7 +3137,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     this.graph.insertVertex
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
-      "verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.TimeSeriesInsights());
   }  
 
@@ -3148,6 +3195,90 @@ addUpDownLeftRightArrowToMoveCells() {
       }
     }
   }
+
+  // rerenderAllAnimatedTrafficFlow() {
+  //   var allVerticies = this.graph.getChildVertices(this.graph.getDefaultParent());
+
+    
+  //   cell.edges.map(edge => {
+  //     var result = Utils.TryParseUserObject(edge.value);
+  //     if(result.isUserObject) {
+  //       //re-render animated traffic flow
+  //       this.animateTrafficFlow(edge, result.userObject);
+  //     }
+  //   });
+
+  // }
+
+  // animateTrafficFlow = (edge, flag) => {
+
+  //   var result = Utils.TryParseUserObject(edge.value);
+  //   if(!result.isUserObject)
+  //     return;
+      
+  //   var edgeModel = result.userObject;
+
+  //   //turn off animation
+  //   if(flag!= null && flag == 'off')
+  //   {
+  //     edgeModel.GraphModel.IsAnimatedTrafficFlowOn = false;
+  //     edgeModel.GraphModel.IsLeftToRight = false;
+  //     this.animateTrafficFlowInternalOff(edge);
+  //   }
+  //   //user turn on animation manually
+  //   else if(flag!= null && flag == 'l2r'){
+  //     edgeModel.GraphModel.IsAnimatedTrafficFlowOn = true;
+  //     edgeModel.GraphModel.IsLeftToRight = true;
+  //     this.animateTrafficFlowInternalRender(edge, edgeModel);
+  //   }
+  //   //user turn on animation manually
+  //   else if(flag!= null && flag == 'r2l'){
+  //     edgeModel.GraphModel.IsAnimatedTrafficFlowOn = true;
+  //     edgeModel.GraphModel.IsLeftToRight = false;
+  //     this.animateTrafficFlowInternalRender(edge, edgeModel);
+  //   }
+  //   //executed from importXmlAsDiagram() logic for loadFromDraft, Import .azwb or Load from Shared Link
+  //   else {
+  //     this.animateTrafficFlowInternalRender(edge, edgeModel);
+  //   }
+
+  //   edge.setValue(JSON.stringify(edgeModel));
+  //   this.graph.clearSelection();
+  // }
+
+
+  // animateTrafficFlowInternalRender(edge, edgeModel) {
+
+  //   if(!edgeModel.GraphModel.IsAnimatedTrafficFlowOn)
+  //     return;
+  //   if(edge.source == null && edge.target == null) //must be connected both ends
+  //     return;
+
+  //   var state = this.graph.view.getState(edge, true);
+  //   var edgeStyle = this.graphManager.convertStyleStringToObject(edge.style);
+  //   var strokeWidth = edgeStyle['strokeWidth'];
+
+  //   state.shape.node.getElementsByTagName('path')[0].removeAttribute('visibility');
+  //   state.shape.node.getElementsByTagName('path')[0].setAttribute('stroke-width', strokeWidth);
+  //   state.shape.node.getElementsByTagName('path')[0].setAttribute('stroke', 'white');
+  //   if(edgeModel.GraphModel.IsLeftToRight) {
+  //     state.shape.node.getElementsByTagName('path')[1]
+  //       .setAttribute('class', 'animateTrafficFlowLeft2Right');
+  //   }
+  //   else
+  //     state.shape.node.getElementsByTagName('path')[1]
+  //       .setAttribute('class', 'animateTrafficFlowRight2Left');
+  // }
+
+  // animateTrafficFlowInternalOff(edge) {
+  //     var state = this.graph.view.getState(edge, true);
+
+  //     //state.shape.node.getElementsByTagName('path')[0].removeAttribute('visibility');
+  //     //state.shape.node.getElementsByTagName('path')[0].setAttribute('stroke-width', strokeWidth);
+  //     //state.shape.node.getElementsByTagName('path')[0].setAttribute('stroke', edgeColor);
+  //     state.shape.node.getElementsByTagName('path')[1].removeAttribute('class');
+  // }
+
 
   copyToClipboard =() => {
     var cells = this.graph.getSelectionCells();
@@ -3493,6 +3624,14 @@ addUpDownLeftRightArrowToMoveCells() {
                   })
                 }
               }
+              
+              // cell.edges.map(edge => {
+              //   var result = Utils.TryParseUserObject(edge.value);
+              //   if(result.isUserObject) {
+              //     //re-render animated traffic flow
+              //     this.animateTrafficFlow(edge, result.userObject);
+              //   }
+              // });
             });
         }
   }
