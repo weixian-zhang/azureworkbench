@@ -26,14 +26,18 @@ using System.Net.Http;
 using System.Net;
 using System.IO;
 using System.Text;
+using AzW.Secret;
 
 namespace AzW.Job.CacheHydrator
 {
     public class CacheHydrator
     {
-        public CacheHydrator(Secret secret, ICacheRepository cache, Serilog.Core.Logger logger)
+        public CacheHydrator
+            (WorkbenchSecret secret, ICacheRepository cache,
+             IRatecardRepository rcRepo, Serilog.Core.Logger logger)
         {
             _secret = secret;
+            _rcRepo = rcRepo;
             _cache = cache;
             _logger = logger;
 
@@ -42,8 +46,6 @@ namespace AzW.Job.CacheHydrator
             
             azureCreds = new AzureCredentials
                 (sdkCred, null, _secret.TenantId, AzureEnvironment.AzureGlobalCloud);
-                
-                
         }
 
         [FunctionName("CacheHydrator")]
@@ -51,17 +53,19 @@ namespace AzW.Job.CacheHydrator
         {
             await GetRateCardPricings();
 
-            //await HydrateServiceTag();
+            await HydrateServiceTag();
 
-            //await HydrateVMSizes();
+            await HydrateVMSizes();
 
-            //await HydrateVMImages();
+            await HydrateVMImages();
         }
 
         private async Task GetRateCardPricings()
         {
             try
             {
+                if(await _rcRepo.IsRatecardExist())
+                    return;
 
                var authenticationContext =
                     new AuthenticationContext(  String.Format("{0}/{1}",
@@ -100,6 +104,42 @@ namespace AzW.Job.CacheHydrator
                 // You can also walk through this object to manipulate the individuals member objects. 
                 RateCardPayload payload =
                     JsonConvert.DeserializeObject<RateCardPayload>(rateCardJson);
+
+                var ratecards = new List<Ratecard>();
+
+                foreach(var meter in payload.Meters)
+                {
+                    if( meter.MeterRegion.Contains("NO East") ||
+                        meter.MeterRegion.Contains("NO West") ||
+                        meter.MeterRegion.Contains("Azure Stack") ||
+                        meter.MeterRegion.StartsWith("Zone"))
+                        continue;
+                        
+                    double rate = Math.Round(meter.MeterRates.FirstOrDefault().Value, 2);
+                    
+                    string unitName = "";
+                    double unitVal = 0;
+
+                    var splittedUnit = meter.Unit.Split(' ');
+                    if(splittedUnit.Length == 2)
+                    {
+                        unitVal = Convert.ToDouble(splittedUnit[0]);
+                        unitName = splittedUnit[1];
+                    }
+
+                    ratecards.Add(new Ratecard(){
+                        MeterCategory = meter.MeterCategory,
+                        MeterName = meter.MeterName,
+                        MeterRate = rate,
+                        MeterRegion = meter.MeterRegion,
+                        MeterSubCategory = meter.MeterSubCategory,
+                        Unit = meter.Unit,
+                        UnitName = unitName,
+                        UnitValue = unitVal
+                    });
+                }
+
+                await _rcRepo.InsertRatecardsAsync(ratecards);
             }
             catch(Exception ex)
             {
@@ -400,8 +440,9 @@ namespace AzW.Job.CacheHydrator
         
         ServiceClientCredential sdkCred;
         AzureCredentials azureCreds;
-        private Secret _secret;
+        private WorkbenchSecret _secret;
         private ICacheRepository _cache;
+        private IRatecardRepository _rcRepo;
         private Serilog.Core.Logger _logger;
     }
 }

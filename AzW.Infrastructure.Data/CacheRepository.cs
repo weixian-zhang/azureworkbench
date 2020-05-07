@@ -97,7 +97,7 @@ namespace AzW.Infrastructure.Data
                 KeyPrefix = VMImageKeyPrefix,
                 Hosts = new RedisHost[]
                 {
-                    new RedisHost(){Host = _redisHost, Port = 6379},
+                    new RedisHost(){Host = _redisHost, Port = 6380},
                 },
                 AllowAdmin = false,
                 ConnectTimeout = 3000,

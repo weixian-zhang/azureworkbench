@@ -1,0 +1,1 @@
+db.getCollection('Ratecard').distinct("MeterRegion")

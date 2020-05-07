@@ -194,10 +194,13 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
         unsavedChanges: false,
 
         queryString: this.props.queryString
-    }
+    };
 
     //global state
-    this.setGlobal({autoSnapEdgeToPort:false});
+    // this.setGlobal({
+    //   saveBadgeInvisible: this.state.unsavedChanges == true ? true : false,
+    //   autoSnapEdgeToPort: false
+    // });
 
     this.Index = this.props.Index; //Index component contains progress Comp
 
@@ -433,19 +436,25 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
     this.graph.addListener(mxEvent.CELLS_ADDED, function (sender, evt) {
       //set unsave state
       if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-      thisComp.setState({unsavedChanges: true});
+
+      thisComp.setState({unsavedChanges: true}, () => {
+        thisComp.setBadgeVisibilityOnUnsaveChanges()});
       evt.consume();
     });
     this.graph.addListener(mxEvent.CELLS_MOVED, function (sender, evt) {    
       //set unsave state
       if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-      thisComp.setState({unsavedChanges: true});
+
+      thisComp.setState({unsavedChanges: true}, () => {
+        thisComp.setBadgeVisibilityOnUnsaveChanges()});
       evt.consume();
     });
     this.graph.addListener(mxEvent.CONNECT_CELL, function (sender, evt) {
       //set unsave state
       if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-      thisComp.setState({unsavedChanges: true});
+
+      thisComp.setState({unsavedChanges: true}, () => {
+        thisComp.setBadgeVisibilityOnUnsaveChanges()});
       evt.consume();
     });
     this.graph.addListener(mxEvent.RESIZE, function (sender, evt) {
@@ -458,33 +467,58 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
       }
       //set unsave state
       if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-      thisComp.setState({unsavedChanges: true});
+
+      thisComp.setState({unsavedChanges: true}, () => {
+        thisComp.setBadgeVisibilityOnUnsaveChanges()});
       evt.consume();
     });
     this.graph.addListener(mxEvent.CELLS_RESIZED, function (sender, evt) {
       //set unsave state
       if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-      thisComp.setState({unsavedChanges: true});
+      thisComp.setState({unsavedChanges: true}, this.setBadgeVisibilityOnUnsaveChanges);
       evt.consume();
     });
     this.graph.addListener(mxEvent.CELL_CONNECTED, function (sender, evt) {
       //set unsave state
       if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-      thisComp.setState({unsavedChanges: true});
+
+      thisComp.setState({unsavedChanges: true}, () => {
+        thisComp.setBadgeVisibilityOnUnsaveChanges()});
+
       evt.consume();
     });
     this.graph.addListener(mxEvent.CELLS_REMOVED, function (sender, evt) {
       //set unsave state
+      if(!thisComp.graphManager.isCellExist())
+      {
+        thisComp.setState({unsavedChanges: false}, thisComp.setBadgeVisibilityOnUnsaveChanges);
+        evt.consume();
+        return;
+      }
+
       if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-        thisComp.setState({unsavedChanges: true});
+
+      thisComp.setState({unsavedChanges: true}, () => {
+        thisComp.setBadgeVisibilityOnUnsaveChanges()});
+
       evt.consume();
     });
     this.graph.addListener(mxEvent.GROUP_CELLS, function (sender, evt) {
       //set unsave state
       if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-      thisComp.setState({unsavedChanges: true});
+
+      thisComp.setState({unsavedChanges: true}, () => {
+        thisComp.setBadgeVisibilityOnUnsaveChanges()});
+
       evt.consume();
     });
+  }
+
+  setBadgeVisibilityOnUnsaveChanges = () => {
+      if(this.state.unsavedChanges)
+          this.setGlobal({saveBadgeInvisible: false});
+      else
+          this.setGlobal({saveBadgeInvisible: true});
   }
 
   addDeleteKeyEventToDeleteVertex(){
@@ -3483,7 +3517,7 @@ addUpDownLeftRightArrowToMoveCells() {
     LocalStorage.set
       (LocalStorage.KeyNames.TempLocalDiagram, JSON.stringify(anonyDiagramContext));
 
-    this.setState({unsavedChanges: false});
+    this.setState({unsavedChanges: false}, this.setBadgeVisibilityOnUnsaveChanges);
 
     Toaster.create({
       position: Position.TOP,
@@ -3758,7 +3792,7 @@ addUpDownLeftRightArrowToMoveCells() {
       function onSuccess() {
 
         thisComp.Index.showProgress(false);
-        thisComp.setState({unsavedChanges: false});
+        thisComp.setState({unsavedChanges: false}, this.setBadgeVisibilityOnUnsaveChanges);
 
         Toaster.create({
           position: Position.TOP,

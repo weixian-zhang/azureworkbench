@@ -78,8 +78,8 @@ export default class SelectLocation extends Component {
     renderLocation = (location, { handleClick, modifiers }) => {
         return (
             <MenuItem
-                text={location.Name}
-                data-location={location.Name}
+                text={location.DisplayName}
+                data-location={location.ProvisionName}
                 onClick={this.onLocationSelect}
             />
         );
@@ -90,7 +90,7 @@ export default class SelectLocation extends Component {
             this.setGlobal({filteredLocations: this.global.locations});
         else
         {
-            this.setGlobal({filteredLocations: this.global.locations.filter(x => String(x.Name).startsWith(newQuery))});
+            this.setGlobal({filteredLocations: this.global.locations.filter(x => String(x.DisplayName).toLowerCase().startsWith(newQuery))});
         }
     }
 
@@ -99,8 +99,8 @@ export default class SelectLocation extends Component {
         this.setState({selectedValue:location});
         this.props.onValueChange(location);
 
-        //reset filteredLocations, if not, other components using SelectLocations will see
-        //filtered query
+        //reset filteredLocations,
+        //if not, other components using SelectLocations will see filtered query
         this.setGlobal({filteredLocations: this.global.locations}); 
     }
 

@@ -77,6 +77,8 @@ export default class MxGraphManager
 
     initGlobalSettings(){
 
+        this.initResizeVertexSettings();
+
         //global settings
         //contrain drag boundary of child within parent
         mxGraphHandler.prototype.removeCellsFromParent = false
@@ -119,6 +121,15 @@ export default class MxGraphManager
         });
         
         this.initGlobalPanningSettings();
+    }
+
+    //prevent resize of children when parent resize
+    initResizeVertexSettings() {
+        this.graph.resizeContainer = false;
+        this.graph.extendParentsOnAdd = false;
+        this.graph.constrainChildren = true;
+        this.graph.recursiveResize = false;
+        mxVertexHandler.prototype.singleSizer = true;
     }
 
     initGlobalPanningSettings(){

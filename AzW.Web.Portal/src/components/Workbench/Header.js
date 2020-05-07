@@ -1,7 +1,7 @@
 import React, { Component } from "reactn";
 import {useGlobal} from 'reactn';
 import {  PopoverInteractionKind, Popover, Menu, Position, MenuItem,MenuDivider, Classes, Icon, Utils } from "@blueprintjs/core";
-
+import Badge from '@material-ui/core/Badge';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -30,6 +30,8 @@ export default class Header extends Component {
 
     this.authService = new AuthService();
     this.diagService = new DiagramService();
+
+    this.setGlobal({saveBadgeInvisible:true});
 
     this.state = {
         isLogin: this.authService.isUserLogin(),
@@ -64,7 +66,7 @@ export default class Header extends Component {
   }
 
   componentDidMount() { 
-      
+    
   }
 
   render() {
@@ -92,8 +94,11 @@ export default class Header extends Component {
                    <Menu className={Classes.ELEVATION_1}>
                      <MenuItem  text="Share" onClick={this.shareDiagram} />
                      <MenuDivider />
-                     <MenuItem  text="Save to Browser" onClick={this.saveToLocal} />
-                     <MenuItem  text="Save to Workspace" onClick={this.savetoWorkspace} />
+                      <Badge color="secondary" badgeContent='unsave changes' invisible={this.global.saveBadgeInvisible}>
+                        <MenuItem  text="Save to Browser" onClick={this.saveToLocal} />
+                        <MenuItem  text="Save to Workspace" onClick={this.savetoWorkspace} />
+                      </Badge>
+                      
                      <MenuDivider />
                      <MenuItem  text="Import Workbench file(.azwb)" onClick={this.importWorkbenchFormat} />
                      <MenuDivider />
@@ -103,7 +108,9 @@ export default class Header extends Component {
                    </Menu>
                } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.HOVER}>
                 <IconButton color="inherit" aria-label="Edit">
-                  <FolderIcon  />
+                  <Badge color="secondary" variant="dot" overlap='circle' invisible={this.global.saveBadgeInvisible}>
+                    <FolderIcon  />
+                  </Badge>
                 </IconButton>
               </Popover>
               
@@ -132,9 +139,6 @@ export default class Header extends Component {
                               this.loadQuickstartDiagram();
                             }
                           }/>
-                     </MenuItem>
-                     <MenuItem  text="Kubernetes">
-                        <MenuItem text="coming soon.." />
                      </MenuItem>
                      <MenuItem  text="More templates coming..."></MenuItem>
                    </Menu>
