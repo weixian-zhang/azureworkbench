@@ -31,7 +31,9 @@ export default class ARMService
           var regions = [];
           response.data.map(loc => {
             var region = new Region();
-            region.Name = loc;
+            region.DisplayName = loc.displayName;
+            region.ProvisionName = loc.provisionName;
+            region.RatecardMeterRegionName = loc.ratecardMeterRegionName;
             regions.push(region)
           });
 
@@ -59,7 +61,6 @@ export default class ARMService
         location: location,
         rgName: rgName
       };
-      //subscriptionId, location, rgName,
       axios.post('api/arm/rg/new', JSON.stringify(params),
         {
           headers: {

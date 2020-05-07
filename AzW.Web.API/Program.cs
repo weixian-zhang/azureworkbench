@@ -18,7 +18,7 @@ namespace AzW.Web.API
 
         public static void Main(string[] args)
         {
-            LoadConfiguration();
+            //LoadConfiguration();
 
             CreateHostBuilder(args).Build().Run();
         }
@@ -27,23 +27,22 @@ namespace AzW.Web.API
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseConfiguration(_configuration);
                     webBuilder.UseUrls("http://*:8089");
                     webBuilder.UseStartup<Startup>();
                 });
 
-        private static void LoadConfiguration()
-        {
-            string env = Environment.GetEnvironmentVariable("env");
+        // private static void LoadConfiguration()
+        // {
+        //     string env = Environment.GetEnvironmentVariable("env");
 
-            var builder = new ConfigurationBuilder();
+        //     var builder = new ConfigurationBuilder();
 
-            if(string.IsNullOrEmpty(env) || env == "dev")
-                builder.AddUserSecrets("7211aa50-115d-4544-9cf0-c4499c5f2e9f");
-            else
-                builder.AddEnvironmentVariables();
+        //     if(string.IsNullOrEmpty(env) || env == "dev")
+        //         builder.AddUserSecrets("7211aa50-115d-4544-9cf0-c4499c5f2e9f");
+        //     else
+        //         builder.AddEnvironmentVariables();
                 
-            _configuration = builder.Build();
-        }
+        //     _configuration = builder.Build();
+        // }
     }
 }

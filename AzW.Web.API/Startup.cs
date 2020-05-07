@@ -33,10 +33,14 @@ namespace AzW.Web.API
 
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+              var configBuilder = new ConfigurationBuilder()
+                .AddEnvironmentVariables()
+                .AddUserSecrets("7211aa50-115d-4544-9cf0-c4499c5f2e9f");
+
+            Configuration = configBuilder.Build();
         }
 
-        public IConfiguration Configuration { get; }
+        public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)

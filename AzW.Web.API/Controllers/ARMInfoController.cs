@@ -81,18 +81,9 @@ namespace AzW.Web.API
 
         [AllowAnonymous]
         [HttpGet("arms/loc")]
-        public IEnumerable<string> GetLocations()
+        public IEnumerable<RegionMap> GetLocations()
         {
-            var regions = new List<string>();
-
-            var props = TypeDescriptor.GetProperties(typeof(Region));
-
-            foreach(Region reg in Region.Values)
-            {
-                regions.Add(reg.Name);
-            }
-
-            return regions;
+            return RegionMapList.List();
         }
 
         private ARMService _armService;

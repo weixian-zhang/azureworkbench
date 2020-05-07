@@ -2,6 +2,7 @@ namespace AzW.Secret
 {
     public class WorkbenchSecret
     {
+       public string SubscriptionId { get; set; }
        public string AzCosmonMongoConnectionString { get; set; }
 
         public string ClientId { get; set; }

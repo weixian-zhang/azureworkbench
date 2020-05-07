@@ -411,7 +411,7 @@ namespace AzW.Infrastructure.AzureServices
                 .WithRegion(nlb.Location)
                 .WithExistingResourceGroup(nlb.ResourceGroupName)
                 .DefineLoadBalancingRule(nlb.LoadBalancingRuleName)
-                .WithProtocol(TransportProtocol.Tcp);   
+                .WithProtocol(TransportProtocol.Tcp);
 
             if(nlb.IsInternalNLB)
             {

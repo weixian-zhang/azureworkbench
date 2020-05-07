@@ -2,6 +2,8 @@ export default class Location
 {
     constructor()
     {
-        this.Name = '';
+        this.DisplayName = '';
+        this.ProvisionName = '';
+        this.RatecardMeterRegionName = '';
     }
 }

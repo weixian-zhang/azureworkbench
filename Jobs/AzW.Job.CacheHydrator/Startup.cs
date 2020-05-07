@@ -1,6 +1,7 @@
 using System;
 using System.Configuration;
 using AzW.Infrastructure.Data;
+using AzW.Secret;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
@@ -24,7 +25,8 @@ namespace AzW.Job.CacheHydrator
 
             IConfigurationRoot config = configBuilder.Build();
 
-            var secret = new Secret() {
+            var secret = new WorkbenchSecret() {
+                AzCosmonMongoConnectionString = config.GetValue<string>("AzCosmonMongoConnectionString"),
                 RedisConnString = config.GetValue<string>("RedisConnString"),
                 RedisHost = config.GetValue<string>("RedisHost"),
                 RedisPassword = config.GetValue<string>("RedisPassword"),
@@ -37,7 +39,7 @@ namespace AzW.Job.CacheHydrator
 
             var logger = InitAppInsights(secret);
 
-            builder.Services.AddSingleton<Secret>(prov => {
+            builder.Services.AddSingleton<WorkbenchSecret>(prov => {
                 return secret;
             });
 
@@ -51,9 +53,14 @@ namespace AzW.Job.CacheHydrator
                   ( secret.RedisConnString, secret.RedisHost, secret.RedisPassword);
             });
 
+          builder.Services.AddSingleton<IRatecardRepository>(prov =>
+            {
+                return new RatecardRepository(secret);
+            });
+
         }
 
-        private Logger InitAppInsights(Secret secret){
+        private Logger InitAppInsights(WorkbenchSecret secret){
           
           var appInsightsConfig = new TelemetryConfiguration();
           
