@@ -86,7 +86,7 @@ export default class MxGraphManager
         this.graph.setTooltips(true);
 
         //adds page break on vertex move
-        this.graph.view.setScale(1.0); //initial zoomed out degree
+        this.graph.view.setScale(0.7); //initial zoomed out degree
         this.graph.pageBreaksVisible = false;
         this.graph.pageBreakDashed = true;
         this.graph.preferPageSize = true;

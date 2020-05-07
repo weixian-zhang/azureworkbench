@@ -139,6 +139,16 @@ export default class Header extends Component {
                               this.loadQuickstartDiagram();
                             }
                           }/>
+                          <MenuItem text="App Service Environment with API Management"
+                          onClick={
+                            () => {
+                              var qs = this.state.quickstart;
+                              qs.category = 'WebApp';
+                              qs.name = 'ASE-APIM';
+                              this.setState({quickstart:qs});
+                              this.loadQuickstartDiagram();
+                            }
+                          }/>
                      </MenuItem>
                      <MenuItem  text="More templates coming..."></MenuItem>
                    </Menu>
