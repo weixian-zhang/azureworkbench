@@ -1,24 +1,6 @@
 import {
-    mxGraph,
-    mxRectangle,
-    mxEdgeHandler,
-    mxGraphHandler,
-    mxConstants,
-    mxEdgeStyle,
-    mxRubberband,
     mxUtils,
-    mxEvent,
-    mxImage,
-    mxVertexHandler,
-    mxPoint,
-    mxConnectionConstraint,
-    mxConstraintHandler,
-    mxConnectionHandler,
-    mxCodecRegistry,
-    mxCell,
-    mxObjectCodec,
-    mxGeometry,
-    mxEventObject
+    mxGeometry
   } from "mxgraph-js";
 
   export default class mxClientOverrides{

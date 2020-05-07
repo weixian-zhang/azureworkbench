@@ -56,12 +56,15 @@ export default class VNetPropPanel extends Component {
                               inline={true}
                               intent={Intent.PRIMARY}>
                               <div class="bp3-input-group .modifier">
-                                <input id="icon-display-name" type="text" class="bp3-input .modifier" placeholder="Display name"
-                                prop='DisplayName'
-                                value={this.state.userObject.GraphModel.DisplayName}
-                                onChange={this.onDiagramIconNameChange}
-                                autoFocus ={true}
-                                />
+                                                                     <textarea class="bp3-input .modifier bp3-large bp3-fill"
+                                        style={{'max-width':'250px', 'max-height':'200px'}}
+                                        maxlength="80"
+                                        dir="auto"
+                                        prop='DisplayName'
+                                        value={this.state.userObject.GraphModel.DisplayName}
+                                        onChange={this.onDiagramIconNameChange}
+                                        autoFocus ={true}
+                                        />
                               </div>
                         </FormGroup>
                     </div>

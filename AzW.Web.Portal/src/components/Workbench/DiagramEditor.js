@@ -527,7 +527,7 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
       var keyHandler = new mxKeyHandler(this.graph);
       keyHandler.bindKey(46, (evt) =>
         { 
-          thisComp.graph.removeCells();
+          thisComp.graph.removeCells(null,false);
         });
   }
 
@@ -715,7 +715,7 @@ addUpDownLeftRightArrowToMoveCells() {
         menu.addSeparator();
         menu.addItem('Delete', '', function()
         {
-          thisComponent.graph.removeCells(); 
+          thisComponent.graph.removeCells(null,false); 
         });
         
         menu.addSeparator();
@@ -1536,6 +1536,7 @@ addUpDownLeftRightArrowToMoveCells() {
           cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), true);
           cell.geometry.points =  [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
           cell.edge = true;
+          cell.collapsed = false;
 
         var straigthArrow= this.graph.addCell(cell, parent);
 
@@ -1567,6 +1568,7 @@ addUpDownLeftRightArrowToMoveCells() {
         cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
         cell.geometry.relative = true;
         cell.edge = true;
+        cell.collapsed = false;
 
         var elbowArrow = this.graph.addCell(cell, parent);
 
@@ -1582,7 +1584,7 @@ addUpDownLeftRightArrowToMoveCells() {
   addCylinder(dropContext){
     var style = this.graphManager.getDefaultCylinderStyleString();
 
-    var triangle = this.graph.insertVertex(
+    var cell = this.graph.insertVertex(
       this.graph.getDefaultParent(),
       null,
       'cylinder',
@@ -1592,13 +1594,14 @@ addUpDownLeftRightArrowToMoveCells() {
       100,
       style
     );
-    this.graph.scrollCellToVisible(triangle);
-  }
+    cell.collapsed = false;
+    this.graph.scrollCellToVisible(cell);
+  };
 
   addHexagon(dropContext){
     var style = this.graphManager.getDefaultHexagonStyleString();
 
-    var triangle = this.graph.insertVertex(
+    var cell = this.graph.insertVertex(
       this.graph.getDefaultParent(),
       null,
       'hexagon',
@@ -1608,7 +1611,8 @@ addUpDownLeftRightArrowToMoveCells() {
       100,
       style
     );
-    this.graph.scrollCellToVisible(triangle);
+    cell.collapsed = false;
+    this.graph.scrollCellToVisible(cell);
   }
 
   addLabel = (dropContext) => {
@@ -1617,12 +1621,12 @@ addUpDownLeftRightArrowToMoveCells() {
     {
       var randomId = this.shortUID.randomUUID(6);
 
-      var label = this.graph.insertVertex
+      var cell = this.graph.insertVertex
         (this.graph.getDefaultParent(), null, 'text',
           dropContext.x, dropContext.y, 80, 30,
           this.graphManager.getDefaultTextStyleString());
-
-      this.graph.scrollCellToVisible(label);
+      cell.collapsed = false;
+      this.graph.scrollCellToVisible(cell);
     }
     finally
     {
@@ -1632,7 +1636,7 @@ addUpDownLeftRightArrowToMoveCells() {
   }
 
   addRectangle = (dropContext) => {
-    var rect = this.graph.insertVertex(
+    var cell = this.graph.insertVertex(
       this.graph.getDefaultParent(),
       null,
       'rectangle',
@@ -1642,11 +1646,12 @@ addUpDownLeftRightArrowToMoveCells() {
       100,
       this.graphManager.getDefaultRectStyleString()
     );
-    this.graph.scrollCellToVisible(rect);
+    cell.collapsed = false;
+    this.graph.scrollCellToVisible(cell);
   }
 
   addRoundedRectangle = (dropContext) => {
-    var rect = this.graph.insertVertex(
+    var cell = this.graph.insertVertex(
       this.graph.getDefaultParent(),
       null,
       'rectangle',
@@ -1656,7 +1661,8 @@ addUpDownLeftRightArrowToMoveCells() {
       100,
       this.graphManager.getDefaultRoundedRectStyleString()
     );
-    this.graph.scrollCellToVisible(rect);
+    cell.collapsed = false;
+    this.graph.scrollCellToVisible(cell);
   }
   
 
@@ -1664,7 +1670,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
     var style = this.graphManager.getDefaultTriangleStyleString();
 
-    var triangle = this.graph.insertVertex(
+    var cell = this.graph.insertVertex(
       this.graph.getDefaultParent(),
       null,
       'triangle',
@@ -1674,7 +1680,8 @@ addUpDownLeftRightArrowToMoveCells() {
       100,
       style
     );
-    this.graph.scrollCellToVisible(triangle);
+    cell.collapsed = false;
+    this.graph.scrollCellToVisible(cell);
   }
 
   addCircle = (dropContext) => {
@@ -1693,59 +1700,67 @@ addUpDownLeftRightArrowToMoveCells() {
   }
 
   addUser = (dropContext) => {
-    this.graph.insertVertex
+    var cell = this.graph.insertVertex
           (this.graph.getDefaultParent(), null, 'user', dropContext.x, dropContext.y, 50, 50,
           "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
           this.azureIcons.User());
+    cell.collapsed = false;
   }
 
   addOnpremDC = (dropContext) => {
-    this.graph.insertVertex
+    var cell = this.graph.insertVertex
           (this.graph.getDefaultParent(), null, '<p style="margin: 0px auto">datacenter</p>', dropContext.x, dropContext.y, 50, 50,
           "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontSize=13;editable=1;verticalLabelPosition=bottom;shape=image;image=" +
           require('../../assets/azure_icons/shape-dc.png'));
+    cell.collapsed = false;
   }
 
   addInternet = (dropContext) => {
-    this.graph.insertVertex
+    var cell = this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'internet', dropContext.x, dropContext.y, 60, 60,
     "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
       this.azureIcons.Internet());
+    cell.collapsed = false;
   }
 
   addClientDevice = (dropContext) => {
-    this.graph.insertVertex
+    var cell = this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'laptop', dropContext.x, dropContext.y, 60, 60,
     "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;shape=image;image=data:image/svg+xml," +
       this.azureIcons.ClientDevice());
+    cell.collapsed = false;
   }
 
   addADFSDevice = (dropContext) => {
-    this.graph.insertVertex
+    var cell = this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'ADFS', dropContext.x, dropContext.y, 60, 60,
     "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
       this.azureIcons.ADFS());
+    cell.collapsed = false;
   }
 
   addAndriodDevice = (dropContext) => {
-    this.graph.insertVertex
+    var cell = this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'Andriod', dropContext.x, dropContext.y, 60, 60,
     "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
       this.azureIcons.Andriod());
+    cell.collapsed = false;
   }
 
   addiPhoneDevice = (dropContext) => {
-    this.graph.insertVertex
+    var cell = this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'iPhone', dropContext.x, dropContext.y, 60, 60,
     "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
       this.azureIcons.iPhone());
+    cell.collapsed = false;
   }
 
   addOnPremDBServerDevice = (dropContext) => {
-    this.graph.insertVertex
+    var cell = this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'On-Prem DB Server', dropContext.x, dropContext.y, 60, 60,
     "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
       this.azureIcons.OnPremDBServer());
+      cell.collapsed = false;
   }
   
   addPrivateEndpoint = (dropContext) => {
@@ -1766,10 +1781,11 @@ addUpDownLeftRightArrowToMoveCells() {
           
           var parent = this.graph.getDefaultParent();
 
-          this.graph.insertVertex
+          var cell = this.graph.insertVertex
           (parent, model.GraphModel.IconId ,jsonModel, dropContext.x, dropContext.y, 30, 30,
           "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/png," +
             this.azureIcons.PrivateEndpoint());
+            cell.collapsed = false;
     }
     finally
     {
@@ -1800,7 +1816,7 @@ addUpDownLeftRightArrowToMoveCells() {
           
           var vnetStyle = this.graphManager.getVNetStyle();
 
-          var vnetVertex = this.graph.insertVertex(
+          var cell = this.graph.insertVertex(
                 this.graph.getDefaultParent(),
                 vnetModel.GraphModel.Id,
                 jsonstrVnet,
@@ -1811,7 +1827,9 @@ addUpDownLeftRightArrowToMoveCells() {
                 vnetStyle
               );
 
-          this.graph.addCellOverlay(vnetVertex, vnetIconOverlay);
+          cell.collapsed = false;
+
+          this.graph.addCellOverlay(cell, vnetIconOverlay);
     }
     finally
     {
@@ -1819,22 +1837,15 @@ addUpDownLeftRightArrowToMoveCells() {
       this.graphManager.graph.getModel().endUpdate();
     }
 
-    return vnetVertex;;
+    return cell;;
 }
 
   addSubnet = (vnetCell, loadContext) => {
-
-        // var nsgOverlay = new mxCellOverlay(
-        //   new mxImage(require('../../assets/azure_icons/Networking Service Color/Network Security Groups (Classic).svg'),20, 20),
-        //   null,  mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP
-        // );
-
+    
         var subnetLogoOverlay = new mxCellOverlay(
           new mxImage(require('../../assets/azure_icons/Networking Service Color/Subnet.svg'),20, 20),
           'Subnet',  mxConstants.ALIGN_Right, mxConstants.ALIGN_TOP
         );
-
-        var subnetVertex;
 
         if(loadContext == undefined) {
 
@@ -1849,7 +1860,7 @@ addUpDownLeftRightArrowToMoveCells() {
 
           var subnetStyle = this.graphManager.getSubnetStyle();
 
-          subnetVertex = this.graph.insertVertex(
+          var subnetVertex = this.graph.insertVertex(
             vnetCell,
             subnet.GraphModel.Id,
             jsonstrSubnet,
@@ -1859,6 +1870,7 @@ addUpDownLeftRightArrowToMoveCells() {
             100,
             subnetStyle
           );
+          subnetVertex.collapsed = false;
         }
         else {
             this.graph.getModel().getCell(loadContext.parent.id);
@@ -1893,7 +1905,7 @@ addUpDownLeftRightArrowToMoveCells() {
       22, //height
       "resizable=0;editable=0;shape=image;image=data:image/svg+xml," + this.azureIcons.NSG()
     );
-
+    nsgVertex.collapsed = false;
     nsgVertex.geometry.offset = new mxPoint(-12, -15);
     nsgVertex.geometry.relative = true;
     this.graph.refresh();
@@ -1923,7 +1935,7 @@ addUpDownLeftRightArrowToMoveCells() {
       24, //height
       "resizable=0;editable=0;shape=image;image=data:image/svg+xml," + this.azureIcons.RouteTable()
     );
-
+    udrVertex.collapsed = false;
     udrVertex.geometry.offset = new mxPoint(-12, -17);
     udrVertex.geometry.relative = true;
     this.graph.refresh();
@@ -1947,30 +1959,23 @@ addUpDownLeftRightArrowToMoveCells() {
       this.graphManager.translateToParentGeometryPoint(vnetCell)
 
       var subnetVertex = this.graph.insertVertex(
-      vnetCell,
-      subnet.GraphModel.Id,
-      jsonstrSubnet,
-      ((vnetCell.getGeometry().x /2) / 2) - 15,
-      vnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
-      vnetCell.getGeometry().width - 90,
-      100,
-      'subnetstyle'
-    );
+        vnetCell,
+        subnet.GraphModel.Id,
+        jsonstrSubnet,
+        ((vnetCell.getGeometry().x /2) / 2) - 15,
+        vnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
+        vnetCell.getGeometry().width - 90,
+        100,
+        'subnetstyle'
+       );
+      
+       subnetVertex.collapsed = false;
 
     this.graph.addCellOverlay(subnetVertex, subnetLogoOverlay);
   }
 
   addNLB = (dropContext) => {
-      
-      // var parent = this.graph.getDefaultParent();
-      // var parentCell = this.graph.getCellAt(dropContext.x, dropContext.y);
-
-      // if(parentCell != null){
-      //   var cellType = JSON.parse(parentCell.value).GraphModel.ResourceType;
-      //   if(cellType == 'subnet')
-      //       parent = parentCell;
-      // }
-
+    
       var nlb = new NLB();
         nlb.GraphModel.ResourceType = 'nlb';
         nlb.GraphModel.Id = this.shortUID.randomUUID(6);
@@ -1992,10 +1997,11 @@ addUpDownLeftRightArrowToMoveCells() {
       
       var nlbJsonString = JSON.stringify(nlb);
 
-      this.graph.insertVertex
+      var cell = this.graph.insertVertex
         (parent, nlb.GraphModel.IconId ,nlbJsonString, dropContext.x, dropContext.y, 30, 30,
         "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/svg+xml," +
           this.azureIcons.NLB());
+      cell.collapsed = false;
   }
 
   addAppGw = (dropContext) => {
@@ -2019,10 +2025,11 @@ addUpDownLeftRightArrowToMoveCells() {
         appgw.GraphModel.DisplayName = 'app gateway'
         var appgwJsonString = JSON.stringify(appgw);
 
-      this.graph.insertVertex
+      var cell = this.graph.insertVertex
         (subnetCell, appgw.GraphModel.IconId ,appgwJsonString, dropContext.x, dropContext.y, 35, 35,
         "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
           this.azureIcons.AppGateway());
+      cell.collapsed = false;
   }
 
   addDNSPrivateZone = (dropContext) => {
@@ -2036,10 +2043,11 @@ addUpDownLeftRightArrowToMoveCells() {
 
       var dnsPrivateZoneJsonString = JSON.stringify(dnsPrivateZone);
 
-      this.graph.insertVertex
+      var cell = this.graph.insertVertex
         (parent, dnsPrivateZone.GraphModel.IconId ,dnsPrivateZoneJsonString, dropContext.x, dropContext.y, 35, 35,
         "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/svg+xml," +
           this.azureIcons.DNSPrivateZone());
+      cell.collapsed = false;
   }
 
   addVM = (dropContext, vmType) => {
@@ -2106,7 +2114,8 @@ addUpDownLeftRightArrowToMoveCells() {
         var vm = this.graph.insertVertex
           (result.subnetCell, vmModel.GraphModel.IconId, JSON.stringify(vmModel), subnetCenterPt.x, subnetCenterPt.y, 30, 30,
           "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=0;shape=image;image=data:image/svg+xml," + iconByOS);
-    }
+        vm.collapsed = false;
+      }
      finally
      {
        // Updates the display
@@ -3544,7 +3553,7 @@ addUpDownLeftRightArrowToMoveCells() {
       if(Utils.IsNullOrUndefine(anonyDiagramId))
       return;
       
-      this.graph.removeCells(this.graph.getChildVertices(this.graph.getDefaultParent()));
+      this.graph.removeCells(this.graph.getChildVertices(this.graph.getDefaultParent()),false);
 
       var thisComp = this;
 
@@ -3942,7 +3951,7 @@ addUpDownLeftRightArrowToMoveCells() {
   }
 
   clearGraph() {
-    this.graph.removeCells(this.graph.getChildCells(this.graph.getDefaultParent(), true, true))
+    this.graph.removeCells(this.graph.getChildCells(this.graph.getDefaultParent(), true, true),false)
     this.graph.getModel().clear();
   }
 
