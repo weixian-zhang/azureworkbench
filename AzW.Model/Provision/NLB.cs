@@ -16,5 +16,6 @@ namespace AzW.Model
           public int FrontendPort { get; set; }
           public string BackendpoolName { get; set; }
           public string LoadBalancingRuleName { get; set; }
+          public string[] LoadBalanceToExistingVMNames { get; set; }
      }
  }

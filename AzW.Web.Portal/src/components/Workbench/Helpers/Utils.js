@@ -61,6 +61,21 @@ export default class Utils
         return false;
     }
 
+    static IsVM(cell) {
+        if(cell != null && cell.value != null){
+            var result = this.TryParseUserObject(cell.value);
+
+            if(result.isUserObject &&
+                result.userObject.GraphModel.ResourceType == ResourceType.WindowsVM() ||
+                result.userObject.GraphModel.ResourceType == ResourceType.LinuxVM() ||
+                result.userObject.GraphModel.ResourceType == ResourceType.VM())
+              {
+                    return true;
+              }
+        }
+        return false;
+    }
+
     static IsNullOrUndefine(obj) {
 
         if(!obj || 0 === obj.length || obj == "")

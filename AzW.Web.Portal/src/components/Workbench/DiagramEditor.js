@@ -196,12 +196,6 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
         queryString: this.props.queryString
     };
 
-    //global state
-    // this.setGlobal({
-    //   saveBadgeInvisible: this.state.unsavedChanges == true ? true : false,
-    //   autoSnapEdgeToPort: false
-    // });
-
     this.Index = this.props.Index; //Index component contains progress Comp
 
     this.armsvc = new ARMService();
@@ -331,7 +325,7 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
                         this.setState({shareLinkInputbox: input})
                   }}
                 />
-            <Button style={{marginTop: '10px', float: 'right'}} className="bp3-button bp3-intent-success" icon="tick" onClick={this.copySharedLink}>Copy</Button>
+            <Button style={{marginTop: '10px', float: 'right'}} className="bp3-button bp3-intent-primary" onClick={this.copySharedLink}>Copy</Button>
           </div>
         </Overlay>
       </div>
@@ -684,6 +678,28 @@ addUpDownLeftRightArrowToMoveCells() {
           });
         }
         menu.addSeparator();
+      }
+
+      if(Utils.IsVM(cell))
+      {
+        menu.addItem('Add Backup', '', function()
+        {
+          var nsgVertex = thisComponent.graph.insertVertex(
+            cell,
+            '',
+            '',
+            0,
+            0, //subnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
+            15, //width
+            15, //height
+            "resizable=0;editable=0;shape=image;image=data:image/svg+xml," +
+              thisComponent.azureIcons.NSG()
+          );
+          nsgVertex.collapsed = false;
+          nsgVertex.geometry.offset = new mxPoint(-12, -15);
+          nsgVertex.geometry.relative = true;
+          thisComponent.graph.refresh();
+        });
       }
 
       if(Utils.IsSubnet(cell))
@@ -3526,7 +3542,8 @@ addUpDownLeftRightArrowToMoveCells() {
     LocalStorage.set
       (LocalStorage.KeyNames.TempLocalDiagram, JSON.stringify(anonyDiagramContext));
 
-    this.setState({unsavedChanges: false}, this.setBadgeVisibilityOnUnsaveChanges);
+    this.setState({unsavedChanges: false}, () => {
+      this.setBadgeVisibilityOnUnsaveChanges()});
 
     Toaster.create({
       position: Position.TOP,
@@ -3801,7 +3818,8 @@ addUpDownLeftRightArrowToMoveCells() {
       function onSuccess() {
 
         thisComp.Index.showProgress(false);
-        thisComp.setState({unsavedChanges: false}, this.setBadgeVisibilityOnUnsaveChanges);
+        thisComp.setState({unsavedChanges: false}, () => {
+          thisComp.setBadgeVisibilityOnUnsaveChanges()});
 
         Toaster.create({
           position: Position.TOP,

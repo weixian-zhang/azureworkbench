@@ -217,7 +217,8 @@ export default class MxGraphManager
             }
             else if(result.isUserObject == true &&
                 result.userObject.ProvisionContext.ResourceType != ResourceType.NSG() &&
-                result.userObject.ProvisionContext.ResourceType != ResourceType.RouteTable())
+                result.userObject.ProvisionContext.ResourceType != ResourceType.RouteTable() &&
+                result.userObject.ProvisionContext.ResourceType != ResourceType.RecoveryServiceVault())
             {
                 mxGraphTranslateCellOriginal(graph,cell, dx, dy)
             }
