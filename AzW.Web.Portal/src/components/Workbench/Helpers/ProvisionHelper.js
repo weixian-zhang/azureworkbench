@@ -18,13 +18,16 @@ export default class ProvisionHelper
             {
                 var userObject = result.userObject;
 
-                this.getVNetContext(userObject, cell, provisionContexts);
+                //ordering is important!
+                this.getNSGs(userObject, cell, provisionContexts);
 
-                this.getInternalNLBContexts(userObject, cell, provisionContexts);
+                this.getVNetContext(userObject, cell, provisionContexts);
 
                 this.getVMContexts(userObject, cell, provisionContexts);
 
-                this.getNSGs(userObject, cell, provisionContexts);
+                this.getInternalNLBContexts(userObject, cell, provisionContexts);
+
+                this.getExternalNLBContexts(userObject, cell, provisionContexts);
 
                 this.getAllResourcesOutsideVNetContexts(userObject, cell, provisionContexts);
             }
@@ -89,10 +92,52 @@ export default class ProvisionHelper
                 var subnetResult =  Utils.TryParseUserObject(subnetCell.value);
                 nlbContext.SubnetName = subnetResult.userObject.ProvisionContext.Name;
 
+                var vmNames = this.getEdgeConnectedVMs(nlbCell);
+                nlbContext.LoadBalanceToExistingVMNames = vmNames;
+
                 provisionContexts.push(nlbContext);
             }
             
         });
+    }
+
+    getExternalNLBContexts(userObject, cell, provisionContexts) {
+        if(userObject.ProvisionContext.ResourceType == ResourceType.NLB() &&
+            userObject.ProvisionContext.IsInternalNLB == false)
+        {
+            var nlbContext = userObject.ProvisionContext;
+            var vmNames = this.getEdgeConnectedVMs(cell);
+            nlbContext.LoadBalanceToExistingVMNames = vmNames;
+
+            provisionContexts.push(nlbContext);
+        }
+    }
+
+    getEdgeConnectedVMs(cell) {
+        if(cell.edges == null || cell.edges.length == 0)
+            return null;
+
+        var vmNames = [];
+
+        cell.edges.map(x => {
+
+            var source = x.source;
+            var target = x.target;
+
+            if(Utils.IsVM(source))
+            {
+                var result =  Utils.TryParseUserObject(source);
+                vmNames.push(result.userObject.ProvisionContext.Name);
+            }
+
+            if(Utils.IsVM(target))
+            {
+                var result =  Utils.TryParseUserObject(target);
+                vmNames.push(result.userObject.ProvisionContext.Name);
+            }
+        });
+
+        return vmNames;
     }
     
     getVMContexts = (userObject, cell, provisionContexts) => {
@@ -169,7 +214,8 @@ export default class ProvisionHelper
 
     getAllResourcesOutsideVNetContexts = (userObject, cell, provisionContexts) => {
 
-        if(userObject.ProvisionContext.ResourceType != ResourceType.VNet())
+        if(userObject.ProvisionContext.ResourceType != ResourceType.VNet() &&
+        userObject.ProvisionContext.ResourceType != ResourceType.NLB())
         {
             var proContext = userObject.ProvisionContext;
             provisionContexts.push(proContext);

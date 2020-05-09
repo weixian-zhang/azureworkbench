@@ -860,6 +860,7 @@ export default class MxGraphManager
         elbowEdgeStyle[mxConstants.STYLE_STROKECOLOR] = 'darkblue';
         elbowEdgeStyle[mxConstants.STYLE_STROKEWIDTH] = 1;
         elbowEdgeStyle[mxConstants.STYLE_DASHED] = '0';
+        elbowEdgeStyle[mxConstants.STYLE_ROUNDED] = '1';
         elbowEdgeStyle[mxConstants.STYLE_STARTARROW] = mxConstants.ARROW_CLASSIC;
         elbowEdgeStyle[mxConstants.STYLE_ENDARROW] = 'none';
         elbowEdgeStyle[mxConstants.STYLE_ELBOW] = mxConstants.ELBOW_HORIZONTAL;

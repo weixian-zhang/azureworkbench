@@ -29,6 +29,8 @@ namespace AzW.Web.API
                 {
                     webBuilder.UseUrls("http://*:8089");
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseKestrel(o =>
+                        { o.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(30); });
                 });
 
         // private static void LoadConfiguration()

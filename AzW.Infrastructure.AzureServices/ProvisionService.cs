@@ -23,6 +23,7 @@ using Microsoft.Azure.Management.ResourceManager.Fluent.Core.ChildResource.Defin
 using Microsoft.Azure.Management.Storage.Fluent;
 using Microsoft.Azure.Management.OperationalInsights;
 using Microsoft.Azure.Management.OperationalInsights.Models;
+using Microsoft.Azure.Management.Compute.Fluent;
 
 namespace AzW.Infrastructure.AzureServices
 {
@@ -39,38 +40,42 @@ namespace AzW.Infrastructure.AzureServices
 
             try
             {
-                IEnumerable<dynamic> nonNsgContexts;
+                // IEnumerable<dynamic> nonNsgContexts;
 
-                var nsgContexts = SortoutNSGNonNSGContexts(provisionContexts, out nonNsgContexts);
+                // var nsgContexts = SortoutNSGNonNSGContexts(provisionContexts, out nonNsgContexts);
 
-                //*important: NSG to create first
-                foreach(dynamic context in nsgContexts)
+                // //*important: NSG to create first
+                // foreach(dynamic context in nsgContexts)
+                // {
+                //     JObject jObj = JObject.Parse(context.ToString());
+                //     NSG nsg = jObj.ToObject<NSG>();
+                //     await CreateNSGAsync(nsg);
+                // }
+
+                if(provisionContexts != null && provisionContexts.Length > 0)
                 {
-                    JObject jObj = JObject.Parse(context.ToString());
-                    NSG nsg = jObj.ToObject<NSG>();
-                    await CreateNSGAsync(nsg);
-                }
-
-                if(nonNsgContexts != null)
-                {
-                    foreach(dynamic context in nonNsgContexts)
+                    foreach(dynamic context in provisionContexts)
                     {
                         JObject jObj = JObject.Parse(context.ToString());
                         string resourceType = jObj["ResourceType"].ToString();
 
                         switch(resourceType)
                         {
+                            case ResourceType.NSG:
+                                NSG nsg = jObj.ToObject<NSG>();
+                                await CreateNSGAsync(nsg);
+                            break;
                             case ResourceType.VNet:
                                 VNet vnet = jObj.ToObject<VNet>();
-                                await CreateVNetAsync(vnet, _vnets);
-                            break;
-                            case ResourceType.NLB:
-                                NLB nlb = jObj.ToObject<NLB>();
-                                await CreateNLBAsync(nlb);
+                                await CreateVNetAsync(vnet);
                             break;
                             case ResourceType.VM:
                                 VM vm = jObj.ToObject<VM>();
                                 await CreateVMAsync(vm);
+                            break;
+                            case ResourceType.NLB:
+                                NLB nlb = jObj.ToObject<NLB>();
+                                await CreateNLBAsync(nlb);
                             break;
                             case ResourceType.AppService:
                                 WebApp webapp = jObj.ToObject<WebApp>();
@@ -134,7 +139,35 @@ namespace AzW.Infrastructure.AzureServices
             return nsgCons;
         }
 
-        private async Task CreateVNetAsync(VNet vnet, Dictionary<string, INetwork> provisionedVNets)
+        // private IEnumerable<dynamic> SortEssentialContextsInProvisionOrder(dynamic[] nonNsgContexts)
+        // {
+        //     var mustDeployFirstContexts = new List<dynamic>();
+        //     var canDeploySubsequentContexts  = new List<dynamic>();
+
+        //     foreach(dynamic context in nonNsgContexts)
+        //     {
+        //         JObject jObj = JObject.Parse(context.ToString());
+        //         string resourceType = jObj["ResourceType"].ToString();
+
+        //         if(resourceType == ResourceType.VNet)
+        //             mustDeployFirstContexts.Add(context);
+        //         else if(resourceType == ResourceType.VM)
+        //             mustDeployFirstContexts.Add(context);
+        //     }
+
+        //     foreach(dynamic context in nonNsgContexts)
+        //     {
+        //         JObject jObj = JObject.Parse(context.ToString());
+        //         string resourceType = jObj["ResourceType"].ToString();
+
+        //         if(resourceType != ResourceType.VNet)
+        //             canDeploySubsequentContexts.Add(context);
+        //         else if(resourceType != ResourceType.VM)
+        //             canDeploySubsequentContexts.Add(context);
+        //     }
+        // }
+
+        private async Task CreateVNetAsync(VNet vnet)
         {                 
            var withCreateSubnet = AzClient.WithSubscription(_subscriptionId)
                 .Networks.Define(vnet.Name)
@@ -163,7 +196,8 @@ namespace AzW.Infrastructure.AzureServices
 
             INetwork virtualnetwork = await withCreateSubnet.CreateAsync();
     
-            provisionedVNets.Add(virtualnetwork.Name, virtualnetwork);
+            //add to global list for resource reference
+            _vnets.Add(virtualnetwork.Name, virtualnetwork);
         }
 
         private async Task CreateNSGAsync(NSG nsg)
@@ -360,9 +394,11 @@ namespace AzW.Infrastructure.AzureServices
             else
                 vmContDefinition = withPip.WithoutPrimaryPublicIPAddress();
             
+            IVirtualMachine azvm;
+            
             if(vm.IsLinux)
             {
-                await vmContDefinition.WithSpecificLinuxImageVersion(imgRef)
+                azvm = await vmContDefinition.WithSpecificLinuxImageVersion(imgRef)
                     .WithRootUsername(vm.AdminUsername)
                     .WithRootPassword(vm.AdminPassword)
                     .WithSize(vm.SizeName)
@@ -370,40 +406,45 @@ namespace AzW.Infrastructure.AzureServices
             }
             else
             {
-                await vmContDefinition.WithSpecificWindowsImageVersion(imgRef)
+                azvm = await vmContDefinition.WithSpecificWindowsImageVersion(imgRef)
                     .WithAdminUsername(vm.AdminUsername)
                     .WithAdminPassword(vm.AdminPassword)
                     .WithSize(vm.SizeName)
                     .CreateAsync();
             }
-            
+
+            //add to global list for resource reference
+            _vms.Add(vm.Name, azvm);
         }
     
         private async Task CreateNLBAsync(NLB nlb)
         {
+           
+            // if(!nlb.IsInternalNLB) //public LB
+            // {
+            //     if(nlb.IsStandardSku)
+            //         pip = AzClient.WithSubscription(_subscriptionId)
+            //             .PublicIPAddresses
+            //             .Define(nlb.PublicIPName)
+            //             .WithRegion(nlb.Location)
+            //             .WithExistingResourceGroup(nlb.ResourceGroupName)
+            //             .WithSku(PublicIPSkuType.Standard)
+            //             .WithStaticIP();
+            //     else
+            //         pip = AzClient.WithSubscription(_subscriptionId)
+            //             .PublicIPAddresses
+            //             .Define(nlb.PublicIPName)
+            //             .WithRegion(nlb.Location)
+            //             .WithExistingResourceGroup(nlb.ResourceGroupName)
+            //             .WithSku(PublicIPSkuType.Basic)
+            //             .
+            // }
+
             var sku = LoadBalancerSkuType.Basic;
             if(nlb.IsStandardSku)
                sku = LoadBalancerSkuType.Standard;
             
-            ICreatable<IPublicIPAddress> pip = null;
-            if(!nlb.IsInternalNLB)
-            {
-                if(nlb.IsStandardSku)
-                    pip = AzClient.WithSubscription(_subscriptionId)
-                        .PublicIPAddresses
-                        .Define(nlb.PublicIPName)
-                        .WithRegion(nlb.Location)
-                        .WithExistingResourceGroup(nlb.ResourceGroupName)
-                        .WithSku(PublicIPSkuType.Standard)
-                        .WithStaticIP();
-                else
-                    pip = AzClient.WithSubscription(_subscriptionId)
-                        .PublicIPAddresses
-                        .Define(nlb.PublicIPName)
-                        .WithRegion(nlb.Location)
-                        .WithExistingResourceGroup(nlb.ResourceGroupName)
-                        .WithSku(PublicIPSkuType.Basic);
-            }
+            
 
             var nlbDefWithProtocol = AzClient
                 .WithSubscription(_subscriptionId)
@@ -413,26 +454,86 @@ namespace AzW.Infrastructure.AzureServices
                 .DefineLoadBalancingRule(nlb.LoadBalancingRuleName)
                 .WithProtocol(TransportProtocol.Tcp);
 
+             Microsoft.Azure.Management.Network.Fluent.
+                LoadBalancingRule.Definition.IWithBackend
+                    <Microsoft.Azure.Management.Network.Fluent.LoadBalancer
+                    .Definition.IWithLBRuleOrNatOrCreate> lbruleDef = null;
+            
             if(nlb.IsInternalNLB)
             {
                 INetwork vnet = GetVNetByName(nlb.VNetName);
 
-                await nlbDefWithProtocol
-                    .FromExistingSubnet(vnet, nlb.SubnetName)
-                    .FromFrontendPort(nlb.FrontendPort)
-                    .ToBackend(nlb.BackendpoolName)
-                    .Attach()
-                    .WithSku(sku)
-                    .CreateAsync();
+                lbruleDef = nlbDefWithProtocol
+                                .FromExistingSubnet(vnet, nlb.SubnetName)
+                                .FromFrontendPort(nlb.FrontendPort);
+
+                if(nlb.LoadBalanceToExistingVMNames.Length > 0)
+                {
+                    var vms = GetLBVMs(nlb.LoadBalanceToExistingVMNames);
+
+                    await lbruleDef
+                        .ToExistingVirtualMachines(new List<IHasNetworkInterfaces>(vms))
+                        .Attach()
+                        .WithSku(sku)
+                        .CreateAsync(); 
+                }
+                else
+                {
+                    await lbruleDef
+                        .ToBackend(nlb.BackendpoolName)
+                        .Attach()
+                        .WithSku(sku)
+                        .CreateAsync(); 
+                    
+                }
             }
+            //public NLB
             else
-                await nlbDefWithProtocol
-                    .FromNewPublicIPAddress(pip)
-                    .FromFrontendPort(nlb.FrontendPort)
-                    .ToBackend(nlb.BackendpoolName)
-                    .Attach()
-                    .WithSku(sku)
+            {
+                // Microsoft.Azure.Management.Network.Fluent
+                //     .PublicIPAddress.Definition.IWithSku pipSkuDef;
+                
+                //create new public ip for nlb
+                 var pipSkuDef =  AzClient.WithSubscription(_subscriptionId)
+                        .PublicIPAddresses
+                        .Define(nlb.PublicIPName)
+                        .WithRegion(nlb.Location)
+                        .WithExistingResourceGroup(nlb.ResourceGroupName);
+
+                PublicIPSkuType pipSku = PublicIPSkuType.Basic;
+
+                if(nlb.IsStandardSku)
+                    pipSku = PublicIPSkuType.Standard;
+                
+                var newPIP = await pipSkuDef
+                    .WithSku(pipSku)
                     .CreateAsync();
+                    
+            
+                lbruleDef = nlbDefWithProtocol
+                    .FromExistingPublicIPAddress(newPIP)
+                    .FromFrontendPort(nlb.FrontendPort);
+
+                if(nlb.LoadBalanceToExistingVMNames.Length > 0)
+                {
+                    var vms = GetLBVMs(nlb.LoadBalanceToExistingVMNames);
+
+                    await lbruleDef
+                        .ToExistingVirtualMachines(new List<IHasNetworkInterfaces>(vms))
+                        .Attach()
+                        .WithSku(sku)
+                        .CreateAsync(); 
+                }
+                else
+                {
+                    await lbruleDef
+                        .ToBackend(nlb.BackendpoolName)
+                        .Attach()
+                        .WithSku(sku)
+                        .CreateAsync(); 
+                    
+                }
+            }
         }
 
         private async Task CreateAppService(WebApp webapp)
@@ -521,6 +622,24 @@ namespace AzW.Infrastructure.AzureServices
             .CreateAsync();
         }
 
+        //helpers
+        private IEnumerable<IVirtualMachine> GetLBVMs(string[] vmNames)
+        {
+            var vmsToLB = new List<IVirtualMachine>();
+
+            foreach(string name in vmNames)
+            {
+               var vm = _vms.Values.FirstOrDefault(x => x.Name == name);
+
+               if(vm != null)
+               {
+                   vmsToLB.Add(vm);
+               }
+            }
+
+            return vmsToLB;
+        }
+
         private INetwork GetVNetByName(string vnetName)
         {
            return  _vnets.Values.FirstOrDefault(x => x.Name == vnetName);
@@ -531,6 +650,7 @@ namespace AzW.Infrastructure.AzureServices
             return _nsgs.Values.FirstOrDefault(x => x.Name ==nsgName );
         }
         
+        private Dictionary<string, IVirtualMachine> _vms = new Dictionary<string, IVirtualMachine>();
         private Dictionary<string, INetwork> _vnets = new Dictionary<string, INetwork>();
         private Dictionary<string, INetworkSecurityGroup> _nsgs = new Dictionary<string, INetworkSecurityGroup>();
         private string _subscriptionId;

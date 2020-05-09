@@ -23,7 +23,8 @@ export default class NLB
             SubnetName: '',
             FrontendPort: 443,
             BackendpoolName: '',
-            LoadBalancingRuleName: ''
+            LoadBalancingRuleName: '',
+            LoadBalanceToExistingVMNames: []
         }; 
         this.CalculatorContext = {
             IsFree: false,

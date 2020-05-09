@@ -35,7 +35,7 @@ export default class ProvisionService
             var result = response.data;
 
             if(result.isSuccessful) {
-                Toast.show('success', 2000, 'Diagram deployed successfully');
+                Toast.show('success', 3000, 'Diagram deployed successfully');
             }
             else { 
                 Toast.show('danger', 8000, result.errorMessage);
@@ -43,7 +43,7 @@ export default class ProvisionService
                 
         })
         .catch(function (error) {
-            Toast.show('danger', 3000, Messages.GeneralHttpError());
+            Toast.show('danger', 8000, Messages.GeneralHttpError());
         })
     }
 }
