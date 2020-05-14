@@ -183,7 +183,7 @@ namespace AzW.Web.API
                 },
                 new RegionMap()
                 {
-                    DisplayName = "South EastAsia",
+                    DisplayName = "SouthEast Asia",
                     ProvisionName = "southeastasia",
                     RatecardMeterRegionName = "AP Southeast"
                 },

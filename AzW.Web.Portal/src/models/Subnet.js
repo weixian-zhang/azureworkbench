@@ -6,7 +6,9 @@ export default class Subnet
             Id: '',
             ResourceType: ResourceType.Subnet(),
             DisplayName: '',
-            IsGatewaySubnet: false
+            IsGatewaySubnet: false,
+            VNetAddressSpace: '',
+            SubnetsAndCidrs: []
         };
 
         this.ProvisionContext = {

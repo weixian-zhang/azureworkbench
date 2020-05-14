@@ -22,7 +22,7 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
 import mxClientOverrides from './Helpers/mxClientOverrides';
 
 //models
-//import Edge from "../../models/Edge";
+import SubnetsCidrs from "../../models/services/SubnetsCidrs";
 import PrivateEndpoint from "../../models/PrivateEndpoint";
 import IoTCentral from "../../models/IoTCentral";
 import LogAnalytics from "../../models/LogAnalytics";
@@ -680,27 +680,29 @@ addUpDownLeftRightArrowToMoveCells() {
         menu.addSeparator();
       }
 
-      if(Utils.IsVM(cell))
-      {
-        menu.addItem('Add Backup', '', function()
-        {
-          var nsgVertex = thisComponent.graph.insertVertex(
-            cell,
-            '',
-            '',
-            0,
-            0, //subnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
-            15, //width
-            15, //height
-            "resizable=0;editable=0;shape=image;image=data:image/svg+xml," +
-              thisComponent.azureIcons.NSG()
-          );
-          nsgVertex.collapsed = false;
-          nsgVertex.geometry.offset = new mxPoint(-12, -15);
-          nsgVertex.geometry.relative = true;
-          thisComponent.graph.refresh();
-        });
-      }
+      //TODO
+      // if(Utils.IsVM(cell))
+      // {
+      //   menu.addItem('VM Backup', '', function()
+      //   {
+      //     var nsgVertex = thisComponent.graph.insertVertex(
+      //       cell,
+      //       '',
+      //       '',
+      //       1,
+      //       0, //subnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
+      //       15, //width
+      //       15, //height
+      //       "movable=0;resizable=0;editable=0;shape=image;image=data:image/png," + thisComponent.azureIcons.RecoveryServiceVault()
+              
+      //     );
+      //     nsgVertex.collapsed = false;
+      //     nsgVertex.geometry.offset = new mxPoint(-12, -15);
+      //     nsgVertex.geometry.relative = true;
+      //     thisComponent.graph.refresh();
+      //   });
+      //   menu.addSeparator();
+      // }
 
       if(Utils.IsSubnet(cell))
       {
@@ -800,6 +802,7 @@ addUpDownLeftRightArrowToMoveCells() {
       // }
 
       //preview diagram in new window
+      
       menu.addSeparator();  
       menu.addItem('Preview Diagram', null, function()
         {
@@ -1502,15 +1505,39 @@ addUpDownLeftRightArrowToMoveCells() {
         });
         break;
       case ResourceType.VNet():
+        //get all subnet names and cidrs
+        userObject.GraphModel.SubnetsAndCidrs =
+          Utils.vnetGetSubnetsAndCidrs(thisComp.graph, cell);
+
         this.vnetPropPanel.current.show(userObject, function(savedUserObject){
           thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+
         });
         break;
       case ResourceType.Subnet():
           if(this.azureValidator.isGatewaySubnet(cell))
             return;
+
+          //pass into Subnet Prop Panel
+          //vnet address and subnet cidrs.
+          //This is purely for UI cidr validation, does not affect provisioning
+          var vnetCell = cell.parent;
+          var vnetProContext=  Utils.TryParseUserObject(vnetCell);
+
+          userObject.GraphModel.VNetAddressSpace =
+            vnetProContext.userObject.ProvisionContext.AddressSpace;
+
+          userObject.GraphModel.SubnetsAndCidrs =
+          Utils.vnetGetSubnetsAndCidrs(thisComp.graph, vnetCell, userObject.ProvisionContext.Name);
+          
           this.subnetPropPanel.current.show(userObject, function(savedUserObject){
+            //save values to subnet pro-context
             thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+
+            //save subnet names and cidrs to VNet pro-context
+            vnetProContext.userObject.GraphModel.SubnetsAndCidrs = 
+            Utils.vnetGetSubnetsAndCidrs(thisComp.graph, cell.parent);
+            thisComp.graph.model.setValue(vnetCell, JSON.stringify(vnetProContext.userObject));
           });
           break;
       case ResourceType.NLB():

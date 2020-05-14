@@ -141,7 +141,8 @@ export default class VNetPropPanel extends Component {
                   }/>
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center"
+               style={{marginBottom:'18px'}}>
                 <Grid item sm={3}>
                     <label>Address Space</label>
                 </Grid>
@@ -155,6 +156,19 @@ export default class VNetPropPanel extends Component {
                     }} />
                 </Grid>
               </Grid>
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center"
+               style={{marginBottom:'5px'}}>
+                Subnets
+              </Grid>
+              {
+                    this.state.userObject.GraphModel.SubnetsAndCidrs.map(x => {
+                        return <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom:'2px'}}>
+                          <Grid item>
+                            {x.subnetName} : {x.cidr} ({x.addressCount} addresses, {x.usableAddress} usable)
+                          </Grid>
+                        </Grid>
+                    })
+                  }
             </Grid>
       </div>
     );

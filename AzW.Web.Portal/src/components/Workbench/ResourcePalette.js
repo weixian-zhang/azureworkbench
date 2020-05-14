@@ -482,7 +482,9 @@ export default class ResourcePalette extends Component {
               </div>
               <div class="tile-panel" ref={this.appgwIcon}>
                 <Tippy content="Application Gateway" followCursor={true} placement="bottom">
-                  <AppGateway class="azure-rsc-icon" />
+                  <Badge badgeContent={'P'} color="error">
+                    <AppGateway class="azure-rsc-icon" />
+                  </Badge>
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.dnsprivatezoneIcon}>
@@ -794,7 +796,9 @@ export default class ResourcePalette extends Component {
             <Typography component={'span'} variant={'body2'}>
               <div class="tile-panel" ref={this.azfwIcon}>
                 <Tippy content="Firewall" followCursor={true} placement="bottom">
-                  <AzFirewall class="azure-rsc-icon" />
+                  <Badge badgeContent={'P'} color="error">
+                    <AzFirewall class="azure-rsc-icon" />
+                  </Badge>
                 </Tippy>
               </div>
               <div class="tile-panel" ref={this.sentinelIcon}>

@@ -58,7 +58,6 @@ namespace AzW.Web.API
                 });
             });
 
-
             services.AddControllers();
 
             services.AddSwaggerGen();
@@ -70,6 +69,8 @@ namespace AzW.Web.API
             ConfigureAzureAdAuth(services);
 
             ConfigureDependencies(services);
+
+            services.AddApplicationInsightsTelemetry(_secrets.AppInsightsKey);
         }
 
 

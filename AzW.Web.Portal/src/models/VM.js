@@ -21,7 +21,7 @@ export default class VM
             VNetName: '',
             SubnetName: '',
 
-            AdminUsername: '',
+            AdminUsername: 'admin',
             AdminPassword: '',
             
             VMPublisher: '',
@@ -29,7 +29,7 @@ export default class VM
             VMSKU: '',
             VMVersion: '',
 
-            SizeName: '',
+            SizeName: 'STANDARD_DS2_V2',
             IsLinux: false
         };
         this.CalculatorContext = {

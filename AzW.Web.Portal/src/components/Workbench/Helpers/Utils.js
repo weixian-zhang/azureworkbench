@@ -1,5 +1,6 @@
 import ResourceType from '../../../models/ResourceType';
 import { mxCell } from 'mxgraph-js';
+import SubnetsCidrs from '../../../models/services/SubnetsCidrs';
 
 export default class Utils
 {
@@ -65,10 +66,13 @@ export default class Utils
         if(cell != null && cell.value != null){
             var result = this.TryParseUserObject(cell.value);
 
+            if(!result.isUserObject)
+                return false;
+
             if(result.isUserObject &&
-                result.userObject.GraphModel.ResourceType == ResourceType.WindowsVM() ||
-                result.userObject.GraphModel.ResourceType == ResourceType.LinuxVM() ||
-                result.userObject.GraphModel.ResourceType == ResourceType.VM())
+                result.userObject.ProvisionContext.ResourceType == ResourceType.WindowsVM() ||
+                result.userObject.ProvisionContext.ResourceType == ResourceType.LinuxVM() ||
+                result.userObject.ProvisionContext.ResourceType == ResourceType.VM())
               {
                     return true;
               }
@@ -122,5 +126,88 @@ export default class Utils
         newDate.setHours(hours - offset);
     
         return newDate;   
+    }
+
+    static getIPCountFromCidr(cidr) {
+        if(Utils.IsNullOrUndefine(cidr))
+            return 0;
+        
+        var addrCount = 0;
+        var cidrArr = cidr.split('/');
+        if(cidrArr.length == 2)
+        {
+            var bit = cidrArr[1];
+            addrCount = Math.pow(2, 32 - bit);
+        }
+
+        return addrCount;
+    }
+
+    static getCidrPrefix(cidr) {
+        if(Utils.IsNullOrUndefine(cidr))
+            return 0;
+        
+        var addrCount = 0;
+        var cidrArr = cidr.split('/');
+        if(cidrArr.length == 2)
+        {
+            var bit = cidrArr[1];
+            return bit;
+        }
+        else
+        {
+            return 0
+        }
+        
+    }
+
+    static isCidr(cidr) {
+        if(Utils.IsNullOrUndefine(cidr))
+            return false;
+        var cidrArr = cidr.split('/');
+        if(cidrArr.length == 2)
+            return true;
+        else
+            return false;
+    }
+
+    static vnetGetSubnetsAndCidrs = (graph, vnetCell, subnetName) => {
+        if(Utils.IsNullOrUndefine(vnetCell))
+          return [];
+        
+        var subnetNamesAndCidrs = [];
+  
+        var childs = graph.getChildVertices(vnetCell);
+  
+        childs.map(x => {
+            var result = Utils.TryParseUserObject(x);
+  
+            if(result.isUserObject == true &&
+               result.userObject.ProvisionContext.ResourceType == ResourceType.Subnet())
+            {
+                var context = result.userObject.ProvisionContext;
+                var addressCount = Utils.getIPCountFromCidr(context.AddressSpace);
+                var usableAddresses = 0;
+                if(addressCount != 0)
+                  usableAddresses = addressCount - 5;
+                
+                var snc = new SubnetsCidrs();
+                snc.subnetName = context.Name;
+                snc.cidr = context.AddressSpace;
+                snc.addressCount = addressCount;
+                snc.usableAddress = usableAddresses;
+
+              //check and prevent adding of subnet & cidr for active Subnet Prop panel
+              if(Utils.IsNullOrUndefine(subnetName))
+                    subnetNamesAndCidrs.push(snc);
+              else
+              {
+                if(result.userObject.ProvisionContext.Name != subnetName)               
+                    subnetNamesAndCidrs.push(snc);
+              }
+            }
+        });
+  
+        return subnetNamesAndCidrs;
     }
 }

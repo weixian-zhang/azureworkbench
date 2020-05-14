@@ -10,15 +10,11 @@ export default class AzureFirewall
 
         this.ProvisionContext = {
             ResourceType: ResourceType.Firewall(),
-            Deployable: true,
-            HighCost: false,
-            
             Name: '',
             Location: '',
-            Tags: [],
-
-            VNetAddress: '',
-            SubnetName: ''
+            ResourceGroupName: '',
+            VNetName: '',
+            SubnetName: '',
         };
         this.CalculatorContext = {
             IsFree: false,

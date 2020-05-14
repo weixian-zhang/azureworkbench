@@ -40,18 +40,6 @@ namespace AzW.Infrastructure.AzureServices
 
             try
             {
-                // IEnumerable<dynamic> nonNsgContexts;
-
-                // var nsgContexts = SortoutNSGNonNSGContexts(provisionContexts, out nonNsgContexts);
-
-                // //*important: NSG to create first
-                // foreach(dynamic context in nsgContexts)
-                // {
-                //     JObject jObj = JObject.Parse(context.ToString());
-                //     NSG nsg = jObj.ToObject<NSG>();
-                //     await CreateNSGAsync(nsg);
-                // }
-
                 if(provisionContexts != null && provisionContexts.Length > 0)
                 {
                     foreach(dynamic context in provisionContexts)
@@ -76,6 +64,14 @@ namespace AzW.Infrastructure.AzureServices
                             case ResourceType.NLB:
                                 NLB nlb = jObj.ToObject<NLB>();
                                 await CreateNLBAsync(nlb);
+                            break;
+                            case ResourceType.AppGw:
+                                AppGateway appgw = jObj.ToObject<AppGateway>();
+                                await CreateAppGatewayAsync(appgw);
+                            break;
+                            case ResourceType.Firewall:
+                                Firewall fw = jObj.ToObject<Firewall>();
+                                await CreateAzFirewallAsync(fw);
                             break;
                             case ResourceType.AppService:
                                 WebApp webapp = jObj.ToObject<WebApp>();
@@ -117,27 +113,27 @@ namespace AzW.Infrastructure.AzureServices
             return provisionResult;
         }
 
-        private IEnumerable<dynamic> SortoutNSGNonNSGContexts
-            (dynamic[] provisionContexts, out IEnumerable<dynamic> otherContexts)
-        {
-            var nsgCons = new List<dynamic>();
-            var nonNsgCons = new List<dynamic>();
+        // private IEnumerable<dynamic> SortoutNSGNonNSGContexts
+        //     (dynamic[] provisionContexts, out IEnumerable<dynamic> otherContexts)
+        // {
+        //     var nsgCons = new List<dynamic>();
+        //     var nonNsgCons = new List<dynamic>();
 
-            foreach(dynamic context in provisionContexts)
-            {
-                JObject jObj = JObject.Parse(context.ToString());
-                string resourceType = jObj["ResourceType"].ToString();
+        //     foreach(dynamic context in provisionContexts)
+        //     {
+        //         JObject jObj = JObject.Parse(context.ToString());
+        //         string resourceType = jObj["ResourceType"].ToString();
 
-                if(resourceType == ResourceType.NSG)
-                    nsgCons.Add(context);
-                else
-                    nonNsgCons.Add(context);
-            }
+        //         if(resourceType == ResourceType.NSG)
+        //             nsgCons.Add(context);
+        //         else
+        //             nonNsgCons.Add(context);
+        //     }
 
-            otherContexts = nonNsgCons;
+        //     otherContexts = nonNsgCons;
 
-            return nsgCons;
-        }
+        //     return nsgCons;
+        // }
 
         // private IEnumerable<dynamic> SortEssentialContextsInProvisionOrder(dynamic[] nonNsgContexts)
         // {
@@ -362,6 +358,14 @@ namespace AzW.Infrastructure.AzureServices
 
         private async Task CreateVMAsync(VM vm)
         {  
+            IVirtualMachine existingVM = AzClient
+                .WithSubscription(_subscriptionId)
+                .VirtualMachines
+                .GetByResourceGroup(vm.ResourceGroupName, vm.Name);
+            
+            if(existingVM != null)
+                return;
+
             INetwork vnet = GetVNetByName(vm.VNetName);
             
             var withPip = AzClient.WithSubscription(_subscriptionId)
@@ -419,33 +423,10 @@ namespace AzW.Infrastructure.AzureServices
     
         private async Task CreateNLBAsync(NLB nlb)
         {
-           
-            // if(!nlb.IsInternalNLB) //public LB
-            // {
-            //     if(nlb.IsStandardSku)
-            //         pip = AzClient.WithSubscription(_subscriptionId)
-            //             .PublicIPAddresses
-            //             .Define(nlb.PublicIPName)
-            //             .WithRegion(nlb.Location)
-            //             .WithExistingResourceGroup(nlb.ResourceGroupName)
-            //             .WithSku(PublicIPSkuType.Standard)
-            //             .WithStaticIP();
-            //     else
-            //         pip = AzClient.WithSubscription(_subscriptionId)
-            //             .PublicIPAddresses
-            //             .Define(nlb.PublicIPName)
-            //             .WithRegion(nlb.Location)
-            //             .WithExistingResourceGroup(nlb.ResourceGroupName)
-            //             .WithSku(PublicIPSkuType.Basic)
-            //             .
-            // }
-
             var sku = LoadBalancerSkuType.Basic;
             if(nlb.IsStandardSku)
                sku = LoadBalancerSkuType.Standard;
             
-            
-
             var nlbDefWithProtocol = AzClient
                 .WithSubscription(_subscriptionId)
                 .LoadBalancers.Define(nlb.Name)
@@ -489,10 +470,7 @@ namespace AzW.Infrastructure.AzureServices
             }
             //public NLB
             else
-            {
-                // Microsoft.Azure.Management.Network.Fluent
-                //     .PublicIPAddress.Definition.IWithSku pipSkuDef;
-                
+            {              
                 //create new public ip for nlb
                  var pipSkuDef =  AzClient.WithSubscription(_subscriptionId)
                         .PublicIPAddresses
@@ -536,6 +514,125 @@ namespace AzW.Infrastructure.AzureServices
             }
         }
 
+        private async Task CreateAppGatewayAsync(AppGateway appgw)
+        {
+           var routingRuleDef = AzClient
+                .WithSubscription(_subscriptionId)
+                .ApplicationGateways
+                .Define(appgw.Name)
+                .WithRegion(appgw.Location)
+                .WithExistingResourceGroup(appgw.ResourceGroupName)
+                .DefineRequestRoutingRule(appgw.RoutingRuleName);
+
+            var subnet = GetSubnet(appgw.VNetName, appgw.SubnetName);
+
+            ApplicationGatewayTier tier = ApplicationGatewayTier.StandardV2;
+            ApplicationGatewaySkuName sku = ApplicationGatewaySkuName.StandardV2;
+
+            if(appgw.WAFEnabled)
+            {
+                tier = ApplicationGatewayTier.WAFV2;
+                sku = ApplicationGatewaySkuName.WAFV2;
+            }
+
+            var standardPip =
+                await CreateStandardPublicIP($"pip-{appgw.Name}", appgw.Location, appgw.ResourceGroupName);
+
+            string[] privateIPs = GetVMPrivateIPAddress(appgw.LoadBalanceToExistingVMNames);
+
+                
+            var appgwBackendpoolDef =  routingRuleDef
+                .FromListener(appgw.FrontendListenerName)
+                .ToBackendHttpPort(appgw.BackendPort)               
+                .ToBackend(appgw.BackendPoolName)
+                .Attach()
+
+            .DefineListener(appgw.FrontendListenerName)
+                .WithPublicFrontend()
+                .WithFrontendPort(80)
+                .WithHttp()
+                .Attach()
+
+                .DefineBackend(appgw.BackendPoolName);
+
+                foreach(string privateip in privateIPs)
+                {
+                    if(!string.IsNullOrEmpty(privateip))
+                        appgwBackendpoolDef.WithIPAddress(privateip);
+                    else
+                        appgwBackendpoolDef.WithIPAddress("");
+                }
+
+                await appgwBackendpoolDef.Attach()
+
+                .DefineBackendHttpConfiguration("httpsettings-http-80")
+                    .WithProtocol(ApplicationGatewayProtocol.Http)
+                    .WithPort(appgw.BackendPort)
+                    .Attach()
+
+                .DefineProbe("probe-http-80")
+                    .WithHost("www.contoso.com")
+                    .WithPath("/")
+                    .WithProtocol(ApplicationGatewayProtocol.Http)
+                    .WithTimeoutInSeconds(30)
+                    .Attach()
+
+                .WithExistingPublicIPAddress(standardPip)
+                .WithExistingSubnet(subnet)
+                .WithInstanceCount(appgw.NumberofInstances)
+                .WithTier(tier)
+                .WithSize(sku)
+                .CreateAsync();
+
+            // }
+            // else
+            // {
+            //     await routingRuleDef
+            //         .FromPublicFrontend()
+            //         .FromFrontendHttpPort(appgw.FrontendPort)
+            //         .ToBackendHttpPort(appgw.BackendPort)
+            //         .ToBackend(appgw.BackendPoolName)
+            //         .Attach()
+            //         .WithExistingPublicIPAddress(standardPip)
+            //         .WithExistingSubnet(subnet)
+            //         .WithInstanceCount(appgw.NumberofInstances)
+            //         .WithTier(tier)
+            //         .WithSize(sku)
+            //         .CreateAsync();
+            // }
+        }
+
+        private async Task CreateAzFirewallAsync(Firewall firewall)
+        {
+            var subnet = GetSubnet(firewall.VNetName, firewall.SubnetName);
+
+            var pip = await CreateStandardPublicIP
+                ($"pip-azfw-{firewall.ResourceGroupName}",firewall.Location, firewall.ResourceGroupName);
+
+            await AzClient
+                .WithSubscription(_subscriptionId)
+                .AzureFirewalls
+                .Define(firewall.Name)
+                .WithExistingResourceGroup(firewall.ResourceGroupName)
+                .WithRegion(firewall.Location)
+                .DefineAzureFirewallIpConfiguration("azfw-ip-config")
+                .WithSubnet(subnet.Inner.Id)
+                .WithPublicIpAddress(pip.Id)
+                .Attach()
+                .CreateAsync();
+        }
+
+        private async Task<IPublicIPAddress> CreateStandardPublicIP(string name, string location, string rg)
+        {
+            return await AzClient.WithSubscription(_subscriptionId)
+                .PublicIPAddresses
+                .Define(name)
+                .WithRegion(location)
+                .WithExistingResourceGroup(rg)
+                .WithSku(PublicIPSkuType.Standard)
+                .WithStaticIP()
+                .CreateAsync();
+        }
         private async Task CreateAppService(WebApp webapp)
         {
            FieldInfo tier =
@@ -547,6 +644,8 @@ namespace AzW.Infrastructure.AzureServices
             typeof(RuntimeStack).GetFields().FirstOrDefault(x => x.Name == webapp.RuntimeStack);
             
             RuntimeStack runtimeStack = (RuntimeStack) runtime.GetValue(null);
+
+        //    AzClient.WithSubscription("").WebApps.Define("").WithRegion("").WithExistingResourceGroup("").WithNewWindowsPlan(PricingTier)
 
             var pricingTierDef = AzClient.WithSubscription(_subscriptionId)
                 .AppServices
@@ -643,6 +742,32 @@ namespace AzW.Infrastructure.AzureServices
         private INetwork GetVNetByName(string vnetName)
         {
            return  _vnets.Values.FirstOrDefault(x => x.Name == vnetName);
+        }
+
+        private ISubnet GetSubnet(string vnetName, string subnetName)
+        {
+            var vnet = GetVNetByName(vnetName);
+
+            return vnet.Subnets.Values.FirstOrDefault(x => x.Name == subnetName);
+        }
+
+        private string[] GetVMPrivateIPAddress(string[] vmNames)
+        {
+            var vms = GetLBVMs(vmNames);
+
+            var vmIPs = new List<string>();
+
+            foreach(var vm in vms)
+            {
+                string privateIP =
+                    _vms.Values.FirstOrDefault()
+                    .GetPrimaryNetworkInterface()
+                    .IPConfigurations.FirstOrDefault().Value.PrivateIPAddress;
+
+                vmIPs.Add(privateIP);
+            }
+
+            return vmIPs.ToArray();
         }
 
         private INetworkSecurityGroup GetNSGByName(string nsgName)

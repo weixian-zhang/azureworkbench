@@ -86,8 +86,8 @@ export default class OverlayProvision extends Component {
                                 </Grid>
                                 <Grid item sm={12}>
                                     <div className="bp3-running-text" variant="body1" style={{color: '#FF6347'}}>
-                                        *Azure Workbench requires <a target="_blank" href="https://docs.microsoft.com/en-us/azure/active-directory/manage-apps/grant-admin-consent">Admin Consent </a>
-                                         to be able to retrieve Subscriptions, Resource Groups and perform deployment.
+                                        *Azure Workbench requires either your Azure AD Global Admin, App Admin or Cloud App Admin to grant <a target="_blank" href="https://docs.microsoft.com/en-us/azure/active-directory/manage-apps/grant-admin-consent">Admin Consent </a>
+                                         to Workbench, to be able to retrieve Subscriptions, Resource Groups and perform deployment.
                                         Workbench only creates and will NOT update/delete any resource in your subscription.
                                     </div>
                                 </Grid>
@@ -99,7 +99,7 @@ export default class OverlayProvision extends Component {
                                 <Grid item sm={12}><Divider /></Grid>
                                 <Grid item sm={12} />
                                 <Grid item sm={3}>
-                                    <label>Resource Group</label>
+                                    <label>Create new Resource Group</label>
                                 </Grid>
                                 <Grid item>
                                     <input ref={this.rgNameInput} type="text" placeholder="new resource group name"  class="bp3-input .modifier"
@@ -118,11 +118,11 @@ export default class OverlayProvision extends Component {
                                     <Button intent={Intent.PRIMARY} text="Create" icon="new-layers"
                                     onClick={this.createNewRG} style={{marginLeft: '8px'}}/>
                                 </Grid>
-                                <Grid item sm={12}>
+                                {/* <Grid item sm={12}>
                                     <div className="bp3-running-text" variant="body1">
                                         Create new Resource Group
                                     </div>
-                                </Grid>
+                                </Grid> */}
                             </Grid>
                         </Grid>
                 </Card>

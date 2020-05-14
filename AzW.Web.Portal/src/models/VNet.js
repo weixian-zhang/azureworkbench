@@ -5,7 +5,8 @@ export default class VNet
         this.GraphModel = {
             Id: '',
             ResourceType: ResourceType.VNet(),
-            DisplayName: ''
+            DisplayName: '',
+            SubnetsAndCidrs: []
         };
 
         this.ProvisionContext = {
@@ -14,7 +15,7 @@ export default class VNet
             Name: '',
             Location: '',
             ResourceGroupName: '',
-            AddressSpace: '',
+            AddressSpace: '10.0.0.0/24',
             Subnets: []
         }; 
         this.CalculatorContext = {

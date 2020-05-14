@@ -1,6 +1,5 @@
 import Utils from "./Utils";
 import ResourceType from '../../../models/ResourceType';
-import VM from "../../../models/VM";
 
 export default class ProvisionHelper
 {
@@ -28,6 +27,10 @@ export default class ProvisionHelper
                 this.getInternalNLBContexts(userObject, cell, provisionContexts);
 
                 this.getExternalNLBContexts(userObject, cell, provisionContexts);
+
+                this.getAppGatewayContexts(userObject, cell, provisionContexts);
+
+                this.getFirewallContexts(userObject, cell, provisionContexts);
 
                 this.getAllResourcesOutsideVNetContexts(userObject, cell, provisionContexts);
             }
@@ -82,15 +85,9 @@ export default class ProvisionHelper
                 var nlbCell = cell;
                 var nlbContext = result.userObject.ProvisionContext;
 
-                //get vnet name
-                var vnetCell = nlbCell.parent.parent;
-                var vnetResult = Utils.TryParseUserObject(vnetCell.value);
-                nlbContext.VNetName = vnetResult.userObject.ProvisionContext.Name;
+                nlbContext.VNetName = this.getResourceVNetName(nlbCell);
 
-                //get subnet name
-                var subnetCell = nlbCell.parent;
-                var subnetResult =  Utils.TryParseUserObject(subnetCell.value);
-                nlbContext.SubnetName = subnetResult.userObject.ProvisionContext.Name;
+                nlbContext.SubnetName = this.getResourceSubnetName(nlbCell);
 
                 var vmNames = this.getEdgeConnectedVMs(nlbCell);
                 nlbContext.LoadBalanceToExistingVMNames = vmNames;
@@ -111,6 +108,39 @@ export default class ProvisionHelper
 
             provisionContexts.push(nlbContext);
         }
+    }
+
+    getAppGatewayContexts = (userObject, cell, provisionContexts) => {
+        if(userObject.ProvisionContext.ResourceType != ResourceType.VNet())
+            return;
+
+        var subnetCells = this.getSubnetCells(userObject, cell);
+
+        if(Utils.IsNullOrUndefine(subnetCells.length))
+            return;
+
+        var cellsInSubnets = this.getCellsInSubnets(subnetCells);
+
+        cellsInSubnets.map(cell => {
+            var result = Utils.TryParseUserObject(cell.value);
+
+            if(result.isUserObject &&
+                result.userObject.ProvisionContext.ResourceType == ResourceType.AppGw())
+            {
+                var appgwCell = cell;
+                var appgwContext = result.userObject.ProvisionContext;
+
+                appgwContext.VNetName = this.getResourceVNetName(appgwCell);
+
+                appgwContext.SubnetName = this.getResourceSubnetName(appgwCell);
+
+                var vmNames = this.getEdgeConnectedVMs(appgwCell);
+                appgwContext.LoadBalanceToExistingVMNames = vmNames;
+
+                provisionContexts.push(appgwContext);
+            }
+            
+        });
     }
 
     getEdgeConnectedVMs(cell) {
@@ -142,12 +172,13 @@ export default class ProvisionHelper
     
     getVMContexts = (userObject, cell, provisionContexts) => {
 
+        if(userObject.ProvisionContext.ResourceType != ResourceType.VNet())
+            return;
+
         var subnetCells = this.getSubnetCells(userObject, cell);
 
         if(Utils.IsNullOrUndefine(subnetCells.length))
             return;
-        
-        var vms = [];
 
         var cellsInSubnets = this.getCellsInSubnets(subnetCells);
 
@@ -165,14 +196,14 @@ export default class ProvisionHelper
                 var vmContext = result.userObject.ProvisionContext;
 
                 //get vnet name
-                var vnetCell = vmCell.parent.parent;
-                var vnetResult = Utils.TryParseUserObject(vnetCell.value);
-                vmContext.VNetName = vnetResult.userObject.ProvisionContext.Name;
+                // var vnetCell = vmCell.parent.parent;
+                // var vnetResult = Utils.TryParseUserObject(vnetCell.value);
+                vmContext.VNetName = this.getResourceVNetName(vmCell); // vnetResult.userObject.ProvisionContext.Name;
 
                 //get subnet name
-                var subnetCell = vmCell.parent;
-                var subnetResult =  Utils.TryParseUserObject(subnetCell.value);
-                vmContext.SubnetName = subnetResult.userObject.ProvisionContext.Name;
+                // var subnetCell = vmCell.parent;
+                // var subnetResult =  Utils.TryParseUserObject(subnetCell.value);
+                vmContext.SubnetName = this.getResourceSubnetName(vmCell); //subnetResult.userObject.ProvisionContext.Name;
 
                 provisionContexts.push(vmContext);
             }
@@ -190,8 +221,6 @@ export default class ProvisionHelper
 
         if(Utils.IsNullOrUndefine(subnetCells.length))
             return;
-        
-        var nsgs = [];
 
         var cellsInSubnets = this.getCellsInSubnets(subnetCells);
 
@@ -212,6 +241,37 @@ export default class ProvisionHelper
         });
     }
 
+    getFirewallContexts= (userObject, cell, provisionContexts) => {
+
+        if(userObject.ProvisionContext.ResourceType != ResourceType.VNet())
+            return;
+
+        var subnetCells = this.getSubnetCells(userObject, cell);
+
+        if(Utils.IsNullOrUndefine(subnetCells.length))
+            return;
+
+        var cellsInSubnets = this.getCellsInSubnets(subnetCells);
+
+        cellsInSubnets.map(cell => {
+            var result = Utils.TryParseUserObject(cell.value);
+
+            if(result.isUserObject &&
+                result.userObject.ProvisionContext.ResourceType == ResourceType.Firewall())
+            {
+                var azfwCell = cell;
+                var azfwCellContext = result.userObject.ProvisionContext;
+
+                azfwCellContext.VNetName = this.getResourceVNetName(azfwCell);
+
+                azfwCellContext.SubnetName = this.getResourceSubnetName(azfwCell);
+
+                provisionContexts.push(azfwCellContext);
+            }
+            
+        });
+    }
+
     getAllResourcesOutsideVNetContexts = (userObject, cell, provisionContexts) => {
 
         if(userObject.ProvisionContext.ResourceType != ResourceType.VNet() &&
@@ -224,6 +284,18 @@ export default class ProvisionHelper
     }
 
     //helper
+    getResourceVNetName(cell) {
+        var vnetCell = cell.parent.parent;
+        var vnetResult = Utils.TryParseUserObject(vnetCell.value);
+        return vnetResult.userObject.ProvisionContext.Name;
+    }
+
+    getResourceSubnetName(cell) {
+        var subnetCell = cell.parent;
+        var subnetResult =  Utils.TryParseUserObject(subnetCell.value);
+        return subnetResult.userObject.ProvisionContext.Name;
+    }
+
     getNSGNameForSubnet(subnetCell)
     {
         var children = this.graph.getChildVertices(subnetCell);

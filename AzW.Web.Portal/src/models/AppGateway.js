@@ -10,15 +10,19 @@ export default class AppGateway
 
         this.ProvisionContext = {
             ResourceType: ResourceType.AppGw(),
-            Deployable: true,
-            HighCost: false,
-            
             Name: '',
             Location: '',
-            Tags: [],
-
-            VNetAddress: '',
-            SubnetName: ''
+            ResourceGroupName: '',
+            VNetName: '',
+            SubnetName: '',
+            NumberofInstances: 2,
+            WAFEnabled: false,
+            RoutingRuleName: 'Rule-HTTP-80-to-80',
+            FrontendListenerName: 'FEListener-Http-80',
+            FrontendPort: 80,
+            BackendPoolName: 'Backendpool-VMs',
+            BackendPort: 80,
+            LoadBalanceToExistingVMNames: ''
         };
         this.CalculatorContext = {
             IsFree: false,

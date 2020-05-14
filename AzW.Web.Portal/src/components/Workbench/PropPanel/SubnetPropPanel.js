@@ -6,20 +6,27 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Grid from "@material-ui/core/Grid";
 import AppBar from '@material-ui/core/AppBar';
-import Typography from '@material-ui/core/Typography';
+import IPCIDR  from 'ip-cidr';
+import { Cidr } from 'cidr-lib';
+import { Typography } from "@material-ui/core";
+import Utils from "../Helpers/Utils";
 
 export default class SubnetPropPanel extends Component {
+
   constructor(props) {
       super(props);
 
       this.state ={
         isOpen: false,
         userObject: new Subnet(),
-        
+        cidrInvalid: true,
+        isWithinVNetRange: true,
         value: 'diagram', //tabs
 
         saveCallback: function () {},
       }
+
+      this.cidrRanger = new Cidr();
   }
 
   render = () => {
@@ -55,7 +62,7 @@ export default class SubnetPropPanel extends Component {
                               inline={true}
                               intent={Intent.PRIMARY}>
                               <div class="bp3-input-group .modifier">
-                                                                     <textarea class="bp3-input .modifier bp3-large bp3-fill"
+                                  <textarea class="bp3-input .modifier bp3-large bp3-fill"
                                         style={{'max-width':'250px', 'max-height':'200px'}}
                                         maxlength="80"
                                         dir="auto"
@@ -76,7 +83,6 @@ export default class SubnetPropPanel extends Component {
                   
                 </Grid>
               </Grid>
-              {/* <Button alignText="center" className="buttonStretch" text="Save" onClick={this.saveForm} /> */}
       </Drawer>
     );
   }
@@ -97,7 +103,7 @@ export default class SubnetPropPanel extends Component {
               justify="center"
               alignItems="center"
               spacing={1} style={{marginTop: '15px', width: '100%'}}>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+              <Grid container item direction="row" xs="12" spacing="3" justify="flex-start" alignItems="center">
                 <Grid item sm={3}>
                     <label>Subnet Name</label>
                 </Grid>
@@ -111,20 +117,68 @@ export default class SubnetPropPanel extends Component {
                     }} />
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center"
+               style={{marginBottom: '18px'}}>
                 <Grid item sm={3}>
                     <label>Address Space</label>
                 </Grid>
                 <Grid item>
-                  <input id="icon-display-name" type="text" class="bp3-input .modifier"
+                  <input id="icon-display-name" type="text" class="bp3-input .modifier" style={{marginRight: '5px'}}
                     value={this.state.userObject.ProvisionContext.AddressSpace} 
                     onChange={(e) => {
+                      
+                      if(!this.isAddressValidAndInRange(e.target.value))
+                          this.setState({cidrInvalid: false});
+                      else {
+                          this.setState({cidrInvalid: true});
+                      }
+
                       var uo = this.state.userObject;
                       uo.ProvisionContext.AddressSpace = e.target.value
                       this.setState({userObject:uo});
                     }} />
+                    <label>
+                      {Utils.getIPCountFromCidr(this.state.userObject.ProvisionContext.AddressSpace)} addresses
+                    </label>
+                    {
+                      (!this.state.cidrInvalid) ?
+                        <Typography style={{fontSize:10,color:'red',display:'block', marginTop:'3px'}} variant="body2">
+                          Invalid address, overlaps subnets or not within VNet range
+                        </Typography>
+                      :   null
+                    }
+                    {/* {
+                        (!this.state.isAddressWithinVNetRange) ?
+                          <Typography style={{fontSize:10,color:'red',display:'block', marginTop:'3px'}} variant="body2">
+                            Address range not within VNet Cidr range
+                          </Typography>
+                        :   null
+                    } */}
                 </Grid>
               </Grid>
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+                <Grid item>
+                  <label>VNet Address: </label>
+                  <label>
+                    {
+                      (this.state.userObject.GraphModel.VNetAddressSpace == "")
+                      ? "Not specified"
+                      : this.state.userObject.GraphModel.VNetAddressSpace
+                    }
+                    </label>
+                </Grid>
+              </Grid>
+              
+                  {
+                    this.state.userObject.GraphModel.SubnetsAndCidrs.map(x => {
+                        return <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+                          <Grid item>
+                          {x.subnetName} : {x.cidr} ({x.addressCount} addresses, {x.usableAddress} usable)
+                          </Grid>
+                        </Grid>
+                    })
+                  }
+                
             </Grid>
       </div>
     );
@@ -139,6 +193,66 @@ export default class SubnetPropPanel extends Component {
       </div>
     );
   }
+
+  isAddressValidAndInRange(subnetAddr) {
+      var subnetCidr = new IPCIDR(subnetAddr);
+      
+      var valid = true;
+
+      if(subnetCidr.isValid() && Utils.isCidr(subnetAddr))
+      {
+          //within vnet range
+          if(this.cidrRanger.doSubnetsOverlap
+              (subnetAddr, this.state.userObject.GraphModel.VNetAddressSpace))
+          {
+              if(Utils.getCidrPrefix(subnetAddr) >= 
+                Utils.getCidrPrefix(this.state.userObject.GraphModel.VNetAddressSpace))
+              {
+                this.setState({isAddressWithinVNetRange: true});
+              }
+              else
+              {
+                this.setState({isAddressWithinVNetRange: false});
+              }
+              
+          }
+          else {
+              this.setState({isAddressWithinVNetRange: true});
+          }
+          
+          for(var item of this.state.userObject.GraphModel.SubnetsAndCidrs)
+          {
+              //prevent validate its ownself
+              if(item.subnetName != this.state.userObject.ProvisionContext.Name)
+              {
+                var isOverlap =
+                  this.cidrRanger.doSubnetsOverlap(subnetAddr, item.cidr);
+              }
+              
+              if(isOverlap)
+                  return false;
+          }
+      }
+      else
+        valid = false;
+      
+      return valid;
+  }
+
+  //to achieve an updated view for this prop panel
+  //at diagrameditor, subnet & cidrs is retrieved again
+  // updateSubnetsAndCidrsOfDiagramEditor() {
+  //    var sncs = this.state.userObject.GraphModel.SubnetsAndCidrs;
+
+  //    sncs.forEach((snc, index) => {
+  //     if(snc.subnetName === this.state.userObject.ProvisionContext.Name) {
+  //       var sncItem = sncs[index];
+  //       sncItem.cidr = this.state.userObject.ProvisionContext.AddressSpace;
+  //       sncItem.addressCount = ;
+  //       sncs[index] = sncItem;
+  //     }
+  //   });
+  // }
   
   onDiagramIconNameChange = (e) => {
     var propName = e.target.getAttribute('prop');

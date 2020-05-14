@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import NLB from '../../../models/NLB';
-import { FormGroup, Drawer, Tooltip, Intent, Button, Switch, InputGroup } from "@blueprintjs/core";
+import { FormGroup, Drawer,   Button,  InputGroup, Intent, Switch } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
