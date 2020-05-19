@@ -3,7 +3,7 @@ import {Card,Elevation, Overlay} from "@blueprintjs/core";
 import Typography from '@material-ui/core/Typography';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import AppBar from '@material-ui/core/AppBar';
+import Badge from '@material-ui/core/Badge';
 
 export default class OverlayTutorial extends Component {
     constructor(props) {
@@ -24,7 +24,7 @@ export default class OverlayTutorial extends Component {
                     </Typography>
                     <Tabs value={this.state.value} onChange={this.handleTabChange} style={{marginBottom:'6px'}}>
                         <Tab label="Diagram" value="diagram" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'diagram' ? "bold" : "" }}/>
-                        <Tab label="Provision Diagram on Azure" value="provision" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'provision' ? "bold" : "" }}/>
+                        <Tab label="Deploy Diagram on Azure" value="provision" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'provision' ? "bold" : "" }}/>
                     </Tabs>
                     <div hidden={this.state.value !== 'diagram'} style={{overflow: 'auto'}}>
                         <Typography variant="h6" align="left" color="primary" gutterBottom>
@@ -33,6 +33,17 @@ export default class OverlayTutorial extends Component {
                         <Typography variant="body1" align="left" gutterBottom>
                             Right-click on Virtual Network (drag from Resource Palette) and
                             select "Add Subnet"
+                        </Typography>
+                        <Typography variant="h6" align="left" color="primary" gutterBottom>
+                            Add NSG, UDR and NAT Gateway
+                        </Typography>
+                        <Typography variant="body1" align="left" gutterBottom>
+                            To add Network Security Group and User-Defined Route, right-click any Subnet
+                            and click on "Add Network Security Group" or "Add Route Table.
+                        </Typography>
+                        <Typography variant="body1" align="left" gutterBottom>
+                            To add NAT Gateway, right-click on any Virtual Network and click "Add NAT Gateway"
+                            and click on "Add Network Security Group" or "Add Route Table.
                         </Typography>
                         <Typography variant="h6" align="left" color="primary" gutterBottom>
                             Add Azure services into Subnet
@@ -113,11 +124,11 @@ export default class OverlayTutorial extends Component {
                     </div>
                     <div hidden={this.state.value !== 'provision'} style={{overflowY: 'auto'}}>
                         <Typography variant="h6" align="left" color="primary" >
-                            Deployable Resources
+                            Deploy Resources
                         </Typography>
                         <Typography variant="body1" align="left" gutterBottom>
-                            In Resource Palette, any Stencil marked with a red badge<span style={{color:'red'}}> P </span>
-                            is deployable
+                            In Resource Palette, any Stencil marked with a <Badge color="secondary" variant="dot">red-dotted badge</Badge>, 
+                            these stencil can be deployed to your Azure subscription
                         </Typography>
                         <Typography variant="h6" align="left" color="primary" >
                             How to deploy?
@@ -128,8 +139,9 @@ export default class OverlayTutorial extends Component {
                                 <li>Switch to 'Provision' tab and fill in all Azure properties</li>
                                 <li>At Toolbar, click on Azure menu, select Subscription and click Deploy</li>
                             </ul>
+                            <Typography variant="body1" align="left" >*Note: NSG is deployable</Typography>
                         </Typography>
-                        <Typography variant="body1" align="left" color="secondary">
+                        <Typography variant="body1" align="left" color="secondary" style={{marginTop:'30px'}}>
                             Azure Workbench must have Admin Consent granted by your Azure AD Global Admin before it can retrieve any Subscription and
                              Resource Group to perform any deploy
                         </Typography>

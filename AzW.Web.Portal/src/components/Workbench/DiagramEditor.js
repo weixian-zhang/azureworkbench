@@ -22,8 +22,13 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
 import mxClientOverrides from './Helpers/mxClientOverrides';
 
 //models
+import Cognitive from "../../models/Cognitive";
+import BotsService from "../../models/BotsService";
+import Genomics from "../../models/Genomics";
+import MLServiceWorkspace from "../../models/MLServiceWorkspace";
 import SubnetsCidrs from "../../models/services/SubnetsCidrs";
 import PrivateEndpoint from "../../models/PrivateEndpoint";
+import NatGateway from "../../models/NatGateway";
 import IoTCentral from "../../models/IoTCentral";
 import LogAnalytics from "../../models/LogAnalytics";
 import AppConfig from "../../models/AppConfig";
@@ -41,6 +46,7 @@ import IntegratedServiceEnvironment from "../../models/IntegratedServiceEnvironm
 import EventGridTopic from "../../models/EventGridTopic";
 import EventGridSubscription from "../../models/EventGridSubscription";
 import StreamAnalytics from "../../models/StreamAnalytics";
+import EventHub from "../../models/EventHub";
 import AzureFirewall from "../../models/AzureFirewall";
 import Sentinel from "../../models/Sentinel";
 import KeyVault from "../../models/KeyVault";
@@ -98,6 +104,11 @@ import RouteTable from "../../models/RouteTable";
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
 
 //property panels
+import CognitivePropPanel from './PropPanel/CognitivePropPanel';
+import BotsServicePropPanel from './PropPanel/BotsServicePropPanel';
+import GenomicsPropPanel from './PropPanel/GenomicsPropPanel';
+import MLServiceWorkspacePropPanel from './PropPanel/MLServiceWorkspacePropPanel';
+import NatGatewayPropPanel from './PropPanel/NatGatewayPropPanel';
 import PrivateEndpointPropPanel from './PropPanel/PrivateEndpointPropPanel';
 import AzStoragePropPanel from './PropPanel/AzStoragePropPanel';
 import StylePropPanel from './StylePropPanel';
@@ -242,6 +253,12 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
   render() {
     return (
       <div id="diagramEditor" className="diagramEditor">
+        <CognitivePropPanel ref={this.cognitivePropPanel} />
+        <BotsServicePropPanel ref={this.botsPropPanel} />
+        <GenomicsPropPanel ref={this.genomicsPropPanel} />
+        <MLServiceWorkspacePropPanel ref={this.mlsvcworkspacePropPanel} /> 
+
+        <NatGatewayPropPanel ref={this.natgwPropPanel} />
         <PrivateEndpointPropPanel ref={this.privateendpointPropPanel} />
         <AzStoragePropPanel ref={this.azstoragePropPanel} />
         <OverlayPreviewDiagram ref={this.previewOverlay} />
@@ -333,6 +350,11 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
   }
 
   initRef() {
+    this.cognitivePropPanel = React.createRef();
+    this.botsPropPanel = React.createRef();
+    this.genomicsPropPanel = React.createRef();
+    this.mlsvcworkspacePropPanel = React.createRef();
+    this.natgwPropPanel = React.createRef();
     this.privateendpointPropPanel = React.createRef();
     this.azstoragePropPanel = React.createRef();
     this.nsgPropPanel = React.createRef();
@@ -603,6 +625,10 @@ addUpDownLeftRightArrowToMoveCells() {
       {
           cells.map(cell => {
 
+              //do not allow arrpw keys to move NSG, USR and NAT Gateway
+              if(thisComp.azureValidator.isUDRNSGNATGateway(cell))
+                  return;
+
               var geo = getSelectedCellGeo(cell);
 
               if (evt != null && evt.key == 'ArrowUp')
@@ -677,6 +703,14 @@ addUpDownLeftRightArrowToMoveCells() {
             thisComponent.addGatewaySubnet(cell); // is vnetCell
           });
         }
+
+        if(!thisComponent.azureValidator.vnetHasNatGateway(cell)){
+          menu.addItem('Add NAT Gateway', '', function()
+          {
+            thisComponent.addNatGateway(cell); // is vnetCell
+          });
+        }
+
         menu.addSeparator();
       }
 
@@ -706,16 +740,24 @@ addUpDownLeftRightArrowToMoveCells() {
 
       if(Utils.IsSubnet(cell))
       {
-        menu.addItem('Add Network Security Group', '', function()
-        {
-            thisComponent.addNSG(cell);
-        });
+        if(!thisComponent.azureValidator.subnetHasNSG(cell)) {
+          menu.addItem('Add Network Security Group', '', function()
+          {
+              thisComponent.addNSG(cell);
+          });
+        }
 
+        if(!thisComponent.azureValidator.subnetHasUDR(cell)) {
         menu.addItem('Add Route Table', '', function()
         {
             thisComponent.addUDR(cell);
         });
-        menu.addSeparator();
+        }
+
+        if(!thisComponent.azureValidator.subnetHasNSG(cell) ||
+           !thisComponent.azureValidator.subnetHasUDR(cell))
+           menu.addSeparator();
+            
       }
       
       //if any cell is selected
@@ -833,8 +875,20 @@ addUpDownLeftRightArrowToMoveCells() {
   }
 
   addResourceToEditorFromPalette = (dropContext) => {
+
     this.graphManager.graph.getModel().beginUpdate();
+
+    //handle software icons
+    var softwareResourceType = '' 
+    if(String(dropContext.resourceType).startsWith('software-'))
+        softwareResourceType = dropContext.resourceType;
+    else
+        softwareResourceType = '';
+
     switch(dropContext.resourceType) {
+      case softwareResourceType:
+        this.addSoftwareShape(dropContext);
+        break;
       case 'elbowarrow':
         this.addElbowArrow(dropContext);
         break;
@@ -866,6 +920,12 @@ addUpDownLeftRightArrowToMoveCells() {
       case 'user':
         this.addUser(dropContext);
         break;
+      case 'userblue':
+        this.addUserBlue(dropContext);
+        break;
+      case 'usergroup':
+        this.addUserGroup(dropContext);
+        break;
       case 'datacenter':
         this.addOnpremDC(dropContext);
         break;
@@ -884,10 +944,31 @@ addUpDownLeftRightArrowToMoveCells() {
       case 'iphone':
         this.addiPhoneDevice(dropContext);
         break;
-      case 'onpremdbserver':
-        this.addOnPremDBServerDevice(dropContext);
+      case 'shape-vm1':
+        this.addShapeVM1(dropContext);
         break;
-        
+      case 'shape-vm2':
+        this.addShapeVM2(dropContext);
+        break;
+      case 'shape-server1':
+        this.addShapeServer1(dropContext);
+        break;
+      case 'shape-server2':
+        this.addShapeServer2(dropContext);
+        break;
+      case 'shape-dbblack':
+        this.addShapeDBBlack(dropContext);
+      break;
+      case 'shape-dbblackha':
+        this.addShapeDBBlackHA(dropContext);
+      break;
+      case 'shape-dbblue':
+        this.addShapeDBBlue(dropContext);
+      break;
+      case 'shape-firewall':
+        this.addShapeFirewall(dropContext);
+      break;
+  
       case ResourceType.AppService():
         this.addAppService(dropContext);
         break;
@@ -974,7 +1055,6 @@ addUpDownLeftRightArrowToMoveCells() {
       case 'vmss':
         this.addVMSS(dropContext, 'vmss');
         break;
-
       case ResourceType.PrivateEndpoint():
         this.addPrivateEndpoint(dropContext);
         break;
@@ -1039,10 +1119,23 @@ addUpDownLeftRightArrowToMoveCells() {
       case ResourceType.DataLakeAnalytics():
         this.addDataLakeAnalytics(dropContext);
         break;
-
       case ResourceType.HdInsight():
         this.addHdInsight(dropContext);
         break;
+
+      case ResourceType.Cognitive():
+        this.addCognitive(dropContext);
+        break;
+      case ResourceType.BotsService():
+        this.addBotsService(dropContext);
+        break;
+      case ResourceType.Genomics():
+        this.addGenomics(dropContext);
+        break;
+      case ResourceType.MLServiceWorkspace():
+        this.addMLServiceWorkspace(dropContext);
+        break;
+
       case ResourceType.ContainerInstance():
         this.addContainerInstance(dropContext);
         break;
@@ -1073,6 +1166,9 @@ addUpDownLeftRightArrowToMoveCells() {
         break;
       case ResourceType.StreamAnalytics():
         this.addStreamAnalytics(dropContext);
+        break;
+      case ResourceType.EventHub():
+        this.addEventHub(dropContext);
         break;
       case ResourceType.SendGrid():
         this.addSendGrid(dropContext);
@@ -1161,7 +1257,31 @@ addUpDownLeftRightArrowToMoveCells() {
     let thisComp = this;
 
     switch (userObject.GraphModel.ResourceType) {
-
+      case ResourceType.Cognitive():
+        this.cognitivePropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.BotsService():
+        this.botsPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.Genomics():
+        this.genomicsPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.MLServiceWorkspace():
+        this.mlsvcworkspacePropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
+      case ResourceType.NatGateway():
+        this.natgwPropPanel.current.show(userObject, function(savedUserObject){
+          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+        });
+        break;
       case ResourceType.PrivateEndpoint():
         this.privateendpointPropPanel.current.show(userObject, function(savedUserObject){
           thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
@@ -1592,6 +1712,155 @@ addUpDownLeftRightArrowToMoveCells() {
       }
   }
 
+  addSoftwareShape(dropContext) {
+
+      var image;
+      var label;
+
+      if(String(dropContext.resourceType).endsWith('shapehelm')) {
+          image = this.azureIcons.ShapeHelm();
+          label = 'Helm';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapeazuredevops')) {
+          image = this.azureIcons.ShapeAzureDevOps();
+          label = 'Azure DevOps';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapecsharp')) {
+        image = this.azureIcons.ShapeCSharp();
+        label = '';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapedapr')) {
+        image = this.azureIcons.ShapeDapr();
+        label = '';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapedocker')) {
+        image = this.azureIcons.ShapeDocker();
+        label = 'Docker';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapeelasticsearch')) {
+        image = this.azureIcons.ShapeElasticSearch();
+        label = 'ElasticSearch';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapeesbmiddleware')) {
+        image = this.azureIcons.ShapeESBMiddleware();
+        label = 'ESB';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapegithub')) {
+        image = this.azureIcons.ShapeGithub();
+        label = 'GitHub';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapegithubactions')) {
+        image = this.azureIcons.ShapeGithubActions();
+        label = 'GitHub Actions';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapegolang')) {
+        image = this.azureIcons.ShapeGo();
+        label = 'Go';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapegrafana')) {
+        image = this.azureIcons.ShapeGrafana();
+        label = 'Grafana';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapehashicorpconsul')) {
+        image = this.azureIcons.ShapeHashicorpConsul();
+        label = 'Consul';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapehashicorpterraform')) {
+        image = this.azureIcons.ShapeHashicorpTerraform();
+        label = '';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapehashicorpvault')) {
+        image = this.azureIcons.ShapeHashicorpVault();
+        label = '';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapeinfluxdb')) {
+        image = this.azureIcons.ShapeInfluxDB();
+        label = 'InfluxDB';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapejaeger')) {
+        image = this.azureIcons.ShapeJaeger();
+        label = 'Jaeger';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapejava')) {
+        image = this.azureIcons.ShapeJava();
+        label = '';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapejavascript')) {
+        image = this.azureIcons.ShapeJavascript();
+        label = '';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapekafka')) {
+        image = this.azureIcons.ShapeKafka();
+        label = '';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapekube')) {
+        image = this.azureIcons.ShapeKube();
+        label = 'Kubernetes';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapemessagequeue')) {
+        image = this.azureIcons.ShapeMessageQueue();
+        label = 'Message Queue';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapemongodb')) {
+        image = this.azureIcons.ShapeMongoDB();
+        label = 'MongoDB';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapenetcore')) {
+        image = this.azureIcons.ShapeNetCore();
+        label = '';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapenginx')) {
+        image = this.azureIcons.ShapeNginx();
+        label = 'Nginx';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapenginxplus')) {
+        image = this.azureIcons.ShapeNginxPlus();
+        label = 'Nginx +';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapenodejs')) {
+        image = this.azureIcons.ShapeNode();
+        label = '';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapepowerbi')) {
+        image = this.azureIcons.ShapePowerBI();
+        label = 'Power BI';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapepowershell')) {
+        image = this.azureIcons.ShapePowershell();
+        label = 'Powershell';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapepython')) {
+        image = this.azureIcons.ShapePython();
+        label = 'Python';
+      }
+      else if(String(dropContext.resourceType).endsWith('shaperabbitmq')) {
+        image = this.azureIcons.ShapeRabbitMQ();
+        label = '';
+      }
+      else if(String(dropContext.resourceType).endsWith('shaperubyonrails')) {
+        image = this.azureIcons.ShapeRubyOnRails();
+        label = 'Ruby';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapetraefik')) {
+        image = this.azureIcons.ShapeTraefik();
+        label = '';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapezipkin')) {
+        image = this.azureIcons.ShapeZipkin();
+        label = '';
+      }
+      else if(String(dropContext.resourceType).endsWith('shapejaeger')) {
+        image = this.azureIcons.ShapeJaeger();
+        label = 'Jaeger';
+      }
+
+      var cell = this.graph.insertVertex
+      (this.graph.getDefaultParent(), null, label, dropContext.x, dropContext.y, 80, 80,
+      "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      image);
+      cell.collapsed = false;
+  }
+
   addElbowArrow(dropContext) {
 
       this.graphManager.graph.getModel().beginUpdate();
@@ -1750,6 +2019,23 @@ addUpDownLeftRightArrowToMoveCells() {
     cell.collapsed = false;
   }
 
+  addUserBlue = (dropContext) => {
+    var cell = this.graph.insertVertex
+          (this.graph.getDefaultParent(), null, 'user', dropContext.x, dropContext.y, 50, 50,
+          "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+          this.azureIcons.addUserBlue());
+    cell.collapsed = false;
+  }
+
+  addUserGroup = (dropContext) => {
+    var cell = this.graph.insertVertex
+          (this.graph.getDefaultParent(), null, 'user', dropContext.x, dropContext.y, 50, 50,
+          "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
+          this.azureIcons.addUserGroup());
+    cell.collapsed = false;
+  }
+
+
   addOnpremDC = (dropContext) => {
     var cell = this.graph.insertVertex
           (this.graph.getDefaultParent(), null, '<p style="margin: 0px auto">datacenter</p>', dropContext.x, dropContext.y, 50, 50,
@@ -1769,7 +2055,7 @@ addUpDownLeftRightArrowToMoveCells() {
   addClientDevice = (dropContext) => {
     var cell = this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'laptop', dropContext.x, dropContext.y, 60, 60,
-    "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;shape=image;image=data:image/svg+xml," +
+    "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;shape=image;image=data:image/svg+xml," +
       this.azureIcons.ClientDevice());
     cell.collapsed = false;
   }
@@ -1777,7 +2063,7 @@ addUpDownLeftRightArrowToMoveCells() {
   addADFSDevice = (dropContext) => {
     var cell = this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'ADFS', dropContext.x, dropContext.y, 60, 60,
-    "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+    "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
       this.azureIcons.ADFS());
     cell.collapsed = false;
   }
@@ -1785,7 +2071,7 @@ addUpDownLeftRightArrowToMoveCells() {
   addAndriodDevice = (dropContext) => {
     var cell = this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'Andriod', dropContext.x, dropContext.y, 60, 60,
-    "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+    "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
       this.azureIcons.Andriod());
     cell.collapsed = false;
   }
@@ -1793,18 +2079,76 @@ addUpDownLeftRightArrowToMoveCells() {
   addiPhoneDevice = (dropContext) => {
     var cell = this.graph.insertVertex
     (this.graph.getDefaultParent(), null, 'iPhone', dropContext.x, dropContext.y, 60, 60,
-    "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+    "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
       this.azureIcons.iPhone());
     cell.collapsed = false;
   }
 
-  addOnPremDBServerDevice = (dropContext) => {
+  addShapeVM1 = (dropContext) => {
     var cell = this.graph.insertVertex
-    (this.graph.getDefaultParent(), null, 'On-Prem DB Server', dropContext.x, dropContext.y, 60, 60,
-    "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-      this.azureIcons.OnPremDBServer());
+    (this.graph.getDefaultParent(), null, 'VM', dropContext.x, dropContext.y, 60, 60,
+    "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      this.azureIcons.ShapeVM1());
       cell.collapsed = false;
   }
+
+  addShapeVM2 = (dropContext) => {
+    var cell = this.graph.insertVertex
+    (this.graph.getDefaultParent(), null, 'VM', dropContext.x, dropContext.y, 60, 60,
+    "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      this.azureIcons.ShapeVM2());
+      cell.collapsed = false;
+  }
+
+  addShapeServer1 = (dropContext) => {
+    var cell = this.graph.insertVertex
+    (this.graph.getDefaultParent(), null, 'Physical Server', dropContext.x, dropContext.y, 60, 60,
+    "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      this.azureIcons.ShapeServer1());
+      cell.collapsed = false;
+  }
+
+  addShapeServer2 = (dropContext) => {
+    var cell = this.graph.insertVertex
+    (this.graph.getDefaultParent(), null, 'Physical Blade Server', dropContext.x, dropContext.y, 60, 60,
+    "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      this.azureIcons.ShapeServer2());
+      cell.collapsed = false;
+  }
+
+  addShapeDBBlack = (dropContext) => {
+    var cell = this.graph.insertVertex
+    (this.graph.getDefaultParent(), null, 'Database', dropContext.x, dropContext.y, 60, 60,
+    "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      this.azureIcons.ShapeDBBlack());
+      cell.collapsed = false;
+  }
+
+  addShapeDBBlackHA = (dropContext) => {
+    var cell = this.graph.insertVertex
+    (this.graph.getDefaultParent(), null, 'Database', dropContext.x, dropContext.y, 60, 60,
+    "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      this.azureIcons.ShapeDBBlackHA());
+      cell.collapsed = false;
+  }
+
+  addShapeDBBlue = (dropContext) => {
+    var cell = this.graph.insertVertex
+    (this.graph.getDefaultParent(), null, 'Database', dropContext.x, dropContext.y, 60, 60,
+    "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      this.azureIcons.ShapeDBBlue());
+      cell.collapsed = false;
+  }
+
+  addShapeFirewall = (dropContext) => {
+    var cell = this.graph.insertVertex
+    (this.graph.getDefaultParent(), null, 'Firewall', dropContext.x, dropContext.y, 60, 60,
+    "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+      this.azureIcons.ShapeFirewall());
+      cell.collapsed = false;
+  }
+
+  
   
   addPrivateEndpoint = (dropContext) => {
 
@@ -1837,6 +2181,7 @@ addUpDownLeftRightArrowToMoveCells() {
     }
   }
 
+
   addVNet = (dropContext) => {
 
       this.graphManager.graph.getModel().beginUpdate();
@@ -1846,7 +2191,7 @@ addUpDownLeftRightArrowToMoveCells() {
           https://stackoverflow.com/questions/45708656/drag-event-on-mxgraph-overlay
           // Creates a new overlay with an image and a tooltip
           var vnetIconOverlay = new mxCellOverlay(
-            new mxImage(require('../../assets/azure_icons/Networking Service Color/Virtual Networks.svg'),20, 20),
+            new mxImage(require('../../assets/azure_icons/Networking Service Color/Virtual Networks.png'),20, 20),
             null,  mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP
           );
 
@@ -1946,7 +2291,7 @@ addUpDownLeftRightArrowToMoveCells() {
       0, //subnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
       22, //width
       22, //height
-      "resizable=0;editable=0;shape=image;image=data:image/svg+xml," + this.azureIcons.NSG()
+      "resizable=1;editable=0;shape=image;image=data:image/svg+xml," + this.azureIcons.NSG()
     );
     nsgVertex.collapsed = false;
     nsgVertex.geometry.offset = new mxPoint(-12, -15);
@@ -1976,11 +2321,41 @@ addUpDownLeftRightArrowToMoveCells() {
       0, //subnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
       24, //width
       24, //height
-      "resizable=0;editable=0;shape=image;image=data:image/svg+xml," + this.azureIcons.RouteTable()
+      "resizable=1;editable=0;shape=image;image=data:image/svg+xml," + this.azureIcons.RouteTable()
     );
     udrVertex.collapsed = false;
     udrVertex.geometry.offset = new mxPoint(-12, -17);
     udrVertex.geometry.relative = true;
+    this.graph.refresh();
+  }
+
+  addNatGateway(vnetCell) {
+
+    if(this.azureValidator.vnetHasNatGateway(vnetCell))
+    {
+      Toast.show('warning', 2000, 'Nat Gateway exist for VNet')
+      return;
+    }
+
+    var natgw = new NatGateway();
+    natgw.GraphModel.Id = this.shortUID.randomUUID(6);
+    natgw.GraphModel.DisplayName = '';
+    natgw.ProvisionContext.Name = "natgw-" + natgw.GraphModel.Id;
+    var jsonStr = JSON.stringify(natgw);
+
+    var natgwVertex = this.graph.insertVertex(
+      vnetCell,
+      natgw.GraphModel.Id,
+      jsonStr,
+      0,
+      0, //subnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
+      35, //width
+      35, //height
+      "resizable=1;editable=0;shape=image;image=data:image/png," + this.azureIcons.NatGateway()
+    );
+    natgwVertex.collapsed = false;
+    natgwVertex.geometry.offset = new mxPoint(-12, -17);
+    natgwVertex.geometry.relative = true;
     this.graph.refresh();
   }
 
@@ -2671,8 +3046,10 @@ addUpDownLeftRightArrowToMoveCells() {
     model.GraphModel.DisplayName = 'SQL Managed Instance'
     var modelJsonString = JSON.stringify(model);
 
+    var subnetCenterPt = Utils.getCellCenterPoint(subnetCell);
+
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (subnetCell, model.GraphModel.IconId,modelJsonString, subnetCenterPt.x, subnetCenterPt.y, 35, 35,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.SQLMI());
   }
@@ -2737,6 +3114,8 @@ addUpDownLeftRightArrowToMoveCells() {
         this.azureIcons.DataExplorer());
   }
 
+  
+
   addDatabricks = (dropContext) => {
 
     var model = new Databricks();
@@ -2787,6 +3166,58 @@ addUpDownLeftRightArrowToMoveCells() {
       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.HdInsight());
+  }
+
+  addCognitive = (dropContext) => {
+
+    var model = new Cognitive();
+    model.GraphModel.Id = this.shortUID.randomUUID(6);
+    model.GraphModel.DisplayName = 'Cognitive Service'
+    var modelJsonString = JSON.stringify(model);
+
+    this.graph.insertVertex
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.Cognitive());
+  }
+
+  addBotsService = (dropContext) => {
+
+    var model = new BotsService();
+    model.GraphModel.Id = this.shortUID.randomUUID(6);
+    model.GraphModel.DisplayName = 'Bots Service'
+    var modelJsonString = JSON.stringify(model);
+
+    this.graph.insertVertex
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.BotsService());
+  }
+
+  addGenomics = (dropContext) => {
+
+    var model = new Genomics();
+    model.GraphModel.Id = this.shortUID.randomUUID(6);
+    model.GraphModel.DisplayName = 'Genomics'
+    var modelJsonString = JSON.stringify(model);
+
+    this.graph.insertVertex
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.Genomics());
+  }
+
+  addMLServiceWorkspace = (dropContext) => {
+
+    var model = new MLServiceWorkspace();
+    model.GraphModel.Id = this.shortUID.randomUUID(6);
+    model.GraphModel.DisplayName = 'Machine Learning Service Workspace'
+    var modelJsonString = JSON.stringify(model);
+
+    this.graph.insertVertex
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.MLServiceWorkspace());
   }
 
   addContainerInstance = (dropContext) => {
@@ -2951,6 +3382,21 @@ addUpDownLeftRightArrowToMoveCells() {
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.StreamAnalytics());
   }
+
+  addEventHub = (dropContext) => {
+
+    var model = new EventHub();
+    model.GraphModel.Id = this.shortUID.randomUUID(6);
+    model.GraphModel.DisplayName = 'Event Hub'
+    var modelJsonString = JSON.stringify(model);
+
+    this.graph.insertVertex
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+        this.azureIcons.EventHub());
+  }
+
+  
 
   addSendGrid = (dropContext) => {
 
@@ -3456,9 +3902,26 @@ addUpDownLeftRightArrowToMoveCells() {
                 if(imageDataBase64){
 
                   thisComp.createVertexFromBrowserClipboard(imageDataBase64);
-                    // data:image/png;base64,iVBORw0KGgoAAAAN......
+                  //example: data:image/png;base64,iVBORw0KGgoAAAAN......
+
                 }
             });
+            
+            //if there is item in clipboard, and clipboard item is copy image from websites
+            //and item is not Vertx
+            if(e.clipboardData.items.length != 0) {
+              var tempElement = document.createElement("input");
+              tempElement.style.cssText = "width:0!important;padding:0!important;border:0!important;margin:0!important;outline:none!important;boxShadow:none!important;";
+              document.body.appendChild(tempElement);
+              tempElement.value = ' ' // Empty string won't work!
+              tempElement.select();
+              document.execCommand("copy");
+              document.body.removeChild(tempElement);
+
+              if(!mxClipboard.isEmpty())
+                  mxClipboard.setCells([]);
+            }
+
         }, false);
     }
 

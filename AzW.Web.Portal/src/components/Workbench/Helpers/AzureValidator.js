@@ -164,6 +164,45 @@ export default class AzureValidator {
             return false;
     }
 
+    vnetHasNatGateway(vnetCell) {
+        var childs = this.graph.getChildVertices(vnetCell);
+
+        if(!Utils.IsNullOrUndefine(childs))
+        {
+            for(var child of childs)
+            {
+                var result = Utils.TryParseUserObject(child.value);
+                
+                if(result.isUserObject &&
+                    result.userObject.ProvisionContext.ResourceType == ResourceType.NatGateway())
+                    {
+                        return true;
+                    }
+            }
+        }
+        else
+            return false;
+    }
+
+    isUDRNSGNATGateway(cell) {
+        var result = Utils.TryParseUserObject(cell);
+                
+        if(result.isUserObject &&
+            !Utils.IsNullOrUndefine(result.userObject.ProvisionContext))
+            {
+                if(result.userObject.ProvisionContext.ResourceType == ResourceType.NatGateway()
+                || result.userObject.ProvisionContext.ResourceType == ResourceType.NSG()
+                || result.userObject.ProvisionContext.ResourceType == ResourceType.RouteTable())
+                {
+                    return true;
+                }
+                else
+                    return false;
+            }
+            else
+                return false;
+    }
+
     isGatewaySubnetExist(vnetCell){
         if(Utils.IsNullOrUndefine(vnetCell))
             return false;

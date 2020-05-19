@@ -71,7 +71,7 @@ export default class MxGraphManager
         this.overrideRemoveCell();
 
         //NSG and RouteTable
-        this.overrideMxClientForChildInParentEdgeBoundary();
+        this.overrideMxClientForUDRNSGNATGWFloatAtParentEdge();
     
         this.initCodecBehaviour();
 
@@ -85,6 +85,8 @@ export default class MxGraphManager
         this.initResizeVertexSettings();
 
         this.graph.foldingEnabled = false;
+
+        mxVertexHandler.prototype.livePreview = false;
 
         //global settings
         //contrain drag boundary of child within parent
@@ -206,7 +208,7 @@ export default class MxGraphManager
             function() { this.graph.container.style.cursor = 'default'; });
     }
 
-    overrideMxClientForChildInParentEdgeBoundary() {
+    overrideMxClientForUDRNSGNATGWFloatAtParentEdge() {
 
         var graph = this.graph;
 
@@ -222,7 +224,7 @@ export default class MxGraphManager
             else if(result.isUserObject == true &&
                 result.userObject.ProvisionContext.ResourceType != ResourceType.NSG() &&
                 result.userObject.ProvisionContext.ResourceType != ResourceType.RouteTable() &&
-                result.userObject.ProvisionContext.ResourceType != ResourceType.RecoveryServiceVault())
+                result.userObject.ProvisionContext.ResourceType != ResourceType.NatGateway())
             {
                 mxGraphTranslateCellOriginal(graph,cell, dx, dy)
             }

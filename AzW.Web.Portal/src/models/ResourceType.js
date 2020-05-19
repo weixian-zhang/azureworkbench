@@ -9,6 +9,7 @@ export default class ResourceType
     static Function() {return 'func'; }
     static VNet() {return 'vnet'; }
     static PrivateEndpoint() {return 'privateendpoint'; }
+    static NetworkWatcher() {return 'networkwatcher'; }
     static Subnet() {return 'subnet'; }
     static NLB() {return 'nlb'; }
     static AppGw() {return 'appgw'; }
@@ -17,6 +18,7 @@ export default class ResourceType
     static SignalR() {return 'signalr'; }
     static AppServiceCert() {return 'appsvccert'; }
     static AppServiceDomain() {return 'appsvcdomain'; }
+
     static SharedImageGallery() {return 'sig'; }
     static FrontDoor() {return 'frontdoor'; }
     static PublicIp() {return 'pip'; }
@@ -29,6 +31,7 @@ export default class ResourceType
     static RouteTable() {return 'routetable'; }
     static ASG() {return 'asg'; }
     static NIC() {return 'nic'; }
+    static NatGateway() {return 'natgw'; }
     static BlobStorage() {return 'blobstorage'; }
     static AzFile() {return 'azfile'; }
     static AzFileSync() {return 'azfilesync'; }
@@ -52,6 +55,12 @@ export default class ResourceType
     static DataFactory() {return 'datafactory'; }
     static DataLakeAnalytics() {return 'datalakeanalytics'; }
     static HdInsight() {return 'hdinsight'; }
+
+    static Cognitive() {return 'cognitive'; }
+    static BotsService() {return 'botsservice'; }
+    static Genomics() {return 'genomics'; }
+    static MLServiceWorkspace() {return 'mlsvcworkspace'; }
+
     static ContainerInstance() {return 'containerinstance'; }
     static ContainerRegistry() {return 'containerregistry'; }
     static Kubernetes() {return 'kube'; }
@@ -63,6 +72,7 @@ export default class ResourceType
     static ISE() {return 'ise'; }
     static EventGridTopic() {return 'egtopic'; }
     static EventGridSubscription() {return 'egsubscription'; }
+    static EventHub() {return 'eventhub'; }
     static StreamAnalytics() {return 'streamanalytics'; }
     static SendGrid() {return 'sendgrid'; }
     static AppConfig() {return 'appconfig'; }

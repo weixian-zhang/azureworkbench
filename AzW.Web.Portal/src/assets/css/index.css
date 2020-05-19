@@ -33,13 +33,14 @@ inline {
 }
 
 .tile-panel {
-  vertical-align: top;
-  display: inline-block;
-  text-align: center;
-  width: 40px;
-  margin-right: 5px;
-  margin-top: 8px;
-  margin-bottom: 8px;
+  display: flex;
+  flex-flow: row wrap;
+  position: relative;
+  width: 100%;
+}
+.tile-item {
+  flex: 1 1 18%;
+  margin: 8px;
 }
 .azure-rsc-icon {
   width: 30px;
@@ -113,7 +114,7 @@ div.mxRubberband {
 .resourcePalette {
   overflow-y: auto;
   position: absolute;
-  top: 0;
+  top: 30px;
   bottom: 0;
   left: 0;
   right: 0;

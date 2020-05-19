@@ -4,12 +4,12 @@ export default class AppGateway
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.AppGw(),
+            ResourceType: ResourceType.Bastion(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.AppGw(),
+            ResourceType: ResourceType.Bastion(),
             Deployable: true,
             HighCost: false,
             
