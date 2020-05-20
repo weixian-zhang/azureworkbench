@@ -717,6 +717,12 @@ addUpDownLeftRightArrowToMoveCells() {
             thisComp.importWorkbenchFormat(file);
           }
           else if(file.name.endsWith('.png')) { //insert image as Vertex
+
+            if(thisComp.checkFileLargerThanLimit(file.size, 400)) {
+                Toast.show('warning',  3500, 'PNG file size cannot be over 400Kb, try compressing it.')
+                return;
+            }
+
             var fileReader = new FileReader();
             fileReader.readAsDataURL(file);
             fileReader.onload = function() {
@@ -748,6 +754,18 @@ addUpDownLeftRightArrowToMoveCells() {
         });
       }
     });
+  }
+
+  checkFileLargerThanLimit(fileSize, limitInKb) {
+    var marker = 1024; // Change to 1000 if required
+    var decimal = 0; // Change as required
+    var kiloBytes = marker; // One Kilobyte is 1024 bytes
+    var fileInKb = (fileSize / kiloBytes).toFixed(decimal);
+
+    if(fileInKb > limitInKb)
+      return true;
+    else
+      return false;
   }
 
   addContextMenu(){
