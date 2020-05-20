@@ -235,6 +235,7 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
     this.addCtrlAEventSelectAll();
     this.addCtrlCCtrlVCopyPasteVertices();
     this.addUpDownLeftRightArrowToMoveCells();
+    this.addDropPNGAZWBFileHandler();
     
     this.initPasteImageFromBrowserClipboard();
     this.addCtrlSSave();
@@ -679,6 +680,74 @@ addUpDownLeftRightArrowToMoveCells() {
        thisComp.graph.refresh();
     }
 
+  }
+
+  addDropPNGAZWBFileHandler = () => {
+
+    var thisComp = this;
+
+    mxEvent.addListener(this.graphManager.container, 'dragover', function(evt)
+    {      
+      if (thisComp.graph.isEnabled())
+      {
+        evt.stopPropagation();
+        evt.preventDefault();
+      }
+    });
+
+    mxEvent.addListener(this.graphManager.container, 'drop', function(evt)
+    {
+      if (thisComp.graph.isEnabled())
+      {
+        evt.stopPropagation();
+        evt.preventDefault();
+
+        // Gets drop location point for vertex
+        var pt = mxUtils.convertPoint
+          (thisComp.graphManager.container, mxEvent.getClientX(evt), mxEvent.getClientY(evt));
+        var tr = thisComp.graph.view.translate;
+        var scale = thisComp.graph.view.scale;
+        var x = pt.x / scale - tr.x;
+        var y = pt.y / scale - tr.y;
+        
+        // Converts local images to data urls
+        var filesArray = evt.dataTransfer.files;
+        Array.from(filesArray).forEach( file => {
+          if(file.name.endsWith('.azwb')) {
+            thisComp.importWorkbenchFormat(file);
+          }
+          else if(file.name.endsWith('.png')) { //insert image as Vertex
+            var fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
+            fileReader.onload = function() {
+
+              var dataUrl = fileReader.result;
+
+              if(!Utils.IsNullOrUndefine(dataUrl)) {
+                var commaSplittedDataUrl = dataUrl.split(','); 
+
+                if(commaSplittedDataUrl.length != 2)
+                  return;
+
+                var base64only = commaSplittedDataUrl[1];
+
+                var cell = thisComp.graph.insertVertex
+                (thisComp.graph.getDefaultParent(), null, '', x, y, 80, 80,
+                "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+                base64only);
+                cell.collapsed = false;
+              }
+            };
+            fileReader.onerror = function(error) {
+              Toast.show('warning', 3000, error);
+            };
+          }
+          else
+            Toast.show('warning', '3500', 'Workbench currently supports importing PNG and .azwb file types')
+          
+        });
+      }
+    });
   }
 
   addContextMenu(){
