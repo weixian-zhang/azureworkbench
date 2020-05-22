@@ -450,6 +450,10 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
 
   canvasChangeEvent = () => {
     var thisComp = this;
+    this.graph.addListener(mxEvent.GROUP_CELLS, function (sender, evt) {
+        //group cells "bring to front"
+        this.graph.orderCells(false); 
+    });
     this.graph.addListener(mxEvent.CELLS_ADDED, function (sender, evt) {
       //set unsave state
       if(thisComp.state.unsavedChanges) { evt.consume(); return;}
@@ -2538,7 +2542,7 @@ addUpDownLeftRightArrowToMoveCells() {
         var appgwJsonString = JSON.stringify(appgw);
 
       var cell = this.graph.insertVertex
-        (subnetCell, appgw.GraphModel.IconId ,appgwJsonString, dropContext.x, dropContext.y, 35, 35,
+        (subnetCell, appgw.GraphModel.IconId ,appgwJsonString, dropContext.x, dropContext.y, 50, 50,
         "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
           this.azureIcons.AppGateway());
       cell.collapsed = false;
@@ -2556,7 +2560,7 @@ addUpDownLeftRightArrowToMoveCells() {
       var dnsPrivateZoneJsonString = JSON.stringify(dnsPrivateZone);
 
       var cell = this.graph.insertVertex
-        (parent, dnsPrivateZone.GraphModel.IconId ,dnsPrivateZoneJsonString, dropContext.x, dropContext.y, 35, 35,
+        (parent, dnsPrivateZone.GraphModel.IconId ,dnsPrivateZoneJsonString, dropContext.x, dropContext.y, 50, 50,
         "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/svg+xml," +
           this.azureIcons.DNSPrivateZone());
       cell.collapsed = false;
@@ -2702,7 +2706,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var appsvcJsonString = JSON.stringify(appsvc);
 
     this.graph.insertVertex
-      (parent, appsvc.GraphModel.IconId ,appsvcJsonString, dropContext.x, dropContext.y, 35, 35,
+      (parent, appsvc.GraphModel.IconId ,appsvcJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AppService());
   }
@@ -2739,7 +2743,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var aseJsonString = JSON.stringify(ase);
 
     this.graph.insertVertex
-      (subnetCell, ase.GraphModel.IconId ,aseJsonString, subnetCenterPt.x, subnetCenterPt.y, 35, 35,
+      (subnetCell, ase.GraphModel.IconId ,aseJsonString, subnetCenterPt.x, subnetCenterPt.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.ASE());
   }
@@ -2752,7 +2756,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var funcJsonString = JSON.stringify(func);
 
     this.graph.insertVertex
-      (this.graph.parent, func.GraphModel.IconId ,funcJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, func.GraphModel.IconId ,funcJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/png," +
         this.azureIcons.FunctionApp());
   }
@@ -2765,7 +2769,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var azsearchJsonString = JSON.stringify(azsearch);
 
     this.graph.insertVertex
-      (this.graph.parent, azsearch.GraphModel.IconId ,azsearchJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, azsearch.GraphModel.IconId ,azsearchJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AzureSearch());
   }
@@ -2778,7 +2782,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var signalrJsonString = JSON.stringify(signalr);
 
     this.graph.insertVertex
-      (this.graph.parent, signalr.GraphModel.IconId ,signalrJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, signalr.GraphModel.IconId ,signalrJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.SignalR());
   }
@@ -2791,7 +2795,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var appsvccertJsonString = JSON.stringify(appsvccert);
 
     this.graph.insertVertex
-      (this.graph.parent, appsvccert.GraphModel.IconId ,appsvccertJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, appsvccert.GraphModel.IconId ,appsvccertJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AppServiceCert());
   }
@@ -2804,7 +2808,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var appsvcdomainJsonString = JSON.stringify(appsvcdomain);
 
     this.graph.insertVertex
-      (this.graph.parent, appsvcdomain.GraphModel.IconId ,appsvcdomainJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, appsvcdomain.GraphModel.IconId ,appsvcdomainJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AppServiceDomain());
   }
@@ -2817,7 +2821,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.SharedImageGallery());
   }
@@ -2830,7 +2834,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AppConfig());
   }
@@ -2844,7 +2848,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.PublicIp());
   }
@@ -2858,7 +2862,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.FrontDoor());
   }
@@ -2871,7 +2875,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.ExpressRouteCircuit());
   }
@@ -2884,7 +2888,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.TrafficManager());
   }
@@ -2897,7 +2901,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.DevTestLab());
   }
@@ -2927,7 +2931,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var dropContext = Utils.getCellCenterPoint(result.subnetCell);
 
     this.graph.insertVertex
-      (result.subnetCell, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (result.subnetCell, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.VNetGateway());
   }
@@ -2940,21 +2944,21 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.CDN());
   }
 
   addASG = (dropContext) => {
     this.graph.insertVertex
-      (this.graph.parent, '','Application Security Group', dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, '','Application Security Group', dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.ASG());
   }
 
   addNIC = (dropContext) => {
     this.graph.insertVertex
-      (this.graph.parent, '','Network Interface', dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, '','Network Interface', dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.NIC());
   }
@@ -2967,7 +2971,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId, modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId, modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.BlobStorage());
   }
@@ -2980,7 +2984,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJson = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.Id,modelJson, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.Id,modelJson, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AzureFile());
   }
@@ -2993,7 +2997,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.FileSync());
   }
@@ -3006,7 +3010,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.NetAppFile());
   }
@@ -3019,7 +3023,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJson = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.Id, modelJson, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.Id, modelJson, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.QueueStorage());
   }
@@ -3032,14 +3036,14 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJson = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.Id, modelJson, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.Id, modelJson, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.TableStorage());
   }
 
   addDatabox = (dropContext) => {
     this.graph.insertVertex
-      (this.graph.parent, '','Data box', dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, '','Data box', dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Databox());
   }
@@ -3052,7 +3056,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.PostgreSQL());
   }
@@ -3065,7 +3069,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.MariaDB());
   }
@@ -3078,7 +3082,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.SQLDB());
   }
@@ -3091,7 +3095,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Cosmos());
   }
@@ -3104,7 +3108,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.MySQL());
   }
@@ -3117,7 +3121,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.SQLElasticPool());
   }
@@ -3143,7 +3147,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var subnetCenterPt = Utils.getCellCenterPoint(subnetCell);
 
     this.graph.insertVertex
-      (subnetCell, model.GraphModel.IconId,modelJsonString, subnetCenterPt.x, subnetCenterPt.y, 35, 35,
+      (subnetCell, model.GraphModel.IconId,modelJsonString, subnetCenterPt.x, subnetCenterPt.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.SQLMI());
   }
@@ -3151,7 +3155,7 @@ addUpDownLeftRightArrowToMoveCells() {
   addSQLStretchDB = (dropContext) => {
 
     this.graph.insertVertex
-      (this.graph.parent, '', 'SQL Stretch DB', dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, '', 'SQL Stretch DB', dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.SQLStretchDB());
   }
@@ -3164,7 +3168,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Redis());
   }
@@ -3177,7 +3181,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.DataLakeStorage());
   }
@@ -3190,7 +3194,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Synapse());
   }
@@ -3203,7 +3207,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.DataExplorer());
   }
@@ -3218,7 +3222,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Databricks());
   }
@@ -3231,7 +3235,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.DataFactory());
   }
@@ -3244,7 +3248,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.DataLakeAnalytics());
   }
@@ -3257,7 +3261,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.HdInsight());
   }
@@ -3270,7 +3274,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Cognitive());
   }
@@ -3283,7 +3287,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.BotsService());
   }
@@ -3296,7 +3300,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Genomics());
   }
@@ -3309,7 +3313,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.MLServiceWorkspace());
   }
@@ -3322,7 +3326,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.ContainerInstance());
   }
@@ -3335,7 +3339,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.ContainerRegistry());
   }
@@ -3343,13 +3347,12 @@ addUpDownLeftRightArrowToMoveCells() {
   addKubernetes = (dropContext) => {
 
     var subnetCell = this.graph.getSelectionCell();
-    if(!this.azureValidator.isResourceinDedicatedSubnet(subnetCell))
+
+    var result = this.azureValidator.isResourceDropinSubnet(subnetCell);
+
+    if(!result.isInSubnet)
     {
-      Toaster.create({
-          position: Position.TOP,
-          autoFocus: false,
-          canEscapeKeyClear: true
-        }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.KubeNotInSubnetError()});
+        Toast.show('warning', 3000, 'Kubernetes must be in a subnet');
         return;
     }
 
@@ -3361,7 +3364,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (subnetCell, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (subnetCell, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Kubernetes());
   }
@@ -3375,7 +3378,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.APIM());
   }
@@ -3388,7 +3391,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.ASB());
   }
@@ -3401,7 +3404,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.LogicApp());
   }
@@ -3427,7 +3430,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (subnetCell, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (subnetCell, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.ISE());
     
@@ -3446,7 +3449,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.EventGridTopic());
   }
@@ -3459,7 +3462,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.EventGridSubscription());
   }
@@ -3472,7 +3475,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.StreamAnalytics());
   }
@@ -3485,7 +3488,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.EventHub());
   }
@@ -3495,7 +3498,7 @@ addUpDownLeftRightArrowToMoveCells() {
   addSendGrid = (dropContext) => {
 
     this.graph.insertVertex
-      (this.graph.parent, '','SendGrid', dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, '','SendGrid', dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.SendGrid());
   }
@@ -3508,7 +3511,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Relay());
 
@@ -3545,7 +3548,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (subnetCell, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (subnetCell, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Firewall());
   }
@@ -3558,7 +3561,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Sentinel());
   }
@@ -3571,14 +3574,14 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.KeyVault());
   }
 
   addSecurityCenter = (dropContext) => {
     this.graph.insertVertex
-      (this.graph.parent, '','Security Center', dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, '','Security Center', dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.SecurityCenter());
   }
@@ -3591,7 +3594,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.DDoSStandard());
   }
@@ -3636,7 +3639,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (subnetCell, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (subnetCell, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Bastion());
   }
@@ -3649,7 +3652,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.RecoveryServiceVault());
   }
@@ -3662,7 +3665,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AppInsights());
   }
@@ -3675,7 +3678,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.LogAnalytics());
   }
@@ -3688,7 +3691,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.Automation());
   }
@@ -3696,7 +3699,7 @@ addUpDownLeftRightArrowToMoveCells() {
   addAAD = (dropContext) => {
 
     this.graph.insertVertex
-      (this.graph.parent, '', 'Azure AD', dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, '', 'Azure AD', dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AAD());
   }
@@ -3709,7 +3712,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AADB2C());
   }
@@ -3722,7 +3725,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.IoTHub());
   }
@@ -3735,7 +3738,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.IoTCentral());
   }
@@ -3749,7 +3752,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.AzureMaps());
   }
@@ -3762,7 +3765,7 @@ addUpDownLeftRightArrowToMoveCells() {
     var modelJsonString = JSON.stringify(model);
 
     this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 35, 35,
+      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
         this.azureIcons.TimeSeriesInsights());
   }  
@@ -3992,7 +3995,15 @@ addUpDownLeftRightArrowToMoveCells() {
 
             // Handle the event
             thisComp.retrieveImageFromClipboardAsBase64(e, function(imageDataBase64){
-                // If there's an image, open it in the browser as a new window :)
+                
+              var pt = mxUtils.convertPoint
+              (thisComp.graphManager.container, mxEvent.getClientX(e), mxEvent.getClientY(e));
+                // var tr = thisComp.graph.view.translate;
+                // var scale = thisComp.graph.view.scale;
+                // var x = pt.x / scale - tr.x;
+                // var y = pt.y / scale - tr.y;
+
+              // If there's an image, open it in the browser as a new window :)
                 if(imageDataBase64){
 
                   thisComp.createVertexFromBrowserClipboard(imageDataBase64);
@@ -4045,6 +4056,14 @@ addUpDownLeftRightArrowToMoveCells() {
             if (items[i].type.indexOf("image") == -1) continue;
             // Retrieve image on clipboard as blob
             var blob = items[i].getAsFile();
+
+            if(blob == null)
+                continue;
+            
+            if(thisComp.checkFileLargerThanLimit(blob.size, 400)) {
+                Toast.show('warning',  3500, 'PNG file size cannot be over 400Kb, try compressing it.')
+                return;
+            }
     
             // Create an abstract canvas and get context
             var mycanvas = document.createElement("canvas");
@@ -4095,7 +4114,7 @@ addUpDownLeftRightArrowToMoveCells() {
   createVertexFromBrowserClipboard(clipboardResult) {
 
     this.graphManager.graph.getModel().beginUpdate();
-      var style = 'editable=1;verticalLabelPosition=bottom;shape=image;image=';
+      var style = 'fontColor=black;fontSize=12;editable=1;verticalLabelPosition=bottom;shape=image;image=';
       
       if(clipboardResult.imageFormat == 'png')
         style += 'data:image/png,' + clipboardResult.imageBase64;

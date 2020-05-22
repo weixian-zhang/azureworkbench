@@ -193,7 +193,7 @@ export default class MxGraphManager
         this.graph.extendParentsOnAdd = false;
         this.graph.constrainChildren = true;
         this.graph.recursiveResize = false;
-        mxVertexHandler.prototype.singleSizer = true;
+        mxVertexHandler.prototype.singleSizer = false;
     }
 
     initGlobalPanningSettings(){
