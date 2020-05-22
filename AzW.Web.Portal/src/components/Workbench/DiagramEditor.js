@@ -474,14 +474,7 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
         thisComp.setBadgeVisibilityOnUnsaveChanges()});
       evt.consume();
     });
-    this.graph.addListener(mxEvent.RESIZE, function (sender, evt) {
-      //re-add animation for connected edge
-      if(evt.properties.edge != undefined &&
-        evt.properties.edge.source != null &&
-        evt.properties.edge.target != null) {
-
-        thisComp.animateTrafficFlow(evt.properties.edge, null);
-      }
+    this.graph.addListener(mxEvent.CELLS_RESIZED, function (sender, evt) {
       //set unsave state
       if(thisComp.state.unsavedChanges) { evt.consume(); return;}
 
@@ -678,6 +671,9 @@ addUpDownLeftRightArrowToMoveCells() {
        newGeo.y = y;
        thisComp.graph.model.setGeometry(cell, newGeo);
        thisComp.graph.refresh();
+
+       thisComp.setState({unsavedChanges: true}, () => {
+        thisComp.setBadgeVisibilityOnUnsaveChanges()});
     }
 
   }
@@ -4272,15 +4268,11 @@ addUpDownLeftRightArrowToMoveCells() {
                   })
                 }
               }
-              
-              // cell.edges.map(edge => {
-              //   var result = Utils.TryParseUserObject(edge.value);
-              //   if(result.isUserObject) {
-              //     //re-render animated traffic flow
-              //     this.animateTrafficFlow(edge, result.userObject);
-              //   }
-              // });
             });
+
+            //reset unsave changes state on new diagram import
+            this.setState({unsavedChanges: false}, () => {
+              this.setBadgeVisibilityOnUnsaveChanges()});
         }
   }
 

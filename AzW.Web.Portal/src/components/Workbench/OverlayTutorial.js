@@ -43,7 +43,6 @@ export default class OverlayTutorial extends Component {
                         </Typography>
                         <Typography variant="body1" align="left" gutterBottom>
                             To add NAT Gateway, right-click on any Virtual Network and click "Add NAT Gateway"
-                            and click on "Add Network Security Group" or "Add Route Table.
                         </Typography>
                         <Typography variant="h6" align="left" color="primary" gutterBottom>
                             Add Azure services into Subnet

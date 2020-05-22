@@ -88,7 +88,7 @@ export default class OverlayProvision extends Component {
                                     <div className="bp3-running-text" variant="body1" style={{color: '#FF6347'}}>
                                         *Azure Workbench requires either your Azure AD Global Admin, App Admin or Cloud App Admin to grant <a target="_blank" href="https://docs.microsoft.com/en-us/azure/active-directory/manage-apps/grant-admin-consent">Admin Consent </a>
                                          to Workbench, to be able to retrieve Subscriptions, Resource Groups and perform deployment.
-                                        Workbench only creates and will NOT update/delete any resource in your subscription.
+                                        Workbench only creates and will NOT Delete any resource in your subscription.
                                     </div>
                                 </Grid>
                             </Grid>

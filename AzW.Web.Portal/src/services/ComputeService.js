@@ -5,6 +5,7 @@ import axios from "axios";
 import AuthService from './AuthService';
 import Toast from '../components/Workbench/Helpers/Toast';
 import Messages from '../components/Workbench/Helpers/Messages';
+import ServiceHelper from './ServiceHelper';
 
 export default class ComputeService
 {
@@ -13,11 +14,9 @@ export default class ComputeService
     }
 
     async getVMSizes( onSuccess, onFailure) {
-      if(!this.authService.isUserLogin())
-      {
-        Toast.show("warning", 2000, "Please login/re-login...")
-        return;
-      }
+
+      if(!ServiceHelper.checkLoginStateAndNotify(this.authService))
+          return;
 
       var user = this.authService.getUserProfile();
 
@@ -54,11 +53,9 @@ export default class ComputeService
     }
 
     async getServiceTags( onSuccess, onFailure) {
-      if(!this.authService.isUserLogin())
-      {
-        Toast.show("warning", 2000, "Please login/re-login...")
-        return;
-      }
+
+      if(!ServiceHelper.checkLoginStateAndNotify(this.authService))
+          return;
 
       var user = this.authService.getUserProfile();
 
@@ -93,11 +90,9 @@ export default class ComputeService
     }
 
     async searchVMImages(searchPattern, onSuccess, onFailure){
-        if(!this.authService.isUserLogin())
-        {
-          Toast.show("warning", 2000, "Please login/re-login...")
+        
+      if(!ServiceHelper.checkLoginStateAndNotify(this.authService))
           return;
-        }
 
         var user = this.authService.getUserProfile();
 
