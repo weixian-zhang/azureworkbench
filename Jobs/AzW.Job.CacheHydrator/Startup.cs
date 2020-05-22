@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Core;
+using Serilog.Events;
 using Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters;
 
 [assembly: FunctionsStartup(typeof(AzW.Job.CacheHydrator.Startup))]
@@ -37,7 +38,7 @@ namespace AzW.Job.CacheHydrator
                 SubscriptionId = config.GetValue<string>("SubscriptionId")
             };
 
-            var logger = InitAppInsights(secret);
+            var logger = InitLogger(secret);
 
             builder.Services.AddSingleton<WorkbenchSecret>(prov => {
                 return secret;
@@ -53,20 +54,17 @@ namespace AzW.Job.CacheHydrator
                   ( secret.RedisConnString, secret.RedisHost, secret.RedisPassword);
             });
 
-          builder.Services.AddSingleton<IRatecardRepository>(prov =>
-            {
-                return new RatecardRepository(secret);
-            });
-
         }
 
-        private Logger InitAppInsights(WorkbenchSecret secret){
+        private Logger InitLogger(WorkbenchSecret secret){
           
           var appInsightsConfig = new TelemetryConfiguration();
           
           var logger = new LoggerConfiguration()
             .WriteTo
-            .ApplicationInsights(secret.AppInsightsKey, new TraceTelemetryConverter())
+              .MongoDB(CosmosDbHelper.GetDatabase(secret),LogEventLevel.Verbose, "Log-CacheHydrator")
+            // .WriteTo
+            // . ApplicationInsights(secret.AppInsightsKey, new TraceTelemetryConverter())
             .CreateLogger();
 
           return logger;

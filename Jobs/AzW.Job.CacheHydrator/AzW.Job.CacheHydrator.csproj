@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AzureFunctionsVersion>v3</AzureFunctionsVersion>
   </PropertyGroup>
   <ItemGroup>
@@ -11,6 +11,7 @@
     <PackageReference Include="StackExchange.Redis.Extensions.Newtonsoft" Version="5.5.0"/>
     <PackageReference Include="System.Net.Http" Version="4.3.4"/>
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.7"/>
+    <PackageReference Include="Serilog.Sinks.MongoDB" Version="4.0.0"/>
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
@@ -27,10 +28,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.2.0"/>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0"/>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0"/>
-    <PackageReference Include="Microsoft.Azure.Management.Fluent" Version="1.29.0"/>
+    <PackageReference Include="Microsoft.Azure.Management.Fluent" Version="1.33.0"/>
     <PackageReference Include="Microsoft.Azure.Management.ResourceManager" Version="2.3.0-preview"/>
     <PackageReference Include="Microsoft.Azure.Management.Compute" Version="30.1.0"/>
-    <PackageReference Include="Microsoft.Azure.Management.Network.Fluent" Version="1.29.0"/>
+    <PackageReference Include="Microsoft.Azure.Management.Network.Fluent" Version="1.33.0"/>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3"/>
   </ItemGroup>
   <ItemGroup>

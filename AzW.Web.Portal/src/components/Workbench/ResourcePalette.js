@@ -116,6 +116,7 @@ export default class ResourcePalette extends Component {
   }
 
   initRef(){
+    this.threedbox = React.createRef();
     this.straightArrow = React.createRef();
     this.elbowArrow = React.createRef();
     this.curveArrow = React.createRef();
@@ -372,6 +373,14 @@ export default class ResourcePalette extends Component {
               IsPng: true,
               IsVisible:true,
               ref: this.hexagon
+            },
+            {
+              Name: '3d box',
+              Tooltip: '3D Box',
+              Image:require('../../assets/azure_icons/shape-3dbox.png'),
+              IsPng: true,
+              IsVisible:true,
+              ref: this.threedbox
             }
            ]
          }
@@ -1801,7 +1810,8 @@ export default class ResourcePalette extends Component {
     this.graphManager.makeIconDraggable(this.user.current, "user", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.datacenter.current, "datacenter", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.internet.current, "internet", thisComponent.props.addResourceToDiagramEditor);
-    
+    this.graphManager.makeIconDraggable(this.threedbox.current, "3dbox", thisComponent.props.addResourceToDiagramEditor);
+
     //devices
     this.graphManager.makeIconDraggable(this.clientIcon.current, "clientdevice", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.adfsIcon.current, "adfs", thisComponent.props.addResourceToDiagramEditor);

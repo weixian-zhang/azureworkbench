@@ -24,6 +24,8 @@ using Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConve
 using System.Reflection;
 using System.IO;
 using DinkToPdf;
+using Serilog.Events;
+using Microsoft.AspNetCore.Diagnostics;
 
 namespace AzW.Web.API
 {
@@ -95,7 +97,17 @@ namespace AzW.Web.API
 
             app.UseRouting();
 
-            
+            app.UseExceptionHandler(handler => {
+
+                handler.Run(async context =>
+                {   
+                    var exceptionHandlerPathFeature = 
+                        context.Features.Get<IExceptionHandlerPathFeature>();
+
+                    _logger.Error
+                        (exceptionHandlerPathFeature.Error, exceptionHandlerPathFeature.Error.Message);
+                });
+            });
 
             app.UseAuthorization();
 
@@ -216,6 +228,8 @@ namespace AzW.Web.API
         private void InitSerilog()
         {
             _logger = new LoggerConfiguration()
+                .WriteTo
+                .MongoDB(CosmosDbHelper.GetDatabase(_secrets),LogEventLevel.Error, "Log-API")
                 .WriteTo
                 .ApplicationInsights(_secrets.AppInsightsKey, new TraceTelemetryConverter())
                 .CreateLogger();

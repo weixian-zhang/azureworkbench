@@ -77,6 +77,16 @@
             "problemMatcher": []
         },
         {
+            "label": "Publish Func Job CacheHydrator",
+            "command": "dotnet publish -c Release -o ./publish",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/Jobs/AzW.Job.CacheHydrator"
+            },
+            "problemMatcher": []
+        },
+        {
             "label": "build Infra Data",
             "command": "dotnet build",
             "type": "shell",

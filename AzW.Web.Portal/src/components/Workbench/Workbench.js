@@ -29,9 +29,6 @@ export default class Workbench extends Component {
 
   componentDidMount() {
     this.diagramEditor = React.createRef();
-
-    Toast.show("none", 2000, "Attempting to login for you now...");
-    this.authService.login();
   }
 
   render = () => {

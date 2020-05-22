@@ -33,11 +33,9 @@ namespace AzW.Job.CacheHydrator
     public class CacheHydrator
     {
         public CacheHydrator
-            (WorkbenchSecret secret, ICacheRepository cache,
-             IRatecardRepository rcRepo, Serilog.Core.Logger logger)
+            (WorkbenchSecret secret, ICacheRepository cache, Serilog.Core.Logger logger)
         {
             _secret = secret;
-            _rcRepo = rcRepo;
             _cache = cache;
             _logger = logger;
 
@@ -49,115 +47,33 @@ namespace AzW.Job.CacheHydrator
         }
 
         [FunctionName("CacheHydrator")]
-        public async Task Run([TimerTrigger("*/5 * * * * *")]TimerInfo myTimer, Microsoft.Extensions.Logging.ILogger log)
+        public async Task Run([TimerTrigger("0 */10 * * * *")]TimerInfo myTimer, Microsoft.Extensions.Logging.ILogger log)
         {
-            await GetRateCardPricings();
+            _logger.Information("CacheHydrator started");
 
             await HydrateServiceTag();
 
             await HydrateVMSizes();
 
             await HydrateVMImages();
-        }
 
-        private async Task GetRateCardPricings()
+            _logger.Information("CacheHydrator completed");
+        }
+        public async Task HydrateVMSizes() 
         {
             try
             {
-                if(await _rcRepo.IsRatecardExist())
+                if(await _cache.IsVMSizeExistAsync())
                     return;
 
-               var authenticationContext =
-                    new AuthenticationContext(  String.Format("{0}/{1}",
-                            "https://login.microsoftonline.com/",
-                            "microsoft.onmicrosoft.com"));
-
-           
-            //Ask the logged in user to authenticate, so that this client app can get a token on his behalf
-            var result = await authenticationContext.AcquireTokenAsync
-                ("https://management.azure.com", new ClientCredential(_secret.ClientId, _secret.ClientSecret));
-
-                string accessToken = result.AccessToken;
-
-                string requestURL = String.Format("{0}/{1}/{2}/{3}",
-                        "https://management.azure.com",
-                        "subscriptions",
-                        _secret.SubscriptionId,
-                        "providers/Microsoft.Commerce/RateCard?api-version=2016-08-31-preview&$filter=OfferDurableId eq 'MS-AZR-0003P' and Currency eq 'USD' and Locale eq 'en-US' and RegionInfo eq 'US'");
+                _logger.Information("CacheHydrator-VMSize cache empty, start hydrating");
                 
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(requestURL);
+                var azure = Azure.Configure().Authenticate(azureCreds);
 
-                // Add the OAuth Authorization header, and Content Type header
-                request.Headers.Add(HttpRequestHeader.Authorization, "Bearer " + accessToken);
-                request.ContentType = "application/json";
-
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                
-                Stream receiveStream = response.GetResponseStream();
-
-                StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8);
-                string rateCardJson = readStream.ReadToEnd();
-                
-                File.WriteAllText(@"C:\Users\weixzha\Desktop\ratecard.json", rateCardJson);
-
-                // Convert the Stream to a strongly typed RateCardPayload object.  
-                // You can also walk through this object to manipulate the individuals member objects. 
-                RateCardPayload payload =
-                    JsonConvert.DeserializeObject<RateCardPayload>(rateCardJson);
-
-                var ratecards = new List<Ratecard>();
-
-                foreach(var meter in payload.Meters)
-                {
-                    if( meter.MeterRegion.Contains("NO East") ||
-                        meter.MeterRegion.Contains("NO West") ||
-                        meter.MeterRegion.Contains("Azure Stack") ||
-                        meter.MeterRegion.StartsWith("Zone"))
-                        continue;
+                var vmSizes = await azure
+                        .WithSubscription(_secret.SubscriptionId)
+                        .VirtualMachines.Sizes.ListByRegionAsync("southeastasia");
                         
-                    double rate = Math.Round(meter.MeterRates.FirstOrDefault().Value, 2);
-                    
-                    string unitName = "";
-                    double unitVal = 0;
-
-                    var splittedUnit = meter.Unit.Split(' ');
-                    if(splittedUnit.Length == 2)
-                    {
-                        unitVal = Convert.ToDouble(splittedUnit[0]);
-                        unitName = splittedUnit[1];
-                    }
-
-                    ratecards.Add(new Ratecard(){
-                        MeterCategory = meter.MeterCategory,
-                        MeterName = meter.MeterName,
-                        MeterRate = rate,
-                        MeterRegion = meter.MeterRegion,
-                        MeterSubCategory = meter.MeterSubCategory,
-                        Unit = meter.Unit,
-                        UnitName = unitName,
-                        UnitValue = unitVal
-                    });
-                }
-
-                await _rcRepo.InsertRatecardsAsync(ratecards);
-            }
-            catch(Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public async Task HydrateVMSizes() 
-        {
-            if(await _cache.IsVMSizeExistAsync())
-                return;
-            
-            var azure = Azure.Configure().Authenticate(azureCreds);
-
-            var vmSizes = await azure
-                    .WithSubscription(_secret.SubscriptionId)
-                    .VirtualMachines.Sizes.ListByRegionAsync("southeastasia");
-                    
                 foreach(var size in vmSizes)
                 {
                     var vmSize = new VMSize() 
@@ -171,6 +87,13 @@ namespace AzW.Job.CacheHydrator
                     string cacheKey = "vmsize" + " " +  size.Name;
                     await _cache.SetVMSizeAsync(cacheKey, vmSize);
                 }
+
+                _logger.Information("CacheHydrator-VMSize cache hydration completed");
+            }
+            catch(Exception ex)
+            {
+                _logger.Error(ex, ex.Message);
+            }
         }
 
         private async Task HydrateServiceTag()
@@ -179,6 +102,8 @@ namespace AzW.Job.CacheHydrator
             {
                 if(await _cache.IsServiceTagExistAsync())
                     return;
+                
+                _logger.Information("CacheHydrator-ServiceTag cache empty, start hydrating");
 
                 var restClient = RestClient.Configure()
                     .WithEnvironment(AzureEnvironment.AzureGlobalCloud)
@@ -297,29 +222,42 @@ namespace AzW.Job.CacheHydrator
                         Name = "Internet"
                     });
                 }
+            
+                _logger.Information("CacheHydrator-ServiceTag cache hydration completed");
             }
             catch(Exception ex)
             {
-                throw ex;
+                _logger.Error(ex, ex.Message);
             }
         }
 
         private async Task HydrateVMImages()
         {
-            if(!await _cache.IsVMImageCacheExistAsync())
+            try
             {
-                foreach(var vmImg in GetImageReferences())
+                if(!await _cache.IsVMImageCacheExistAsync())
                 {
-                    try
+                    _logger.Information("CacheHydrator-VMImages cache empty, start hydrating");
+
+                    foreach(var vmImg in GetImageReferences())
                     {
-                        await _cache.SetVMImageAsync(vmImg.SearchPattern, vmImg);
+                        try
+                        {
+                            await _cache.SetVMImageAsync(vmImg.SearchPattern, vmImg);
+                        }
+                        catch(Exception ex)
+                        {
+                            _logger.Error(ex, ex.Message);
+                            continue;
+                        }
                     }
-                    catch(Exception ex)
-                    {
-                        _logger.Error(ex, ex.Message);
-                        continue;
-                    }
+
+                    _logger.Information("CacheHydrator-VMImages cache hydration completed");
                 }
+            }
+            catch(Exception ex)
+            {
+                _logger.Error(ex, ex.Message);
             }
         }
 
@@ -437,12 +375,99 @@ namespace AzW.Job.CacheHydrator
                    }
             }
         }
+
+        //shelved
+        // private async Task GetRateCardPricings()
+        // {
+        //     try
+        //     {
+        //         if(await _rcRepo.IsRatecardExist())
+        //             return;
+
+        //        var authenticationContext =
+        //             new AuthenticationContext(  String.Format("{0}/{1}",
+        //                     "https://login.microsoftonline.com/",
+        //                     "microsoft.onmicrosoft.com"));
+
+           
+        //     //Ask the logged in user to authenticate, so that this client app can get a token on his behalf
+        //     var result = await authenticationContext.AcquireTokenAsync
+        //         ("https://management.azure.com", new ClientCredential(_secret.ClientId, _secret.ClientSecret));
+
+        //         string accessToken = result.AccessToken;
+
+        //         string requestURL = String.Format("{0}/{1}/{2}/{3}",
+        //                 "https://management.azure.com",
+        //                 "subscriptions",
+        //                 _secret.SubscriptionId,
+        //                 "providers/Microsoft.Commerce/RateCard?api-version=2016-08-31-preview&$filter=OfferDurableId eq 'MS-AZR-0003P' and Currency eq 'USD' and Locale eq 'en-US' and RegionInfo eq 'US'");
+                
+        //         HttpWebRequest request = (HttpWebRequest)WebRequest.Create(requestURL);
+
+        //         // Add the OAuth Authorization header, and Content Type header
+        //         request.Headers.Add(HttpRequestHeader.Authorization, "Bearer " + accessToken);
+        //         request.ContentType = "application/json";
+
+        //         HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                
+        //         Stream receiveStream = response.GetResponseStream();
+
+        //         StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8);
+        //         string rateCardJson = readStream.ReadToEnd();
+                
+        //         File.WriteAllText(@"C:\Users\weixzha\Desktop\ratecard.json", rateCardJson);
+
+        //         // Convert the Stream to a strongly typed RateCardPayload object.  
+        //         // You can also walk through this object to manipulate the individuals member objects. 
+        //         RateCardPayload payload =
+        //             JsonConvert.DeserializeObject<RateCardPayload>(rateCardJson);
+
+        //         var ratecards = new List<Ratecard>();
+
+        //         foreach(var meter in payload.Meters)
+        //         {
+        //             if( meter.MeterRegion.Contains("NO East") ||
+        //                 meter.MeterRegion.Contains("NO West") ||
+        //                 meter.MeterRegion.Contains("Azure Stack") ||
+        //                 meter.MeterRegion.StartsWith("Zone"))
+        //                 continue;
+                        
+        //             double rate = Math.Round(meter.MeterRates.FirstOrDefault().Value, 2);
+                    
+        //             string unitName = "";
+        //             double unitVal = 0;
+
+        //             var splittedUnit = meter.Unit.Split(' ');
+        //             if(splittedUnit.Length == 2)
+        //             {
+        //                 unitVal = Convert.ToDouble(splittedUnit[0]);
+        //                 unitName = splittedUnit[1];
+        //             }
+
+        //             ratecards.Add(new Ratecard(){
+        //                 MeterCategory = meter.MeterCategory,
+        //                 MeterName = meter.MeterName,
+        //                 MeterRate = rate,
+        //                 MeterRegion = meter.MeterRegion,
+        //                 MeterSubCategory = meter.MeterSubCategory,
+        //                 Unit = meter.Unit,
+        //                 UnitName = unitName,
+        //                 UnitValue = unitVal
+        //             });
+        //         }
+
+        //         await _rcRepo.InsertRatecardsAsync(ratecards);
+        //     }
+        //     catch(Exception ex)
+        //     {
+        //         throw ex;
+        //     }
+        // }
         
         ServiceClientCredential sdkCred;
         AzureCredentials azureCreds;
         private WorkbenchSecret _secret;
         private ICacheRepository _cache;
-        private IRatecardRepository _rcRepo;
         private Serilog.Core.Logger _logger;
     }
 }

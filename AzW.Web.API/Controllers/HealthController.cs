@@ -10,7 +10,8 @@ namespace AzW.Web.UI.Controllers
         }
 
         [HttpGet("alive")]
-        public string Alive(){
+        public string Alive()
+        {
             return "alive";
         }
 

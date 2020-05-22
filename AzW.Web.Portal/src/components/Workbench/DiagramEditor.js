@@ -997,7 +997,6 @@ addUpDownLeftRightArrowToMoveCells() {
       case 'roundedrectangle':
         this.addRoundedRectangle(dropContext);
         break;
-        
       case 'triangle':
         this.addTriangle(dropContext);
         break;
@@ -1009,6 +1008,9 @@ addUpDownLeftRightArrowToMoveCells() {
         break;
       case 'userblue':
         this.addUserBlue(dropContext);
+        break;
+      case '3dbox':
+        this.add3DBox(dropContext);
         break;
       case 'usergroup':
         this.addUserGroup(dropContext);
@@ -2113,6 +2115,15 @@ addUpDownLeftRightArrowToMoveCells() {
           this.azureIcons.addUserBlue());
     cell.collapsed = false;
   }
+
+  add3DBox = (dropContext) => {
+    var cell = this.graph.insertVertex
+          (this.graph.getDefaultParent(), null, 'box', dropContext.x, dropContext.y, 50, 50,
+          "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+          this.azureIcons.Shape3DBox());
+    cell.collapsed = false;
+  }
+  
 
   addUserGroup = (dropContext) => {
     var cell = this.graph.insertVertex
