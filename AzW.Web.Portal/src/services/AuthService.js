@@ -3,6 +3,7 @@ import UserProfile from '../models/UserProfile';
 import SessionStorage from './SessionStorage';
 import Config from "../../src/config";
 import Toast from '../components/Workbench/Helpers/Toast';
+import moment from 'moment';
 
 export default class AuthService 
 {

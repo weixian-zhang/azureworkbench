@@ -450,10 +450,6 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
 
   canvasChangeEvent = () => {
     var thisComp = this;
-    this.graph.addListener(mxEvent.GROUP_CELLS, function (sender, evt) {
-        //group cells "bring to front"
-        this.graph.orderCells(false); 
-    });
     this.graph.addListener(mxEvent.CELLS_ADDED, function (sender, evt) {
       //set unsave state
       if(thisComp.state.unsavedChanges) { evt.consume(); return;}
@@ -518,6 +514,9 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
       evt.consume();
     });
     this.graph.addListener(mxEvent.GROUP_CELLS, function (sender, evt) {
+      
+      this.graph.orderCells(false); 
+
       //set unsave state
       if(thisComp.state.unsavedChanges) { evt.consume(); return;}
 
@@ -1806,6 +1805,14 @@ addUpDownLeftRightArrowToMoveCells() {
       var image;
       var label;
 
+      if(String(dropContext.resourceType).endsWith('calico')) {
+        image = this.azureIcons.ShapeCalico();
+        label = 'Calico';
+      }
+      if(String(dropContext.resourceType).endsWith('resourcegroup')) {
+        image = this.azureIcons.ShapeResourceGroup();
+        label = 'Resource Group(shape)';
+      }
       if(String(dropContext.resourceType).endsWith('shapehelm')) {
           image = this.azureIcons.ShapeHelm();
           label = 'Helm';
@@ -4120,8 +4127,8 @@ addUpDownLeftRightArrowToMoveCells() {
         style += 'data:image/png,' + clipboardResult.imageBase64;
 
       this.graph.insertVertex
-      (this.graph.getDefaultParent(), '', 'image',
-      MouseEvent.clientX, MouseEvent.clientY, 60, 60, //native javascript MouseEvent 
+      (this.graph.getDefaultParent(), '', '',
+      MouseEvent.clientX, MouseEvent.clientY, 800, 900, //native javascript MouseEvent 
       style);
       //data:image/svg+xml,
       this.graphManager.graph.getModel().endUpdate();
@@ -4546,9 +4553,6 @@ addUpDownLeftRightArrowToMoveCells() {
           //Toast.show("danger", 6000, error);
         }
       );
-
-     
-
   }
   
   showLoading(toShow){

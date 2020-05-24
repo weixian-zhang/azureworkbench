@@ -40,8 +40,11 @@ export default class OverlaySaveToWorkspace extends Component {
                     </FormGroup>
                     <Button intent={Intent.PRIMARY} text="Save" icon="saved"
                      onClick={this.saveToWorkspace}/>
-                    <Typography variant="body1">
+                    <Typography variant="body2">
                         *Note: Same Collection and Diagram name will override your saved diagram
+                    </Typography>
+                    <Typography variant="body2">
+                        You can also use "save current diagram to Space" feature in 'My Space' to override existing diagrams
                     </Typography>
                 </Card>
             </Overlay>

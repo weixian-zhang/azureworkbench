@@ -18,6 +18,7 @@ import DiagramService from '../../services/DiagramService';
 import fileDialog from 'file-dialog'
 import Tippy from '@tippy.js/react';
 import 'tippy.js/dist/tippy.css';
+import moment from 'moment';
 
 import AuthService from '../../services/AuthService';
 
@@ -150,6 +151,18 @@ export default class Header extends Component {
                             }
                           }/>
                      </MenuItem>
+                     <MenuItem  text="Kubernetes">
+                      <MenuItem text="Secured Microservices"
+                            onClick={
+                              () => {
+                                var qs = this.state.quickstart;
+                                qs.category = 'Kube';
+                                qs.name = 'Secured-Micro';
+                                this.setState({quickstart:qs});
+                                this.loadQuickstartDiagram();
+                              }
+                            }/>
+                     </MenuItem>
                      <MenuItem  text="More templates coming..."></MenuItem>
                    </Menu>
                } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.HOVER}>
@@ -177,8 +190,10 @@ export default class Header extends Component {
                     this.state.userProfile == null ?
                       <AccountCircle onClick={this.handleAcctMenu}/>
                     :
-                      <Tippy content={this.state.userProfile == null ? 'Not logged in' :
-                        'welcome, ' + this.state.userProfile.UserName}
+                      <Tippy content={
+                        this.state.userProfile == null ? 'Not logged in' :
+                        'welcome, ' + this.state.userProfile.UserName
+                      }
                         followCursor={false} placement="bottom">
                         <AccountCircle onClick={this.handleAcctMenu}/>
                       </Tippy>

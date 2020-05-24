@@ -1,18 +1,18 @@
 {
   "files": {
-    "main.css": "/static/css/main.d3c9284d.chunk.css",
-    "main.js": "/static/js/main.acf96c85.chunk.js",
-    "main.js.map": "/static/js/main.acf96c85.chunk.js.map",
+    "main.css": "/static/css/main.c250f3c7.chunk.css",
+    "main.js": "/static/js/main.64da370c.chunk.js",
+    "main.js.map": "/static/js/main.64da370c.chunk.js.map",
     "runtime-main.js": "/static/js/runtime-main.fb71ee71.js",
     "runtime-main.js.map": "/static/js/runtime-main.fb71ee71.js.map",
-    "static/css/2.caf1b858.chunk.css": "/static/css/2.caf1b858.chunk.css",
-    "static/js/2.b4b44f57.chunk.js": "/static/js/2.b4b44f57.chunk.js",
-    "static/js/2.b4b44f57.chunk.js.map": "/static/js/2.b4b44f57.chunk.js.map",
+    "static/css/2.e080b8a9.chunk.css": "/static/css/2.e080b8a9.chunk.css",
+    "static/js/2.531e9f22.chunk.js": "/static/js/2.531e9f22.chunk.js",
+    "static/js/2.531e9f22.chunk.js.map": "/static/js/2.531e9f22.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.834e8d3e73c39381c6667f6031df6eed.js": "/precache-manifest.834e8d3e73c39381c6667f6031df6eed.js",
+    "precache-manifest.9bbc9ed340e33fb9eba3129d2bdca52d.js": "/precache-manifest.9bbc9ed340e33fb9eba3129d2bdca52d.js",
     "service-worker.js": "/service-worker.js",
-    "static/css/2.caf1b858.chunk.css.map": "/static/css/2.caf1b858.chunk.css.map",
-    "static/css/main.d3c9284d.chunk.css.map": "/static/css/main.d3c9284d.chunk.css.map",
+    "static/css/2.e080b8a9.chunk.css.map": "/static/css/2.e080b8a9.chunk.css.map",
+    "static/css/main.c250f3c7.chunk.css.map": "/static/css/main.c250f3c7.chunk.css.map",
     "static/media/Azure AD.png": "/static/media/Azure AD.d3ca8f60.png",
     "static/media/Logic Apps.png": "/static/media/Logic Apps.c7575782.png",
     "static/media/Machine Learning Service Workspaces.png": "/static/media/Machine Learning Service Workspaces.6432fe6b.png",
@@ -35,6 +35,7 @@
     "static/media/shape-vm2.png": "/static/media/shape-vm2.5830b4c6.png",
     "static/media/software-Zipkin.png": "/static/media/software-Zipkin.789f3c23.png",
     "static/media/software-azuredevops.png": "/static/media/software-azuredevops.1bb95e9c.png",
+    "static/media/software-calico.png": "/static/media/software-calico.3a8400e8.png",
     "static/media/software-docker.png": "/static/media/software-docker.fbdfb3f6.png",
     "static/media/software-elasticsearch.png": "/static/media/software-elasticsearch.d0e6c0ac.png",
     "static/media/software-githubactions.png": "/static/media/software-githubactions.b71c0a18.png",
@@ -62,9 +63,9 @@
   },
   "entrypoints": [
     "static/js/runtime-main.fb71ee71.js",
-    "static/css/2.caf1b858.chunk.css",
-    "static/js/2.b4b44f57.chunk.js",
-    "static/css/main.d3c9284d.chunk.css",
-    "static/js/main.acf96c85.chunk.js"
+    "static/css/2.e080b8a9.chunk.css",
+    "static/js/2.531e9f22.chunk.js",
+    "static/css/main.c250f3c7.chunk.css",
+    "static/js/main.64da370c.chunk.js"
   ]
 }

@@ -28,6 +28,24 @@ export default class OverlayTutorial extends Component {
                     </Tabs>
                     <div hidden={this.state.value !== 'diagram'} style={{overflow: 'auto'}}>
                         <Typography variant="h6" align="left" color="primary" gutterBottom>
+                            Save Diagram as PDF
+                        </Typography>
+                        <Typography variant="body1" align="left" gutterBottom>
+                            <ul>
+                                <li>
+                                    <Typography variant="body2" align="left" gutterBottom>
+                                        At Header toolbar, click on Folder icon and click "Export as PDF"
+                                    </Typography>
+                                </li>
+                                <li>
+                                    <Typography variant="body2" align="left" gutterBottom>
+                                        Another way: Right-click on canvas and click "Preview Diagram".
+                                        A new window will open to preview your diagram, on the new window, right-click and click on browser's 'Print' feature to save diagram as PDF.
+                                    </Typography>
+                                </li>
+                            </ul>
+                        </Typography>
+                        <Typography variant="h6" align="left" color="primary" gutterBottom>
                             Add Subnet
                         </Typography>
                         <Typography variant="body1" align="left" gutterBottom>

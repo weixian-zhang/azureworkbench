@@ -116,6 +116,8 @@ export default class ResourcePalette extends Component {
   }
 
   initRef(){
+    this.shapecalico = React.createRef();
+    this.shaperesourcegroup = React.createRef();
     this.threedbox = React.createRef();
     this.straightArrow = React.createRef();
     this.elbowArrow = React.createRef();
@@ -532,7 +534,7 @@ export default class ResourcePalette extends Component {
       },
       {
         resourceGroup: {
-          groupName: 'Software (Non-Azure)',
+          groupName: 'Misc (Non-Azure)',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
@@ -799,6 +801,22 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
               ref: this.shapejaeger
+            },
+            {
+              Name: 'calico microservice',
+              Tooltip: 'Calico',
+              Image: require('../../assets/azure_icons/software/software-calico.png'),
+              IsPng: false,
+              IsVisible:true,
+              ref: this.shapecalico
+            },
+            {
+              Name: 'resource group',
+              Tooltip: 'Azure Resource Group (shape))',
+              Image: require('../../assets/azure_icons/software/software-resourcegroup.png'),
+              IsPng: false,
+              IsVisible:true,
+              ref: this.shaperesourcegroup
             },
           ]
         }
@@ -1861,6 +1879,8 @@ export default class ResourcePalette extends Component {
     this.graphManager.makeIconDraggable(this.shapetraefik.current, "software-shapetraefik", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.shapezipkin.current, "software-shapezipkin", thisComponent.props.addResourceToDiagramEditor);
     this.graphManager.makeIconDraggable(this.shapejaeger.current, "software-shapejaeger", thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.shapecalico.current, "software-calico", thisComponent.props.addResourceToDiagramEditor);
+    this.graphManager.makeIconDraggable(this.shaperesourcegroup.current, "software-resourcegroup", thisComponent.props.addResourceToDiagramEditor);
 
     //web
     this.graphManager.makeIconDraggable(this.appsvcIcon.current, ResourceType.AppService(), thisComponent.props.addResourceToDiagramEditor);

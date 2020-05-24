@@ -16,10 +16,8 @@ import {
     mxConnectionHandler,
     mxCellEditor,
     mxEventObject,
-    mxEdgeStyle,
-    mxStyleRegistry,
-    mxGraphCreateHandler,
-    mxEdgeSegmentHandler
+    mxCellHighlight,
+    mxClient
   } from "mxgraph-js";
 
 import Utils from '../Helpers/Utils';
@@ -82,12 +80,11 @@ export default class MxGraphManager
 
     initGlobalSettings(){
 
-        this.initResizeVertexSettings();
-
         this.graph.foldingEnabled = false;
 
         mxVertexHandler.prototype.livePreview = false;
-
+        mxGraphHandler.prototype.allowLivePreview = false;
+        
         //global settings
         //contrain drag boundary of child within parent
         mxGraphHandler.prototype.removeCellsFromParent = false
@@ -187,14 +184,6 @@ export default class MxGraphManager
         };
     }
 
-    //prevent resize of children when parent resize
-    initResizeVertexSettings() {
-        this.graph.resizeContainer = false;
-        this.graph.extendParentsOnAdd = false;
-        this.graph.constrainChildren = true;
-        this.graph.recursiveResize = false;
-        mxVertexHandler.prototype.singleSizer = false;
-    }
 
     initGlobalPanningSettings(){
         this.graph.setPanning(true);
