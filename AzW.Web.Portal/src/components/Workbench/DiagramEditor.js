@@ -4,6 +4,10 @@ import MySpace from './MySpace';
 import OverlaySaveToWorkspace from './OverlaySaveToWorkspace';
 import {InputGroup, Classes, Button, Intent, Overlay, Toaster, Position} from "@blueprintjs/core";
 
+//gojs
+import * as go from 'gojs';
+import { PanningTool } from 'gojs';
+
 //3rd-party libraries
 import ShortUniqueId from 'short-unique-id';
 import AzureIcons from "./Helpers/AzureIcons";
@@ -189,8 +193,12 @@ import Toast from './Helpers/Toast';
 import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
 
  export default class DiagramEditor extends Component {
+ 
   constructor(props) {
     super(props);
+
+    this.$ = go.GraphObject.make;
+
     this.shortUID = new ShortUniqueId();
     this.graph = null;
     this.azureIcons = AzureIcons;
@@ -212,43 +220,45 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
     this.armsvc = new ARMService();
     this.comsvc = new ComputeService();
     this.diagService = new DiagramService();
+
+    this.diagram = null;
+    this.contextmenu = null;
   }
 
   componentDidMount() {
 
-    this.graphManager = new MxGraphManager(document.getElementById("diagramEditor"));
-    this.graphManager.initGraph();
-    this.graph = this.graphManager.graph;
-    this.azureValidator = new AzureValidator(this.graph);
-    this.props.mxgraphManagerReadyCallback(this.graphManager);
-    this.mxClientOverrides = new mxClientOverrides(this.graph);
+    this.initDiagramCanvas();
+
+    //this.graphManager = null; //new MxGraphManager(document.getElementById("diagramEditor"));
+    
+    //this.graph = graphManager.initDiagramCanvas('diagramEditor'); //this.graphManager.graph;
+    //this.props.mxgraphManagerReadyCallback(this.graphManager);
+    //this.mxClientOverrides = new mxClientOverrides(this.graph);
+
+    //this.azureValidator = new AzureValidator(this.graph);
 
     //services
     this.diagramService = new DiagramService();
     this.provisionService = new ProvisionService();
     this.provisionHelper = new ProvisionHelper();
 
-    this.addDblClickEventToOpenPropPanel();
-    this.addDeleteKeyEventToDeleteVertex();
-    this.addContextMenu();
-    this.addCtrlZEventToUndo();
-    this.addCtrlAEventSelectAll();
-    this.addCtrlCCtrlVCopyPasteVertices();
-    this.addUpDownLeftRightArrowToMoveCells();
-    this.addDropPNGAZWBFileHandler();
+    // this.addDblClickEventToOpenPropPanel();
+    // this.addDeleteKeyEventToDeleteVertex();
+    // this.addContextMenu();
+    // this.addCtrlZEventToUndo();
+    // this.addCtrlAEventSelectAll();
+    // this.addCtrlCCtrlVCopyPasteVertices();
+    // this.addUpDownLeftRightArrowToMoveCells();
+    // this.addDropPNGAZWBFileHandler();
     
-    this.initPasteImageFromBrowserClipboard();
-    this.addCtrlSSave();
-    this.PromptSaveBeforeCloseBrowser();
-    this.canvasChangeEvent();
+    // this.initPasteImageFromBrowserClipboard();
+    // this.addCtrlSSave();
+    // this.PromptSaveBeforeCloseBrowser();
+    // this.canvasChangeEvent();
 
     this.initRef();
 
     this.loadSharedDiagram();
-  }
-
-  returnDiagramEditor(){
-
   }
 
   render() {
@@ -431,101 +441,396 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
     this.iotcentralPropPanel = React.createRef();
   }
   
-  addDblClickEventToOpenPropPanel(){
-    this.graph.addListener(mxEvent.DOUBLE_CLICK, (sender, evt) =>
+  initDiagramCanvas = () => {
+
+    this.diagram = this.$(go.Diagram, 'diagramEditor', 
+    {
+        initialContentAlignment: go.Spot.Center,
+        initialAutoScale: go.Diagram.Uniform,
+        "undoManager.isEnabled": true,
+        'animationManager.isEnabled': false,  // turn off automatic animations
+        
+        // allow Ctrl-G to call groupSelection()
+        "commandHandler.archetypeGroupData": { text: "Group", isGroup: true, color: "blue" },
+        isReadOnly: false,
+        allowZoom: true,
+        allowSelect: true,
+        allowCopy: true,
+        allowDelete: true,
+        allowInsert: true,
+        allowGroup: true,
+        allowUngroup: true,
+        allowClipboard: true,
+        
+        "draggingTool.dragsLink": true,
+        "draggingTool.isGridSnapEnabled": true,
+        "linkingTool.isUnconnectedLinkValid": true,
+        "relinkingTool.isUnconnectedLinkValid": true
+    });
+
+    this.diagram.scrollMode = go.Diagram.InfiniteScroll;
+
+    this.initDiagramBehaviors();
+
+    this.linkDataArray = [];
+    this.nodeDataArray =  [];
+
+    this.diagram.model =
+            new go.GraphLinksModel(this.nodeDataArray, this.linkDataArray);
+}
+
+initDiagramBehaviors() {
+
+  this.initTemplates();
+
+  this.initPanningwithRightMouseClick();
+
+  this.initDiagramModifiedEvent();
+
+  this.initContextMenu();
+}
+
+initPanningwithRightMouseClick() {
+  PanningTool.prototype.canStart = function() {
+    if (!this.isEnabled) return false;
+    var diagram = this.diagram;
+    if (diagram === null) return false;
+    if (!diagram.allowHorizontalScroll && !diagram.allowVerticalScroll) return false;
+    // require left button & that it has moved far enough away from the mouse down point, so it isn't a click
+    if (!diagram.lastInput.right) return false;
+    // don't include the following check when this tool is running modally
+    if (diagram.currentTool !== this) {
+      // mouse needs to have moved from the mouse-down point
+      if (!this.isBeyondDragSize()) return false;
+    }
+    return true;
+  };
+}
+
+initTemplates() {
+  var nodeTemplateMap = new go.Map();
+  var linkTemplateMap = new go.Map();
+
+  this.diagram.groupTemplate = this.createGroupTemplate();
+
+  var shapeTemplate = this.createShapeTemplate();
+  nodeTemplateMap.add('shape', shapeTemplate);
+
+  var linkTemplate = this.createLinkTemplate();
+  linkTemplateMap.add('link', linkTemplate);
+
+  this.diagram.nodeTemplateMap = nodeTemplateMap;
+  this.diagram.linkTemplateMap = linkTemplateMap;
+}
+
+createShapeTemplate() {
+  var thisComp = this;
+  var shapeTemplate =
+    this.$(go.Node, "Auto",
+      {
+        movable: true,
+        selectable: true,
+        resizable: true,
+        resizeObjectName: "SHAPE",
+        selectionObjectName: "SHAPE",
+        rotatable: true,
+        selectionChanged: function(p) {
+          p.layerName = (p.isSelected ? "Foreground" : '');
+        }
+      },
+      new go.Binding("location", "loc", go.Point.parse),
+      this.$(go.Shape,
         {
-          var cell = evt.getProperty('cell');
+          name: 'SHAPE',
+          strokeWidth: 2,
+          desiredSize: new go.Size(180, 100)
+        },
+        new go.Binding("figure", "figure"),
+        new go.Binding("fill", "fillColor"),
+        new go.Binding("strokeColor", "strokeColor"),
+      ),
+      this.$(go.TextBlock,
+        { 
+          editable: true,
+          isMultiline: false 
+        },
+        new go.Binding("text", "label")
+      ),
+      // four small named ports, one on each side:
+      this.makePort("T", go.Spot.Top, true, true),
+      this.makePort("TL", go.Spot.TopLeft, true, true),
+      this.makePort("TR", go.Spot.TopRight, true, true),
+      this.makePort("L", go.Spot.Left, true, true),
+      this.makePort("R", go.Spot.Right, true, true),
+      this.makePort("B", go.Spot.Bottom, true, true),
+      this.makePort("BL", go.Spot.BottomLeft, true, true),
+      this.makePort("BR", go.Spot.BottomRight, true, true)
+    );
+    
+    return shapeTemplate;
+}
 
-          if(Utils.IsNullOrUndefine(cell) || Utils.IsNullOrUndefine(cell.value))
-            return;
-          
-          var result = Utils.TryParseUserObject(cell.value);
+//https://gojs.net/latest/samples/draggableLink.html
 
-          if(!result.isUserObject)
+      // Define a function for creating a "port" that is normally transparent.
+      // The "name" is used as the GraphObject.portId, the "spot" is used to control how links connect
+      // and where the port is positioned on the node, and the boolean "output" and "input" arguments
+      // control whether the user can draw links from or to the port.
+makePort(name, spot, output, input) {
+  // the port is basically just a small transparent square
+  return this.$(go.Shape, "Circle",
+    {
+      fill: null,  // not seen, by default; set to a translucent gray by showSmallPorts, defined below
+      stroke: null,
+      desiredSize: new go.Size(7, 7),
+      alignment: spot,  // align the port on the main Shape
+      alignmentFocus: spot,  // just inside the Shape
+      portId: name,  // declare this object to be a "port"
+      fromSpot: spot, toSpot: spot,  // declare where links may connect at this port
+      fromLinkable: output, toLinkable: input,  // declare whether the user may draw links to/from here
+      cursor: "pointer"  // show a different cursor to indicate potential link point
+    });
+}
+
+createLinkTemplate(dropContext) {
+  
+  var linkSelectionAdornmentTemplate =
+        this.$(go.Adornment, "Link",
+        this.$(go.Shape,
+            // isPanelMain declares that this Shape shares the Link.geometry
+            { isPanelMain: true, fill: null, stroke: "darkblue", strokeWidth: 0 } // use selection object's strokeWidth
+          )  
+        );
+
+   var linkTemplate =
+      this.$(go.Link,  // the whole link panel
+          { 
+            selectable: true,
+            selectionAdornmentTemplate: linkSelectionAdornmentTemplate 
+          },
+          { relinkableFrom: true, relinkableTo: true, reshapable: true },
+          {
+            routing: go.Link.Bezier,
+            curve: go.Link.JumpOver,
+            corner: 3
+            // toShortLength: 4
+          },
+          //new go.Binding("routing", "routing"),
+          new go.Binding("points").makeTwoWay(),
+      this.$(go.Shape,  // the link path shape
+            { isPanelMain: true, strokeWidth: 2 }),
+      this.$(go.Shape,  // the arrowhead
+            {toArrow: "Standard", stroke: null })
+        );
+
+    return linkTemplate;
+}
+
+createGroupTemplate() {
+  
+    var groupTemplate =
+      this.$(go.Group, "Auto",
+      {
+        selectionObjectName: "PANEL",  // selection handle goes around shape, not label
+        ungroupable: true  // enable Ctrl-Shift-G to ungroup a selected Group
+      },
+        this.$(go.Panel, "Auto",
+        { name: "PANEL" },
+        this.$(go.Shape, "Rectangle",  // the rectangular shape around the members
+          {
+            fill: "transparent", stroke: "transparent", strokeWidth: 0,
+            portId: "", cursor: "pointer",  // the Shape is the port, not the whole Node
+            // allow all kinds of links from and to this port
+            fromLinkable: false, fromLinkableSelfNode: false, fromLinkableDuplicates: false,
+            toLinkable: false, toLinkableSelfNode: false, toLinkableDuplicates: false
+          }),
+        this.$(go.Placeholder, { margin: 10, background: "transparent" })  // represents where the members are
+      )
+    );
+
+    return groupTemplate;
+}
+
+
+initDiagramModifiedEvent() {
+  var thisComp = this;
+  this.diagram.addDiagramListener("Modified",
+    function(e) {
+
+      if(e.diagram.nodes.count == 0) {
+        thisComp.setState({unsavedChanges: false}, () => {
+          thisComp.setBadgeVisibilityOnUnsaveChanges()});
+        return
+      }
+      
+      if(thisComp.diagram.isModified) {
+        if(thisComp.state.unsavedChanges)
+          return;
+
+        thisComp.setState({unsavedChanges: true}, () => {
+          thisComp.setBadgeVisibilityOnUnsaveChanges()});
+      }
+    });
+
+    this.diagram.addModelChangedListener(
+    function(e) {
+      if(e.isTransactionFinished) {
+          if(thisComp.diagram.nodes.count == 0) {
+            thisComp.setState({unsavedChanges: false}, () => {
+              thisComp.setBadgeVisibilityOnUnsaveChanges()});
+          }
+          else {
+            if(thisComp.state.unsavedChanges)
               return;
 
-          this.determineResourcePropertyPanelToShow(cell, result.userObject);
-        });  
-  }
-
-  canvasChangeEvent = () => {
-    var thisComp = this;
-    this.graph.addListener(mxEvent.CELLS_ADDED, function (sender, evt) {
-      //set unsave state
-      if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-
-      thisComp.setState({unsavedChanges: true}, () => {
-        thisComp.setBadgeVisibilityOnUnsaveChanges()});
-      evt.consume();
-    });
-    this.graph.addListener(mxEvent.CELLS_MOVED, function (sender, evt) {    
-      //set unsave state
-      if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-
-      thisComp.setState({unsavedChanges: true}, () => {
-        thisComp.setBadgeVisibilityOnUnsaveChanges()});
-      evt.consume();
-    });
-    this.graph.addListener(mxEvent.CONNECT_CELL, function (sender, evt) {
-      //set unsave state
-      if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-
-      thisComp.setState({unsavedChanges: true}, () => {
-        thisComp.setBadgeVisibilityOnUnsaveChanges()});
-      evt.consume();
-    });
-    this.graph.addListener(mxEvent.CELLS_RESIZED, function (sender, evt) {
-      //set unsave state
-      if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-
-      thisComp.setState({unsavedChanges: true}, () => {
-        thisComp.setBadgeVisibilityOnUnsaveChanges()});
-      evt.consume();
-    });
-    this.graph.addListener(mxEvent.CELLS_RESIZED, function (sender, evt) {
-      //set unsave state
-      if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-      thisComp.setState({unsavedChanges: true}, this.setBadgeVisibilityOnUnsaveChanges);
-      evt.consume();
-    });
-    this.graph.addListener(mxEvent.CELL_CONNECTED, function (sender, evt) {
-      //set unsave state
-      if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-
-      thisComp.setState({unsavedChanges: true}, () => {
-        thisComp.setBadgeVisibilityOnUnsaveChanges()});
-
-      evt.consume();
-    });
-    this.graph.addListener(mxEvent.CELLS_REMOVED, function (sender, evt) {
-      //set unsave state
-      if(!thisComp.graphManager.isCellExist())
-      {
-        thisComp.setState({unsavedChanges: false}, thisComp.setBadgeVisibilityOnUnsaveChanges);
-        evt.consume();
-        return;
+            thisComp.setState({unsavedChanges: true}, () => {
+              thisComp.setBadgeVisibilityOnUnsaveChanges()});
+          }
+            
       }
-
-      if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-
-      thisComp.setState({unsavedChanges: true}, () => {
-        thisComp.setBadgeVisibilityOnUnsaveChanges()});
-
-      evt.consume();
     });
-    this.graph.addListener(mxEvent.GROUP_CELLS, function (sender, evt) {
+}
+
+initContextMenu() {
+  this.diagram.contextMenu =
+  this.$("ContextMenu",
+    this.$("ContextMenuButton",
+      this.$(go.TextBlock, "Undo"),
+          { click: function(e, obj) { e.diagram.commandHandler.undo(); } },
+          new go.Binding("visible", "", function(o) {
+              return o.diagram.commandHandler.canUndo();
+          }).ofObject()),
+    this.$("ContextMenuButton",
+      this.$(go.TextBlock, "Redo"),
+          { click: function(e, obj) { e.diagram.commandHandler.redo(); } },
+          new go.Binding("visible", "", function(o) {
+            return o.diagram.commandHandler.canRedo();
+          }).ofObject()),
+    this.$("ContextMenuButton",
+      this.$(go.TextBlock, "Group"),
+            { 
+              click: function(e, obj) 
+              { 
+                e.diagram.commandHandler.groupSelection(); 
+            } },
+            new go.Binding("visible", "", 
+              function(o) {
+                return o.diagram.commandHandler.canGroupSelection();
+              }).ofObject()),
+    this.$("ContextMenuButton",
+      this.$(go.TextBlock, "Ungroup"),
+              { 
+                click: function(e, obj) 
+                { 
+                  e.diagram.commandHandler.ungroupSelection(); 
+              } },
+              new go.Binding("visible", "", 
+                function(o) {
+                  return o.diagram.commandHandler.canUngroupSelection();
+                }).ofObject()),
+  );
+}
+
+
+createShape(dropContext) {
+  var figure = dropContext.figure;
+  var label = dropContext.label;
+  var canvasPoint = this.diagram.transformViewToDoc(new go.Point(dropContext.x, dropContext.y));
+
+  this.diagram.model.addNodeData
+    ({key: label, label: label, fillColor: 'white',
+      strokeColor: 'black', figure: figure, loc: go.Point.stringify(canvasPoint), category: 'shape'});
+}
+
+createLink(dropContext) {
+  var canvasPoint = this.diagram.transformViewToDoc(new go.Point(dropContext.x, dropContext.y));
+  var routing = dropContext.routing;
+  this.diagram.model.addLinkData(
+    { points: new go.List(go.Point).addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]),
+      routing:  routing,
+      category: 'link'
+    }
+  );
+}
+
+  // canvasChangeEvent = () => {
+  //   var thisComp = this;
+  //   this.graph.addListener(mxEvent.CELLS_ADDED, function (sender, evt) {
+  //     //set unsave state
+  //     if(thisComp.state.unsavedChanges) { evt.consume(); return;}
+
+  //     thisComp.setState({unsavedChanges: true}, () => {
+  //       thisComp.setBadgeVisibilityOnUnsaveChanges()});
+  //     evt.consume();
+  //   });
+  //   this.graph.addListener(mxEvent.CELLS_MOVED, function (sender, evt) {    
+  //     //set unsave state
+  //     if(thisComp.state.unsavedChanges) { evt.consume(); return;}
+
+  //     thisComp.setState({unsavedChanges: true}, () => {
+  //       thisComp.setBadgeVisibilityOnUnsaveChanges()});
+  //     evt.consume();
+  //   });
+  //   this.graph.addListener(mxEvent.CONNECT_CELL, function (sender, evt) {
+  //     //set unsave state
+  //     if(thisComp.state.unsavedChanges) { evt.consume(); return;}
+
+  //     thisComp.setState({unsavedChanges: true}, () => {
+  //       thisComp.setBadgeVisibilityOnUnsaveChanges()});
+  //     evt.consume();
+  //   });
+  //   this.graph.addListener(mxEvent.CELLS_RESIZED, function (sender, evt) {
+  //     //set unsave state
+  //     if(thisComp.state.unsavedChanges) { evt.consume(); return;}
+
+  //     thisComp.setState({unsavedChanges: true}, () => {
+  //       thisComp.setBadgeVisibilityOnUnsaveChanges()});
+  //     evt.consume();
+  //   });
+  //   this.graph.addListener(mxEvent.CELLS_RESIZED, function (sender, evt) {
+  //     //set unsave state
+  //     if(thisComp.state.unsavedChanges) { evt.consume(); return;}
+  //     thisComp.setState({unsavedChanges: true}, this.setBadgeVisibilityOnUnsaveChanges);
+  //     evt.consume();
+  //   });
+  //   this.graph.addListener(mxEvent.CELL_CONNECTED, function (sender, evt) {
+  //     //set unsave state
+  //     if(thisComp.state.unsavedChanges) { evt.consume(); return;}
+
+  //     thisComp.setState({unsavedChanges: true}, () => {
+  //       thisComp.setBadgeVisibilityOnUnsaveChanges()});
+
+  //     evt.consume();
+  //   });
+  //   this.graph.addListener(mxEvent.CELLS_REMOVED, function (sender, evt) {
+  //     //set unsave state
+  //     if(!thisComp.graphManager.isCellExist())
+  //     {
+  //       thisComp.setState({unsavedChanges: false}, thisComp.setBadgeVisibilityOnUnsaveChanges);
+  //       evt.consume();
+  //       return;
+  //     }
+
+  //     if(thisComp.state.unsavedChanges) { evt.consume(); return;}
+
+  //     thisComp.setState({unsavedChanges: true}, () => {
+  //       thisComp.setBadgeVisibilityOnUnsaveChanges()});
+
+  //     evt.consume();
+  //   });
+  //   this.graph.addListener(mxEvent.GROUP_CELLS, function (sender, evt) {
       
-      this.graph.orderCells(false); 
+  //     this.graph.orderCells(false); 
 
-      //set unsave state
-      if(thisComp.state.unsavedChanges) { evt.consume(); return;}
+  //     //set unsave state
+  //     if(thisComp.state.unsavedChanges) { evt.consume(); return;}
 
-      thisComp.setState({unsavedChanges: true}, () => {
-        thisComp.setBadgeVisibilityOnUnsaveChanges()});
+  //     thisComp.setState({unsavedChanges: true}, () => {
+  //       thisComp.setBadgeVisibilityOnUnsaveChanges()});
 
-      evt.consume();
-    });
-  }
+  //     evt.consume();
+  //   });
+  // }
 
   setBadgeVisibilityOnUnsaveChanges = () => {
       if(this.state.unsavedChanges)
@@ -534,34 +839,34 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
           this.setGlobal({saveBadgeInvisible: true});
   }
 
-  addDeleteKeyEventToDeleteVertex(){
-      var thisComp = this;
-      // delete key remove vertex
-      var keyHandler = new mxKeyHandler(this.graph);
-      keyHandler.bindKey(46, (evt) =>
-        { 
-          thisComp.graph.removeCells(null,false);
-        });
-  }
+  // addDeleteKeyEventToDeleteVertex(){
+  //     var thisComp = this;
+  //     // delete key remove vertex
+  //     var keyHandler = new mxKeyHandler(this.graph);
+  //     keyHandler.bindKey(46, (evt) =>
+  //       { 
+  //         thisComp.graph.removeCells(null,false);
+  //       });
+  // }
 
-  addCtrlZEventToUndo(){
+  // addCtrlZEventToUndo(){
     
-    var undoManager = new mxUndoManager();
-    var listener = function(sender, evt) {
-      undoManager.undoableEditHappened(evt.getProperty("edit"));
-    };
-    this.graph.getModel().addListener(mxEvent.UNDO, listener);
-    this.graph.getView().addListener(mxEvent.UNDO, listener);
+  //   var undoManager = new mxUndoManager();
+  //   var listener = function(sender, evt) {
+  //     undoManager.undoableEditHappened(evt.getProperty("edit"));
+  //   };
+  //   this.graph.getModel().addListener(mxEvent.UNDO, listener);
+  //   this.graph.getView().addListener(mxEvent.UNDO, listener);
 
-    var keyHandler = new mxKeyHandler(this.graph);
+  //   var keyHandler = new mxKeyHandler(this.graph);
 
-    keyHandler.getFunction = function(evt) {
-      if (evt != null && evt.ctrlKey == true && evt.key == 'z')
-      {
-          undoManager.undo();
-      }
-    }
-  }
+  //   keyHandler.getFunction = function(evt) {
+  //     if (evt != null && evt.ctrlKey == true && evt.key == 'z')
+  //     {
+  //         undoManager.undo();
+  //     }
+  //   }
+  // }
 
   addCtrlAEventSelectAll() {
 
@@ -767,202 +1072,200 @@ addUpDownLeftRightArrowToMoveCells() {
       return false;
   }
 
-  addContextMenu(){
-    this.graph.popupMenuHandler.autoExpand = true;
+  // addContextMenu(){
+  //   this.graph.popupMenuHandler.autoExpand = true;
 
-    var thisComponent = this;
+  //   var thisComponent = this;
 
-    this.graph.popupMenuHandler.factoryMethod = function(menu, cell, evt)
-    {
-       //for vnet
-      if(Utils.IsVNet(cell))
-      {
-        menu.addItem('Add Subnet', '', function()
-        {
-          thisComponent.addSubnet(cell); // is vnetCell
-        });
+  //   this.graph.popupMenuHandler.factoryMethod = function(menu, cell, evt)
+  //   {
+  //      //for vnet
+  //     if(Utils.IsVNet(cell))
+  //     {
+  //       menu.addItem('Add Subnet', '', function()
+  //       {
+  //         thisComponent.addSubnet(cell); // is vnetCell
+  //       });
 
-        //if true, hide option
-        if(!thisComponent.azureValidator.isGatewaySubnetExist(cell)){
-          menu.addItem('Add GatewaySubnet', '', function()
-          {
-            thisComponent.addGatewaySubnet(cell); // is vnetCell
-          });
-        }
+  //       //if true, hide option
+  //       if(!thisComponent.azureValidator.isGatewaySubnetExist(cell)){
+  //         menu.addItem('Add GatewaySubnet', '', function()
+  //         {
+  //           thisComponent.addGatewaySubnet(cell); // is vnetCell
+  //         });
+  //       }
 
-        if(!thisComponent.azureValidator.vnetHasNatGateway(cell)){
-          menu.addItem('Add NAT Gateway', '', function()
-          {
-            thisComponent.addNatGateway(cell); // is vnetCell
-          });
-        }
+  //       if(!thisComponent.azureValidator.vnetHasNatGateway(cell)){
+  //         menu.addItem('Add NAT Gateway', '', function()
+  //         {
+  //           thisComponent.addNatGateway(cell); // is vnetCell
+  //         });
+  //       }
 
-        menu.addSeparator();
-      }
+  //       menu.addSeparator();
+  //     }
 
-      //TODO
-      // if(Utils.IsVM(cell))
-      // {
-      //   menu.addItem('VM Backup', '', function()
-      //   {
-      //     var nsgVertex = thisComponent.graph.insertVertex(
-      //       cell,
-      //       '',
-      //       '',
-      //       1,
-      //       0, //subnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
-      //       15, //width
-      //       15, //height
-      //       "movable=0;resizable=0;editable=0;shape=image;image=data:image/png," + thisComponent.azureIcons.RecoveryServiceVault()
+  //     //TODO
+  //     // if(Utils.IsVM(cell))
+  //     // {
+  //     //   menu.addItem('VM Backup', '', function()
+  //     //   {
+  //     //     var nsgVertex = thisComponent.graph.insertVertex(
+  //     //       cell,
+  //     //       '',
+  //     //       '',
+  //     //       1,
+  //     //       0, //subnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
+  //     //       15, //width
+  //     //       15, //height
+  //     //       "movable=0;resizable=0;editable=0;shape=image;image=data:image/png," + thisComponent.azureIcons.RecoveryServiceVault()
               
-      //     );
-      //     nsgVertex.collapsed = false;
-      //     nsgVertex.geometry.offset = new mxPoint(-12, -15);
-      //     nsgVertex.geometry.relative = true;
-      //     thisComponent.graph.refresh();
-      //   });
-      //   menu.addSeparator();
-      // }
+  //     //     );
+  //     //     nsgVertex.collapsed = false;
+  //     //     nsgVertex.geometry.offset = new mxPoint(-12, -15);
+  //     //     nsgVertex.geometry.relative = true;
+  //     //     thisComponent.graph.refresh();
+  //     //   });
+  //     //   menu.addSeparator();
+  //     // }
 
-      if(Utils.IsSubnet(cell))
-      {
-        if(!thisComponent.azureValidator.subnetHasNSG(cell)) {
-          menu.addItem('Add Network Security Group', '', function()
-          {
-              thisComponent.addNSG(cell);
-          });
-        }
+  //     if(Utils.IsSubnet(cell))
+  //     {
+  //       if(!thisComponent.azureValidator.subnetHasNSG(cell)) {
+  //         menu.addItem('Add Network Security Group', '', function()
+  //         {
+  //             thisComponent.addNSG(cell);
+  //         });
+  //       }
 
-        if(!thisComponent.azureValidator.subnetHasUDR(cell)) {
-        menu.addItem('Add Route Table', '', function()
-        {
-            thisComponent.addUDR(cell);
-        });
-        }
+  //       if(!thisComponent.azureValidator.subnetHasUDR(cell)) {
+  //       menu.addItem('Add Route Table', '', function()
+  //       {
+  //           thisComponent.addUDR(cell);
+  //       });
+  //       }
 
-        if(!thisComponent.azureValidator.subnetHasNSG(cell) ||
-           !thisComponent.azureValidator.subnetHasUDR(cell))
-           menu.addSeparator();
+  //       if(!thisComponent.azureValidator.subnetHasNSG(cell) ||
+  //          !thisComponent.azureValidator.subnetHasUDR(cell))
+  //          menu.addSeparator();
             
-      }
+  //     }
       
-      //if any cell is selected
-      if(thisComponent.graph.getSelectionCells().length > 0) {
-        menu.addItem('Bring to Front', '', function()
-        {
-          thisComponent.graph.orderCells(false); 
-        });
+  //     //if any cell is selected
+  //     if(thisComponent.graph.getSelectionCells().length > 0) {
+  //       menu.addItem('Bring to Front', '', function()
+  //       {
+  //         thisComponent.graph.orderCells(false); 
+  //       });
 
-        menu.addItem('Send To Back', '', function()
-        {
-          thisComponent.graph.orderCells(true); 
-        });
+  //       menu.addItem('Send To Back', '', function()
+  //       {
+  //         thisComponent.graph.orderCells(true); 
+  //       });
 
-        menu.addSeparator();
-        menu.addItem('Delete', '', function()
-        {
-          thisComponent.graph.removeCells(null,false); 
-        });
+  //       menu.addSeparator();
+  //       menu.addItem('Delete', '', function()
+  //       {
+  //         thisComponent.graph.removeCells(null,false); 
+  //       });
         
-        menu.addSeparator();
-        menu.addItem('Group', '', function()
-        {
-          thisComponent.groupCells(); 
-        });
-        menu.addItem('Ungroup', '', function()
-        {
-          thisComponent.unGroupCells(); 
-        });
+  //       menu.addSeparator();
+  //       menu.addItem('Group', '', function()
+  //       {
+  //         thisComponent.groupCells(); 
+  //       });
+  //       menu.addItem('Ungroup', '', function()
+  //       {
+  //         thisComponent.unGroupCells(); 
+  //       });
 
-        if(!Utils.IsNullOrUndefine(this.graph.getSelectionCells()))
-        {
-          menu.addSeparator();
-          menu.addItem('Copy', '', function()
-          {
-            thisComponent.copyToClipboard(); 
-          });
-        }
-      }
+  //       if(!Utils.IsNullOrUndefine(this.graph.getSelectionCells()))
+  //       {
+  //         menu.addSeparator();
+  //         menu.addItem('Copy', '', function()
+  //         {
+  //           thisComponent.copyToClipboard(); 
+  //         });
+  //       }
+  //     }
       
-      //if clipboard exist
-      if(!mxClipboard.isEmpty())
-      {
-        menu.addItem('Paste', '', function()
-        {
-          thisComponent.pasteFromClipboard(); 
-        });
-      }
+  //     //if clipboard exist
+  //     if(!mxClipboard.isEmpty())
+  //     {
+  //       menu.addItem('Paste', '', function()
+  //       {
+  //         thisComponent.pasteFromClipboard(); 
+  //       });
+  //     }
 
-      //is cell exist on canvas
-      if(thisComponent.graphManager.isCellExist()) {
+  //     //is cell exist on canvas
+  //     if(thisComponent.graphManager.isCellExist()) {
         
-        //style for shapes only
-        if(thisComponent.graphManager.isNonAzureShape(cell) ||
-        thisComponent.azureValidator.isSubnet(cell) ||
-        thisComponent.azureValidator.isVNet(cell))
-        {
-          menu.addSeparator();
-          menu.addItem('Style', '', function()
-          {
-            thisComponent.openStylePanel(cell);
-          });
-        }
+  //       //style for shapes only
+  //       if(thisComponent.graphManager.isNonAzureShape(cell) ||
+  //       thisComponent.azureValidator.isSubnet(cell) ||
+  //       thisComponent.azureValidator.isVNet(cell))
+  //       {
+  //         menu.addSeparator();
+  //         menu.addItem('Style', '', function()
+  //         {
+  //           thisComponent.openStylePanel(cell);
+  //         });
+  //       }
 
-      // if(cell!= null && cell.isEdge()) //animate flow
-      // {
-      //   menu.addSeparator();
+  //     // if(cell!= null && cell.isEdge()) //animate flow
+  //     // {
+  //     //   menu.addSeparator();
 
-      //   var atfMenu = menu.addItem('Animate traffic flow');
-      //   menu.addItem('Left 2 Right', null, function()
-      //   {
-      //     thisComponent.animateTrafficFlow(cell,'l2r');
-      //   },atfMenu);
-      //   menu.addItem('Right 2 Left', null, function()
-      //   {
-      //     thisComponent.animateTrafficFlow(cell,'r2l');
-      //   },atfMenu);
-      //   menu.addItem('No animation', null, function()
-      //   {
-      //     thisComponent.animateTrafficFlow(cell,'off');
-      //   },atfMenu);
+  //     //   var atfMenu = menu.addItem('Animate traffic flow');
+  //     //   menu.addItem('Left 2 Right', null, function()
+  //     //   {
+  //     //     thisComponent.animateTrafficFlow(cell,'l2r');
+  //     //   },atfMenu);
+  //     //   menu.addItem('Right 2 Left', null, function()
+  //     //   {
+  //     //     thisComponent.animateTrafficFlow(cell,'r2l');
+  //     //   },atfMenu);
+  //     //   menu.addItem('No animation', null, function()
+  //     //   {
+  //     //     thisComponent.animateTrafficFlow(cell,'off');
+  //     //   },atfMenu);
 
-      //   menu.addSeparator();
-      // }
+  //     //   menu.addSeparator();
+  //     // }
 
-      //preview diagram in new window
+  //     //preview diagram in new window
       
-      menu.addSeparator();  
-      menu.addItem('Preview Diagram', null, function()
-        {
-          thisComponent.showPreviewDiagramOverlay();
-        });
-      }
+  //     menu.addSeparator();  
+  //     menu.addItem('Preview Diagram', null, function()
+  //       {
+  //         thisComponent.showPreviewDiagramOverlay();
+  //       });
+  //     }
 
-      var showTickForAutoSnap = '';
-      if(thisComponent.global.autoSnapEdgeToPort)
-        showTickForAutoSnap = BlackTickPNG;
-      else
-        showTickForAutoSnap = '';
+  //     var showTickForAutoSnap = '';
+  //     if(thisComponent.global.autoSnapEdgeToPort)
+  //       showTickForAutoSnap = BlackTickPNG;
+  //     else
+  //       showTickForAutoSnap = '';
 
-      //auto snap edge to port
-      menu.addSeparator();
-      menu.addItem('Auto snap line to connection points',
-      showTickForAutoSnap, //tick image
-      function() {
-        if(!thisComponent.global.autoSnapEdgeToPort)
-          thisComponent.setGlobal({autoSnapEdgeToPort:true});
-        else
-          thisComponent.setGlobal({autoSnapEdgeToPort:false});
+  //     //auto snap edge to port
+  //     menu.addSeparator();
+  //     menu.addItem('Auto snap line to connection points',
+  //     showTickForAutoSnap, //tick image
+  //     function() {
+  //       if(!thisComponent.global.autoSnapEdgeToPort)
+  //         thisComponent.setGlobal({autoSnapEdgeToPort:true});
+  //       else
+  //         thisComponent.setGlobal({autoSnapEdgeToPort:false});
 
-          thisComponent.graphManager.autoSnapEdgeToPorts
-            (thisComponent.global.autoSnapEdgeToPort);
-      });
-    };
-  }
+  //         thisComponent.graphManager.autoSnapEdgeToPorts
+  //           (thisComponent.global.autoSnapEdgeToPort);
+  //     });
+  //   };
+  // }
 
   addResourceToEditorFromPalette = (dropContext) => {
-
-    this.graphManager.graph.getModel().beginUpdate();
 
     //handle software icons
     var softwareResourceType = '' 
@@ -975,12 +1278,15 @@ addUpDownLeftRightArrowToMoveCells() {
       case softwareResourceType:
         this.addSoftwareShape(dropContext);
         break;
-      case 'elbowarrow':
-        this.addElbowArrow(dropContext);
+      case 'Orthognal Arrow':
+        this.createLink({routing: go.Link.Orthogonal, x: dropContext.x, y: dropContext.y});
         break;
-      case 'straightarrow':
-        this.addStraightArrow(dropContext);
+      case 'Straight Arrow': //'straightarrow':
+        this.createLink({routing: go.Link.Normal, x: dropContext.x, y: dropContext.y});
         break;
+      case 'Bezier Curve Arrow': //'straightarrow':
+        this.createLink({routing: go.Link.Bezier , x: dropContext.x, y: dropContext.y});
+      break;
       case 'cylinder':
         this.addCylinder(dropContext);
         break;
@@ -990,11 +1296,11 @@ addUpDownLeftRightArrowToMoveCells() {
       case 'label':
         this.addLabel(dropContext);
         break;
-      case 'rectangle':
-        this.addRectangle(dropContext);
+      case 'Rectangle':
+        this.createShape({figure: 'Rectangle', label: 'rect', x: dropContext.x, y: dropContext.y});
         break;
-      case 'roundedrectangle':
-        this.addRoundedRectangle(dropContext);
+      case 'Rectangle Rounded':
+        this.createShape({figure: 'RoundedRectangle', label: 'rect', x: dropContext.x, y: dropContext.y});
         break;
       case 'triangle':
         this.addTriangle(dropContext);
@@ -1318,8 +1624,8 @@ addUpDownLeftRightArrowToMoveCells() {
       default:
         break;
     }
-    this.graphManager.graph.getModel().endUpdate();
-    this.graph.clearSelection();
+    // this.graphManager.graph.getModel().endUpdate();
+    // this.graph.clearSelection();
   }
 
   openStylePanel = (cell) => {
@@ -1770,34 +2076,38 @@ addUpDownLeftRightArrowToMoveCells() {
 
   addStraightArrow(dropContext){
 
-    this.graphManager.graph.getModel().beginUpdate();
-      try
-      {
-        var parent = this.graph.getDefaultParent();
+    var links = this.state.linkDataArray;
+    links.push({from: "", to: "", routing: go.Link.Normal});
+    this.setState({linkDataArray: links});
 
-        // var edgeModel = new Edge();
-        // edgeModel.GraphModel.IconId = this.shortUID.randomUUID(6);
+    // this.graphManager.graph.getModel().beginUpdate();
+    //   try
+    //   {
+    //     var parent = this.graph.getDefaultParent();
+
+    //     // var edgeModel = new Edge();
+    //     // edgeModel.GraphModel.IconId = this.shortUID.randomUUID(6);
 
 
-        var styleString = this.graphManager.getDefaultStraightEdgeStyleString();
+    //     var styleString = this.graphManager.getDefaultStraightEdgeStyleString();
 
-        var cell = new mxCell(this.shortUID.randomUUID(6),
-          new mxGeometry(dropContext.x, dropContext.y, 50, 50), styleString);
-          cell.geometry.setTerminalPoint(new mxPoint(dropContext.x, dropContext.y), false);
-          cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), true);
-          cell.geometry.points =  [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
-          cell.edge = true;
-          cell.collapsed = false;
+    //     var cell = new mxCell(this.shortUID.randomUUID(6),
+    //       new mxGeometry(dropContext.x, dropContext.y, 50, 50), styleString);
+    //       cell.geometry.setTerminalPoint(new mxPoint(dropContext.x, dropContext.y), false);
+    //       cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), true);
+    //       cell.geometry.points =  [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
+    //       cell.edge = true;
+    //       cell.collapsed = false;
 
-        var straigthArrow= this.graph.addCell(cell, parent);
+    //     var straigthArrow= this.graph.addCell(cell, parent);
 
-        this.graph.scrollCellToVisible(straigthArrow);
-      }
-      finally
-      {
-        // Updates the display
-        this.graphManager.graph.getModel().endUpdate();
-      }
+    //     this.graph.scrollCellToVisible(straigthArrow);
+    //   }
+    //   finally
+    //   {
+    //     // Updates the display
+    //     this.graphManager.graph.getModel().endUpdate();
+    //   }
   }
 
   addSoftwareShape(dropContext) {

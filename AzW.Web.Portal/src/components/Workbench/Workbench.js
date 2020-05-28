@@ -15,28 +15,31 @@ export default class Workbench extends Component {
 
     this.state = {
       renderResourcePalette: false,
-      queryString: this.props.queryString,
-      diagramEditor: null
+      queryString: this.props.queryString
     }
     
-    this.Index = this.props.Index;
+    // this.Index = this.props.Index;
 
-    this.graphContainer = null;
-    this.dropContext = null;
+    // this.graphContainer = null;
+    // this.dropContext = null;
+
+    this.diagramEditor = React.createRef();
 
     this.authService = new AuthService();
   }
 
   componentDidMount() {
-    this.diagramEditor = React.createRef();
+    
   }
 
   render = () => {
     const { renderResourcePalette } = this.state
     return (
         <div className="workbenchgrid-container">
-          { renderResourcePalette ? <ResourcePalette mxgraphManager={this.graphManager}  addResourceToDiagramEditor={this.addResourceToDiagramEditor} /> : '' }
-          <DiagramEditor ref={this.diagramEditor} Index={this.Index} queryString={this.state.queryString}  mxgraphManagerReadyCallback={this.mxgraphManagerReadyCallback} Workbench={this} />
+          <ResourcePalette addResourceToDiagramEditor={this.addResourceToDiagramEditor}/>
+          <DiagramEditor ref={this.diagramEditor} />
+          {/* { renderResourcePalette ? <ResourcePalette mxgraphManager={this.graphManager}  addResourceToDiagramEditor={this.addResourceToDiagramEditor} /> : '' } */}
+          {/* <DiagramEditor ref={this.diagramEditor} Index={this.Index} queryString={this.state.queryString}  mxgraphManagerReadyCallback={this.mxgraphManagerReadyCallback} Workbench={this} /> */}
         </div>
     );
   }

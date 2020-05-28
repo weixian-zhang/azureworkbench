@@ -16,7 +16,9 @@ import {
     mxConnectionHandler,
     mxCellEditor,
     mxEventObject,
-    mxCellHighlight,
+    mxRectangleShape,
+    mxImageShape,
+    mxShape,
     mxClient
   } from "mxgraph-js";
 
@@ -81,9 +83,6 @@ export default class MxGraphManager
     initGlobalSettings(){
 
         this.graph.foldingEnabled = false;
-
-        mxVertexHandler.prototype.livePreview = false;
-        mxGraphHandler.prototype.allowLivePreview = false;
         
         //global settings
         //contrain drag boundary of child within parent
