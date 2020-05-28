@@ -245,13 +245,6 @@ export default class ResourcePalette extends Component {
                  IsVisible:true,
                  ref: this.elbowArrow
              },
-             {
-              Name: 'double ended arrow',
-              Tooltip: 'Double Ended Arrow',
-              Image:require('../../assets/azure_icons/shape-doubleendedarrow.png'),
-              IsPng: true,
-              IsVisible:true
-            },
             {
               Name: 'curve bezier arrow',
               Tooltip: 'Bezier Curve Arrow',
@@ -259,14 +252,13 @@ export default class ResourcePalette extends Component {
               IsPng: true,
               IsVisible:true
             },
-             {
-                Name: 'Orthognal Arrow',
-                Tooltip: 'Elbow Arrow',
-                Image: require('../../assets/azure_icons/round-connector.png'),
-                IsPng: true,
-                IsVisible:true,
-                ref: this.elbowArrow
-             },
+            {
+              Name: 'double ended arrow',
+              Tooltip: 'Double Ended Arrow',
+              Image:require('../../assets/azure_icons/shape-doubleendedarrow.png'),
+              IsPng: true,
+              IsVisible:true
+            },
              {
                 Name: 'text label',
                 Tooltip: 'Text',
@@ -313,7 +305,6 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/azure_icons/shape-cylinder.png'),
               IsPng: true,
               IsVisible:true,
-              ref: this.cylinder
             },
             {
               Name: 'hexagon',
@@ -321,11 +312,17 @@ export default class ResourcePalette extends Component {
               Image:require('../../assets/azure_icons/shape-hexagon.png'),
               IsPng: true,
               IsVisible:true,
-              ref: this.hexagon
             },
             {
-              Name: '3d box',
-              Tooltip: '3D Box',
+              Name: 'nonagon',
+              Tooltip: 'Nonagon',
+              Image:require('../../assets/azure_icons/shape-nonagon.png'),
+              IsPng: true,
+              IsVisible:true,
+            },
+            {
+              Name: '3d box cube',
+              Tooltip: '3D Cube',
               Image:require('../../assets/azure_icons/shape-3dbox.png'),
               IsPng: true,
               IsVisible:true,

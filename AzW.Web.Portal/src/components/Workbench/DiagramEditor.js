@@ -7,6 +7,7 @@ import {InputGroup, Classes, Button, Intent, Overlay, Toaster, Position} from "@
 //gojs
 import * as go from 'gojs';
 import { PanningTool } from 'gojs';
+import './Helpers/GojsExtensionFigures';
 
 //3rd-party libraries
 import ShortUniqueId from 'short-unique-id';
@@ -191,6 +192,7 @@ import ProvisionHelper from './Helpers/ProvisionHelper';
 import Toast from './Helpers/Toast';
 
 import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
+import GojsManager from "./Helpers/GojsManager";
 
  export default class DiagramEditor extends Component {
  
@@ -198,6 +200,8 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
     super(props);
 
     this.$ = go.GraphObject.make;
+
+    this.goManager = new GojsManager();
 
     this.shortUID = new ShortUniqueId();
     this.graph = null;
@@ -222,7 +226,7 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
     this.diagService = new DiagramService();
 
     this.diagram = null;
-    this.contextmenu = null;
+    this.generalContextmenu = null;
   }
 
   componentDidMount() {
@@ -463,12 +467,14 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
         allowClipboard: true,
         
         "draggingTool.dragsLink": true,
-        "draggingTool.isGridSnapEnabled": true,
+        "draggingTool.isGridSnapEnabled": false,
         "linkingTool.isUnconnectedLinkValid": true,
         "relinkingTool.isUnconnectedLinkValid": true
     });
 
     this.diagram.scrollMode = go.Diagram.InfiniteScroll;
+    this.diagram.toolManager.clickCreatingTool.archetypeGroupData = { name: "Unit", leftArray: [], rightArray: [], topArray: [], bottomArray: [] };
+    //this.diagram.toolManager.linkingTool.temporaryLink.routing = go.Link.Orthogonal;
 
     this.initDiagramBehaviors();
 
@@ -487,7 +493,8 @@ initDiagramBehaviors() {
 
   this.initDiagramModifiedEvent();
 
-  this.initContextMenu();
+  this.generalContextmenu = this.initGeneralContextMenu();
+  this.diagram.contextMenu = this.generalContextmenu;
 }
 
 initPanningwithRightMouseClick() {
@@ -513,18 +520,86 @@ initTemplates() {
 
   this.diagram.groupTemplate = this.createGroupTemplate();
 
-  var shapeTemplate = this.createShapeTemplate();
-  nodeTemplateMap.add('shape', shapeTemplate);
+  nodeTemplateMap.add('shape', this.createShapeTemplate());
+  nodeTemplateMap.add('text', this.createTextTemplate());
+  nodeTemplateMap.add('picshape', this.createPictureShapeTemplate());
 
-  var linkTemplate = this.createLinkTemplate();
-  linkTemplateMap.add('link', linkTemplate);
+  this.initLinkTemplate(linkTemplateMap);
 
   this.diagram.nodeTemplateMap = nodeTemplateMap;
   this.diagram.linkTemplateMap = linkTemplateMap;
 }
 
-createShapeTemplate() {
+createTextTemplate() {
+    //textblock
+    var textTemplate =
+      this.$(go.Node, "Auto",
+        {
+          movable: true,
+          selectable: true,
+          resizable: true,
+          rotatable: true //,
+          // selectionChanged: function(p) {
+          //   p.layerName = (p.isSelected ? "Foreground" : '');
+          // }
+        },
+        new go.Binding("location", "loc", go.Point.parse),
+        this.$(go.TextBlock,
+          { 
+            text: 'text',
+            editable: true,
+            isMultiline: true 
+          },
+          new go.Binding('stroke', 'stroke')
+        ));
+
+    return textTemplate;
+}
+
+createPictureShapeTemplate() {
   var thisComp = this;
+  var template =   
+  this.$(go.Node, "Spot",
+    { locationSpot: go.Spot.Center },
+    new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+    { selectable: true },
+    { resizable: true, resizeObjectName: "PANEL" },
+    // the main object is a Panel that contains a Picture
+    this.$(go.Panel, "Auto",
+      { name: "PANEL", padding:0, desiredSize: new go.Size(80, 80) },
+      new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+      this.$(go.Shape, "Rectangle",  // default figure
+        {
+          portId: "", // the default port: if no spot on link data, use closest side
+          fromLinkable: true, toLinkable: true, cursor: "pointer",
+          fill: null,  // default color
+          stroke: null
+        }
+      ),
+      this.$(go.Picture,
+        {
+          stretch: go.GraphObject.Fill
+        },
+        new go.Binding("source","source")
+      )
+    ),
+    // four small named ports, one on each side:
+    this.makePort("T", go.Spot.Top, true, true),
+    this.makePort("TL", go.Spot.TopLeft, true, true),
+    this.makePort("TR", go.Spot.TopRight, true, true),
+    this.makePort("L", go.Spot.Left, true, true),
+    this.makePort("R", go.Spot.Right, true, true),
+    this.makePort("B", go.Spot.Bottom, true, true),
+    this.makePort("BL", go.Spot.BottomLeft, true, true),
+    this.makePort("BR", go.Spot.BottomRight, true, true)
+  );
+  return template;
+}
+
+createShapeTemplate() {
+
+  var thisComp = this;
+
   var shapeTemplate =
     this.$(go.Node, "Auto",
       {
@@ -536,14 +611,17 @@ createShapeTemplate() {
         rotatable: true,
         selectionChanged: function(p) {
           p.layerName = (p.isSelected ? "Foreground" : '');
-        }
+        },
+        contextMenu: this.generalContextmenu
       },
       new go.Binding("location", "loc", go.Point.parse),
       this.$(go.Shape,
         {
           name: 'SHAPE',
           strokeWidth: 2,
-          desiredSize: new go.Size(180, 100)
+          desiredSize: new go.Size(100, 100),
+          toLinkable: true, toLinkableSelfNode: true,
+          contextMenu: this.generalContextmenu
         },
         new go.Binding("figure", "figure"),
         new go.Binding("fill", "fillColor"),
@@ -552,11 +630,10 @@ createShapeTemplate() {
       this.$(go.TextBlock,
         { 
           editable: true,
-          isMultiline: false 
+          isMultiline: true 
         },
         new go.Binding("text", "label")
       ),
-      // four small named ports, one on each side:
       this.makePort("T", go.Spot.Top, true, true),
       this.makePort("TL", go.Spot.TopLeft, true, true),
       this.makePort("TR", go.Spot.TopRight, true, true),
@@ -564,7 +641,11 @@ createShapeTemplate() {
       this.makePort("R", go.Spot.Right, true, true),
       this.makePort("B", go.Spot.Bottom, true, true),
       this.makePort("BL", go.Spot.BottomLeft, true, true),
-      this.makePort("BR", go.Spot.BottomRight, true, true)
+      this.makePort("BR", go.Spot.BottomRight, true, true),
+      { // handle mouse enter/leave events to show/hide the ports
+        mouseEnter: function(e, node) { thisComp.showSmallPortsOnMouseOverShape(node, true); },
+        mouseLeave: function(e, node) { thisComp.showSmallPortsOnMouseOverShape(node, false); }
+      }
     );
     
     return shapeTemplate;
@@ -582,48 +663,106 @@ makePort(name, spot, output, input) {
     {
       fill: null,  // not seen, by default; set to a translucent gray by showSmallPorts, defined below
       stroke: null,
-      desiredSize: new go.Size(7, 7),
+      desiredSize: new go.Size(5, 5),
       alignment: spot,  // align the port on the main Shape
       alignmentFocus: spot,  // just inside the Shape
       portId: name,  // declare this object to be a "port"
+      fromLinkableDuplicates: true,
+      toLinkableDuplicates: true,
+      fromLinkableSelfNode: true,
+      toLinkableSelfNode: true,
+
       fromSpot: spot, toSpot: spot,  // declare where links may connect at this port
       fromLinkable: output, toLinkable: input,  // declare whether the user may draw links to/from here
       cursor: "pointer"  // show a different cursor to indicate potential link point
     });
 }
 
-createLinkTemplate(dropContext) {
+showSmallPortsOnMouseOverShape(node, show) {
+  node.ports.each(function(port) {
+    if (port.portId !== "") {  // don't change the default port, which is the big shape
+      port.fill = show ? "rgba(0,0,0,.3)" : null;
+    }
+  });
+}
+
+initLinkTemplate(linkTemplateMap) {
   
   var linkSelectionAdornmentTemplate =
         this.$(go.Adornment, "Link",
         this.$(go.Shape,
             // isPanelMain declares that this Shape shares the Link.geometry
-            { isPanelMain: true, fill: null, stroke: "darkblue", strokeWidth: 0 } // use selection object's strokeWidth
+            { isPanelMain: true, fill: null, stroke: "deepskyblue", 
+            strokeWidth: 0, cursor: 'pointer' } // use selection object's strokeWidth
           )  
         );
 
-   var linkTemplate =
-      this.$(go.Link,  // the whole link panel
+    var straightLink =
+        this.$(go.Link,  // the whole link panel
+            { 
+              selectable: true,
+              selectionAdornmentTemplate: linkSelectionAdornmentTemplate 
+            },
+            { 
+              relinkableFrom: true, relinkableTo: true, reshapable: true 
+            },
+            {
+              routing: go.Link.Normal
+            },
+            new go.Binding("points"), //.makeTwoWay(),
+        this.$(go.Shape,  // the link path shape
+              { isPanelMain: true, strokeWidth: 1.5 }),
+        this.$(go.Shape,
+              new go.Binding("fromArrow", "fromArrow")),
+        this.$(go.Shape,
+              new go.Binding("toArrow", "toArrow"))
+    );
+
+   var bezierLink =
+      this.$(go.Link,
           { 
             selectable: true,
             selectionAdornmentTemplate: linkSelectionAdornmentTemplate 
           },
           { relinkableFrom: true, relinkableTo: true, reshapable: true },
           {
-            routing: go.Link.Bezier,
-            curve: go.Link.JumpOver,
-            corner: 3
-            // toShortLength: 4
+            routing: go.Link.AvoidsNodes,
+            curve: go.Link.Bezier,
           },
-          //new go.Binding("routing", "routing"),
-          new go.Binding("points").makeTwoWay(),
+          new go.Binding("points"), //.makeTwoWay(),
       this.$(go.Shape,  // the link path shape
-            { isPanelMain: true, strokeWidth: 2 }),
-      this.$(go.Shape,  // the arrowhead
-            {toArrow: "Standard", stroke: null })
-        );
+            { isPanelMain: true, strokeWidth: 1.5 }),
+      this.$(go.Shape,
+              new go.Binding("fromArrow", "fromArrow")),
+      this.$(go.Shape,
+              new go.Binding("toArrow", "toArrow"))
+    );
 
-    return linkTemplate;
+    var orthogonalLink =
+      this.$(go.Link,
+          { 
+            selectable: true,
+            selectionAdornmentTemplate: linkSelectionAdornmentTemplate 
+          },
+          { relinkableFrom: true, relinkableTo: true, reshapable: true },
+          {
+            routing: go.Link.AvoidsNodes,  // may be either Orthogonal or AvoidsNodes
+            curve: go.Link.JumpOver,
+            corner: 5
+          },
+
+          new go.Binding("points"), //.makeTwoWay(),
+      this.$(go.Shape,  // the link path shape
+            { isPanelMain: true, strokeWidth: 1.5 }),
+      this.$(go.Shape,
+              new go.Binding("fromArrow", "fromArrow")),
+      this.$(go.Shape,
+              new go.Binding("toArrow", "toArrow"))
+    );
+
+    linkTemplateMap.add('straight', straightLink);
+    linkTemplateMap.add('bezier', bezierLink);
+    linkTemplateMap.add('ortho', orthogonalLink);
 }
 
 createGroupTemplate() {
@@ -650,7 +789,6 @@ createGroupTemplate() {
 
     return groupTemplate;
 }
-
 
 initDiagramModifiedEvent() {
   var thisComp = this;
@@ -691,8 +829,8 @@ initDiagramModifiedEvent() {
     });
 }
 
-initContextMenu() {
-  this.diagram.contextMenu =
+initGeneralContextMenu() {
+  var contextMenu =
   this.$("ContextMenu",
     this.$("ContextMenuButton",
       this.$(go.TextBlock, "Undo"),
@@ -728,7 +866,40 @@ initContextMenu() {
                 function(o) {
                   return o.diagram.commandHandler.canUngroupSelection();
                 }).ofObject()),
+    this.$("ContextMenuButton",
+      this.$(go.TextBlock, "Bring to Front"),
+          { 
+            click: function(e, obj) 
+            { 
+              var nodes = e.diagram.selection;
+              var it = nodes.iterator;
+              while (it.next()) {
+                  if(isNaN(it.value.zOrder))
+                      it.value.zOrder = 10;
+                  else 
+                      it.value.zOrder += 10;
+              }
+            }
+          }),
+      this.$("ContextMenuButton",
+          this.$(go.TextBlock, "Send to Back"),
+              { 
+                click: function(e, obj) 
+                { 
+                  var nodes = e.diagram.selection;
+                  var it = nodes.iterator;
+                  while (it.next()) {
+                  if(isNaN(it.value.zOrder))
+                      it.value.zOrder = -10;
+                  else 
+                      it.value.zOrder -= 10;
+                  }
+                }
+              }
+            ),
   );
+
+  return contextMenu;
 }
 
 
@@ -736,21 +907,70 @@ createShape(dropContext) {
   var figure = dropContext.figure;
   var label = dropContext.label;
   var canvasPoint = this.diagram.transformViewToDoc(new go.Point(dropContext.x, dropContext.y));
-
+  var vmModel = new VM();
   this.diagram.model.addNodeData
     ({key: label, label: label, fillColor: 'white',
       strokeColor: 'black', figure: figure, loc: go.Point.stringify(canvasPoint), category: 'shape'});
 }
 
-createLink(dropContext) {
+createPictureShape(dropContext) {
+  var image = 'data:image/png;base64,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';
+  var label = dropContext.label;
   var canvasPoint = this.diagram.transformViewToDoc(new go.Point(dropContext.x, dropContext.y));
+
+  this.diagram.model.addNodeData
+    ({key: label, label: label, source: image,
+      loc: go.Point.stringify(canvasPoint), category: 'picshape'});
+}
+
+createText(dropContext) {
+  var label = dropContext.label;
+  var canvasPoint = this.diagram.transformViewToDoc(new go.Point(dropContext.x, dropContext.y));
+
+  this.diagram.model.addNodeData
+    ({key: label,
+      stroke: 'black', loc: go.Point.stringify(canvasPoint), category: 'text'});
+}
+
+createLink(dropContext) {
+  var dropPt = this.diagram.transformViewToDoc(new go.Point(dropContext.x, dropContext.y));
   var routing = dropContext.routing;
-  this.diagram.model.addLinkData(
-    { points: new go.List(go.Point).addAll([new go.Point(0, 0), new go.Point(30, 0), new go.Point(30, 40), new go.Point(60, 40)]),
-      routing:  routing,
-      category: 'link'
-    }
-  );
+
+  var nonStraightlinkPoints =
+  new go.List(go.Point).addAll([dropPt, new go.Point(dropPt.x + 30, dropPt.y), new go.Point(dropPt.x+30, dropPt.y + 40), new go.Point(dropPt.x + 60, dropPt.y + 40)]);
+    //new go.List(go.Point).addAll([new go.Point(0, 0), new go.Point((canvasPoint.x + 30), 0), new go.Point(30, 40), new go.Point(60, 40)]);
+  
+    var straightlinkPoints =
+    new go.List(go.Point).addAll([dropPt, new go.Point(dropPt.x + 70, dropPt.y)]);
+
+  if(routing == go.Link.Normal) {
+    this.diagram.model.addLinkData(
+      { points: straightlinkPoints,
+        fromArrow: '',
+        toArrow: 'Standard',
+        category: 'straight'
+      }
+    );
+  }
+  else if(routing == go.Link.Bezier) { //straight arrow with curve
+    this.diagram.model.addLinkData(
+      { points: straightlinkPoints,
+        fromArrow: '',
+        toArrow: 'Standard',
+        category: 'bezier'
+      }
+    );
+  }
+  else //orthogonol
+  {
+    this.diagram.model.addLinkData(
+      { points: nonStraightlinkPoints,
+        fromArrow: '',
+        toArrow: 'Standard',
+        category: 'ortho'
+      }
+    );
+  }
 }
 
   // canvasChangeEvent = () => {
@@ -1287,26 +1507,32 @@ addUpDownLeftRightArrowToMoveCells() {
       case 'Bezier Curve Arrow': //'straightarrow':
         this.createLink({routing: go.Link.Bezier , x: dropContext.x, y: dropContext.y});
       break;
-      case 'cylinder':
-        this.addCylinder(dropContext);
+      case 'Double Ended Arrow': //'straightarrow':
+        this.createShape({figure: 'DoubleEndArrow', label: '', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Cylinder':
+        this.createShape({figure: 'Cylinder1', label: '', x: dropContext.x, y: dropContext.y});
         break;
-      case 'hexagon':
-        this.addHexagon(dropContext);
+      case 'Hexagon':
+        this.createShape({figure: 'Hexagon', label: '', x: dropContext.x, y: dropContext.y});
         break;
-      case 'label':
-        this.addLabel(dropContext);
+      case 'Nonagon':
+        this.createShape({figure: 'Nonagon', label: '', x: dropContext.x, y: dropContext.y});
+        break;
+      case 'Text':
+        this.createText({label: 'text', x: dropContext.x, y: dropContext.y});
         break;
       case 'Rectangle':
-        this.createShape({figure: 'Rectangle', label: 'rect', x: dropContext.x, y: dropContext.y});
+        this.createShape({figure: 'Rectangle', label: '', x: dropContext.x, y: dropContext.y});
         break;
       case 'Rectangle Rounded':
-        this.createShape({figure: 'RoundedRectangle', label: 'rect', x: dropContext.x, y: dropContext.y});
+        this.createShape({figure: 'RoundedRectangle', label: '', x: dropContext.x, y: dropContext.y});
         break;
-      case 'triangle':
-        this.addTriangle(dropContext);
+      case 'Triangle':
+        this.createShape({figure: 'TriangleUp', label: '', x: dropContext.x, y: dropContext.y});
         break;
-      case 'circle':
-        this.addCircle(dropContext);
+      case 'Circle':
+        this.createShape({figure: 'Circle', label: '', x: dropContext.x, y: dropContext.y});
         break;
       case 'user':
         this.addUser(dropContext);
@@ -1314,8 +1540,8 @@ addUpDownLeftRightArrowToMoveCells() {
       case 'userblue':
         this.addUserBlue(dropContext);
         break;
-      case '3dbox':
-        this.add3DBox(dropContext);
+      case '3D Cube':
+        this.createShape({figure: 'Cube2', label: '', x: dropContext.x, y: dropContext.y});
         break;
       case 'usergroup':
         this.addUserGroup(dropContext);
@@ -1326,8 +1552,10 @@ addUpDownLeftRightArrowToMoveCells() {
       case 'internet':
         this.addInternet(dropContext);
         break;
-      case 'clientdevice':
-        this.addClientDevice(dropContext);
+      case 'Client Machine':
+        this.createPictureShape
+          ({source: this.azureIcons.ClientDevice(),
+            label: 'client', x: dropContext.x, y: dropContext.y});
         break;
       case 'adfs':
         this.addADFSDevice(dropContext);

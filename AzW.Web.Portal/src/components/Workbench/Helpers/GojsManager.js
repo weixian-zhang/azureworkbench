@@ -9,7 +9,6 @@ export default class GojsManager
 {
     constructor(container)
     {
-
     }
 
     initDiagramCanvas(containerId) {
