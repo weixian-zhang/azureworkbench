@@ -104,6 +104,7 @@ export default class Header extends Component {
                      <MenuItem  text="Import Workbench file(.azwb)" onClick={this.importWorkbenchFormat} />
                      <MenuDivider />
                      <MenuItem  text="Export as SVG" onClick={this.exportDiagramAsSVG} />
+                     <MenuItem  text="Export as PNG" />
                      <MenuItem  text="Export as PDF" onClick={this.exportDiagramAsPDF} />
                      <MenuItem  text="Export as Workbench file(.azwb)" onClick={this.exportWorkbenchFormat} />
                    </Menu>

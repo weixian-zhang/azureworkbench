@@ -4,6 +4,13 @@ import SubnetsCidrs from '../../../models/services/SubnetsCidrs';
 
 export default class Utils
 {
+    static isCanvasEmpty(diagram) {
+        if(diagram != undefined && diagram.nodes.count == 0)
+            return true;
+        else
+            return false;
+    }
+
     static TryParseUserObject(str) {
         
         try {

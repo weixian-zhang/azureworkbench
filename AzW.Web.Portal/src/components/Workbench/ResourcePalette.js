@@ -22,8 +22,6 @@ export default class ResourcePalette extends Component {
     super(props);
 
     this.graphManager = this.props.mxgraphManager;
-
-    //this.initRef();
     
     this.state = {
       graphContainer: null,
@@ -41,166 +39,6 @@ export default class ResourcePalette extends Component {
       }
     }
   }
-
-  // initRef(){
-  //   this.shapecalico = React.createRef();
-  //   this.shaperesourcegroup = React.createRef();
-  //   this.threedbox = React.createRef();
-  //   this.straightArrow = React.createRef();
-  //   this.elbowArrow = React.createRef();
-  //   this.curveArrow = React.createRef();
-  //   this.label = React.createRef();
-  //   this.rectangle = React.createRef();
-  //   this.roundedrectangle = React.createRef();
-  //   this.circle = React.createRef();
-  //   this.cylinder = React.createRef();
-  //   this.hexagon = React.createRef();
-  //   this.triangle = React.createRef();
-  //   this.user = React.createRef();
-  //   this.userblue = React.createRef();
-  //   this.usergroup = React.createRef();
-  //   this.datacenter = React.createRef();
-  //   this.internet = React.createRef();
-  //   this.clientIcon = React.createRef();
-  //   this.adfsIcon = React.createRef();
-  //   this.andriodIcon = React.createRef();
-  //   this.iphoneIcon = React.createRef();
-  //   this.vm1 = React.createRef();
-  //   this.vm2 = React.createRef();
-  //   this.server1 = React.createRef();
-  //   this.server2 = React.createRef();
-  //   this.dbblack = React.createRef();
-  //   this.dbblackha = React.createRef();
-  //   this.dbblue = React.createRef();
-  //   this.shapefirewall = React.createRef();
-
-  //   this.shapehelm = React.createRef();
-  //   this.shapeazuredevops = React.createRef();
-  //   this.shapecsharp = React.createRef();
-  //   this.shapedapr = React.createRef();
-  //   this.shapedocker = React.createRef();
-  //   this.shapeelasticsearch = React.createRef();
-  //   this.shapeesbmiddleware = React.createRef();
-  //   this.shapegithub = React.createRef();
-  //   this.shapegithubactions = React.createRef();
-  //   this.shapegolang = React.createRef();
-  //   this.shapegrafana = React.createRef();
-  //   this.shapehashicorpconsul = React.createRef();
-  //   this.shapehashicorpterraform = React.createRef();
-  //   this.shapehashicorpvault = React.createRef();
-  //   this.shapeinfluxdb = React.createRef();
-  //   this.shapejava = React.createRef();
-  //   this.shapejavascript  = React.createRef();
-  //   this.shapekafka = React.createRef();
-  //   this.shapekubernetes = React.createRef();
-  //   this.shapekube = React.createRef();
-  //   this.shapemessagequeue = React.createRef();
-  //   this.shapemongodb = React.createRef();
-  //   this.shapenetcore = React.createRef();
-  //   this.shapenginx = React.createRef();
-  //   this.shapenginxplus = React.createRef();
-  //   this.shapenodejs = React.createRef();
-  //   this.shapepowershell = React.createRef();
-  //   this.shapepowerbi = React.createRef();
-  //   this.shapepython = React.createRef();
-  //   this.shaperabbitmq = React.createRef();
-  //   this.shaperubyonrails= React.createRef();
-  //   this.shapetraefik = React.createRef();
-  //   this.shapezipkin = React.createRef();
-  //   this.shapejaeger = React.createRef();
-
-  //   this.devtestlabIcon = React.createRef();
-  //   this.sigIcon = React.createRef();
-  //   this.vmWindowsIcon = React.createRef();
-  //   this.vmLinuxIcon = React.createRef();
-  //   this.vmssIcon =  React.createRef();
-  //   this.funcIcon = React.createRef();
-  //   this.aseIcon = React.createRef();
-  //   this.appsvcIcon = React.createRef();
-  //   this.azsearchIcon = React.createRef();
-  //   this.signalrIcon = React.createRef();
-  //   this.appsvccertIcon = React.createRef();
-  //   this.appsvcdomainIcon = React.createRef();
-  //   this.appsvcconfig = React.createRef();
-
-  //   this.publicipIcon = React.createRef();
-  //   this.expressrouteIcon = React.createRef();
-  //   this.trafficmanagerIcon = React.createRef();
-  //   this.vnetgatewayIcon = React.createRef();
-  //   this.cdnIcon  = React.createRef();
-  //   this.asgIcon = React.createRef();
-  //   this.nicIcon = React.createRef();
-  //   this.azfw = React.createRef();
-  //   this.vnetIcon = React.createRef();
-  //   this.networkwatcherIcon = React.createRef();
-  //   this.privateEndpointIcon = React.createRef();
-  //   this.nlbIcon = React.createRef();
-  //   this.dnsprivatezoneIcon = React.createRef();
-  //   this.appgwIcon = React.createRef();
-  //   this.frontdoorIcon = React.createRef();
-  //   this.containerInstanceIcon = React.createRef();
-  //   this.containerRegistryIcon = React.createRef();
-  //   this.kubeIcon = React.createRef();
-  //   this.siteRecoveryIcon = React.createRef();
-  //   this.azfileIcon = React.createRef();
-  //   this.blobstorageIcon = React.createRef();
-  //   this.azfilesyncIcon = React.createRef();
-  //   this.netappfileIcon = React.createRef();
-  //   this.queuestorageIcon = React.createRef();
-  //   this.tablestorageIcon = React.createRef();
-  //   this.databoxIcon = React.createRef();
-
-  //   //data ai
-  //   this.cognitivesvcicon = React.createRef();
-  //   this.botsvcicon = React.createRef();
-  //   this.genomicsicon = React.createRef();
-  //   this.mlsvcworkspace = React.createRef();
-
-  //   this.postgresqlIcon = React.createRef();
-  //   this.mariaDbIcon = React.createRef();
-  //   this.sqldbIcon = React.createRef();
-  //   this.cosmosdbIcon = React.createRef();
-  //   this.mysqlIcon = React.createRef();
-  //   this.azSqlElasticPoolIcon = React.createRef();
-  //   this.sqlmiIcon = React.createRef();
-  //   this.sqlstretchIcon = React.createRef();
-  //   this.redisIcon = React.createRef();
-  //   this.synapseIcon = React.createRef();
-  //   this.dataexplorerIcon = React.createRef();
-  //   this.databricksIcon = React.createRef();
-  //   this.datafactoryIcon = React.createRef();
-  //   this.datalakeanalyticsIcon = React.createRef();
-  //   this.hdinsightIcon = React.createRef();
-  //   this.apimIcon = React.createRef();
-  //   this.asbIcon = React.createRef();
-  //   this.logicAppIcon = React.createRef();
-  //   this.relayIcon =  React.createRef();
-  //   this.iseIcon = React.createRef();
-  //   this.eventGridTopicIcon = React.createRef();
-  //   this.eventGridSubIcon = React.createRef();
-  //   this.streamanalyticsIcon = React.createRef();
-  //   this.eventhubIcon = React.createRef();
-  //   this.sendgridSubIcon = React.createRef();
-
-  //   this.azfwIcon = React.createRef();
-  //   this.sentinelIcon = React.createRef();
-  //   this.ascIcon = React.createRef();
-  //   this.ddosstandardIcon = React.createRef();
-  //   this.bastionIcon = React.createRef();
-  //   this.akvIcon = React.createRef();
-  //   this.siteRecoveryIcon = React.createRef();
-  //   this.appInsightsIcon = React.createRef();
-  //   this.azloganalyticsIcon = React.createRef();
-  //   this.automationIcon = React.createRef();
-
-  //   this.aadIcon = React.createRef();
-  //   this.aadb2cIcon = React.createRef();
-  //   this.iothub = React.createRef();
-  //   this.azmaps = React.createRef();
-  //   this.timeseriesinsights = React.createRef();
-  //   this.appconfigIcon = React.createRef();
-  //   this.iotcentralhub =  React.createRef();
-  // }
   
 
   componentWillMount() {
@@ -351,7 +189,6 @@ export default class ResourcePalette extends Component {
                Image: require('../../assets/azure_icons/_Flat Symbols/CnE_Enterprise/AD FS.png'),
                IsPng: false,
                IsVisible:true,
-               ref: this.adfsIcon
            },
            {
                 Name: 'andriod driod',
@@ -359,7 +196,6 @@ export default class ResourcePalette extends Component {
                 Image: require('../../assets/azure_icons/shape-andriod.png'),
                 IsPng: false,
                 IsVisible:true,
-                ref: this.andriodIcon
            },
            {
                 Name: 'iphone apple',
@@ -367,7 +203,6 @@ export default class ResourcePalette extends Component {
                 Image: require('../../assets/azure_icons/shape-iphone.png'),
                 IsPng: false,
                 IsVisible:true,
-                ref: this.iphoneIcon
            },
           {
             Name: 'user',
@@ -375,7 +210,6 @@ export default class ResourcePalette extends Component {
             Image:require('../../assets/azure_icons/shape-user.png'),
             IsPng: true,
             IsVisible:true,
-            ref: this.user
           },
           {
             Name: 'user',
@@ -383,7 +217,6 @@ export default class ResourcePalette extends Component {
             Image:require('../../assets/azure_icons/shape-userblue.png'),
             IsPng: true,
             IsVisible:true,
-            ref: this.userblue
           },
           {
             Name: 'user',
@@ -391,7 +224,13 @@ export default class ResourcePalette extends Component {
             Image:require('../../assets/azure_icons/shape-usergroup.png'),
             IsPng: true,
             IsVisible:true,
-            ref: this.usergroup
+          },
+          {
+            Name: 'user',
+            Tooltip: 'User Ian',
+            Image:require('../../assets/azure_icons/shape-user-ian.png'),
+            IsPng: true,
+            IsVisible:true,
           },
           {
             Name: 'datacenter dc',
@@ -406,32 +245,28 @@ export default class ResourcePalette extends Component {
             Tooltip: 'Internet',
             Image:require('../../assets/azure_icons/shape-internet.png'),
             IsPng: true,
-            IsVisible:true,
-            ref: this.internet
+            IsVisible:true
           },
           {
             Name: 'vm virtual machine',
             Tooltip: 'Azure VM',
             Image: require('../../assets/azure_icons/shape-vm.png'),
             IsPng: false,
-            IsVisible:true,
-            ref: this.vm1
+            IsVisible:true
           },
           {
             Name: 'vm virtual machine',
             Tooltip: 'VM',
             Image: require('../../assets/azure_icons/shape-vm2.png'),
             IsPng: false,
-            IsVisible:true,
-            ref: this.vm2
+            IsVisible:true
           },
           {
             Name: 'physical server',
             Tooltip: 'Physical Server',
             Image: require('../../assets/azure_icons/shape-server1.png'),
             IsPng: false,
-            IsVisible:true,
-            ref: this.server1
+            IsVisible:true
           },
           {
             Name: 'physical blade server',
@@ -500,7 +335,7 @@ export default class ResourcePalette extends Component {
             },
             {
               Name: 'c# csharp',
-              Tooltip: 'C#, .Net',
+              Tooltip: 'C#',
               Image: require('../../assets/azure_icons/software/software-c#.png'),
               IsPng: false,
               IsVisible:true,
@@ -576,15 +411,13 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/azure_icons/software/software-hashicorpconsul.png'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapehashicorpconsul
             },
             {
               Name: 'terraform hashicorp',
-              Tooltip: 'Hashicorp ',
+              Tooltip: 'Terraform',
               Image: require('../../assets/azure_icons/software/software-hashicorpterraform.png'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapehashicorpterraform
             },
             {
               Name: 'hashicorp vault',
@@ -756,7 +589,7 @@ export default class ResourcePalette extends Component {
             },
             {
               Name: 'resource group',
-              Tooltip: 'Azure Resource Group (shape))',
+              Tooltip: 'Azure Resource Group (shape)',
               Image: require('../../assets/azure_icons/software/software-resourcegroup.png'),
               IsPng: false,
               IsVisible:true,
@@ -786,8 +619,7 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/azure_icons/Web Service Color/App Service Environments.png'),
               Provisionable: false,
               IsPng: false,
-              IsVisible:true,
-              ref: this.aseIcon
+              IsVisible:true
             },
             {
               Name: 'azure function',
@@ -795,8 +627,7 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/azure_icons/Web Service Color/Function Apps.png'),
               Provisionable: false,
               IsPng: false,
-              IsVisible:true,
-              ref: this.funcIcon
+              IsVisible:true
             },
             {
               Name: 'azure search',
@@ -1782,193 +1613,8 @@ export default class ResourcePalette extends Component {
           x: x,
           y: y
         });
-        
-        // var p = new go.Point(x, y);
-        // var q = this.graph.transformViewToDoc(p);
-        // var model = this.graph.model;
-        // model.startTransaction("drop");
-        // model.addNodeData({
-        //   text: text,
-        //   loc: go.Point.stringify(q)
-        // });
-        // model.commitTransaction("drop");
       }
     });
-
-    //shape
-    // this.graphManager.makeIconDraggable(this.straightArrow.current, "straightarrow", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.elbowArrow.current, "elbowarrow", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.cylinder.current, "cylinder", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.hexagon.current, "hexagon", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.label.current, "label", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.rectangle.current, "rectangle", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.roundedrectangle.current, "roundedrectangle", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.triangle.current, "triangle", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.circle.current, "circle", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.user.current, "user", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.user.current, "user", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.user.current, "user", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.datacenter.current, "datacenter", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.internet.current, "internet", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.threedbox.current, "3dbox", thisComponent.props.addResourceToDiagramEditor);
-
-    // //devices
-    // this.graphManager.makeIconDraggable(this.clientIcon.current, "clientdevice", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.adfsIcon.current, "adfs", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.andriodIcon.current, "andriod", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.iphoneIcon.current, "iphone", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.vm1.current, "shape-vm1", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.vm2.current, "shape-vm2", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.server1.current, "shape-server1", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.server2.current, "shape-server2", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.dbblack.current, "shape-dbblack", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.dbblackha.current, "shape-dbblackha", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.dbblue.current, "shape-dbblue", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapefirewall.current, "shape-firewall", thisComponent.props.addResourceToDiagramEditor);
-    
-    // //software
-    // this.graphManager.makeIconDraggable(this.shapehelm.current, "software-shapehelm", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapeazuredevops.current, "software-shapeazuredevops", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapecsharp.current, "software-shapecsharp", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapedapr.current, "software-shapedapr", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapedocker.current, "software-shapedocker", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapeelasticsearch.current, "software-shapeelasticsearch", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapeesbmiddleware.current, "software-shapeesbmiddleware", thisComponent.props.addResourceToDiagramEditor);
-    
-    // this.graphManager.makeIconDraggable(this.shapegithub.current, "software-shapegithub", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapegithubactions.current, "software-shapegithubactions", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapegolang.current, "software-shapegolang", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapegrafana.current, "software-shapegrafana", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapehashicorpconsul.current, "software-shapehashicorpconsul", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapehashicorpterraform.current, "software-shapehashicorpterraform", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapehashicorpvault.current, "software-shapehashicorpvault", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapeinfluxdb.current, "software-shapeinfluxdb", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapejava.current, "software-shapejava", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapejavascript.current, "software-shapejavascript", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapekafka.current, "software-shapekafka", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapekube.current, "software-shapekube", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapemessagequeue.current, "software-shapemessagequeue", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapemongodb.current, "software-shapemongodb", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapenetcore.current, "software-shapenetcore", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapenginx.current, "software-shapenginx", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapenginxplus.current, "software-shapenginxplus", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapenodejs.current, "software-shapenodejs", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapepowershell.current, "software-shapepowershell", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapepowerbi.current, "software-shapepowerbi", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapepython.current, "software-shapepython", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shaperabbitmq.current, "software-shaperabbitmq", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shaperubyonrails.current, "software-shaperubyonrails", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapetraefik.current, "software-shapetraefik", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapezipkin.current, "software-shapezipkin", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapejaeger.current, "software-shapejaeger", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shapecalico.current, "software-calico", thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.shaperesourcegroup.current, "software-resourcegroup", thisComponent.props.addResourceToDiagramEditor);
-
-    // //web
-    // this.graphManager.makeIconDraggable(this.appsvcIcon.current, ResourceType.AppService(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.aseIcon.current, ResourceType.ASE(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.funcIcon.current, ResourceType.Function(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.azsearchIcon.current, ResourceType.AzureSearch(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.signalrIcon.current, ResourceType.SignalR(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.appsvccertIcon.current, ResourceType.AppServiceCert(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.appsvcdomainIcon.current, ResourceType.AppServiceDomain(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.appconfigIcon.current, ResourceType.AppConfig(), thisComponent.props.addResourceToDiagramEditor);
-    
-    // //compute
-    // this.graphManager.makeIconDraggable(this.sigIcon.current, ResourceType.SharedImageGallery(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.vmWindowsIcon.current, ResourceType.WindowsVM(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.vmLinuxIcon.current, ResourceType.LinuxVM(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.vmssIcon.current, ResourceType.VMSS(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.devtestlabIcon.current, ResourceType.DevTestLab(), thisComponent.props.addResourceToDiagramEditor);
-
-    // //network
-    // this.graphManager.makeIconDraggable(this.publicipIcon.current, ResourceType.PublicIp(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.expressrouteIcon.current, ResourceType.ExpressRouteCircuit(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.trafficmanagerIcon.current, ResourceType.TrafficManager(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.vnetgatewayIcon.current, ResourceType.VirtualNetworkGateway(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.cdnIcon.current, ResourceType.CDN(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.asgIcon.current, ResourceType.ASG(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.nicIcon.current, ResourceType.NIC(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.privateEndpointIcon.current, ResourceType.PrivateEndpoint(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.networkwatcherIcon.current, ResourceType.NetworkWatcher(), thisComponent.props.addResourceToDiagramEditor);
-    
-    // this.graphManager.makeIconDraggable(this.vnetIcon.current, ResourceType.VNet(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.nlbIcon.current, ResourceType.NLB(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.appgwIcon.current, ResourceType.AppGw(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.dnsprivatezoneIcon.current, ResourceType.DNSPrivateZone(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.frontdoorIcon.current, ResourceType.FrontDoor(), thisComponent.props.addResourceToDiagramEditor);
-
-    // //storage
-    // this.graphManager.makeIconDraggable(this.blobstorageIcon.current, ResourceType.BlobStorage(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.azfileIcon.current, ResourceType.AzFile(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.azfilesyncIcon.current, ResourceType.AzFileSync(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.netappfileIcon.current, ResourceType.NetAppFile(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.queuestorageIcon.current, ResourceType.QueueStorage(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.tablestorageIcon.current, ResourceType.TableStorage(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.databoxIcon.current, ResourceType.Databox(), thisComponent.props.addResourceToDiagramEditor);   
-    
-    // //database
-    // this.graphManager.makeIconDraggable(this.postgresqlIcon.current, ResourceType.PostgreSQL(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.mariaDbIcon.current, ResourceType.MariaDB(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.sqldbIcon.current, ResourceType.SQLDB(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.cosmosdbIcon.current, ResourceType.CosmosDB(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.mysqlIcon.current, ResourceType.MySQL(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.azSqlElasticPoolIcon.current, ResourceType.SQLElasticPool(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.sqlmiIcon.current, ResourceType.SQLMI(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.sqlstretchIcon.current, ResourceType.SQLStretchDB(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.redisIcon.current, ResourceType.Redis(), thisComponent.props.addResourceToDiagramEditor);
-    
-    // //Data
-    // this.graphManager.makeIconDraggable(this.synapseIcon.current, ResourceType.Synapse(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.dataexplorerIcon.current, ResourceType.DataExplorer(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.databricksIcon.current, ResourceType.Databricks(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.datafactoryIcon.current, ResourceType.DataFactory(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.datalakeanalyticsIcon.current, ResourceType.DataLakeAnalytics(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.hdinsightIcon.current, ResourceType.HdInsight(), thisComponent.props.addResourceToDiagramEditor);
-
-    // //ai and ml
-    // this.graphManager.makeIconDraggable(this.cognitivesvcicon.current, ResourceType.Cognitive(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.botsvcicon.current, ResourceType.BotsService(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.genomicsicon.current, ResourceType.Genomics(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.mlsvcworkspace.current, ResourceType.MLServiceWorkspace(), thisComponent.props.addResourceToDiagramEditor);
-    
-    // //Container
-    // this.graphManager.makeIconDraggable(this.containerInstanceIcon.current, ResourceType.ContainerInstance(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.containerRegistryIcon.current, ResourceType.ContainerRegistry(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.kubeIcon.current, ResourceType.Kubernetes(), thisComponent.props.addResourceToDiagramEditor);
-
-    // //integration
-    // this.graphManager.makeIconDraggable(this.apimIcon.current, ResourceType.APIM(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.asbIcon.current, ResourceType.ASB(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.logicAppIcon.current, ResourceType.LogicApp(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.iseIcon.current, ResourceType.ISE(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.eventGridTopicIcon.current, ResourceType.EventGridTopic(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.eventGridSubIcon.current, ResourceType.EventGridSubscription(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.streamanalyticsIcon.current, ResourceType.StreamAnalytics(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.sendgridSubIcon.current, ResourceType.SendGrid(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.relayIcon.current, ResourceType.Relay(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.eventhubIcon.current, ResourceType.EventHub(), thisComponent.props.addResourceToDiagramEditor);
-
-    
-    // this.graphManager.makeIconDraggable(this.azfwIcon.current, ResourceType.Firewall(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.sentinelIcon.current, ResourceType.Sentinel(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.akvIcon.current, ResourceType.KeyVault(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.ascIcon.current, ResourceType.SecurityCenter(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.ddosstandardIcon.current, ResourceType.DDoSStandard(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.bastionIcon.current, ResourceType.Bastion(), thisComponent.props.addResourceToDiagramEditor);
-
-    // this.graphManager.makeIconDraggable(this.siteRecoveryIcon.current, ResourceType.RecoveryServiceVault(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.appInsightsIcon.current, ResourceType.AppInsights(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.azloganalyticsIcon.current, ResourceType.LogAnalytics(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.automationIcon.current, ResourceType.Automation(), thisComponent.props.addResourceToDiagramEditor);
-
-    // this.graphManager.makeIconDraggable(this.aadIcon.current, ResourceType.AAD(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.aadb2cIcon.current, ResourceType.AADB2C(), thisComponent.props.addResourceToDiagramEditor);
-    
-    // this.graphManager.makeIconDraggable(this.iothub.current, ResourceType.IoTHub(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.azmaps.current, ResourceType.AzureMaps(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.timeseriesinsights.current, ResourceType.TimeSeriesInsights(), thisComponent.props.addResourceToDiagramEditor);
-    // this.graphManager.makeIconDraggable(this.iotcentralhub.current, ResourceType.IoTCentral(), thisComponent.props.addResourceToDiagramEditor);
     
   }
 }
