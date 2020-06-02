@@ -6,6 +6,7 @@ export default class Messages {
     static VMInSubnet() {return "A VM or VM Scale Sets must be in a subnet, select the subnet then drag VM onto canvas";}
     static ASEInSubnet() {return "App Service Environment must be in a dedicated subnet, select the subnet then drag ASE onto canvas";}
     static NonVNetGwInGatewaySubnetError() {return 'Only Virtual Network Gateway can be in Gateway Subnet'; }
+    static VIRMustBeInDedicatedSubnet() {return 'Resource must be in dedicated subnet, not shared';}
     static ResourceInSubnetTakenByDedicatedSubnetResource() {return 'This subnet is occupied by a resource that requires dedicated subnet. Please select another subnet or remove existing resource in this subnet' ; }
     static SharedDiagramLoadError() {return "Unable to load shared diagram";}
     static GetSubscriptionError() {return "Error getting subscription, please clear browser cookie and re-login again.";}

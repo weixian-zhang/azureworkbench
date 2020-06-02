@@ -1,30 +1,139 @@
 import * as go from 'gojs';
-import { ToolManager, Diagram } from 'gojs';
 
 
 import Utils from '../Helpers/Utils';
-import ResourceType from '../../../models/ResourceType';
+import Toast from './Toast';
 
 export default class GojsManager
 {
-    constructor(container)
+    constructor(diagram, diagramEditor)
     {
+        this.diagram = diagram;
+        this.diagramEditor = diagramEditor;
     }
 
-    initDiagramCanvas(containerId) {
-        var gojs = go.GraphObject.make;
-        var graph =
-            gojs(go.Diagram, containerId,
-                { // enable Ctrl-Z to undo and Ctrl-Y to redo
-                  "undoManager.isEnabled": true,
-                    isReadOnly: false,
-                    allowHorizontalScroll: true,
-                    allowVerticalScroll: true,
-                    allowZoom: true,
-                    allowSelect: true,
-                    autoScale: Diagram.Uniform
-                });
+    overrideResizeToNotMoveChildInGroup() {
+        this.diagram.toolManager.resizingTool.resize = function(newr) {
+          var diagram = this.diagram;
+          if (diagram === null) return;
+          var obj = this.adornedObject;
+          var part = obj.part;
     
-        return graph;
-    }
+          // calculate new location
+          var angle = obj.getDocumentAngle();
+          var sc = obj.getDocumentScale();
+    
+          var radAngle = Math.PI * angle / 180;
+          var angleCos = Math.cos(radAngle);
+          var angleSin = Math.sin(radAngle);
+    
+          var angleRight = (angle > 270 || angle < 90) ? 1 : 0;
+          var angleBottom = (angle > 0 && angle < 180) ? 1 : 0;
+          var angleLeft = (angle > 90 && angle < 270) ? 1 : 0;
+          var angleTop = (angle > 180 && angle < 360) ? 1 : 0;
+    
+          var deltaWidth = newr.width - obj.naturalBounds.width;
+          var deltaHeight = newr.height - obj.naturalBounds.height;
+    
+          var pos = part.position.copy();
+          pos.x += sc * ((newr.x + deltaWidth * angleLeft) * angleCos - (newr.y + deltaHeight * angleBottom) * angleSin);
+          pos.y += sc * ((newr.x + deltaWidth * angleTop) * angleSin + (newr.y + deltaHeight * angleLeft) * angleCos);
+    
+          obj.desiredSize = newr.size;
+          go.Node.prototype.move.call(part, pos);
+        }
+      }
+  
+      overridePasteSelectionHandleVNetSubnetPasteInGroup() {
+        this.diagram.commandHandler.copySelection = function() {
+          
+          var items = this.diagram.selection;
+
+          if (items.count > 0) {  // if there are any selected items, save them to a clipboard
+            var copiedItems = [];
+            var it = items.iterator;
+            while(it.next()) {
+              copiedItems.push(it.value);
+            }
+
+            this.diagram.commandHandler.copiedItems = copiedItems;
+            go.CommandHandler.prototype.copySelection.call(this.diagram.commandHandler);
+          } else {  // otherwise just copy nodes and/or links, as usual
+            this.diagram.commandHandler.copiedItems = null;
+            go.CommandHandler.prototype.copySelection.call(this.diagram.commandHandler);
+          }
+
+
+          // var copiedParts = this.diagram.selection;
+
+          // var cpIterator = copiedParts.iterator;
+
+          // while(cpIterator.next()) {
+          //   var part = cpIterator.value;
+
+          //   if(Utils.isPartVIR(part))
+              
+
+          // }
+          
+          // if (items.count > 0) {  // if there are any selected items, save them to a clipboard
+          //   this.diagram.commandHandler._itemClipboard = items;
+          //   go.CommandHandler.prototype.copySelection.call(this.diagram.commandHandler);
+
+          // } 
+          // else// otherwise just copy nodes and/or links, as usual
+          //   go.CommandHandler.prototype.copySelection.call(this.diagram.commandHandler);
+        }
+
+        var diagramEditor = this.diagramEditor;
+        this.diagram.commandHandler.pasteSelection = function() {
+          var itemClipboard = this.diagram.commandHandler.copiedItems;
+
+          var pasteTarget = this.diagram.selection.first();  // assumes a single node is selected, may need to be changed
+          
+          if (itemClipboard && itemClipboard.length > 0 && pasteTarget instanceof go.Node) {
+            
+            this.diagram.startTransaction("paste items");
+
+            for(var copiedPart of itemClipboard) {
+
+              // if(Utils.IsNonAzureShape(copiedPart) || Utils.isNonVIRAzResource(copiedPart))
+              //   //paste nodes and/or links, as usual
+               
+              if(Utils.isPartVIR(copiedPart) && Utils.isSubnet(pasteTarget)) {
+                diagramEditor.createVIROntoSubnet({
+                  resourceType: Utils.getAzContextResourceType(copiedPart),
+                  azcontext: JSON.parse(JSON.stringify(copiedPart.data.azcontext)) //deep clone
+                });
+              }
+              else if(Utils.isPartVIR(copiedPart) && !Utils.IsSubnet(pasteTarget)) {
+                Toast.show('warning', 3000, 'Select a Subnet to paste into');
+                return;
+              }
+
+              // else if(Utils.IsSubnet(copiedPart) && Utils.isVNet(pasteTarget)) {
+              //   pasteTarget.addMembers(copiedPart);
+              // }
+              // else if(Utils.IsSubnet(copiedPart) && !Utils.isVNet(pasteTarget)) {
+              //   Toast.show('warning', 3000, 'Select a VNet to paste into');
+              //   return;
+              // }
+              // else
+              //   go.CommandHandler.prototype.pasteSelection.call(this.diagram.commandHandler);
+            }
+
+            // for (var i = 0; i < itemClipboard.count; i++) {
+            //   var panel = itemClipboard[i];
+            //   var itemdata = panel.data;
+            //   var fields = pasteTarget.data.fields;
+            //   this.diagram.model.addArrayItem(fields, itemdata);  // add the copied panel's data to the selected node's fields
+            // }
+
+            this.diagram.commitTransaction("paste items");
+
+          } else {  // otherwise just paste nodes and/or links, as usual
+            go.CommandHandler.prototype.pasteSelection.call(this.diagram.commandHandler);
+          }
+        }
+      }
 }

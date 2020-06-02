@@ -4,6 +4,36 @@ import SubnetsCidrs from '../../../models/services/SubnetsCidrs';
 
 export default class Utils
 {
+    //follows Tooltip name
+    static isResourceTypeVIR(resourceType) {
+        var VIR = [ResourceType.VM(), ResourceType.WindowsVM(), ResourceType.LinuxVM(),
+            ResourceType.ASE(),ResourceType.AppGw(),ResourceType.Firewall(),ResourceType.Bastion(),
+            ResourceType.VMSS(), ResourceType.SQLMI()];
+            
+        for(var x of VIR) {
+            if(x == resourceType)
+                return true;
+        }
+        return false;
+    }
+
+    static isPartVIR(part) {
+        if(!Utils.isAzContextExist(part))
+            return false;
+        
+        if(Utils.isResourceTypeVIR(Utils.getAzContextResourceType(part)))
+            return true;
+        else
+            return false;
+    }
+
+    static isNonVIRAzResource(part) {
+        if(Utils.isAzContextExist(part) && !Utils.isPartVIR(part))
+            return true;
+        else
+            return false;
+    }
+
     static isCanvasEmpty(diagram) {
         if(diagram != undefined && diagram.nodes.count == 0)
             return true;
@@ -31,42 +61,84 @@ export default class Utils
         }
     };
 
-    static IsNonAzureResource(cell) {
-        if(cell != null && cell.value != null){
-            var result = this.TryParseUserObject(cell.value);
+    static isVIRinDedicatedSubnet(subnetNode) {
 
-            if(!result.isUserObject)
+        if(subnetNode.memberParts.count > 0)
+            return false;
+        else
+            return true;
+    }
+
+    static isVMinSubnetTakenByVIRRequiredDedicatedSubnet(subnet) {
+        
+        var it = subnet.memberParts.iterator;
+        while(it.next()) {
+           var node =  it.value;
+
+           if(Utils.isDedicatedSubnetVIR(node)) {
+            return true;
+            }
+        }
+        return false;
+    }
+
+    static isDedicatedSubnetVIR(node) {
+
+        if(!Utils.isAzContextExist(node))
+             throw 'isDedicatedSubnetVIR - node.data.azcontext is null';
+
+        var VIR = [ ResourceType.ASE(),ResourceType.AppGw(),
+            ResourceType.Firewall(),ResourceType.Bastion(), ResourceType.SQLMI()];
+        
+        var resourceType = node.data.azcontext.ProvisionContext.ResourceType;
+            
+        for(var x of VIR) {
+            if(x == resourceType)
                 return true;
-            else
-                return false;
-        }
-        return true;
-    }
-
-    static IsVNet(cell) {
-        if(cell != null && cell.value != null){
-            var result = this.TryParseUserObject(cell.value);
-
-            if(result.isUserObject &&
-                result.userObject.GraphModel.ResourceType == ResourceType.VNet())
-              {
-                    return true;
-              }
         }
         return false;
     }
 
-    static IsSubnet(cell) {
-        if(cell != null && cell.value != null){
-            var result = this.TryParseUserObject(cell.value);
+    static isAzContextExist(node) {
+        if(typeof node.data.azcontext !== 'undefined' && 
+            typeof node.data.azcontext.ProvisionContext !== 'undefined')
+            return true;
+        else    
+            return false;
+    }
 
-            if(result.isUserObject &&
-                result.userObject.GraphModel.ResourceType == ResourceType.Subnet())
-              {
-                    return true;
-              }
-        }
-        return false;
+    static getAzContextResourceType(node) {
+        if(!Utils.isAzContextExist(node))
+            return null;
+        
+        return node.data.azcontext.ProvisionContext.ResourceType;
+    }
+
+    static IsNonAzureShape(node) {
+        if(!Utils.isAzContextExist(node))
+            return true;
+        else
+            return false;
+    }
+
+    static isVNet(node) {
+        if(!Utils.isAzContextExist(node))
+            return false;
+        
+        if(Utils.getAzContextResourceType(node) == ResourceType.VNet())
+            return true;
+        else
+            return false;
+    }
+
+    static isSubnet(node) {
+        if(!Utils.isAzContextExist(node))
+            return false;
+        
+        if(Utils.getAzContextResourceType(node) == ResourceType.Subnet())
+            return true;
+        else
+            return false;
     }
 
     static IsVM(cell) {

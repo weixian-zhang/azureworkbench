@@ -7,7 +7,9 @@ import {InputGroup, Classes, Button, Intent, Overlay, Toaster, Position} from "@
 //gojs
 import * as go from 'gojs';
 import { PanningTool } from 'gojs';
-import './Helpers/GojsExtensionFigures';
+import './GojsExtensions/Figures';
+
+
 
 //3rd-party libraries
 import ShortUniqueId from 'short-unique-id';
@@ -195,14 +197,14 @@ import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
 import GojsManager from "./Helpers/GojsManager";
 import Function from "../../models/Function";
 
+import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
+
  export default class DiagramEditor extends Component {
  
   constructor(props) {
     super(props);
 
     this.$ = go.GraphObject.make;
-
-    this.goManager = new GojsManager();
 
     this.shortUID = new ShortUniqueId();
     this.graph = null;
@@ -235,13 +237,10 @@ import Function from "../../models/Function";
 
     this.initDiagramCanvas();
 
-    //this.graphManager = null; //new MxGraphManager(document.getElementById("diagramEditor"));
-    
-    //this.graph = graphManager.initDiagramCanvas('diagramEditor'); //this.graphManager.graph;
-    //this.props.mxgraphManagerReadyCallback(this.graphManager);
-    //this.mxClientOverrides = new mxClientOverrides(this.graph);
+    this.gojsManager = new GojsManager(this.diagram, this);
 
-    //this.azureValidator = new AzureValidator(this.graph);
+    this.gojsManager.overrideResizeToNotMoveChildInGroup();
+    this.gojsManager.overridePasteSelectionHandleVNetSubnetPasteInGroup();
 
     //services
     this.diagramService = new DiagramService();
@@ -258,10 +257,8 @@ import Function from "../../models/Function";
     // this.addDropPNGAZWBFileHandler();
     
     // this.initPasteImageFromBrowserClipboard();
-    this.addCtrlSSave();
+    this.addKeyPressShortcuts();
     this.PromptSaveBeforeCloseBrowser();
-
-    // this.canvasChangeEvent();
 
     this.initRef();
 
@@ -367,6 +364,10 @@ import Function from "../../models/Function";
     );
   }
 
+  getDiagram() {
+    return this.diagram;
+  }
+
   initRef() {
     this.cognitivePropPanel = React.createRef();
     this.botsPropPanel = React.createRef();
@@ -450,6 +451,7 @@ import Function from "../../models/Function";
   
   initDiagramCanvas = (model) => {
     var thisComp = this;
+    var GroupMargin = new go.Margin(3);
 
     this.diagram =
       this.$(go.Diagram, 'diagramEditor', 
@@ -458,9 +460,27 @@ import Function from "../../models/Function";
           initialAutoScale: go.Diagram.Uniform,
           "undoManager.isEnabled": true,
           'animationManager.isEnabled': false,  // turn off automatic animations
-          
-          // allow Ctrl-G to call groupSelection()
+
+          // "resizingTool.computeMinSize": function() {
+          //   var group = this.adornedObject.part;
+          //   var membnds = group.diagram.computePartsBounds(group.memberParts);
+          //   membnds.addMargin(GroupMargin);
+          //   membnds.unionPoint(group.location);
+          //   return membnds.size;
+          // },
+          autoScrollRegion: new go.Margin(2, 2, 2, 2),
+          allowHorizontalScroll: true,
+          allowVerticalScroll : true,
+
+          draggingTool: new GuidedDraggingTool(), 
+          "draggingTool.horizontalGuidelineColor": "blue",
+          "draggingTool.verticalGuidelineColor": "blue",
+          "draggingTool.centerGuidelineColor": "green",
+          "draggingTool.guidelineWidth": 1,
+
+          // allow Ctrl-G to call groupSelection
           "commandHandler.archetypeGroupData": { text: "Group", isGroup: true, color: "blue" },
+          
           isReadOnly: false,
           allowZoom: true,
           allowSelect: true,
@@ -471,26 +491,29 @@ import Function from "../../models/Function";
           allowUngroup: true,
           allowClipboard: true,
           
-          "draggingTool.dragsLink": true,
-          "draggingTool.isGridSnapEnabled": false,
+          // "draggingTool.dragsLink": true,
+          // "draggingTool.isGridSnapEnabled": false,
           "linkingTool.isUnconnectedLinkValid": true,
           "relinkingTool.isUnconnectedLinkValid": true,
-          "InitialLayoutCompleted": function(e) {
-            // if not all Nodes have real locations, force a layout to happen
-            if (!e.diagram.nodes.all(function(n) { return n.location.isReal(); })) {
-              e.diagram.layoutDiagram(true);
-            }
-          },
-          "ModelChanged": function(e) {
-            if (e.isTransactionFinished) {
-              //thisComp.setState({incrementalChanges: thisComp.diagram.model.toIncrementalJson(e)});
-              // this records each Transaction as a JSON-format string
-              //thisComp.saveDiagramToBrowser(thisComp.diagram.model.toIncrementalJson(e));
-            }
-          },
+          // "InitialLayoutCompleted": function(e) {
+          //   // if not all Nodes have real locations, force a layout to happen
+          //   if (!e.diagram.nodes.all(function(n) { return n.location.isReal(); })) {
+          //     e.diagram.layoutDiagram(true);
+          //   }
+          // }//,
+          // "ModelChanged": function(e) {
+          //   if (e.isTransactionFinished) {
+          //     //thisComp.setState({incrementalChanges: thisComp.diagram.model.toIncrementalJson(e)});
+          //     // this records each Transaction as a JSON-format string
+          //     //thisComp.saveDiagramToBrowser(thisComp.diagram.model.toIncrementalJson(e));
+          //   }
+          // },
       });
     this.diagram.layout.isInitial = false;
-    //this.diagram.layout.isOngoing = true;
+
+    //drag scroll
+//https://forum.nwoods.com/t/highlight-the-autoscrollregion-to-aware-user-to-scroll-diagram-while-dragging/11162/2
+
     this.diagram.scrollMode = go.Diagram.InfiniteScroll;
     
     // temporary links used by LinkingTool and RelinkingTool are also orthogonal:
@@ -504,21 +527,6 @@ import Function from "../../models/Function";
     model.linkFromPortIdProperty = "fromPort";
     model.linkToPortIdProperty = "toPort";
     this.diagram.model = model;
-
-    // model.makeUniqueKeyFunction = function(model, data) {
-    // var i = model.nodeDataArray.length * 2 + 1;
-    // while (model.findNodeDataForKey(i) !== null) i += 2;
-    // data.id = i;  // assume Model.nodeKeyProperty === "id"
-    // return i;
-    // };
-    // // link data id's are even numbers
-    // model.makeUniqueLinkKeyFunction = function(model, data) {
-    //   var i = model.linkDataArray.length * 2 + 2;
-    //   while (model.findLinkDataForKey(i) !== null) i += 2;
-    //   data.id = i;  // assume GraphLinksModel.linkKeyProperty === "id"
-    //   return i;
-    // };
-    
 }
 
 initDiagramBehaviors() {
@@ -528,8 +536,6 @@ initDiagramBehaviors() {
   this.initPanningwithRightMouseClick();
 
   this.initDiagramModifiedEvent();
-
-  this.modelChangeListener();
 
   this.generalContextmenu = this.initGeneralContextMenu();
   this.diagram.contextMenu = this.generalContextmenu;
@@ -555,18 +561,23 @@ initPanningwithRightMouseClick() {
 initTemplates() {
   var nodeTemplateMap = new go.Map();
   var linkTemplateMap = new go.Map();
-
-  this.diagram.groupTemplate = this.createGroupTemplate();
+  var groupTemplateMap = new go.Map();
 
   nodeTemplateMap.add('shape', this.createShapeTemplate());
   nodeTemplateMap.add('text', this.createTextTemplate());
   nodeTemplateMap.add('picshape', this.createPictureShapeTemplate());
   nodeTemplateMap.add('outofvnetazureresource', this.createOutOfVNetAzureResourceTemplate());
+  nodeTemplateMap.add('virresource', this.createVIRAzureResourceTemplate());
 
+  groupTemplateMap.add('', this.createGroupTemplate());
+  groupTemplateMap.add('vnet', this.createVNetTemplate());
+  groupTemplateMap.add('subnet', this.createSubnetTemplate());
+  
   this.initLinkTemplate(linkTemplateMap);
 
   this.diagram.nodeTemplateMap = nodeTemplateMap;
   this.diagram.linkTemplateMap = linkTemplateMap;
+  this.diagram.groupTemplateMap = groupTemplateMap;
 }
 
 createTextTemplate() {
@@ -658,58 +669,58 @@ createPictureShapeTemplate() {
 
 createOutOfVNetAzureResourceTemplate() {
   var thisComp = this;
-  var template =   
-  this.$(go.Node, "Spot",
-    { 
-      locationSpot: go.Spot.Center,
-      selectable: true,
-      resizable: true, 
-      resizeObjectName: "PANEL",
-      selectionObjectName: "PANEL",
-      selectionChanged: function(p) {
-        p.layerName = (p.isSelected ? "Foreground" : '');
+    var template =   
+    this.$(go.Node, "Spot",
+      { 
+        locationSpot: go.Spot.Center,
+        selectable: true,
+        resizable: true, 
+        resizeObjectName: "PANEL",
+        selectionObjectName: "PANEL",
+        selectionChanged: function(p) {
+          p.layerName = (p.isSelected ? "Foreground" : '');
+        },
+        contextMenu: this.initGeneralContextMenu(),
+        doubleClick: function(e, node) {
+          var azcontext = node.data.azcontext;
+          thisComp.determineResourcePropertyPanelToShow
+            (null, azcontext, function onContextSaveCallback(savedContext){
+                node.data.azcontext = savedContext;
+            });
+        }
       },
-      contextMenu: this.initGeneralContextMenu(),
-      doubleClick: function(e, node) {
-        var azcontext = node.data.azcontext;
-        thisComp.determineResourcePropertyPanelToShow
-          (null, azcontext, function onContextSaveCallback(savedContext){
-              node.data.azcontext = savedContext;
-          });
-      }
-    },
-    new go.Binding("azcontext", "azcontext"),
-    new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-    this.$(go.Panel, "Vertical",
-        //new go.Binding("desiredSize", "size", go.Size.parse), //follows panel resize below
-        this.$(go.Panel, "Table",
-          { 
-            name: "PANEL", 
-          },
-          //bind 2 ways to update model so that shape above can resize according
-          //to panel size
-          new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
-          this.$(go.Picture,
-            {
-              stretch: go.GraphObject.Fill
+      new go.Binding("azcontext", "azcontext"),
+      new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+      this.$(go.Panel, "Vertical",
+          //new go.Binding("desiredSize", "size", go.Size.parse), //follows panel resize below
+          this.$(go.Panel, "Table",
+            { 
+              name: "PANEL", 
             },
-            {row:0,column:0},
-            new go.Binding("source","source")
-          )
-        ),//panel
-        this.$(go.TextBlock,
-          {
-            editable:true,
-            isMultiline: true
-          },
-          {row:1,column:0},
-          new go.Binding("text").makeTwoWay()),
-        ),
-        this.makePort("T", go.Spot.Top, go.Spot.TopSide, true, true),
-        this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
-        this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
-        this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true)
-    );
+            //bind 2 ways to update model so that shape above can resize according
+            //to panel size
+            new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+            this.$(go.Picture,
+              {
+                stretch: go.GraphObject.Fill
+              },
+              {row:0,column:0},
+              new go.Binding("source","source")
+            )
+          ),//panel
+          this.$(go.TextBlock,
+            {
+              editable:true,
+              isMultiline: true
+            },
+            {row:1,column:0},
+            new go.Binding("text").makeTwoWay()),
+          ),
+          this.makePort("T", go.Spot.Top, go.Spot.TopSide, true, true),
+          this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
+          this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
+          this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true)
+      );
 
   return template;
 }
@@ -781,7 +792,7 @@ makePort(name, align, spot, output, input, figure) {
       toLinkable: input,  // declare whether the user may draw links to here
       cursor: "pointer",  // show a different cursor to indicate potential link point
       mouseEnter: function(e, port) {  // the PORT argument will be this Shape
-        if (!e.diagram.isReadOnly) port.fill = "rgba(255,0,255,0.5)";
+        if (!e.diagram.isReadOnly) port.fill = "#d3d3d3"; //"rgba(255,0,255,0.5)";
       },
       mouseLeave: function(e, port) {
         port.fill = "transparent";
@@ -848,7 +859,7 @@ initLinkTemplate(linkTemplateMap) {
       this.$(go.Link,
           { 
             
-            corner: 5, toShortLength: 4,
+            corner: 9,
             relinkableFrom: true,
             relinkableTo: true,
             reshapable: true,
@@ -859,7 +870,6 @@ initLinkTemplate(linkTemplateMap) {
             selectionAdorned: false
           },
           {
-            routing: go.Link.AvoidsNodes,
             adjusting: go.Link.Stretch,
             curve: go.Link.Bezier,
           },
@@ -1108,6 +1118,194 @@ initGeneralContextMenu() {
   );
 }
 
+createVNetTemplate() {
+  var thisComp = this;
+  var groupTemplate =
+  this.$(go.Group, "Spot",
+  {
+    resizable: true,
+    resizeObjectName: "VNET",
+    selectionObjectName: "VNET",
+    locationObjectName: "VNET",
+    ungroupable: false,
+    //computesBoundsAfterDrag: false,
+    contextMenu:
+    this.$("ContextMenu",
+      this.$("ContextMenuButton",
+        this.$(go.TextBlock, "Add Subnet"),
+            { 
+              click: function(e, obj) {
+                thisComp.createSubnet(obj.part.data.key);
+              } 
+            },
+            new go.Binding("visible", "", function(o) {
+                return true;
+            }).ofObject())
+    )
+  },
+  new go.Binding("azcontext"),
+  new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+  this.$(go.Shape, "RoundedRectangle",  // the rectangular shape around the members
+      {
+        name: "VNET",
+        fill: "transparent", 
+        stroke: "deepskyblue", 
+        strokeWidth: 1.5,
+        cursor: "pointer",
+        desiredSize: new go.Size(600,500),
+        // allow all kinds of links from and to this port
+        fromLinkable: false, fromLinkableSelfNode: false, fromLinkableDuplicates: true,
+        toLinkable: false, toLinkableSelfNode: false, toLinkableDuplicates: true
+      },
+      new go.Binding("desiredSize").makeTwoWay(),
+      new go.Binding("figure",'figure').makeTwoWay(),
+      new go.Binding("fill",'fill').makeTwoWay(),
+      new go.Binding("stroke",'stroke').makeTwoWay()),
+  // this.$(go.Placeholder,    // represents the area of all member parts,
+  //       { padding: 5}),  // with some extra padding around them
+    this.$(go.TextBlock,
+        { 
+          editable: true,
+          isMultiline: false,
+          alignment: go.Spot.TopLeft, alignmentFocus: go.Spot.BottomLeft
+        },
+        new go.Binding("text").makeTwoWay()),
+    this.$(go.Picture, {
+          stretch: go.GraphObject.Fill,
+          desiredSize: new go.Size(25,25),
+          alignment: go.Spot.TopRight, alignmentFocus: go.Spot.BottomRight,
+          source: require('../../assets/azure_icons/Networking Service Color/Virtual Networks.png')
+        }),
+    this.makePort("T", go.Spot.Top, go.Spot.TopSide, true, true),
+    this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
+    this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
+    this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true)
+  );
+
+  return groupTemplate;
+}
+
+//https://gojs.net/latest/samples/regroupingTreeView.html
+createSubnetTemplate() {
+
+  var subnetTemplate =
+    this.$(go.Group, "Spot",
+    {
+      resizable: true,
+      resizeObjectName: "SUBNET",
+      selectionObjectName: "SUBNET",
+      locationObjectName: "SUBNET",
+      contextMenu: this.initGeneralContextMenu(),
+      dragComputation: this.makeSubnetVIRStayInGroup
+    },
+    new go.Binding("azcontext", "azcontext"),
+    new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+    this.$(go.Shape,
+      {
+        name: 'SUBNET',
+        strokeWidth: 1.5
+      },
+      new go.Binding("desiredSize").makeTwoWay(),
+      new go.Binding("figure").makeTwoWay(),
+      new go.Binding("fill").makeTwoWay(),
+      new go.Binding("stroke").makeTwoWay()
+      ),
+    this.$(go.TextBlock,
+      { 
+        editable: true,
+        isMultiline: false,
+        alignment: go.Spot.TopRight, alignmentFocus:go.Spot.BottomRight
+      },
+    new go.Binding("text").makeTwoWay()),
+      this.makePort("T", go.Spot.Top, go.Spot.TopSide, true, true),
+      this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
+      this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
+      this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true)
+    );
+
+return subnetTemplate;
+}
+
+makeSubnetVIRStayInGroup(part, pt, gridpt) {
+  // don't constrain top-level nodes
+  var grp = part.containingGroup;
+  if (grp === null) return pt;
+  // try to stay within the background Shape of the Group
+  var back = grp.resizeObject;
+  if (back === null) return pt;
+  // allow dragging a Node out of a Group if the Shift key is down
+  //if (part.diagram.lastInput.shift) return pt;
+  var p1 = back.getDocumentPoint(go.Spot.TopLeft);
+  var p2 = back.getDocumentPoint(go.Spot.BottomRight);
+  var b = part.actualBounds;
+  var loc = part.location ;
+  // no placeholder -- just assume some Margin
+  var m = new go.Margin(1);
+  // now limit the location appropriately
+  var x = Math.max(p1.x + m.left, Math.min(pt.x, p2.x - m.right - b.width - 1)) + (loc.x - b.x);
+  var y = Math.max(p1.y + m.top, Math.min(pt.y, p2.y - m.bottom - b.height - 1)) + (loc.y - b.y);
+  return new go.Point(x, y);
+}
+
+createVIRAzureResourceTemplate() {
+  var thisComp = this;
+    var template =   
+    this.$(go.Node, "Spot",
+      { 
+        locationSpot: go.Spot.Center,
+        selectable: true,
+        resizable: true, 
+        resizeObjectName: "PANEL",
+        selectionObjectName: "PANEL",
+        selectionChanged: function(p) {
+          p.layerName = (p.isSelected ? "Foreground" : '');
+        },
+        contextMenu: this.initGeneralContextMenu(),
+        doubleClick: function(e, node) {
+          var azcontext = node.data.azcontext;
+          thisComp.determineResourcePropertyPanelToShow
+            (null, azcontext, function onContextSaveCallback(savedContext){
+                node.data.azcontext = savedContext;
+            });
+        },
+        dragComputation: this.makeSubnetVIRStayInGroup
+      },
+      new go.Binding("azcontext", "azcontext"),
+      new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+      this.$(go.Panel, "Vertical",
+          //new go.Binding("desiredSize", "size", go.Size.parse), //follows panel resize below
+          this.$(go.Panel, "Table",
+            { 
+              name: "PANEL", 
+            },
+            //bind 2 ways to update model so that shape above can resize according
+            //to panel size
+            new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+            this.$(go.Picture,
+              {
+                stretch: go.GraphObject.Fill
+              },
+              {row:0,column:0},
+              new go.Binding("source","source")
+            )
+          ),//panel
+          this.$(go.TextBlock,
+            {
+              editable:true,
+              isMultiline: true
+            },
+            {row:1,column:0},
+            new go.Binding("text").makeTwoWay()),
+          ),
+          this.makePort("T", go.Spot.Top, go.Spot.TopSide, true, true),
+          this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
+          this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
+          this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true)
+      );
+
+  return template;
+}
+
 
 createShape(dropContext) {
   var figure = dropContext.figure;
@@ -1118,6 +1316,156 @@ createShape(dropContext) {
   this.diagram.model.addNodeData
     ({key: shapeKey, text: label, fillColor: 'white',
       strokeColor: 'black', figure: figure, loc: go.Point.stringify(canvasPoint), category: 'shape'});
+}
+
+createVNet(dropContext) {
+  var figure = dropContext.figure;
+  var label = dropContext.label;
+  var canvasPoint = this.diagram.transformViewToDoc(new go.Point(dropContext.x, dropContext.y));
+  
+  var vnetKey = 'vnet-' + this.shortUID.randomUUID(6);
+  
+
+  this.diagram.model.addNodeData
+    ({key: vnetKey, text: 'vnet', azcontext: new VNet(),fill: 'transparent',
+      stroke: 'deepskyblue', isGroup: true,
+      loc: go.Point.stringify(canvasPoint), category: 'vnet'});
+
+  this.createSubnet(vnetKey);
+
+
+}
+
+createSubnet(vnetKey) {
+
+  var vnet = null;
+
+  if(vnetKey != null) {
+    vnet = this.diagram.findNodeForKey(vnetKey);
+  }
+  else {
+    vnet = this.diagram.selection.first();
+  }
+
+  
+
+  var subnetKey = 'subnet-' + this.shortUID.randomUUID(6);
+  var subnetLoc = new go.Point(vnet.location.x + 10, vnet.location.y +20);
+  var subnetSize = new go.Size((vnet.actualBounds.width - 40), 80);
+  
+    //create default subnet
+  this.diagram.model.addNodeData
+    ({key: subnetKey, azcontext: new Subnet(),
+      text: subnetKey, fill: 'transparent',
+      stroke: 'darkblue', group: vnet.key,"isGroup":true,
+      figure:'RoundedRectangle',
+      desiredSize: subnetSize,
+      loc: go.Point.stringify(subnetLoc), category: 'subnet'});
+}
+
+createVIROntoSubnet(dropContext) {
+
+    var selectedNode = this.diagram.selection.first();
+
+    if(selectedNode == undefined || !selectedNode instanceof go.Node) {
+      Toast.show('warning', 2500, 'A Subnet must be selected');
+         return;
+    }
+
+    var azcontext = selectedNode.data.azcontext;
+
+    if(!Utils.isAzContextExist(selectedNode) ||
+      !Utils.isSubnet(selectedNode)) {
+      Toast.show('warning', 2500, 'A Subnet must be selected');
+      return;
+    }
+
+    var subnet = selectedNode;
+    var azcontext = dropContext.azcontext;
+    var image = '';
+    var nodeKey =  '';
+    var subnet = selectedNode;
+    var text = '';
+    var virLoc = new go.Point(subnet.location.x + 60, subnet.location.y +40);
+
+    switch(dropContext.resourceType) {
+        case ResourceType.WindowsVM():
+          if(Utils.isVMinSubnetTakenByVIRRequiredDedicatedSubnet(subnet)) {
+            Toast.show('warining', 7000, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
+            return;
+          }
+
+          text = 'vm';
+          nodeKey = 'vmwin-' + this.shortUID.randomUUID(6);
+          image = require('../../assets/azure_icons/ComputeServiceColor/VM/VM-windows.png');
+          
+          if(azcontext != null)
+            azcontext = azcontext;
+          else {
+            var vm = new VM();
+            vm.ProvisionContext.ResourceType = ResourceType.WindowsVM();
+            vm.GraphModel.ResourceType = ResourceType.WindowsVM();
+            azcontext = vm;
+          }
+
+        break;
+        case ResourceType.LinuxVM():
+          if(Utils.isVMinSubnetTakenByVIRRequiredDedicatedSubnet(subnet)) {
+            Toast.show('warining', 7000, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
+            return;
+          }
+
+          text = 'vm';
+          nodeKey = 'vmlinux-' + this.shortUID.randomUUID(6);
+          image = require('../../assets/azure_icons/ComputeServiceColor/VM/VM-Linux.png');
+          
+          if(azcontext != null)
+            azcontext = azcontext;
+          else {
+            var vm = new VM();
+            vm.ProvisionContext.ResourceType = ResourceType.LinuxVM();
+            vm.GraphModel.ResourceType = ResourceType.LinuxVM();
+            azcontext = vm;
+          }
+        break;
+        case ResourceType.VMSS():
+          if(Utils.isVMinSubnetTakenByVIRRequiredDedicatedSubnet(subnet)) {
+            Toast.show('warining', 2500, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
+            return;
+          }
+          
+          text = 'vm scale sets';
+          nodeKey = 'vmss-' + this.shortUID.randomUUID(6);
+          image = require('../../assets/azure_icons/ComputeServiceColor/VM/VM Scale Sets.png');
+          azcontext = new VMSS();
+        break;
+        case ResourceType.Firewall():
+          if(!Utils.isVIRinDedicatedSubnet(subnet)) {
+            Toast.show('warining', 2500, Messages.VIRMustBeInDedicatedSubnet());
+            return;
+          }
+          text = 'firewall';
+          nodeKey = 'azfw-' + this.shortUID.randomUUID(6);
+          image = require('../../assets/azure_icons/Security Service Color/Azure Firewall.png');
+          azcontext = new AzureFirewall();
+        break;
+        case ResourceType.Bastion():
+          if(!Utils.isVIRinDedicatedSubnet(subnet)) {
+            Toast.show('warining', 2500, Messages.VIRMustBeInDedicatedSubnet());
+            return;
+          }
+          text = 'bastion';
+          nodeKey = 'bastion-' + this.shortUID.randomUUID(6);
+          image = require('../../assets/azure_icons/Security Service Color/azure-bastion-icon.png');
+          azcontext = new Bastion();
+        break;
+    }
+
+    this.diagram.model.addNodeData
+      ({key: nodeKey, text: text, azcontext: azcontext, group: subnet.key,
+        source: image, loc: go.Point.stringify(virLoc),
+        size: go.Size.stringify(new go.Size(40,40)),
+        category: 'virresource'});
 }
 
 createPictureShape(dropContext) {
@@ -1141,7 +1489,6 @@ createOutOfVNetAzureResource(dropContext) {
       source: image, size: go.Size.stringify(new go.Size(40,40)),
       loc: go.Point.stringify(canvasPoint), category: 'outofvnetazureresource'});
 }
-
 
 createText(dropContext) {
   var label = dropContext.label;
@@ -1194,16 +1541,7 @@ createLink(dropContext) {
   }
 }
 
-modelChangeListener() {
-  var thisComp = this;
-  this.diagram.model.addChangedListener(function(e) {
-    if (e.isTransactionFinished) {
-      thisComp.saveDiagramToBrowser();
-    }
-  });
-}
-
-addCtrlSSave() {
+addKeyPressShortcuts() {
   document.addEventListener("keydown", function(e) {
     if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
       e.preventDefault();
@@ -1219,23 +1557,46 @@ addCtrlSSave() {
       thisComp.saveDiagramToBrowser();
     }
 
+    var parts = thisComp.diagram.selection;
+    var partIterator = parts.iterator;
+
     if (e.key === "Up") {
-        this.diagram.moveParts(thisComp.diagram.selection, new go.Point(0,-2), false);
+        this.diagram.startTransaction('commandHandler.part.move');
+        while (partIterator.next()) {
+            var node = partIterator.value;
+            node.move(new go.Point(node.actualBounds.x, node.actualBounds.y - 2 ));
+        }
+        this.diagram.commitTransaction('commandHandler.part.move');
         return;
     }
 
     if (e.key === "Down") {
-        this.diagram.moveParts(thisComp.diagram.selection, new go.Point(0,2), false);
+        this.diagram.startTransaction('commandHandler.part.move');
+        while (partIterator.next()) {
+            var node = partIterator.value;
+            node.move(new go.Point(node.actualBounds.x, node.actualBounds.y + 2 ));
+        }
+        this.diagram.commitTransaction('commandHandler.part.move');
         return;
     }
 
     if (e.key === "Left") {
-        this.diagram.moveParts(thisComp.diagram.selection, new go.Point(-2,0), false);
+        this.diagram.startTransaction('commandHandler.part.move');
+        while (partIterator.next()) {
+            var node = partIterator.value;
+            node.move(new go.Point(node.actualBounds.x - 2, node.actualBounds.y ));
+        }
+        this.diagram.commitTransaction('commandHandler.part.move');
         return;
     }
 
     if (e.key === "Right") {
-        this.diagram.moveParts(thisComp.diagram.selection, new go.Point(2,0), false);
+        this.diagram.startTransaction('commandHandler.part.move');
+        while (partIterator.next()) {
+            var node = partIterator.value;
+            node.move(new go.Point(node.actualBounds.x + 2, node.actualBounds.y ));
+        }
+        this.diagram.commitTransaction('commandHandler.part.move');
         return;
     }
 
@@ -1357,220 +1718,87 @@ initPasteImageFromBrowserClipboard = () => {
   }, false);
 }
 
-  // canvasChangeEvent = () => {
-  //   var thisComp = this;
-  //   this.graph.addListener(mxEvent.CELLS_ADDED, function (sender, evt) {
-  //     //set unsave state
-  //     if(thisComp.state.unsavedChanges) { evt.consume(); return;}
 
-  //     thisComp.setState({unsavedChanges: true}, () => {
-  //       thisComp.setBadgeVisibilityOnUnsaveChanges()});
-  //     evt.consume();
-  //   });
-  //   this.graph.addListener(mxEvent.CELLS_MOVED, function (sender, evt) {    
-  //     //set unsave state
-  //     if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-
-  //     thisComp.setState({unsavedChanges: true}, () => {
-  //       thisComp.setBadgeVisibilityOnUnsaveChanges()});
-  //     evt.consume();
-  //   });
-  //   this.graph.addListener(mxEvent.CONNECT_CELL, function (sender, evt) {
-  //     //set unsave state
-  //     if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-
-  //     thisComp.setState({unsavedChanges: true}, () => {
-  //       thisComp.setBadgeVisibilityOnUnsaveChanges()});
-  //     evt.consume();
-  //   });
-  //   this.graph.addListener(mxEvent.CELLS_RESIZED, function (sender, evt) {
-  //     //set unsave state
-  //     if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-
-  //     thisComp.setState({unsavedChanges: true}, () => {
-  //       thisComp.setBadgeVisibilityOnUnsaveChanges()});
-  //     evt.consume();
-  //   });
-  //   this.graph.addListener(mxEvent.CELLS_RESIZED, function (sender, evt) {
-  //     //set unsave state
-  //     if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-  //     thisComp.setState({unsavedChanges: true}, this.setBadgeVisibilityOnUnsaveChanges);
-  //     evt.consume();
-  //   });
-  //   this.graph.addListener(mxEvent.CELL_CONNECTED, function (sender, evt) {
-  //     //set unsave state
-  //     if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-
-  //     thisComp.setState({unsavedChanges: true}, () => {
-  //       thisComp.setBadgeVisibilityOnUnsaveChanges()});
-
-  //     evt.consume();
-  //   });
-  //   this.graph.addListener(mxEvent.CELLS_REMOVED, function (sender, evt) {
-  //     //set unsave state
-  //     if(!thisComp.graphManager.isCellExist())
-  //     {
-  //       thisComp.setState({unsavedChanges: false}, thisComp.setBadgeVisibilityOnUnsaveChanges);
-  //       evt.consume();
-  //       return;
-  //     }
-
-  //     if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-
-  //     thisComp.setState({unsavedChanges: true}, () => {
-  //       thisComp.setBadgeVisibilityOnUnsaveChanges()});
-
-  //     evt.consume();
-  //   });
-  //   this.graph.addListener(mxEvent.GROUP_CELLS, function (sender, evt) {
-      
-  //     this.graph.orderCells(false); 
-
-  //     //set unsave state
-  //     if(thisComp.state.unsavedChanges) { evt.consume(); return;}
-
-  //     thisComp.setState({unsavedChanges: true}, () => {
-  //       thisComp.setBadgeVisibilityOnUnsaveChanges()});
-
-  //     evt.consume();
-  //   });
-  // }
-
-  setBadgeVisibilityOnUnsaveChanges = () => {
+setBadgeVisibilityOnUnsaveChanges = () => {
       if(this.state.unsavedChanges)
           this.setGlobal({saveBadgeInvisible: false});
       else
           this.setGlobal({saveBadgeInvisible: true});
   }
 
-  // addDeleteKeyEventToDeleteVertex(){
-  //     var thisComp = this;
-  //     // delete key remove vertex
-  //     var keyHandler = new mxKeyHandler(this.graph);
-  //     keyHandler.bindKey(46, (evt) =>
-  //       { 
-  //         thisComp.graph.removeCells(null,false);
-  //       });
-  // }
-
-  // addCtrlZEventToUndo(){
-    
-  //   var undoManager = new mxUndoManager();
-  //   var listener = function(sender, evt) {
-  //     undoManager.undoableEditHappened(evt.getProperty("edit"));
-  //   };
-  //   this.graph.getModel().addListener(mxEvent.UNDO, listener);
-  //   this.graph.getView().addListener(mxEvent.UNDO, listener);
-
-  //   var keyHandler = new mxKeyHandler(this.graph);
-
-  //   keyHandler.getFunction = function(evt) {
-  //     if (evt != null && evt.ctrlKey == true && evt.key == 'z')
-  //     {
-  //         undoManager.undo();
-  //     }
-  //   }
-  // }
-
-//   addCtrlAEventSelectAll() {
-
+// addUpDownLeftRightArrowToMoveCells() {
 //     var keyHandler = new mxKeyHandler(this.graph);
 //     var thisComp = this;
 //     keyHandler.getFunction = function(evt) {
-//       if (evt != null && evt.ctrlKey == true && evt.key == 'a')
+
+//       var cells = thisComp.graph.getSelectionCells();
+
+//       if(!Utils.IsNullOrUndefine(cells))
 //       {
-//         evt.preventDefault();
-//         thisComp.graph.selectAll();
+//           cells.map(cell => {
+
+//               //do not allow arrpw keys to move NSG, USR and NAT Gateway
+//               if(thisComp.azureValidator.isUDRNSGNATGateway(cell))
+//                   return;
+
+//               var geo = getSelectedCellGeo(cell);
+
+//               if (evt != null && evt.key == 'ArrowUp')
+//               {
+//                   if(Utils.IsNullOrUndefine(geo))
+//                     return;
+                  
+
+//                   var newY = geo.y - 2;
+//                   moveCell(cell, geo, geo.x, newY);
+
+                  
+//               }
+          
+//               if (evt != null && evt.key == 'ArrowDown')
+//               {
+//                 if(Utils.IsNullOrUndefine(geo))
+//                   return;
+//                 var newY = geo.y + 2;
+//                 moveCell(cell, geo, geo.x, newY);
+//               }
+          
+//               if (evt != null && evt.key == 'ArrowLeft')
+//               {
+//                 if(Utils.IsNullOrUndefine(geo))
+//                   return;
+//                 var newX = geo.x - 2;
+//                 moveCell(cell, geo, newX, geo.y);
+//               }
+                
+//               if (evt != null && evt.key == 'ArrowRight')
+//               {
+//                 if(Utils.IsNullOrUndefine(geo))
+//                   return;
+//                 var newX = geo.x + 2;
+//                 moveCell(cell, geo, newX, geo.y);
+//               }
+//           })
 //       }
 //     }
-//   }
-
-
-// addCtrlCCtrlVCopyPasteVertices() {
-//   var keyHandler = new mxKeyHandler(this.graph);
-//   var thisComp = this;
-//   keyHandler.getFunction = function(evt) {
-//     if (evt != null && evt.ctrlKey == true && evt.key == 'c')
-//       thisComp.copyToClipboard();
-//     if(evt != null && evt.ctrlKey == true && evt.key == 'v')
-//       thisComp.pasteFromClipboard();
-//   }
-// }
-
-
-
-
-
-
-addUpDownLeftRightArrowToMoveCells() {
-    var keyHandler = new mxKeyHandler(this.graph);
-    var thisComp = this;
-    keyHandler.getFunction = function(evt) {
-
-      var cells = thisComp.graph.getSelectionCells();
-
-      if(!Utils.IsNullOrUndefine(cells))
-      {
-          cells.map(cell => {
-
-              //do not allow arrpw keys to move NSG, USR and NAT Gateway
-              if(thisComp.azureValidator.isUDRNSGNATGateway(cell))
-                  return;
-
-              var geo = getSelectedCellGeo(cell);
-
-              if (evt != null && evt.key == 'ArrowUp')
-              {
-                  if(Utils.IsNullOrUndefine(geo))
-                    return;
-                  var newY = geo.y - 2;
-                  moveCell(cell, geo, geo.x, newY);
-              }
-          
-              if (evt != null && evt.key == 'ArrowDown')
-              {
-                if(Utils.IsNullOrUndefine(geo))
-                  return;
-                var newY = geo.y + 2;
-                moveCell(cell, geo, geo.x, newY);
-              }
-          
-              if (evt != null && evt.key == 'ArrowLeft')
-              {
-                if(Utils.IsNullOrUndefine(geo))
-                  return;
-                var newX = geo.x - 2;
-                moveCell(cell, geo, newX, geo.y);
-              }
-                
-              if (evt != null && evt.key == 'ArrowRight')
-              {
-                if(Utils.IsNullOrUndefine(geo))
-                  return;
-                var newX = geo.x + 2;
-                moveCell(cell, geo, newX, geo.y);
-              }
-          })
-      }
-    }
     
-    var getSelectedCellGeo = function(cell) {
-      return thisComp.graph.getCellGeometry(cell).clone();
-    }
+//     var getSelectedCellGeo = function(cell) {
+//       return thisComp.graph.getCellGeometry(cell).clone();
+//     }
   
-    var moveCell = function (cell, geo, x, y) {
+//     var moveCell = function (cell, geo, x, y) {
   
-       var newGeo = thisComp.graph.getCellGeometry(cell).clone();
-       newGeo.x = x;
-       newGeo.y = y;
-       thisComp.graph.model.setGeometry(cell, newGeo);
-       thisComp.graph.refresh();
+//        var newGeo = thisComp.graph.getCellGeometry(cell).clone();
+//        newGeo.x = x;
+//        newGeo.y = y;
+//        thisComp.graph.model.setGeometry(cell, newGeo);
+//        thisComp.graph.refresh();
 
-       thisComp.setState({unsavedChanges: true}, () => {
-        thisComp.setBadgeVisibilityOnUnsaveChanges()});
-    }
+//        thisComp.setState({unsavedChanges: true}, () => {
+//         thisComp.setBadgeVisibilityOnUnsaveChanges()});
+//     }
 
-  }
+//   }
 
   addDropPNGAZWBFileHandler = () => {
 
@@ -1657,6 +1885,8 @@ addUpDownLeftRightArrowToMoveCells() {
     else
       return false;
   }
+
+  
 
   // addContextMenu(){
   //   this.graph.popupMenuHandler.autoExpand = true;
@@ -1852,13 +2082,6 @@ addUpDownLeftRightArrowToMoveCells() {
   // }
 
   addResourceToEditorFromPalette = (dropContext) => {
-
-    //handle software icons
-    // var softwareResourceType = '' 
-    // if(String(dropContext.resourceType).startsWith('software-'))
-    //     softwareResourceType = dropContext.resourceType;
-    // else
-    //     softwareResourceType = '';
 
     switch(dropContext.resourceType) {
       // case softwareResourceType:
@@ -2170,52 +2393,52 @@ addUpDownLeftRightArrowToMoveCells() {
           label: '', x: dropContext.x, y: dropContext.y});
       break;
   
-      case 'App Service': //ResourceType.AppService():
+      case ResourceType.AppService():
         this.createOutOfVNetAzureResource({
           source: require('../../assets/azure_icons/Web Service Color/App Services.png'),
           label: 'app service', x: dropContext.x, y: dropContext.y,
           azcontext: new AppService()
         });
         break;
-      case 'App Service Environment':
+      case ResourceType.ASE():
         //vnet injection
         break;
-      case 'Function':
+      case ResourceType.Function():
         this.createOutOfVNetAzureResource({
           source: require('../../assets/azure_icons/Web Service Color/Function Apps.png'),
           label: 'func', x: dropContext.x, y: dropContext.y,
           azcontext: new Function()
         });
         break;
-      case 'Azure Search':
+      case ResourceType.AzureSearch():
         this.createOutOfVNetAzureResource({
           source: require('../../assets/azure_icons/Web Service Color/Azure Search.png'),
           label: 'azure search', x: dropContext.x, y: dropContext.y,
           azcontext: new AzureSearch()
         });
         break;
-      case 'Azure SignalR':
+      case ResourceType.SignalR():
         this.createOutOfVNetAzureResource({
           source: require('../../assets/azure_icons/Web Service Color/SignalR.png'),
           label: 'signalr', x: dropContext.x, y: dropContext.y,
           azcontext: new SignalR()
         });
         break;
-      case 'App Service Certificate':
+      case ResourceType.AppServiceCert():
         this.createOutOfVNetAzureResource({
           source: require('../../assets/azure_icons/Web Service Color/App Service Certificates.png'),
           label: 'app service certificate', x: dropContext.x, y: dropContext.y,
           azcontext: new AppServiceCert()
         });
         break;
-      case 'App Service Domain':
+      case ResourceType.AppServiceDomain():
         this.createOutOfVNetAzureResource({
           source: require('../../assets/azure_icons/Web Service Color/App Service Domains.png'),
           label: 'app service domain', x: dropContext.x, y: dropContext.y,
           azcontext: new AppServiceDomain()
         });
         break;
-      case 'App Configuration':
+      case ResourceType.AppConfig():
         this.createOutOfVNetAzureResource({
           source: require('../../assets/azure_icons/Web Service Color/App Configuration.png'),
           label: 'app configuration', x: dropContext.x, y: dropContext.y,
@@ -2223,16 +2446,24 @@ addUpDownLeftRightArrowToMoveCells() {
         });
         break;
       case ResourceType.SharedImageGallery():
-        this.addSharedImageGallery(dropContext);
+        this.createOutOfVNetAzureResource({
+          source: require('../../assets/azure_icons/ComputeServiceColor/Shared Image Galleries.png'),
+          label: 'shared image gallery', x: dropContext.x, y: dropContext.y,
+          azcontext: new SharedImageGallery()
+        });
+        break;
+      case ResourceType.DevTestLab():
+        this.createOutOfVNetAzureResource({
+          source: require('../../assets/azure_icons/ComputeServiceColor/Azure DevTest Labs.png'),
+          label: 'devtest lab', x: dropContext.x, y: dropContext.y,
+          azcontext: new DevTestLab()
+        });
         break;
       case ResourceType.PublicIp():
         this.addPublicIp(dropContext);
         break;
       case ResourceType.TrafficManager():
         this.addTrafficManager(dropContext);
-        break;
-      case ResourceType.DevTestLab():
-        this.addDevTestLab(dropContext);
         break;
       case ResourceType.VirtualNetworkGateway():
         this.addVNetGateway(dropContext);
@@ -2275,26 +2506,17 @@ addUpDownLeftRightArrowToMoveCells() {
       case ResourceType.CosmosDB():
         this.addCosmos(dropContext);
         break;
-      case 'vmWindows':
-        this.addVM(dropContext, 'vmWindows');
-        break;
-      case 'vmLinux':
-        this.addVM(dropContext, 'vmLinux');
-        break;
-      case 'vmss':
-        this.addVMSS(dropContext, 'vmss');
-        break;
       case ResourceType.PrivateEndpoint():
         this.addPrivateEndpoint(dropContext);
         break;
-      case 'vnet':
-        this.addVNet(dropContext);
+      case 'Virtual Network':
+        this.createVNet({
+          x: dropContext.x, y: dropContext.y,
+          azcontext: new VNet()
+        });
         break;
       case 'nlb':
         this.addNLB(dropContext);
-        break;
-      case ResourceType.AppGw():
-        this.addAppGw(dropContext);
         break;
       case ResourceType.DNSPrivateZone():
         this.addDNSPrivateZone(dropContext);
@@ -2316,9 +2538,6 @@ addUpDownLeftRightArrowToMoveCells() {
         break;
       case ResourceType.SQLElasticPool():
         this.addSQLElasticPool(dropContext);
-        break;
-      case ResourceType.SQLMI():
-        this.addSQLMI(dropContext);
         break;
       case ResourceType.SQLStretchDB():
         this.addSQLStretchDB(dropContext);
@@ -2421,9 +2640,6 @@ addUpDownLeftRightArrowToMoveCells() {
       case ResourceType.DDoSStandard():
         this.addDDoSStandard(dropContext);
         break;
-      case ResourceType.Bastion():
-        this.addBastion(dropContext);
-        break;
       case ResourceType.RecoveryServiceVault():
         this.addRecoveryServiceVault(dropContext);
         break;
@@ -2459,8 +2675,6 @@ addUpDownLeftRightArrowToMoveCells() {
       default:
         break;
     }
-    // this.graphManager.graph.getModel().endUpdate();
-    // this.graph.clearSelection();
   }
 
   determineResourcePropertyPanelToShow = (cell, userObject, onContextSaveCallback) => {
@@ -2470,127 +2684,127 @@ addUpDownLeftRightArrowToMoveCells() {
     switch (userObject.GraphModel.ResourceType) {
       case ResourceType.Cognitive():
         this.cognitivePropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+          onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.BotsService():
         this.botsPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+          onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.Genomics():
         this.genomicsPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+          onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.MLServiceWorkspace():
         this.mlsvcworkspacePropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+          onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.NatGateway():
         this.natgwPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.PrivateEndpoint():
         this.privateendpointPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.AzFile():
         this.azstoragePropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.QueueStorage():
         this.azstoragePropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.TableStorage():
         this.azstoragePropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.BlobStorage():
         this.azstoragePropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.NSG():
         this.nsgPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.IoTCentral():
         this.iotcentralPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.TimeSeriesInsights():
         this.timeseriesPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.AzureMaps():
         this.mapsPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.IoTHub():
         this.iothubPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.AADB2C():
         this.aadb2cPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.Automation():
         this.automationPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.LogAnalytics():
         this.loganalyticsPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.AppInsights():
         this.appinsightsPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.RecoveryServiceVault():
         this.recoveryservicevaultPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.Bastion():
         this.bastionPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+          onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.DDoSStandard():
         this.ddosstandardPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.KeyVault():
         this.akvPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.Sentinel():
         this.sentinelPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.Firewall():
         this.firewallPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+          onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.AppConfig():
@@ -2600,152 +2814,147 @@ addUpDownLeftRightArrowToMoveCells() {
         break;
       case ResourceType.StreamAnalytics():
         this.streamanalyticsPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.EventGridSubscription():
         this.egsubscriptionPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.EventGridTopic():
         this.egtopicPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.ISE():
         this.isePropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.LogicApp():
         this.logicappPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.Relay():
         this.relayPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.ASB():
         this.servicebusPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.APIM():
         this.apimPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.Kubernetes():
         this.kubePropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.ContainerRegistry():
         this.containerregistryPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.ContainerInstance():
         this.containerintancePropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.DataExplorer():
         this.dataexplorerPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.HdInsight():
         this.hdinsightPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.DataFactory():
         this.datafactoryPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.Databricks():
         this.databricksPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.DataLakeAnalytics():
         this.datalakeanalyticsPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.DataLakeStorage():
         this.datalakestoragePropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.Redis():
         this.redisPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
-        });
-        break;
-      case ResourceType.SQLMI():
-        this.sqlmiPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.SQLElasticPool():
         this.sqlelasticpoolPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.MySQL():
         this.mysqlPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.CosmosDB():
         this.cosmosPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.SQLDB():
         this.azuresqlPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.MariaDB():
         this.mariadbPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.PostgreSQL():
         this.postgresqlPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.Synapse():
         this.synapsePropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.NetAppFile():
         this.netappfilePropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.AzFileSync():
         this.filesyncPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.BlobStorage():
         this.storagePropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.CDN():
         this.cdnPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.VirtualNetworkGateway():
@@ -2795,95 +3004,97 @@ addUpDownLeftRightArrowToMoveCells() {
         break;
       case ResourceType.VMSS():
         this.vmssPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+          onContextSaveCallback(savedUserObject);
         });
         break; 
       case ResourceType.DevTestLab():
         this.devteslabPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.SharedImageGallery():
         this.sigPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.FrontDoor():
         this.frontdoorPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.PublicIp():
         this.pipPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.ExpressRouteCircuit():
         this.expressroutePropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
         
         
       case ResourceType.WindowsVM():
         this.vmPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+          onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.LinuxVM():
         this.vmPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.VNet():
         //get all subnet names and cidrs
-        userObject.GraphModel.SubnetsAndCidrs =
-          Utils.vnetGetSubnetsAndCidrs(thisComp.graph, cell);
+        // userObject.GraphModel.SubnetsAndCidrs =
+        //   Utils.vnetGetSubnetsAndCidrs(thisComp.graph, cell);
 
         this.vnetPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+           onContextSaveCallback(savedUserObject);
 
         });
         break;
       case ResourceType.Subnet():
-          if(this.azureValidator.isGatewaySubnet(cell))
-            return;
-
-          //pass into Subnet Prop Panel
-          //vnet address and subnet cidrs.
-          //This is purely for UI cidr validation, does not affect provisioning
-          var vnetCell = cell.parent;
-          var vnetProContext=  Utils.TryParseUserObject(vnetCell);
-
-          userObject.GraphModel.VNetAddressSpace =
-            vnetProContext.userObject.ProvisionContext.AddressSpace;
-
-          userObject.GraphModel.SubnetsAndCidrs =
-          Utils.vnetGetSubnetsAndCidrs(thisComp.graph, vnetCell, userObject.ProvisionContext.Name);
           
+        // if(this.azureValidator.isGatewaySubnet(cell))
+        //     return;
+
+        //   //pass into Subnet Prop Panel
+        //   //vnet address and subnet cidrs.
+        //   //This is purely for UI cidr validation, does not affect provisioning
+        //   var vnetCell = cell.parent;
+        //   var vnetProContext=  Utils.TryParseUserObject(vnetCell);
+
+        //   userObject.GraphModel.VNetAddressSpace =
+        //     vnetProContext.userObject.ProvisionContext.AddressSpace;
+
+        //   userObject.GraphModel.SubnetsAndCidrs =
+        //     Utils.vnetGetSubnetsAndCidrs(thisComp.graph, vnetCell, userObject.ProvisionContext.Name);
+          
+        //TODO: 
           this.subnetPropPanel.current.show(userObject, function(savedUserObject){
             //save values to subnet pro-context
-            thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+             onContextSaveCallback(savedUserObject);
 
             //save subnet names and cidrs to VNet pro-context
-            vnetProContext.userObject.GraphModel.SubnetsAndCidrs = 
-            Utils.vnetGetSubnetsAndCidrs(thisComp.graph, cell.parent);
-            thisComp.graph.model.setValue(vnetCell, JSON.stringify(vnetProContext.userObject));
+            // vnetProContext.userObject.GraphModel.SubnetsAndCidrs = 
+            // Utils.vnetGetSubnetsAndCidrs(thisComp.graph, cell.parent);
+            // thisComp.graph.model.setValue(vnetCell, JSON.stringify(vnetProContext.userObject));
           });
           break;
       case ResourceType.NLB():
         this.nlbPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+          onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.AppGw():
         this.appgwPropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+          onContextSaveCallback(savedUserObject);
         });
         break;
       case ResourceType.DNSPrivateZone():
         this.dnsPrivateZonePropPanel.current.show(userObject, function(savedUserObject){
-          thisComp.graph.model.setValue(cell, JSON.stringify(savedUserObject));
+          onContextSaveCallback(savedUserObject);
         });
         break;
       default:
@@ -3559,79 +3770,6 @@ addUpDownLeftRightArrowToMoveCells() {
 //         "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/svg+xml," +
 //           this.azureIcons.DNSPrivateZone());
 //       cell.collapsed = false;
-//   }
-
-//   addVM = (dropContext, vmType) => {
-    
-//     var result = this.azureValidator.isResourceDropinSubnet();
-
-//     if(dropContext.resourceType == ResourceType.WindowsVM() ||
-//         dropContext.resourceType == ResourceType.LinuxVM())
-//     {
-//       if(!result.isInSubnet)
-//       {
-//           Toaster.create({
-//             position: Position.TOP,
-//             autoFocus: false,
-//             canEscapeKeyClear: true
-//           }).show({intent: Intent.DANGER, timeout: 4000, message: Messages.VMInSubnet()});
-//           return;
-//       }
-//     }
-
-//     if(this.azureValidator.isGatewaySubnet(result.subnetCell)) {
-//       Toaster.create({
-//         position: Position.TOP,
-//         autoFocus: false,
-//         canEscapeKeyClear: true
-//       }).show({intent: Intent.DANGER, timeout: 5000, message: Messages.NonVNetGwInGatewaySubnetError()});
-//       return;
-//     }
-
-//     if(this.azureValidator.isVMinSubnetTakenByDedicatedSubnetResource(result.subnetCell))
-//     {
-//       Toaster.create({
-//         position: Position.TOP,
-//         autoFocus: false,
-//         canEscapeKeyClear: true
-//       }).show({intent: Intent.DANGER, timeout: 8000, message: Messages.ResourceInSubnetTakenByDedicatedSubnetResource()});
-//       return;
-//     }
-
-//      var vmModel = new VM();
-//      vmModel.GraphModel.IconId = this.shortUID.randomUUID(6);
-//      vmModel.ProvisionContext.Name = "vm_" + vmModel.GraphModel.IconId;
-//      vmModel.GraphModel.DisplayName = vmModel.ProvisionContext.Name;
-
-//     var iconByOS;
-//     if(vmType == ResourceType.WindowsVM())
-//     {
-//       iconByOS = this.azureIcons.VirtualMachineWindows();
-//       vmModel.GraphModel.ResourceType = ResourceType.WindowsVM();
-//     }
-//     else if(vmType == ResourceType.LinuxVM())
-//     {
-//       iconByOS = this.azureIcons.VirtualMachineLinux();
-//       vmModel.GraphModel.ResourceType = ResourceType.LinuxVM();
-//     }
-//     else
-//       iconByOS = this.azureIcons.VMSS();
-
-//      this.graphManager.graph.getModel().beginUpdate();
-//      try
-//      {
-//         var subnetCenterPt = Utils.getCellCenterPoint(result.subnetCell);
-
-//         var vm = this.graph.insertVertex
-//           (result.subnetCell, vmModel.GraphModel.IconId, JSON.stringify(vmModel), subnetCenterPt.x, subnetCenterPt.y, 30, 30,
-//           "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=0;shape=image;image=data:image/svg+xml," + iconByOS);
-//         vm.collapsed = false;
-//       }
-//      finally
-//      {
-//        // Updates the display
-//        this.graphManager.graph.getModel().endUpdate();
-//      }
 //   }
 
 //   addVMSS = (dropContext) => {

@@ -8,9 +8,11 @@ import Typography from '@material-ui/core/Typography';
 import Badge from '@material-ui/core/Badge';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AppBar from '@material-ui/core/AppBar';
+import Utils from './Helpers/Utils';
 
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
+
 
 import ResourceType from '../../models/ResourceType';
 import Tippy from '@tippy.js/react';
@@ -305,8 +307,7 @@ export default class ResourcePalette extends Component {
             Tooltip: 'Firewall',
             Image: require('../../assets/azure_icons/shape-firewall.png'),
             IsPng: false,
-            IsVisible:true,
-            ref: this.shapefirewall
+            IsVisible:true
           },
          ]
        }
@@ -611,7 +612,7 @@ export default class ResourcePalette extends Component {
                 Provisionable: true,
                 IsPng: false,
                 IsVisible:true,
-                ref: this.appsvcIcon
+                resourceType: ResourceType.AppService()
             },
             {
               Name: 'app service environment',
@@ -619,7 +620,8 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/azure_icons/Web Service Color/App Service Environments.png'),
               Provisionable: false,
               IsPng: false,
-              IsVisible:true
+              IsVisible:true,
+              resourceType: ResourceType.ASE()
             },
             {
               Name: 'azure function',
@@ -627,7 +629,8 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/azure_icons/Web Service Color/Function Apps.png'),
               Provisionable: false,
               IsPng: false,
-              IsVisible:true
+              IsVisible:true,
+              resourceType: ResourceType.Function()
             },
             {
               Name: 'azure search',
@@ -636,7 +639,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.azsearchIcon
+              resourceType: ResourceType.AzureSearch()
             },
             {
               Name: 'azure signalr websocket',
@@ -645,7 +648,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.signalrIcon
+              resourceType: ResourceType.SignalR()
             },
             {
               Name: 'app service certificate',
@@ -654,7 +657,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.appsvccertIcon
+              resourceType: ResourceType.AppServiceCert()
             },
             {
               Name: 'app service domain',
@@ -663,7 +666,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.appsvcdomainIcon
+              resourceType: ResourceType.AppServiceDomain()
             },
             {
               Name: 'app configuration',
@@ -672,7 +675,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.appconfigIcon
+              resourceType: ResourceType.AppConfig()
             },
           ]
         }
@@ -690,7 +693,7 @@ export default class ResourcePalette extends Component {
                 Provisionable: true,
                 IsPng: false,
                 IsVisible:true,
-                ref: this.vmWindowsIcon
+                resourceType: ResourceType.WindowsVM()
             },
             {
               Name: 'linux vm',
@@ -699,7 +702,7 @@ export default class ResourcePalette extends Component {
               Provisionable: true,
               IsPng: false,
               IsVisible:true,
-              ref: this.vmLinuxIcon
+              resourceType: ResourceType.LinuxVM()
             },
             {
               Name: 'vm scale sets',
@@ -708,7 +711,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.vmssIcon
+              resourceType: ResourceType.VMSS()
             },
             {
               Name: 'vm devtest lab',
@@ -1284,7 +1287,7 @@ export default class ResourcePalette extends Component {
                 Provisionable: true,
                 IsPng: false,
                 IsVisible:true,
-                ref: this.azfwIcon
+                resourceType: ResourceType.Firewall()
             },
             {
               Name: 'sentinel',
@@ -1329,7 +1332,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.bastionIcon
+              resourceType: ResourceType.Bastion()
             }
           ]
         }
@@ -1458,8 +1461,7 @@ export default class ResourcePalette extends Component {
                           <Button
                             icon="cross"
                             minimal={true}
-                            onClick={this.handleSearchboxClear}
-                          />
+                            onClick={this.handleSearchboxClear} />
                         }
                         onChange={this.searchResources}
                         value={this.state.searchText}
@@ -1490,7 +1492,7 @@ export default class ResourcePalette extends Component {
                         rsc.resourceGroup.resources.map(r => {
                             return (
                               <div style={{display: r.IsVisible ? 'block' : 'none'}}>
-                                <div class="tile-item" data-shape={r.Tooltip}>
+                                <div class="tile-item" data-shape={(r.resourceType != undefined) ? r.resourceType : r.Tooltip}>
                                   <Tippy content={r.Tooltip} followCursor={true} placement="bottom">
                                     {
                                       (r.Provisionable != undefined && r.Provisionable == true)
@@ -1590,7 +1592,7 @@ export default class ResourcePalette extends Component {
 
     $(".tile-item").draggable({
       stack: "#diagramEditor",
-      revert: true,
+      revert: 'invalid',
       revertDuration: 0,
       refreshPositions: true,
       scroll: false,
@@ -1598,7 +1600,74 @@ export default class ResourcePalette extends Component {
       helper: 'clone',
       zIndex: 10000,
       appendTo: "body"
+      //TODO: drag VIR and highlight subnet
+      // drag: function (evt, ui) {
+      //   var diagram = thisComp.props.DiagramEditor.current.getDiagram();
+
+      //   var mx = evt.clientX; // - bbox.left * ((can.width / pixelratio) / bbw);
+      //   var my = evt.clientY; // - bbox.top * ((can.height / pixelratio) / bbh);
+      //   var point = diagram.transformViewToDoc(new go.Point(mx, my));
+      //   var subnet = diagram.findPartAt(point, true);
+      //   if (subnet instanceof go.Node) {
+      //       var azcontext = subnet.data.azcontext;
+      //       if(azcontext != undefined || azcontext != null) {
+      //         if(azcontext.ProvisionContext.ResourceType == ResourceType.Subnet()) {
+      //           highlightNode(diagram,subnet);
+      //         }
+      //       }
+      //   }
+      //   else
+      //     highlightNode(diagram,null);
+      // },
+      // stop: function () {
+      //   var diagram = thisComp.props.DiagramEditor.current.getDiagram();
+      //   highlightNode(diagram,null);
+      // }
     });
+
+    // function highlightNode(diagram, node) {  // may be null
+    //   var oldskips = diagram.skipsUndoManager;
+    //   diagram.skipsUndoManager = true;
+    //   diagram.startTransaction("highlight");
+    //   if (node !== null) {
+    //     diagram.highlight(node);
+    //   } else {
+    //     diagram.clearHighlighteds();
+    //   }
+    //   diagram.commitTransaction("highlight");
+    //   diagram.skipsUndoManager = oldskips;
+    // }
+
+    // $("#diagramEditor").bind({
+    //   dragover: function(e) {
+    //     var a = 'a';
+    //   },
+    //   dragleave: function(e) {
+    //     var a = 'a';
+    //   }
+    // });
+
+    //highlight subnet for VIR
+    //$('#diagramEditor').bind('dragover', function(){
+        // var diagramEditor = event.target;
+
+        // if (!(diagramEditor instanceof HTMLCanvasElement)) return;
+
+        // var diagram = this.props.DiagramEditor.getDiaram();
+
+        // var mx = event.clientX; // - bbox.left * ((can.width / pixelratio) / bbw);
+        // var my = event.clientY; // - bbox.top * ((can.height / pixelratio) / bbh);
+        // var point = diagram.transformViewToDoc(new go.Point(mx, my));
+        // var subnet = diagram.findPartAt(point, true);
+
+        // if (subnet instanceof go.Node) {
+        //   highlightNode(subnet);
+        // }
+
+
+    //});
+
+    
 
     $("#diagramEditor").droppable({
       accept: ".tile-item", 
@@ -1607,12 +1676,20 @@ export default class ResourcePalette extends Component {
         var resourceType = ui.draggable.data('shape'); //data-shape
         var x = ui.offset.left - $(this).offset().left;
         var y = ui.offset.top - $(this).offset().top;
-  
-        thisComp.props.addResourceToDiagramEditor({
-          resourceType: resourceType,
-          x: x,
-          y: y
-        });
+
+        if(Utils.isResourceTypeVIR(resourceType)) {
+          thisComp.props.DiagramEditor.current.createVIROntoSubnet({
+              x: x,
+              y, y,
+              resourceType: resourceType
+          });
+        }
+        else 
+          thisComp.props.addResourceToDiagramEditor({
+            resourceType: resourceType,
+            x: x,
+            y: y
+          });
       }
     });
     

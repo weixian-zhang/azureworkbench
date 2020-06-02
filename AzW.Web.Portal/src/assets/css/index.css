@@ -109,7 +109,7 @@ div.mxRubberband {
   min-height: 50px;
   position: relative;
   flex-grow: 0;
-  width: 280px;
+  width: 275px;
   overflow-y: auto;
   overflow-x: hidden;
 }

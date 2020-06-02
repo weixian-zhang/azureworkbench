@@ -23,53 +23,7 @@ export default class AzureValidator {
             return {isInSubnet: false, subnetCell: cell};
     }
 
-    isVMinSubnetTakenByDedicatedSubnetResource(subnet) {
-        var childCount = this.graph.getModel().getChildCount(subnet);
-
-        if(childCount <=0 )
-            return false;
-        
-        var childCells = this.graph.getChildVertices(subnet)
-
-        var result = false;
-        
-        for (var i = 0; i < childCells.length; i++) {
-            if(this.isPaaSInVNetResource(childCells[i]))
-            {
-                result = true;
-                break;
-            }
-        };
-
-        return result;
-    }
-
-    isResourceinDedicatedSubnet(subnetCell) {
-
-        var result = this.isResourceDropinSubnet(subnetCell);
-
-        if(result.isInSubnet)
-        {
-           var childs = this.graph.getChildVertices(subnetCell);
-
-           for(var cell of childs)
-           {
-               var result = Utils.TryParseUserObject(cell);
-
-               if(result.isUserObject)
-               {
-                    if(result.userObject.ProvisionContext.ResourceType != ResourceType.NSG()
-                       && result.userObject.ProvisionContext.ResourceType != ResourceType.RouteTable())
-                    {
-                        return false;
-                    }
-               }
-           }
-           return true;
-        }
-        else
-            return false;
-    }
+    
 
     isVM(cell) {
         
