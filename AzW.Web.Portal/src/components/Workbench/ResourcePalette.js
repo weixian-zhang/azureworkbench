@@ -720,7 +720,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.devtestlabIcon
+              resourceType: ResourceType.DevTestLab()
             },
             {
               Name: 'shared image gallery sig',
@@ -729,7 +729,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.sigIcon
+              resourceType: ResourceType.SharedImageGallery()
             }
           ]
         }
@@ -747,7 +747,7 @@ export default class ResourcePalette extends Component {
                 Provisionable: true,
                 IsPng: false,
                 IsVisible:true,
-                ref: this.vnetIcon
+                resourceType: ResourceType.VNet()
             },
             {
               Name: 'load balancer nlb slb alb route',
@@ -756,7 +756,7 @@ export default class ResourcePalette extends Component {
               Provisionable: true,
               IsPng: false,
               IsVisible:true,
-              ref: this.nlbIcon
+              resourceType: ResourceType.NLB()
             },
             {
               Name: 'application gatway appgw waf route',
@@ -765,7 +765,7 @@ export default class ResourcePalette extends Component {
               Provisionable: true,
               IsPng: false,
               IsVisible:true,
-              ref: this.appgwIcon
+              resourceType: ResourceType.AppGw()
             },
             {
               Name: 'dns private zone',
@@ -774,7 +774,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.dnsprivatezoneIcon
+              resourceType: ResourceType.DNSPrivateZone()
             },
             {
               Name: 'front door waf load balancer route',
@@ -783,7 +783,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.frontdoorIcon
+              resourceType: ResourceType.FrontDoor()
             },
             {
               Name: 'public ip address pip',
@@ -792,7 +792,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.publicipIcon
+              resourceType: ResourceType.PublicIp()
             },
             {
               Name: 'express route mpls wan',
@@ -801,7 +801,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.expressrouteIcon
+              resourceType: ResourceType.ExpressRouteCircuit()
             },
             {
               Name: 'traffic manager gtm route',
@@ -810,7 +810,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.trafficmanagerIcon
+              resourceType: ResourceType.TrafficManager()
             },
             {
               Name: 'virtual network gateway vnet',
@@ -819,7 +819,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.vnetgatewayIcon
+              resourceType: ResourceType.VirtualNetworkGateway()
             },
             {
               Name: 'cdn',
@@ -828,7 +828,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.cdnIcon
+              resourceType: ResourceType.CDN()
             },
             {
               Name: 'application security group asg',
@@ -837,7 +837,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.asgIcon
+              resourceType: ResourceType.ASG()
             },
             {
               Name: 'network interface nic',
@@ -846,7 +846,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.nicIcon
+              resourceType: ResourceType.NIC()
             },
             {
               Name: 'private endpoint',
@@ -855,7 +855,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.privateEndpointIcon
+              resourceType: ResourceType.PrivateEndpoint()
             },
             {
               Name: 'network watcher',
@@ -864,7 +864,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.networkwatcherIcon
+              resourceType: ResourceType.NetworkWatcher()
             }
           ]
         }
@@ -954,7 +954,7 @@ export default class ResourcePalette extends Component {
                 Provisionable: false,
                 IsPng: false,
                 IsVisible:true,
-                ref: this.postgresqlIcon
+                resourceType: ResourceType.PostgreSQL()
             },
             {
               Name: 'maria',
@@ -963,7 +963,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.mariaDbIcon
+              resourceType: ResourceType.MariaDB()
             },
             {
               Name: 'sql',
@@ -972,7 +972,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.sqldbIcon
+              resourceType: ResourceType.SQLDB()
             },
             {
               Name: 'cosmos mongo cassandra graph documentdb',
@@ -981,7 +981,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.cosmosdbIcon
+              resourceType: ResourceType.CosmosDB()
             },
             {
               Name: 'mysql',
@@ -990,7 +990,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.mysqlIcon
+              resourceType: ResourceType.MySQL()
             },
             {
               Name: 'sql elastic pool',
@@ -999,7 +999,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.azSqlElasticPoolIcon
+              resourceType: ResourceType.SQLElasticPool()
             },
             {
               Name: 'sql managed instance mi',
@@ -1008,7 +1008,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.sqlmiIcon
+              resourceType: ResourceType.SQLMI()
             },
             {
               Name: 'sql stretch',
@@ -1017,7 +1017,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.sqlstretchIcon
+              resourceType: ResourceType.SQLStretchDB()
             },
             {
               Name: 'redis',
@@ -1026,7 +1026,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.redisIcon
+              resourceType: ResourceType.Redis()
             }
           ]
         }
@@ -1044,7 +1044,7 @@ export default class ResourcePalette extends Component {
                 Provisionable: false,
                 IsPng: false,
                 IsVisible:true,
-                ref: this.synapseIcon
+                resourceType: ResourceType.Synapse()
             },
             {
               Name: 'data lake analytics',
@@ -1053,7 +1053,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.datalakeanalyticsIcon
+              resourceType: ResourceType.DataLakeAnalytics()
             },
             {
               Name: 'databricks data bricks',
@@ -1062,7 +1062,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.databricksIcon
+              resourceType: ResourceType.Databricks()
             },
             {
               Name: 'data factory',
@@ -1071,7 +1071,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.datafactoryIcon
+              resourceType: ResourceType.DataFactory()
             },
             {
               Name: 'hdinsight hd insight',
@@ -1080,7 +1080,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.hdinsightIcon
+              resourceType: ResourceType.HdInsight()
             },
             {
               Name: 'data explorer',
@@ -1089,7 +1089,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.dataexplorerIcon
+              resourceType: ResourceType.DataExplorer()
             }
           ]
         }
@@ -1107,7 +1107,7 @@ export default class ResourcePalette extends Component {
                 Provisionable: false,
                 IsPng: false,
                 IsVisible:true,
-                ref: this.cognitivesvcicon
+                resourceType: ResourceType.Cognitive()
             },
             {
               Name: 'bots service bot',
@@ -1116,7 +1116,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.botsvcicon
+              resourceType: ResourceType.BotsService()
             },
             {
               Name: 'genomics',
@@ -1125,7 +1125,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.genomicsicon
+              resourceType: ResourceType.Genomics()
             },
             {
               Name: 'machine learning service workspace',
@@ -1134,7 +1134,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.mlsvcworkspace
+              resourceType: ResourceType.MLServiceWorkspace()
             }
           ]
         }
@@ -1152,7 +1152,7 @@ export default class ResourcePalette extends Component {
                 Provisionable: false,
                 IsPng: false,
                 IsVisible:true,
-                ref: this.containerInstanceIcon
+                resourceType: ResourceType.ContainerInstance()
             },
             {
               Name: 'container registry',
@@ -1161,7 +1161,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.containerRegistryIcon
+              resourceType: ResourceType.ContainerRegistry()
             },
             {
               Name: 'kubernetes kube k8s microservice',
@@ -1170,7 +1170,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.kubeIcon
+              resourceType: ResourceType.Kubernetes()
             },
           ]
         }
@@ -1296,7 +1296,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.sentinelIcon
+              resourceType: ResourceType.Sentinel()
             },
             {
               Name: 'key vault akv',
@@ -1305,7 +1305,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.akvIcon
+              resourceType: ResourceType.KeyVault()
             },
             {
               Name: 'security center asc',
@@ -1314,7 +1314,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.ascIcon
+              resourceType: ResourceType.SecurityCenter()
             },
             {
               Name: 'ddos protection standard',
@@ -1323,7 +1323,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.ddosstandardIcon
+              resourceType: ResourceType.DDoSStandard()
             },
             {
               Name: 'bastion jumphost jh',
@@ -1350,7 +1350,7 @@ export default class ResourcePalette extends Component {
                 Provisionable: false,
                 IsPng: false,
                 IsVisible:true,
-                ref: this.siteRecoveryIcon
+                resourceType: ResourceType.RecoveryServiceVault()
             },
             {
               Name: 'app insights apm',
@@ -1359,7 +1359,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.appInsightsIcon
+              resourceType: ResourceType.AppInsights()
             },
             {
               Name: 'log analytics monitor',
@@ -1368,7 +1368,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.azloganalyticsIcon
+              resourceType: ResourceType.LogAnalytics()
             },
             {
               Name: 'automation update',
@@ -1377,7 +1377,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.automationIcon
+              resourceType: ResourceType.Automation()
             },
             {
               Name: 'ad aad oauth oidc openid',
@@ -1386,7 +1386,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.aadIcon
+              resourceType: ResourceType.AAD()
             },
             {
               Name: 'ad b2c oauth oidc openid',
@@ -1395,7 +1395,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.aadb2cIcon
+              resourceType: ResourceType.AADB2C()
             }
           ]
         }
@@ -1413,7 +1413,7 @@ export default class ResourcePalette extends Component {
                 Provisionable: false,
                 IsPng: false,
                 IsVisible:true,
-                ref: this.iothub
+                resourceType: ResourceType.IoTHub()
             },
             {
               Name: 'iot central app applications',
@@ -1422,7 +1422,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.iotcentralhub
+              resourceType: ResourceType.IoTCentral()
             },
             {
               Name: 'map',
@@ -1431,7 +1431,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.azmaps
+              resourceType: ResourceType.AzureMaps()
             },
             {
               Name: 'time series insights environment',
@@ -1440,7 +1440,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.timeseriesinsights
+              resourceType: ResourceType.TimeSeriesInsights()
             },
           ]
         }

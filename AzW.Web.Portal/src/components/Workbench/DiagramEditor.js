@@ -566,7 +566,7 @@ initTemplates() {
   nodeTemplateMap.add('shape', this.createShapeTemplate());
   nodeTemplateMap.add('text', this.createTextTemplate());
   nodeTemplateMap.add('picshape', this.createPictureShapeTemplate());
-  nodeTemplateMap.add('outofvnetazureresource', this.createOutOfVNetAzureResourceTemplate());
+  nodeTemplateMap.add('outofvnetazureresource', this.createNonVIRAzureResourceTemplate());
   nodeTemplateMap.add('virresource', this.createVIRAzureResourceTemplate());
 
   groupTemplateMap.add('', this.createGroupTemplate());
@@ -667,7 +667,7 @@ createPictureShapeTemplate() {
   return template;
 }
 
-createOutOfVNetAzureResourceTemplate() {
+createNonVIRAzureResourceTemplate() {
   var thisComp = this;
     var template =   
     this.$(go.Node, "Spot",
@@ -689,7 +689,7 @@ createOutOfVNetAzureResourceTemplate() {
             });
         }
       },
-      new go.Binding("azcontext", "azcontext"),
+      new go.Binding("azcontext", "azcontext").makeTwoWay(),
       new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
       this.$(go.Panel, "Vertical",
           //new go.Binding("desiredSize", "size", go.Size.parse), //follows panel resize below
@@ -1128,7 +1128,6 @@ createVNetTemplate() {
     selectionObjectName: "VNET",
     locationObjectName: "VNET",
     ungroupable: false,
-    //computesBoundsAfterDrag: false,
     contextMenu:
     this.$("ContextMenu",
       this.$("ContextMenuButton",
@@ -1325,18 +1324,15 @@ createVNet(dropContext) {
   
   var vnetKey = 'vnet-' + this.shortUID.randomUUID(6);
   
-
   this.diagram.model.addNodeData
     ({key: vnetKey, text: 'vnet', azcontext: new VNet(),fill: 'transparent',
       stroke: 'deepskyblue', isGroup: true,
       loc: go.Point.stringify(canvasPoint), category: 'vnet'});
 
-  this.createSubnet(vnetKey);
-
-
+  //this.createSubnet(vnetKey);
 }
 
-createSubnet(vnetKey) {
+createSubnet(vnetKey, subnetNodekey = '') {
 
   var vnet = null;
 
@@ -1347,9 +1343,7 @@ createSubnet(vnetKey) {
     vnet = this.diagram.selection.first();
   }
 
-  
-
-  var subnetKey = 'subnet-' + this.shortUID.randomUUID(6);
+  var subnetKey = subnetNodekey != '' ? subnetNodekey :  Utils.uniqueId('subnet');
   var subnetLoc = new go.Point(vnet.location.x + 10, vnet.location.y +20);
   var subnetSize = new go.Size((vnet.actualBounds.width - 40), 80);
   
@@ -1365,7 +1359,8 @@ createSubnet(vnetKey) {
 
 createVIROntoSubnet(dropContext) {
 
-    var selectedNode = this.diagram.selection.first();
+    //selected node can be from copy/paste command in GojsManager, or from just selected node where VIR are dragged onto canvas
+    var selectedNode = dropContext.subnetNode != null ? dropContext.subnetNode : this.diagram.selection.first();
 
     if(selectedNode == undefined || !selectedNode instanceof go.Node) {
       Toast.show('warning', 2500, 'A Subnet must be selected');
@@ -1479,7 +1474,7 @@ createPictureShape(dropContext) {
       loc: go.Point.stringify(canvasPoint), category: 'picshape'});
 }
 
-createOutOfVNetAzureResource(dropContext) {
+createNonVIRAzureResource(dropContext) {
   var image = dropContext.source;
   var label = dropContext.label;
   var canvasPoint = this.diagram.transformViewToDoc(new go.Point(dropContext.x, dropContext.y));
@@ -1726,80 +1721,6 @@ setBadgeVisibilityOnUnsaveChanges = () => {
           this.setGlobal({saveBadgeInvisible: true});
   }
 
-// addUpDownLeftRightArrowToMoveCells() {
-//     var keyHandler = new mxKeyHandler(this.graph);
-//     var thisComp = this;
-//     keyHandler.getFunction = function(evt) {
-
-//       var cells = thisComp.graph.getSelectionCells();
-
-//       if(!Utils.IsNullOrUndefine(cells))
-//       {
-//           cells.map(cell => {
-
-//               //do not allow arrpw keys to move NSG, USR and NAT Gateway
-//               if(thisComp.azureValidator.isUDRNSGNATGateway(cell))
-//                   return;
-
-//               var geo = getSelectedCellGeo(cell);
-
-//               if (evt != null && evt.key == 'ArrowUp')
-//               {
-//                   if(Utils.IsNullOrUndefine(geo))
-//                     return;
-                  
-
-//                   var newY = geo.y - 2;
-//                   moveCell(cell, geo, geo.x, newY);
-
-                  
-//               }
-          
-//               if (evt != null && evt.key == 'ArrowDown')
-//               {
-//                 if(Utils.IsNullOrUndefine(geo))
-//                   return;
-//                 var newY = geo.y + 2;
-//                 moveCell(cell, geo, geo.x, newY);
-//               }
-          
-//               if (evt != null && evt.key == 'ArrowLeft')
-//               {
-//                 if(Utils.IsNullOrUndefine(geo))
-//                   return;
-//                 var newX = geo.x - 2;
-//                 moveCell(cell, geo, newX, geo.y);
-//               }
-                
-//               if (evt != null && evt.key == 'ArrowRight')
-//               {
-//                 if(Utils.IsNullOrUndefine(geo))
-//                   return;
-//                 var newX = geo.x + 2;
-//                 moveCell(cell, geo, newX, geo.y);
-//               }
-//           })
-//       }
-//     }
-    
-//     var getSelectedCellGeo = function(cell) {
-//       return thisComp.graph.getCellGeometry(cell).clone();
-//     }
-  
-//     var moveCell = function (cell, geo, x, y) {
-  
-//        var newGeo = thisComp.graph.getCellGeometry(cell).clone();
-//        newGeo.x = x;
-//        newGeo.y = y;
-//        thisComp.graph.model.setGeometry(cell, newGeo);
-//        thisComp.graph.refresh();
-
-//        thisComp.setState({unsavedChanges: true}, () => {
-//         thisComp.setBadgeVisibilityOnUnsaveChanges()});
-//     }
-
-//   }
-
   addDropPNGAZWBFileHandler = () => {
 
     var thisComp = this;
@@ -1868,7 +1789,6 @@ setBadgeVisibilityOnUnsaveChanges = () => {
           }
           else
             Toast.show('warning', '3500', 'Workbench currently supports importing PNG and .azwb file types')
-          
         });
       }
     });
@@ -2394,7 +2314,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       break;
   
       case ResourceType.AppService():
-        this.createOutOfVNetAzureResource({
+        this.createNonVIRAzureResource({
           source: require('../../assets/azure_icons/Web Service Color/App Services.png'),
           label: 'app service', x: dropContext.x, y: dropContext.y,
           azcontext: new AppService()
@@ -2404,56 +2324,56 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         //vnet injection
         break;
       case ResourceType.Function():
-        this.createOutOfVNetAzureResource({
+        this.createNonVIRAzureResource({
           source: require('../../assets/azure_icons/Web Service Color/Function Apps.png'),
           label: 'func', x: dropContext.x, y: dropContext.y,
           azcontext: new Function()
         });
         break;
       case ResourceType.AzureSearch():
-        this.createOutOfVNetAzureResource({
+        this.createNonVIRAzureResource({
           source: require('../../assets/azure_icons/Web Service Color/Azure Search.png'),
           label: 'azure search', x: dropContext.x, y: dropContext.y,
           azcontext: new AzureSearch()
         });
         break;
       case ResourceType.SignalR():
-        this.createOutOfVNetAzureResource({
+        this.createNonVIRAzureResource({
           source: require('../../assets/azure_icons/Web Service Color/SignalR.png'),
           label: 'signalr', x: dropContext.x, y: dropContext.y,
           azcontext: new SignalR()
         });
         break;
       case ResourceType.AppServiceCert():
-        this.createOutOfVNetAzureResource({
+        this.createNonVIRAzureResource({
           source: require('../../assets/azure_icons/Web Service Color/App Service Certificates.png'),
           label: 'app service certificate', x: dropContext.x, y: dropContext.y,
           azcontext: new AppServiceCert()
         });
         break;
       case ResourceType.AppServiceDomain():
-        this.createOutOfVNetAzureResource({
+        this.createNonVIRAzureResource({
           source: require('../../assets/azure_icons/Web Service Color/App Service Domains.png'),
           label: 'app service domain', x: dropContext.x, y: dropContext.y,
           azcontext: new AppServiceDomain()
         });
         break;
       case ResourceType.AppConfig():
-        this.createOutOfVNetAzureResource({
+        this.createNonVIRAzureResource({
           source: require('../../assets/azure_icons/Web Service Color/App Configuration.png'),
           label: 'app configuration', x: dropContext.x, y: dropContext.y,
           azcontext: new AppConfig()
         });
         break;
       case ResourceType.SharedImageGallery():
-        this.createOutOfVNetAzureResource({
+        this.createNonVIRAzureResource({
           source: require('../../assets/azure_icons/ComputeServiceColor/Shared Image Galleries.png'),
           label: 'shared image gallery', x: dropContext.x, y: dropContext.y,
           azcontext: new SharedImageGallery()
         });
         break;
       case ResourceType.DevTestLab():
-        this.createOutOfVNetAzureResource({
+        this.createNonVIRAzureResource({
           source: require('../../assets/azure_icons/ComputeServiceColor/Azure DevTest Labs.png'),
           label: 'devtest lab', x: dropContext.x, y: dropContext.y,
           azcontext: new DevTestLab()
@@ -2684,364 +2604,364 @@ setBadgeVisibilityOnUnsaveChanges = () => {
     switch (userObject.GraphModel.ResourceType) {
       case ResourceType.Cognitive():
         this.cognitivePropPanel.current.show(userObject, function(savedUserObject){
-          onContextSaveCallback(savedUserObject);
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.BotsService():
         this.botsPropPanel.current.show(userObject, function(savedUserObject){
-          onContextSaveCallback(savedUserObject);
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.Genomics():
         this.genomicsPropPanel.current.show(userObject, function(savedUserObject){
-          onContextSaveCallback(savedUserObject);
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.MLServiceWorkspace():
         this.mlsvcworkspacePropPanel.current.show(userObject, function(savedUserObject){
-          onContextSaveCallback(savedUserObject);
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.NatGateway():
         this.natgwPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.PrivateEndpoint():
         this.privateendpointPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.AzFile():
         this.azstoragePropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.QueueStorage():
         this.azstoragePropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.TableStorage():
         this.azstoragePropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.BlobStorage():
         this.azstoragePropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.NSG():
         this.nsgPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.IoTCentral():
         this.iotcentralPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.TimeSeriesInsights():
         this.timeseriesPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.AzureMaps():
         this.mapsPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.IoTHub():
         this.iothubPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.AADB2C():
         this.aadb2cPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.Automation():
         this.automationPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.LogAnalytics():
         this.loganalyticsPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.AppInsights():
         this.appinsightsPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.RecoveryServiceVault():
         this.recoveryservicevaultPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.Bastion():
         this.bastionPropPanel.current.show(userObject, function(savedUserObject){
-          onContextSaveCallback(savedUserObject);
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.DDoSStandard():
         this.ddosstandardPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.KeyVault():
         this.akvPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.Sentinel():
         this.sentinelPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.Firewall():
         this.firewallPropPanel.current.show(userObject, function(savedUserObject){
-          onContextSaveCallback(savedUserObject);
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.AppConfig():
         this.appconfigPropPanel.current.show(userObject, function(savedUserObject){
-          onContextSaveCallback(savedUserObject);
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.StreamAnalytics():
         this.streamanalyticsPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.EventGridSubscription():
         this.egsubscriptionPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.EventGridTopic():
         this.egtopicPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.ISE():
         this.isePropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.LogicApp():
         this.logicappPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.Relay():
         this.relayPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.ASB():
         this.servicebusPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.APIM():
         this.apimPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.Kubernetes():
         this.kubePropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.ContainerRegistry():
         this.containerregistryPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.ContainerInstance():
         this.containerintancePropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.DataExplorer():
         this.dataexplorerPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.HdInsight():
         this.hdinsightPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.DataFactory():
         this.datafactoryPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.Databricks():
         this.databricksPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.DataLakeAnalytics():
         this.datalakeanalyticsPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.DataLakeStorage():
         this.datalakestoragePropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.Redis():
         this.redisPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.SQLElasticPool():
         this.sqlelasticpoolPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.MySQL():
         this.mysqlPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.CosmosDB():
         this.cosmosPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.SQLDB():
         this.azuresqlPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.MariaDB():
         this.mariadbPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.PostgreSQL():
         this.postgresqlPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.Synapse():
         this.synapsePropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.NetAppFile():
         this.netappfilePropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.AzFileSync():
         this.filesyncPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.BlobStorage():
         this.storagePropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.CDN():
         this.cdnPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.VirtualNetworkGateway():
         this.vnetgatewayPropPanel.current.show(userObject, function(savedUserObject){
-          onContextSaveCallback(savedUserObject);
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.TrafficManager():
         this.trafficmanagerPropPanel.current.show(userObject, function(savedUserObject){
-          onContextSaveCallback(savedUserObject);
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.AppService():
         this.appsvcPropPanel.current.show(userObject, function(savedUserObject){
-            onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.ASE():
         this.asePropPanel.current.show(userObject, function(savedUserObject){
-          onContextSaveCallback(savedUserObject);
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.Function():
         this.funcPropPanel.current.show(userObject, function(savedUserObject){
-          onContextSaveCallback(savedUserObject);
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.AzureSearch():
         this.azsearchPropPanel.current.show(userObject, function(savedUserObject){
-          onContextSaveCallback(savedUserObject);
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.SignalR():
         this.signalrPropPanel.current.show(userObject, function(savedUserObject){
-          onContextSaveCallback(savedUserObject);
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break; 
       case ResourceType.AppServiceCert():
         this.appsvccertPropPanel.current.show(userObject, function(savedUserObject){
-          onContextSaveCallback(savedUserObject);
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.AppServiceDomain():
         this.appsvcdomainPropPanel.current.show(userObject, function(savedUserObject){
-          onContextSaveCallback(savedUserObject);
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.VMSS():
         this.vmssPropPanel.current.show(userObject, function(savedUserObject){
-          onContextSaveCallback(savedUserObject);
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break; 
       case ResourceType.DevTestLab():
         this.devteslabPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.SharedImageGallery():
         this.sigPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.FrontDoor():
         this.frontdoorPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.PublicIp():
         this.pipPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.ExpressRouteCircuit():
         this.expressroutePropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
         
         
       case ResourceType.WindowsVM():
         this.vmPropPanel.current.show(userObject, function(savedUserObject){
-          onContextSaveCallback(savedUserObject);
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.LinuxVM():
         this.vmPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.VNet():
@@ -3050,7 +2970,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         //   Utils.vnetGetSubnetsAndCidrs(thisComp.graph, cell);
 
         this.vnetPropPanel.current.show(userObject, function(savedUserObject){
-           onContextSaveCallback(savedUserObject);
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
 
         });
         break;
@@ -3074,7 +2994,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         //TODO: 
           this.subnetPropPanel.current.show(userObject, function(savedUserObject){
             //save values to subnet pro-context
-             onContextSaveCallback(savedUserObject);
+              onContextSaveCallback(Utils.deepClone(savedUserObject));
 
             //save subnet names and cidrs to VNet pro-context
             // vnetProContext.userObject.GraphModel.SubnetsAndCidrs = 
@@ -3084,17 +3004,17 @@ setBadgeVisibilityOnUnsaveChanges = () => {
           break;
       case ResourceType.NLB():
         this.nlbPropPanel.current.show(userObject, function(savedUserObject){
-          onContextSaveCallback(savedUserObject);
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.AppGw():
         this.appgwPropPanel.current.show(userObject, function(savedUserObject){
-          onContextSaveCallback(savedUserObject);
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.DNSPrivateZone():
         this.dnsPrivateZonePropPanel.current.show(userObject, function(savedUserObject){
-          onContextSaveCallback(savedUserObject);
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       default:

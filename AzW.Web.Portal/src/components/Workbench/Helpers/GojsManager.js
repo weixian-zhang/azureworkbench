@@ -49,17 +49,28 @@ export default class GojsManager
           
           var items = this.diagram.selection;
 
-          if (items.count > 0) {  // if there are any selected items, save them to a clipboard
-            var copiedItems = [];
+          if (items.count > 0) {  // only handles VIRs and subnets, rest copy/paste as usual
+            
+            var copiedVIRAndSubnets = [];
+
             var it = items.iterator;
             while(it.next()) {
-              copiedItems.push(it.value);
+              var part = it.value;
+              if(Utils.isPartVIR(part) || Utils.isSubnet(part))
+              copiedVIRAndSubnets.push(part);
             }
 
-            this.diagram.commandHandler.copiedItems = copiedItems;
-            go.CommandHandler.prototype.copySelection.call(this.diagram.commandHandler);
+            if(copiedVIRAndSubnets.length > 0) {
+              this.diagram.commandHandler.copiedVIRAndSubnets = copiedVIRAndSubnets;
+              go.CommandHandler.prototype.copySelection.call(this.diagram.commandHandler);
+            }
+            else {
+              this.diagram.commandHandler.copiedVIRAndSubnets = [];
+              go.CommandHandler.prototype.copySelection.call(this.diagram.commandHandler);
+            }
+              
           } else {  // otherwise just copy nodes and/or links, as usual
-            this.diagram.commandHandler.copiedItems = null;
+            this.diagram.commandHandler.copiedVIRAndSubnets = [];
             go.CommandHandler.prototype.copySelection.call(this.diagram.commandHandler);
           }
 
@@ -85,41 +96,63 @@ export default class GojsManager
           //   go.CommandHandler.prototype.copySelection.call(this.diagram.commandHandler);
         }
 
+        var diagram = this.diagram;
         var diagramEditor = this.diagramEditor;
         this.diagram.commandHandler.pasteSelection = function() {
-          var itemClipboard = this.diagram.commandHandler.copiedItems;
+
+          var itemClipboard = this.diagram.commandHandler.copiedVIRAndSubnets;
+
+          if(itemClipboard.length == 0) {
+            go.CommandHandler.prototype.pasteSelection.call(this.diagram.commandHandler);
+            return;
+          }
 
           var pasteTarget = this.diagram.selection.first();  // assumes a single node is selected, may need to be changed
           
-          if (itemClipboard && itemClipboard.length > 0 && pasteTarget instanceof go.Node) {
+          if (itemClipboard && itemClipboard.length > 0) {
             
             this.diagram.startTransaction("paste items");
 
             for(var copiedPart of itemClipboard) {
 
-              // if(Utils.IsNonAzureShape(copiedPart) || Utils.isNonVIRAzResource(copiedPart))
-              //   //paste nodes and/or links, as usual
-               
-              if(Utils.isPartVIR(copiedPart) && Utils.isSubnet(pasteTarget)) {
-                diagramEditor.createVIROntoSubnet({
-                  resourceType: Utils.getAzContextResourceType(copiedPart),
-                  azcontext: JSON.parse(JSON.stringify(copiedPart.data.azcontext)) //deep clone
-                });
-              }
-              else if(Utils.isPartVIR(copiedPart) && !Utils.IsSubnet(pasteTarget)) {
+              if(Utils.isPartVIR(copiedPart) && !Utils.isSubnet(pasteTarget)) {
                 Toast.show('warning', 3000, 'Select a Subnet to paste into');
                 return;
               }
+              
+              if(Utils.isSubnet(copiedPart) && !Utils.isVNet(pasteTarget)) {
+                Toast.show('warning', 3000, 'Select a VNet to paste into');
+                return;
+              }
+               
+              if(Utils.isPartVIR(copiedPart)) {
+                diagramEditor.createVIROntoSubnet({
+                  resourceType: Utils.getAzContextResourceType(copiedPart),
+                  azcontext: Utils.deepClone(copiedPart.data.azcontext)
+                });
+                continue;
+              }
 
-              // else if(Utils.IsSubnet(copiedPart) && Utils.isVNet(pasteTarget)) {
-              //   pasteTarget.addMembers(copiedPart);
-              // }
-              // else if(Utils.IsSubnet(copiedPart) && !Utils.isVNet(pasteTarget)) {
-              //   Toast.show('warning', 3000, 'Select a VNet to paste into');
-              //   return;
-              // }
-              // else
-              //   go.CommandHandler.prototype.pasteSelection.call(this.diagram.commandHandler);
+              if(Utils.isSubnet(copiedPart)) {
+                var childVIRs = copiedPart.memberParts;
+                var newSubnetKey = Utils.uniqueId('subnet');
+                var vnetKey = pasteTarget.key;
+
+                diagramEditor.createSubnet(vnetKey, newSubnetKey);
+
+                childVIRs.each(function(part) {
+                  diagramEditor.createVIROntoSubnet({
+                    subnetNode: diagram.findNodeForKey(newSubnetKey),
+                    resourceType: Utils.getAzContextResourceType(part),
+                    azcontext: Utils.deepClone(part.data.azcontext)
+                  });
+                });
+
+                continue;
+              }
+              
+              //paste all non VIRs and Subnets normally
+              go.CommandHandler.prototype.pasteSelection.call(this.diagram.commandHandler);
             }
 
             // for (var i = 0; i < itemClipboard.count; i++) {

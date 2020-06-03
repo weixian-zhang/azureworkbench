@@ -9,7 +9,7 @@ export default class VMSS
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.VM(),
+            ResourceType: ResourceType.VMSS(),
             Deployable: true,
             HighCost: false,
             

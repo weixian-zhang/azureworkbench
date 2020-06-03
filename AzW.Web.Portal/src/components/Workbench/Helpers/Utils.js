@@ -1,12 +1,13 @@
 import ResourceType from '../../../models/ResourceType';
 import { mxCell } from 'mxgraph-js';
 import SubnetsCidrs from '../../../models/services/SubnetsCidrs';
+import ShortUniqueId from 'short-unique-id';
 
 export default class Utils
 {
     //follows Tooltip name
     static isResourceTypeVIR(resourceType) {
-        var VIR = [ResourceType.VM(), ResourceType.WindowsVM(), ResourceType.LinuxVM(),
+        var VIR = [ResourceType.VM(), ResourceType.WindowsVM(), ResourceType.LinuxVM(),ResourceType.VMSS(),
             ResourceType.ASE(),ResourceType.AppGw(),ResourceType.Firewall(),ResourceType.Bastion(),
             ResourceType.VMSS(), ResourceType.SQLMI()];
             
@@ -100,7 +101,11 @@ export default class Utils
     }
 
     static isAzContextExist(node) {
-        if(typeof node.data.azcontext !== 'undefined' && 
+        if(node == null)
+            return false;
+            
+        if(node.data !== 'undefined' &&
+            typeof node.data.azcontext !== 'undefined' && 
             typeof node.data.azcontext.ProvisionContext !== 'undefined')
             return true;
         else    
@@ -139,6 +144,17 @@ export default class Utils
             return true;
         else
             return false;
+    }
+
+    static uniqueId(prefix) {
+        if(prefix != null)
+            return prefix + '-' + new ShortUniqueId().randomUUID(6);
+        else
+            return new ShortUniqueId().randomUUID(6);
+    }
+
+    static deepClone(obj) {
+        return JSON.parse(JSON.stringify(obj));
     }
 
     static IsVM(cell) {
