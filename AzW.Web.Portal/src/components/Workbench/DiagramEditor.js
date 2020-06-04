@@ -661,7 +661,9 @@ createPictureShapeTemplate() {
             isMultiline: true
           },
           {row:1,column:0},
-          new go.Binding("text").makeTwoWay()),
+          new go.Binding("text").makeTwoWay(),
+          new go.Binding("font").makeTwoWay(),
+          new go.Binding("stroke").makeTwoWay())
         ),
         this.makePort("T", go.Spot.Top, go.Spot.TopSide, true, true),
         this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
@@ -719,7 +721,10 @@ createNonVIRAzureResourceTemplate() {
               isMultiline: true
             },
             {row:1,column:0},
-            new go.Binding("text").makeTwoWay()),
+            new go.Binding("text").makeTwoWay(),
+            new go.Binding("font").makeTwoWay(),
+            new go.Binding("stroke").makeTwoWay()
+            ),
           ),
           this.makePort("T", go.Spot.Top, go.Spot.TopSide, true, true),
           this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
@@ -755,15 +760,18 @@ createShapeTemplate() {
           desiredSize: new go.Size(100, 100)
         },
         new go.Binding("figure", "figure"),
-        new go.Binding("fill", "fillColor"),
-        new go.Binding("stroke", "strokeColor")
+        new go.Binding("strokeDashArray", "strokeDashArray").makeTwoWay(),
+        new go.Binding("fill").makeTwoWay(),
+        new go.Binding("stroke").makeTwoWay()
       ),
       this.$(go.TextBlock,
         { 
           editable: true,
           isMultiline: true 
         },
-        new go.Binding("text").makeTwoWay()),
+        new go.Binding("text").makeTwoWay(),
+        new go.Binding("stroke", "textStroke").makeTwoWay(),
+        new go.Binding("font").makeTwoWay()),
 
         this.makePort("T", go.Spot.Top, go.Spot.TopSide, true, true),
         this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
@@ -1033,6 +1041,16 @@ initGeneralContextMenu() {
   var thisComp = this;
 
   return this.$("ContextMenu",
+  this.$("ContextMenuButton",
+    this.$(go.TextBlock, "Add Subnet"),
+        { 
+          click: function(e, obj) {
+            thisComp.createSubnet(obj.part.data.key);
+          } 
+        },
+        new go.Binding("visible", "", function(o) {
+            return Utils.isVNet(o.diagram.selection.first());
+        }).ofObject()),
     this.$("ContextMenuButton",
       this.$(go.TextBlock, "Undo"),
           { click: function(e, obj) { e.diagram.commandHandler.undo(); } },
@@ -1109,19 +1127,7 @@ createVNetTemplate() {
     selectionObjectName: "VNET",
     locationObjectName: "VNET",
     ungroupable: false,
-    contextMenu:
-    this.$("ContextMenu",
-      this.$("ContextMenuButton",
-        this.$(go.TextBlock, "Add Subnet"),
-            { 
-              click: function(e, obj) {
-                thisComp.createSubnet(obj.part.data.key);
-              } 
-            },
-            new go.Binding("visible", "", function(o) {
-                return true;
-            }).ofObject())
-    )
+    contextMenu: this. initGeneralContextMenu()
   },
   new go.Binding("azcontext"),
   new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
@@ -1139,8 +1145,10 @@ createVNetTemplate() {
       },
       new go.Binding("desiredSize").makeTwoWay(),
       new go.Binding("figure",'figure').makeTwoWay(),
-      new go.Binding("fill",'fill').makeTwoWay(),
-      new go.Binding("stroke",'stroke').makeTwoWay()),
+      new go.Binding("strokeDashArray", "strokeDashArray").makeTwoWay(),
+      new go.Binding("fill").makeTwoWay(),
+      new go.Binding("stroke").makeTwoWay()
+      ),
   // this.$(go.Placeholder,    // represents the area of all member parts,
   //       { padding: 5}),  // with some extra padding around them
     this.$(go.TextBlock,
@@ -1149,7 +1157,9 @@ createVNetTemplate() {
           isMultiline: false,
           alignment: go.Spot.TopLeft, alignmentFocus: go.Spot.BottomLeft
         },
-        new go.Binding("text").makeTwoWay()),
+        new go.Binding("text").makeTwoWay(),
+        new go.Binding("stroke", "textStroke").makeTwoWay(),
+        new go.Binding("font").makeTwoWay()),
     this.$(go.Picture, {
           stretch: go.GraphObject.Fill,
           desiredSize: new go.Size(25,25),
@@ -1186,7 +1196,8 @@ createSubnetTemplate() {
         strokeWidth: 1.5
       },
       new go.Binding("desiredSize").makeTwoWay(),
-      new go.Binding("figure").makeTwoWay(),
+      new go.Binding("figure",'figure').makeTwoWay(),
+      new go.Binding("strokeDashArray", "strokeDashArray").makeTwoWay(),
       new go.Binding("fill").makeTwoWay(),
       new go.Binding("stroke").makeTwoWay()
       ),
@@ -1196,7 +1207,9 @@ createSubnetTemplate() {
         isMultiline: false,
         alignment: go.Spot.TopRight, alignmentFocus:go.Spot.BottomRight
       },
-    new go.Binding("text").makeTwoWay()),
+      new go.Binding("text").makeTwoWay(),
+      new go.Binding("stroke", "textStroke").makeTwoWay(),
+      new go.Binding("font").makeTwoWay()),
       this.makePort("T", go.Spot.Top, go.Spot.TopSide, true, true),
       this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
       this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
@@ -1275,7 +1288,10 @@ createVIRAzureResourceTemplate() {
               isMultiline: true
             },
             {row:1,column:0},
-            new go.Binding("text").makeTwoWay()),
+            new go.Binding("text").makeTwoWay(),
+            new go.Binding("font").makeTwoWay(),
+            new go.Binding("stroke").makeTwoWay()
+            ),
           ),
           this.makePort("T", go.Spot.Top, go.Spot.TopSide, true, true),
           this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
@@ -1294,8 +1310,17 @@ createShape(dropContext) {
   var shapeKey = this.shortUID.randomUUID(6);
 
   this.diagram.model.addNodeData
-    ({key: shapeKey, text: label, fillColor: 'white',
-      strokeColor: 'black', figure: figure, loc: go.Point.stringify(canvasPoint), category: 'shape'});
+    ({key: shapeKey,
+      text: label,
+      fill: 'white',
+      stroke: 'black',
+      textStroke: 'black',
+      font: '18px Segoe UI',
+      strokeDashArray: null,
+      nodetype: GoNodeType.Shape(),
+      figure: figure, 
+      loc: go.Point.stringify(canvasPoint),
+      category: 'shape'});
 }
 
 createVNet(dropContext) {
@@ -1306,9 +1331,17 @@ createVNet(dropContext) {
   var vnetKey = 'vnet-' + this.shortUID.randomUUID(6);
   
   this.diagram.model.addNodeData
-    ({key: vnetKey, text: 'vnet', azcontext: new VNet(),fill: 'transparent',
-      stroke: 'deepskyblue', isGroup: true,
-      loc: go.Point.stringify(canvasPoint), category: 'vnet'});
+    ({key: vnetKey, text: 'vnet', 
+      azcontext: new VNet(),
+      fill: 'transparent',
+      stroke: 'deepskyblue',
+      textStroke: 'black',
+      font: '16px Segoe UI',
+      strokeDashArray: null,
+      nodetype: GoNodeType.Shape(),
+      loc: go.Point.stringify(canvasPoint),
+      isGroup: true,
+      category: 'vnet'});
 
   //this.createSubnet(vnetKey);
 }
@@ -1328,13 +1361,20 @@ createSubnet(vnetKey, subnetNodekey = '') {
   var subnetLoc = new go.Point(vnet.location.x + 10, vnet.location.y +20);
   var subnetSize = new go.Size((vnet.actualBounds.width - 40), 80);
   
-    //create default subnet
   this.diagram.model.addNodeData
-    ({key: subnetKey, azcontext: new Subnet(),
-      text: subnetKey, fill: 'transparent',
-      stroke: 'darkblue', group: vnet.key,"isGroup":true,
+    ({key: subnetKey,
+      azcontext: new Subnet(),
+      text: subnetKey, 
+      group: vnet.key,
+      isGroup:true,
       figure:'RoundedRectangle',
       desiredSize: subnetSize,
+      fill: 'transparent',
+      stroke: 'darkblue',
+      textStroke: 'black',
+      font: '15px Segoe UI',
+      strokeDashArray: null,
+      nodetype: GoNodeType.Shape(),
       loc: go.Point.stringify(subnetLoc), category: 'subnet'});
 }
 
@@ -1438,9 +1478,16 @@ createVIROntoSubnet(dropContext) {
     }
 
     this.diagram.model.addNodeData
-      ({key: nodeKey, text: text, azcontext: azcontext, group: subnet.key,
-        source: image, loc: go.Point.stringify(virLoc),
+      ({key: nodeKey,
+         text: text, 
+         azcontext: azcontext, 
+         group: subnet.key,
+        source: image, 
+        loc: go.Point.stringify(virLoc),
         size: go.Size.stringify(new go.Size(40,40)),
+        font: '18px Segoe UI',
+        stroke: 'black',
+        nodetype: GoNodeType.ImageShape(),
         category: 'virresource'});
 }
 
@@ -1451,7 +1498,13 @@ createPictureShape(dropContext) {
   var shapeKey = this.shortUID.randomUUID(6);
 
   this.diagram.model.addNodeData
-    ({key: shapeKey, text: label, source: image, size: go.Size.stringify(new go.Size(80,80)),
+    ({key: shapeKey, 
+      text: label, 
+      source: image, 
+      font: '18px Segoe UI',
+      stroke: 'black',
+      nodetype: GoNodeType.ImageShape(),
+      size: go.Size.stringify(new go.Size(80,80)),
       loc: go.Point.stringify(canvasPoint), category: 'picshape'});
 }
 
@@ -1461,8 +1514,14 @@ createNonVIRAzureResource(dropContext) {
   var canvasPoint = this.diagram.transformViewToDoc(new go.Point(dropContext.x, dropContext.y));
 
   this.diagram.model.addNodeData
-    ({key: label, text: label, azcontext: dropContext.azcontext,
-      source: image, size: go.Size.stringify(new go.Size(40,40)),
+    ({key: label, 
+      text: label, 
+      azcontext: dropContext.azcontext,
+      source: image, 
+      size: go.Size.stringify(new go.Size(40,40)),
+      font: '18px Segoe UI',
+      stroke: 'black',
+      nodetype: GoNodeType.ImageShape(),
       loc: go.Point.stringify(canvasPoint), category: 'outofvnetazureresource'});
 }
 
@@ -1472,8 +1531,12 @@ createText(dropContext) {
   var shapeKey = Utils.uniqueId('text');
 
   this.diagram.model.addNodeData
-    ({key: shapeKey, font:'18px Segoe UI', text: 'text',
-      stroke: 'black', loc: go.Point.stringify(canvasPoint),
+    ({
+      key: shapeKey, 
+      font:'18px Segoe UI', 
+      text: 'text',
+      stroke: 'black', 
+      loc: go.Point.stringify(canvasPoint),
        nodetype:GoNodeType.Text(), category: 'text'});
 }
 
@@ -2224,13 +2287,13 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       case ResourceType.PrivateEndpoint():
         this.addPrivateEndpoint(dropContext);
         break;
-      case 'Virtual Network':
+      case ResourceType.VNet():
         this.createVNet({
           x: dropContext.x, y: dropContext.y,
           azcontext: new VNet()
         });
         break;
-      case 'nlb':
+      case ResourceType.NLB():
         this.addNLB(dropContext);
         break;
       case ResourceType.DNSPrivateZone():
