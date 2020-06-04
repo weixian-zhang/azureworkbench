@@ -177,10 +177,8 @@ export default class Utils
 
     static IsNullOrUndefine(obj) {
 
-        if(!obj || 0 === obj.length || obj == "")
+        if(typeof obj === 'undefined' || obj == null)
             return true;
-        //if(obj == null || obj == undefined)
-            //return true;
         
         if(Array.isArray(obj) && obj.length <= 0)
             return true;

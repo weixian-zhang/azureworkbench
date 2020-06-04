@@ -9,7 +9,7 @@ import * as go from 'gojs';
 import { PanningTool } from 'gojs';
 import './GojsExtensions/Figures';
 
-
+import GoNodeType from './Helpers/GoNodeType';
 
 //3rd-party libraries
 import ShortUniqueId from 'short-unique-id';
@@ -491,10 +491,12 @@ import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
           allowUngroup: true,
           allowClipboard: true,
           
-          // "draggingTool.dragsLink": true,
-          // "draggingTool.isGridSnapEnabled": false,
+          "draggingTool.dragsLink": true,
           "linkingTool.isUnconnectedLinkValid": true,
           "relinkingTool.isUnconnectedLinkValid": true,
+          
+          // "draggingTool.isGridSnapEnabled": false,
+
           // "InitialLayoutCompleted": function(e) {
           //   // if not all Nodes have real locations, force a layout to happen
           //   if (!e.diagram.nodes.all(function(n) { return n.location.isReal(); })) {
@@ -585,27 +587,30 @@ createTextTemplate() {
     var textTemplate =
       this.$(go.Node, "Auto",
         {
+          selectionObjectName: "TEXT",
           movable: true,
           selectable: true,
-          resizable: true,
-          rotatable: true //,
-          // selectionChanged: function(p) {
-          //   p.layerName = (p.isSelected ? "Foreground" : '');
-          // }
+          resizable: false,
+          rotatable: true,
+          selectionChanged: function(p) {
+            p.layerName = (p.isSelected ? "Foreground" : '');
+          },
+          contextMenu: this.initGeneralContextMenu()
         },
+        new go.Binding("nodetype"),
         new go.Binding("location", "loc", go.Point.parse),
         this.$(go.TextBlock,
           { 
-            text: 'text',
+            name: "TEXT",
             editable: true,
             isMultiline: true,
             font: 'Segoe UI',
             stroke: 'black',
-            textAlign: 'start',
-            desiredSize: new go.Size(50,50)
+            textAlign: 'center'
+            //desiredSize: new go.Size(50,50)
           },
           new go.Binding('stroke', 'stroke').makeTwoWay(),
-          new go.Binding('font-size', 'fontSize').makeTwoWay(),
+          new go.Binding('font', 'font').makeTwoWay(),
           new go.Binding("text").makeTwoWay()
         )
     );
@@ -800,15 +805,10 @@ makePort(name, align, spot, output, input, figure) {
     });
 }
 
-showSmallPortsOnMouseOverShape(node, show) {
-  node.ports.each(function(port) {
-    if (port.portId !== "") {  // don't change the default port, which is the big shape
-      port.fill = show ? "rgba(0,0,0,.3)" : null;
-    }
-  });
-}
-
 initLinkTemplate(linkTemplateMap) {
+  
+  //link overview
+  //https://gojs.net/latest/intro/links.html
   
     var straightLink =
         this.$(go.Link,  // the whole link panel
@@ -819,40 +819,46 @@ initLinkTemplate(linkTemplateMap) {
               relinkableFrom: true,
               relinkableTo: true,
               reshapable: true,
-              resegmentable: true,
+              resegmentable: false,
               // mouse-overs subtly highlight links:
-              mouseEnter: function(e, link) { link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
-              mouseLeave: function(e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; },
-              selectionAdorned: false
+              //mouseEnter: function(e, link) { link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
+              //mouseLeave: function(e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; },
+              selectionAdorned: false,
+              contextMenu: this.initGeneralContextMenu()
             },
             {
               routing: go.Link.Normal
             },
             new go.Binding("points").makeTwoWay(),
             this.$(go.Shape,  // the highlight shape, normally transparent
-              { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" }),
-            this.$(go.Shape,  // the link path shape
-              { isPanelMain: true, stroke: "gray", strokeWidth: 2 },
-              new go.Binding("stroke", "isSelected", function(sel) { return sel ? "dodgerblue" : "gray"; }).ofObject()),
-            this.$(go.Shape,  // the arrowhead
-              { toArrow: "standard", strokeWidth: 0, fill: "gray" }),
-            this.$(go.Panel, "Auto",  // the link label, normally not visible
-              { visible: false, name: "LABEL", segmentIndex: 2, segmentFraction: 0.5 },
-            this.$(go.Shape, "RoundedRectangle",  // the label shape
-                { fill: "#F8F8F8", strokeWidth: 0 }),
-            this.$(go.TextBlock, "Yes",  // the label
-                {
-                  textAlign: "center",
-                  font: "10pt helvetica, arial, sans-serif",
-                  stroke: "#333333",
-                  editable: true
-                },
-                new go.Binding("text").makeTwoWay()),
-            this.$(go.Shape,
-                  new go.Binding("fromArrow", "fromArrow")),
-            this.$(go.Shape,
-                    new go.Binding("toArrow", "toArrow"))
-          )
+              { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" },
+              new go.Binding("stroke").makeTwoWay(),
+              new go.Binding("strokeDashArray", "strokeDashArray").makeTwoWay(),
+              new go.Binding("strokeWidth").makeTwoWay(),
+              new go.Binding("stroke").makeTwoWay(),
+            ),
+            // this.$(go.Shape,  // the link path shape
+            //   { isPanelMain: true, stroke: "gray", strokeWidth: 2 },
+            //   new go.Binding("stroke", "isSelected", function(sel) { return sel ? "dodgerblue" : "gray"; }).ofObject()),
+            // this.$(go.Shape,  // the arrowhead
+            //   { toArrow: "standard", strokeWidth: 0, fill: "gray" }),
+            // this.$(go.Panel, "Auto",  // the link label, normally not visible
+            //   { visible: false, name: "LABEL", segmentIndex: 2, segmentFraction: 0.5 },
+            // this.$(go.Shape, "RoundedRectangle",  // the label shape
+            //     { fill: "#F8F8F8", strokeWidth: 0 }),
+            // this.$(go.TextBlock, "Yes",  // the label
+            //     {
+            //       textAlign: "center",
+            //       font: "10pt helvetica, arial, sans-serif",
+            //       stroke: "#333333",
+            //       editable: true
+            //     },
+            //     new go.Binding("text").makeTwoWay()),
+          //)
+          this.$(go.Shape,
+            new go.Binding("fromArrow", "fromArrow")),
+          this.$(go.Shape,
+                  new go.Binding("toArrow", "toArrow"))
       );
 
    var bezierLink =
@@ -865,9 +871,10 @@ initLinkTemplate(linkTemplateMap) {
             reshapable: true,
             resegmentable: true,
             // mouse-overs subtly highlight links:
-            mouseEnter: function(e, link) { link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
-            mouseLeave: function(e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; },
-            selectionAdorned: false
+            //mouseEnter: function(e, link) { link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
+            //mouseLeave: function(e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; },
+            selectionAdorned: false,
+            contextMenu: this.initGeneralContextMenu()
           },
           {
             adjusting: go.Link.Stretch,
@@ -875,29 +882,27 @@ initLinkTemplate(linkTemplateMap) {
           },
           new go.Binding("points").makeTwoWay(),
           this.$(go.Shape,  // the highlight shape, normally transparent
-            { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" }),
-          this.$(go.Shape,  // the link path shape
-            { isPanelMain: true, stroke: "gray", strokeWidth: 2 },
-            new go.Binding("stroke", "isSelected", function(sel) { return sel ? "dodgerblue" : "gray"; }).ofObject()),
-          this.$(go.Shape,  // the arrowhead
-            { toArrow: "standard", strokeWidth: 0, fill: "gray" }),
-          this.$(go.Panel, "Auto",  // the link label, normally not visible
-            { visible: false, name: "LABEL", segmentIndex: 2, segmentFraction: 0.5 },
-          this.$(go.Shape, "RoundedRectangle",  // the label shape
-              { fill: "#F8F8F8", strokeWidth: 0 }),
-          this.$(go.TextBlock, "Yes",  // the label
-              {
-                textAlign: "center",
-                font: "10pt helvetica, arial, sans-serif",
-                stroke: "#333333",
-                editable: true
-              },
-              new go.Binding("text").makeTwoWay())
+            { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" },
+            new go.Binding("stroke").makeTwoWay(),
+            new go.Binding("strokeDashArray", "strokeDashArray").makeTwoWay(),
+            new go.Binding("strokeWidth").makeTwoWay(),
+            new go.Binding("stroke").makeTwoWay(),
           ),
-      this.$(go.Shape,
+          // this.$(go.Shape,  // the link path shape
+          //   { isPanelMain: true, stroke: "gray", strokeWidth: 2 },
+          //   new go.Binding("stroke", "isSelected", function(sel) { return sel ? "dodgerblue" : "gray"; }).ofObject()),
+          // this.$(go.Shape,  // the arrowhead
+          //   { toArrow: "standard", strokeWidth: 0, fill: "gray" }),
+          // this.$(go.Panel, "Auto",  // the link label, normally not visible
+          //   { visible: false, name: "LABEL", segmentIndex: 2, segmentFraction: 0.5 }
+          // ),
+
+        new go.Binding("strokeWidth").makeTwoWay(),
+        new go.Binding("stroke").makeTwoWay(),
+        this.$(go.Shape,
               new go.Binding("fromArrow", "fromArrow")),
-      this.$(go.Shape,
-              new go.Binding("toArrow", "toArrow"))
+        this.$(go.Shape,
+                new go.Binding("toArrow", "toArrow"))
     );
 
     var orthogonalLink =
@@ -911,64 +916,38 @@ initLinkTemplate(linkTemplateMap) {
             reshapable: true,
             resegmentable: true,
             // mouse-overs subtly highlight links:
-            mouseEnter: function(e, link) { link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
-            mouseLeave: function(e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; },
-            selectionAdorned: false
+            //mouseEnter: function(e, link) { link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
+            //mouseLeave: function(e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; },
+            selectionAdorned: false,
+            contextMenu: this.initGeneralContextMenu()
           },
           new go.Binding("points").makeTwoWay(),
           this.$(go.Shape,  // the highlight shape, normally transparent
-            { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" }),
-          this.$(go.Shape,  // the link path shape
-            { isPanelMain: true, stroke: "gray", strokeWidth: 2 },
-            new go.Binding("stroke", "isSelected", function(sel) { return sel ? "dodgerblue" : "gray"; }).ofObject()),
-          this.$(go.Shape,  // the arrowhead
-            { toArrow: "standard", strokeWidth: 0, fill: "gray" }),
-          this.$(go.Panel, "Auto",  // the link label, normally not visible
-            { visible: false, name: "LABEL", segmentIndex: 2, segmentFraction: 0.5 },
-          this.$(go.Shape, "RoundedRectangle",  // the label shape
-              { fill: "#F8F8F8", strokeWidth: 0 }),
-          this.$(go.TextBlock, "Yes",  // the label
-              {
-                textAlign: "center",
-                font: "10pt helvetica, arial, sans-serif",
-                stroke: "#333333",
-                editable: true
-              },
-              new go.Binding("text").makeTwoWay()),
+            { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" },
+            new go.Binding("stroke").makeTwoWay(),
+            new go.Binding("strokeDashArray", "strokeDashArray").makeTwoWay(),
+            new go.Binding("strokeWidth").makeTwoWay(),
+            new go.Binding("stroke").makeTwoWay(),
+          ),
+          // this.$(go.Shape,  // the link path shape
+          //   { isPanelMain: true, stroke: "gray", strokeWidth: 2 },
+          //   new go.Binding("stroke", "isSelected", function(sel) { return sel ? "dodgerblue" : "gray"; }).ofObject()),
+          // this.$(go.Shape,  // the arrowhead
+          //   { toArrow: "standard", strokeWidth: 0, fill: "gray" }),
+          // this.$(go.Panel, "Auto",  // the link label, normally not visible
+          //   { visible: false, name: "LABEL", segmentIndex: 2, segmentFraction: 0.5 },
+          //   new go.Binding("strokeWidth").makeTwoWay(),
+          //   new go.Binding("stroke").makeTwoWay(),
+          //   this.$(go.Shape,
+          //         new go.Binding("fromArrow", "fromArrow")),
+          //   this.$(go.Shape,
+          //           new go.Binding("toArrow", "toArrow"))
+          // )
           this.$(go.Shape,
                 new go.Binding("fromArrow", "fromArrow")),
           this.$(go.Shape,
                   new go.Binding("toArrow", "toArrow"))
-          )
         );
-    //   this.$(go.Link,
-    //       { 
-    //         selectable: true,
-    //         selectionAdornmentTemplate: linkSelectionAdornmentTemplate 
-    //       },
-    //       { 
-    //         relinkableFrom: true, relinkableTo: true, 
-    //         reshapable: true,
-    //         resegmentable: true
-    //       },
-    //       {
-    //         routing: go.Link.AvoidsNodes,  // may be either Orthogonal or AvoidsNodes
-    //         curve: go.Link.JumpOver,
-    //         corner: 5
-    //       },
-    //       new go.Binding("points").makeTwoWay(),
-    //   this.$(go.Shape, { isPanelMain: true, stroke: "transparent", strokeWidth: 2 }),
-    //   this.$(go.Shape, { isPanelMain: true }), 
-    //   this.$(go.Shape,
-    //           new go.Binding("fromArrow", "fromArrow")),
-    //   this.$(go.Shape,
-    //           new go.Binding("toArrow", "toArrow")),
-    //   {
-    //     // a mouse-over highlights the link by changing the first main path shape's stroke:
-    //     mouseEnter: function(e, link) { link.elt(0).stroke = "rgba(0,90,156,0.3)"; },
-    //     mouseLeave: function(e, link) { link.elt(0).stroke = "transparent"; }
-    //   }
-    // );
 
     linkTemplateMap.add('straight', straightLink);
     linkTemplateMap.add('bezier', bezierLink);
@@ -981,7 +960,8 @@ createGroupTemplate() {
       this.$(go.Group, "Auto",
       {
         selectionObjectName: "PANEL",  // selection handle goes around shape, not label
-        ungroupable: true  // enable Ctrl-Shift-G to ungroup a selected Group
+        ungroupable: true,  // enable Ctrl-Shift-G to ungroup a selected Group
+        contextMenu: this.initGeneralContextMenu()
       },
         this.$(go.Panel, "Auto",
         { name: "PANEL" },
@@ -1049,6 +1029,9 @@ initDiagramModifiedEvent() {
 }
 
 initGeneralContextMenu() {
+
+  var thisComp = this;
+
   return this.$("ContextMenu",
     this.$("ContextMenuButton",
       this.$(go.TextBlock, "Undo"),
@@ -1098,23 +1081,21 @@ initGeneralContextMenu() {
                       it.value.zOrder += 10;
               }
             }
-          }) //,
-      // this.$("ContextMenuButton",
-      //     this.$(go.TextBlock, "Send to Back"),
-      //         { 
-      //           click: function(e, obj) 
-      //           { 
-      //             var nodes = e.diagram.selection;
-      //             var it = nodes.iterator;
-      //             while (it.next()) {
-      //             if(isNaN(it.value.zOrder))
-      //                 it.value.zOrder = -10;
-      //             else 
-      //                 it.value.zOrder -= 10;
-      //             }
-      //           }
-      //         }
-      //       ),
+          }),
+      this.$("ContextMenuButton",
+          this.$(go.TextBlock, "Style"),
+              { 
+                click: function(e, obj) 
+                { 
+                  var node = e.diagram.selection.first();
+                  thisComp.openStylePanel(node);
+                }
+              },
+              new go.Binding("visible", "", 
+                function(o) {
+                  return o.diagram.selection.first() != null;
+                }).ofObject()
+            )
   );
 }
 
@@ -1488,11 +1469,12 @@ createNonVIRAzureResource(dropContext) {
 createText(dropContext) {
   var label = dropContext.label;
   var canvasPoint = this.diagram.transformViewToDoc(new go.Point(dropContext.x, dropContext.y));
-var shapeKey = this.shortUID.randomUUID(6);
+  var shapeKey = Utils.uniqueId('text');
 
   this.diagram.model.addNodeData
-    ({key: shapeKey, fontSize: 18, text: 'text',
-      stroke: 'black', loc: go.Point.stringify(canvasPoint), category: 'text'});
+    ({key: shapeKey, font:'18px Segoe UI', text: 'text',
+      stroke: 'black', loc: go.Point.stringify(canvasPoint),
+       nodetype:GoNodeType.Text(), category: 'text'});
 }
 
 createLink(dropContext) {
@@ -1511,6 +1493,10 @@ createLink(dropContext) {
         points: straightlinkPoints,
         fromArrow: '',
         toArrow: 'Standard',
+        stroke: 'black',
+        strokeWidth: 1.5,
+        strokeDashArray: null,
+        nodetype: GoNodeType.Link(),
         category: 'straight'
       }
     );
@@ -1520,6 +1506,10 @@ createLink(dropContext) {
       { points: straightlinkPoints,
         fromArrow: '',
         toArrow: 'Standard',
+        stroke: 'black',
+        strokeWidth: 1.5,
+        strokeDashArray: null,
+        nodetype: GoNodeType.Link(),
         category: 'bezier'
       }
     );
@@ -1530,6 +1520,10 @@ createLink(dropContext) {
       { points: nonStraightlinkPoints,
         fromArrow: '',
         toArrow: 'Standard',
+        stroke: 'black',
+        strokeWidth: 1.5,
+        strokeDashArray: null,
+        nodetype: GoNodeType.Link(),
         category: 'ortho'
       }
     );
@@ -1600,6 +1594,24 @@ addKeyPressShortcuts() {
   };
 }
 
+openStylePanel = (node) => {
+
+  this.stylePanel.current.show(node, this.diagram) //, function(style) {
+
+  // let  properties = Object.getOwnPropertyNames(style)
+
+  // var newStyles = new Map();
+
+  // properties.map(propName => {
+  //   let propDesc = Object.getOwnPropertyDescriptor(style, propName)
+  //   newStyles.set(propName, propDesc.value);
+  // })
+
+  // thisComp.graphManager.setNewStyleFromStylePropPanel(cell, newStyles);  
+  // })
+//})
+}
+
 saveDiagramToBrowser = () => {
   if(Utils.isCanvasEmpty(this.diagram))
   {
@@ -1612,9 +1624,6 @@ saveDiagramToBrowser = () => {
   }
 
   var diagramJson = this.diagram.model.toJson();
-  // var anonyDiagramContext = new AnonymousDiagramContext();
-  // anonyDiagramContext.DiagramXml = this.getDiagramAsXml();
-  // anonyDiagramContext.DateTimeSaved = new Date();
   LocalStorage.set
     (LocalStorage.KeyNames.TempLocalDiagram, diagramJson);
   
@@ -1635,26 +1644,7 @@ loadDraftDiagramFromBrowser = () => {
  var jsonStr = LocalStorage.get(LocalStorage.KeyNames.TempLocalDiagram);
  var loadedModel = go.Model.fromJson(jsonStr);
 
- this.diagram.layout = new go.Layout(); // Simple layout
  this.diagram.model = loadedModel;
-
-
-  // establish GraphLinksModel functions:
-  // node data id's are odd numbers
-  // loadedModel.makeUniqueKeyFunction = function(model, data) {
-  //   var i = model.nodeDataArray.length * 2 + 1;
-  //   while (model.findNodeDataForKey(i) !== null) i += 2;
-  //   data.id = i;  // assume Model.nodeKeyProperty === "id"
-  //   return i;
-  // };
-  // // link data id's are even numbers
-  // loadedModel.makeUniqueLinkKeyFunction = function(model, data) {
-  //   var i = model.linkDataArray.length * 2 + 2;
-  //   while (model.findLinkDataForKey(i) !== null) i += 2;
-  //   data.id = i;  // assume GraphLinksModel.linkKeyProperty === "id"
-  //   return i;
-  // };
-  //this.diagram.model = loadedModel;
 }
 
 PromptSaveBeforeCloseBrowser() {
@@ -1805,201 +1795,6 @@ setBadgeVisibilityOnUnsaveChanges = () => {
     else
       return false;
   }
-
-  
-
-  // addContextMenu(){
-  //   this.graph.popupMenuHandler.autoExpand = true;
-
-  //   var thisComponent = this;
-
-  //   this.graph.popupMenuHandler.factoryMethod = function(menu, cell, evt)
-  //   {
-  //      //for vnet
-  //     if(Utils.IsVNet(cell))
-  //     {
-  //       menu.addItem('Add Subnet', '', function()
-  //       {
-  //         thisComponent.addSubnet(cell); // is vnetCell
-  //       });
-
-  //       //if true, hide option
-  //       if(!thisComponent.azureValidator.isGatewaySubnetExist(cell)){
-  //         menu.addItem('Add GatewaySubnet', '', function()
-  //         {
-  //           thisComponent.addGatewaySubnet(cell); // is vnetCell
-  //         });
-  //       }
-
-  //       if(!thisComponent.azureValidator.vnetHasNatGateway(cell)){
-  //         menu.addItem('Add NAT Gateway', '', function()
-  //         {
-  //           thisComponent.addNatGateway(cell); // is vnetCell
-  //         });
-  //       }
-
-  //       menu.addSeparator();
-  //     }
-
-  //     //TODO
-  //     // if(Utils.IsVM(cell))
-  //     // {
-  //     //   menu.addItem('VM Backup', '', function()
-  //     //   {
-  //     //     var nsgVertex = thisComponent.graph.insertVertex(
-  //     //       cell,
-  //     //       '',
-  //     //       '',
-  //     //       1,
-  //     //       0, //subnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
-  //     //       15, //width
-  //     //       15, //height
-  //     //       "movable=0;resizable=0;editable=0;shape=image;image=data:image/png," + thisComponent.azureIcons.RecoveryServiceVault()
-              
-  //     //     );
-  //     //     nsgVertex.collapsed = false;
-  //     //     nsgVertex.geometry.offset = new mxPoint(-12, -15);
-  //     //     nsgVertex.geometry.relative = true;
-  //     //     thisComponent.graph.refresh();
-  //     //   });
-  //     //   menu.addSeparator();
-  //     // }
-
-  //     if(Utils.IsSubnet(cell))
-  //     {
-  //       if(!thisComponent.azureValidator.subnetHasNSG(cell)) {
-  //         menu.addItem('Add Network Security Group', '', function()
-  //         {
-  //             thisComponent.addNSG(cell);
-  //         });
-  //       }
-
-  //       if(!thisComponent.azureValidator.subnetHasUDR(cell)) {
-  //       menu.addItem('Add Route Table', '', function()
-  //       {
-  //           thisComponent.addUDR(cell);
-  //       });
-  //       }
-
-  //       if(!thisComponent.azureValidator.subnetHasNSG(cell) ||
-  //          !thisComponent.azureValidator.subnetHasUDR(cell))
-  //          menu.addSeparator();
-            
-  //     }
-      
-  //     //if any cell is selected
-  //     if(thisComponent.graph.getSelectionCells().length > 0) {
-  //       menu.addItem('Bring to Front', '', function()
-  //       {
-  //         thisComponent.graph.orderCells(false); 
-  //       });
-
-  //       menu.addItem('Send To Back', '', function()
-  //       {
-  //         thisComponent.graph.orderCells(true); 
-  //       });
-
-  //       menu.addSeparator();
-  //       menu.addItem('Delete', '', function()
-  //       {
-  //         thisComponent.graph.removeCells(null,false); 
-  //       });
-        
-  //       menu.addSeparator();
-  //       menu.addItem('Group', '', function()
-  //       {
-  //         thisComponent.groupCells(); 
-  //       });
-  //       menu.addItem('Ungroup', '', function()
-  //       {
-  //         thisComponent.unGroupCells(); 
-  //       });
-
-  //       if(!Utils.IsNullOrUndefine(this.graph.getSelectionCells()))
-  //       {
-  //         menu.addSeparator();
-  //         menu.addItem('Copy', '', function()
-  //         {
-  //           thisComponent.copyToClipboard(); 
-  //         });
-  //       }
-  //     }
-      
-  //     //if clipboard exist
-  //     if(!mxClipboard.isEmpty())
-  //     {
-  //       menu.addItem('Paste', '', function()
-  //       {
-  //         thisComponent.pasteFromClipboard(); 
-  //       });
-  //     }
-
-  //     //is cell exist on canvas
-  //     if(thisComponent.graphManager.isCellExist()) {
-        
-  //       //style for shapes only
-  //       if(thisComponent.graphManager.isNonAzureShape(cell) ||
-  //       thisComponent.azureValidator.isSubnet(cell) ||
-  //       thisComponent.azureValidator.isVNet(cell))
-  //       {
-  //         menu.addSeparator();
-  //         menu.addItem('Style', '', function()
-  //         {
-  //           thisComponent.openStylePanel(cell);
-  //         });
-  //       }
-
-  //     // if(cell!= null && cell.isEdge()) //animate flow
-  //     // {
-  //     //   menu.addSeparator();
-
-  //     //   var atfMenu = menu.addItem('Animate traffic flow');
-  //     //   menu.addItem('Left 2 Right', null, function()
-  //     //   {
-  //     //     thisComponent.animateTrafficFlow(cell,'l2r');
-  //     //   },atfMenu);
-  //     //   menu.addItem('Right 2 Left', null, function()
-  //     //   {
-  //     //     thisComponent.animateTrafficFlow(cell,'r2l');
-  //     //   },atfMenu);
-  //     //   menu.addItem('No animation', null, function()
-  //     //   {
-  //     //     thisComponent.animateTrafficFlow(cell,'off');
-  //     //   },atfMenu);
-
-  //     //   menu.addSeparator();
-  //     // }
-
-  //     //preview diagram in new window
-      
-  //     menu.addSeparator();  
-  //     menu.addItem('Preview Diagram', null, function()
-  //       {
-  //         thisComponent.showPreviewDiagramOverlay();
-  //       });
-  //     }
-
-  //     var showTickForAutoSnap = '';
-  //     if(thisComponent.global.autoSnapEdgeToPort)
-  //       showTickForAutoSnap = BlackTickPNG;
-  //     else
-  //       showTickForAutoSnap = '';
-
-  //     //auto snap edge to port
-  //     menu.addSeparator();
-  //     menu.addItem('Auto snap line to connection points',
-  //     showTickForAutoSnap, //tick image
-  //     function() {
-  //       if(!thisComponent.global.autoSnapEdgeToPort)
-  //         thisComponent.setGlobal({autoSnapEdgeToPort:true});
-  //       else
-  //         thisComponent.setGlobal({autoSnapEdgeToPort:false});
-
-  //         thisComponent.graphManager.autoSnapEdgeToPorts
-  //           (thisComponent.global.autoSnapEdgeToPort);
-  //     });
-  //   };
-  // }
 
   addResourceToEditorFromPalette = (dropContext) => {
 
@@ -3021,24 +2816,6 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
     }
   }
-
-  // openStylePanel = (cell) => {
-
-  //     var thisComp = this;
-  //     this.stylePanel.current.show(cell, function(style){
-
-  //     let  properties = Object.getOwnPropertyNames(style)
-
-  //     var newStyles = new Map();
-
-  //     properties.map(propName => {
-  //       let propDesc = Object.getOwnPropertyDescriptor(style, propName)
-  //       newStyles.set(propName, propDesc.value);
-  //     })
-
-  //     thisComp.graphManager.setNewStyleFromStylePropPanel(cell, newStyles);  
-  //     })
-  // }
 
   // addStraightArrow(dropContext){
 
@@ -4736,147 +4513,147 @@ setBadgeVisibilityOnUnsaveChanges = () => {
 //         this.azureIcons.LogAnalytics());
 //   }
 
-  addAutomation = (dropContext) => {
+  // addAutomation = (dropContext) => {
 
-    var model = new Automation();
-    model.GraphModel.Id = this.shortUID.randomUUID(6);
-    model.GraphModel.DisplayName = 'Automation'
-    var modelJsonString = JSON.stringify(model);
+  //   var model = new Automation();
+  //   model.GraphModel.Id = this.shortUID.randomUUID(6);
+  //   model.GraphModel.DisplayName = 'Automation'
+  //   var modelJsonString = JSON.stringify(model);
 
-    this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-        this.azureIcons.Automation());
-  }
+  //   this.graph.insertVertex
+  //     (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
+  //     "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+  //       this.azureIcons.Automation());
+  // }
 
-  addAAD = (dropContext) => {
+  // addAAD = (dropContext) => {
 
-    this.graph.insertVertex
-      (this.graph.parent, '', 'Azure AD', dropContext.x, dropContext.y, 50, 50,
-      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-        this.azureIcons.AAD());
-  }
+  //   this.graph.insertVertex
+  //     (this.graph.parent, '', 'Azure AD', dropContext.x, dropContext.y, 50, 50,
+  //     "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+  //       this.azureIcons.AAD());
+  // }
 
-  addAADB2C = (dropContext) => {
+  // addAADB2C = (dropContext) => {
 
-    var model = new AADB2C();
-    model.GraphModel.Id = this.shortUID.randomUUID(6);
-    model.GraphModel.DisplayName = 'Azure B2C'
-    var modelJsonString = JSON.stringify(model);
+  //   var model = new AADB2C();
+  //   model.GraphModel.Id = this.shortUID.randomUUID(6);
+  //   model.GraphModel.DisplayName = 'Azure B2C'
+  //   var modelJsonString = JSON.stringify(model);
 
-    this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-        this.azureIcons.AADB2C());
-  }
+  //   this.graph.insertVertex
+  //     (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
+  //     "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+  //       this.azureIcons.AADB2C());
+  // }
 
-  addIoTHub = (dropContext) => {
+  // addIoTHub = (dropContext) => {
 
-    var model = new IoTHub();
-    model.GraphModel.Id = this.shortUID.randomUUID(6);
-    model.GraphModel.DisplayName = 'IoT Hub'
-    var modelJsonString = JSON.stringify(model);
+  //   var model = new IoTHub();
+  //   model.GraphModel.Id = this.shortUID.randomUUID(6);
+  //   model.GraphModel.DisplayName = 'IoT Hub'
+  //   var modelJsonString = JSON.stringify(model);
 
-    this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-        this.azureIcons.IoTHub());
-  }
+  //   this.graph.insertVertex
+  //     (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
+  //     "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+  //       this.azureIcons.IoTHub());
+  // }
 
-  addIoTCentral = (dropContext) => {
+  // addIoTCentral = (dropContext) => {
 
-    var model = new IoTCentral();
-    model.GraphModel.Id = this.shortUID.randomUUID(6);
-    model.GraphModel.DisplayName = 'IoT Central Application'
-    var modelJsonString = JSON.stringify(model);
+  //   var model = new IoTCentral();
+  //   model.GraphModel.Id = this.shortUID.randomUUID(6);
+  //   model.GraphModel.DisplayName = 'IoT Central Application'
+  //   var modelJsonString = JSON.stringify(model);
 
-    this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-        this.azureIcons.IoTCentral());
-  }
-
-
-  addAzureMaps = (dropContext) => {
-
-    var model = new Maps();
-    model.GraphModel.Id = this.shortUID.randomUUID(6);
-    model.GraphModel.DisplayName = 'Azure Maps'
-    var modelJsonString = JSON.stringify(model);
-
-    this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-        this.azureIcons.AzureMaps());
-  }
-
-  addTimeSeriesInsights = (dropContext) => {
-
-    var model = new TimeSeriesInsights();
-    model.GraphModel.Id = this.shortUID.randomUUID(6);
-    model.GraphModel.DisplayName = 'Time Series Insights'
-    var modelJsonString = JSON.stringify(model);
-
-    this.graph.insertVertex
-      (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-      "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-        this.azureIcons.TimeSeriesInsights());
-  }  
+  //   this.graph.insertVertex
+  //     (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
+  //     "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+  //       this.azureIcons.IoTCentral());
+  // }
 
 
-  //callbacks from Ref components
-  fromVMPropPanelSaveModel(vmModel) {
-      var vmCell = this.graph.getModel().getCell(vmModel.GraphModel.Id);
-      vmCell.value.ProvisionContext = vmModel.ProvisionContext; 
-  }
+  // addAzureMaps = (dropContext) => {
 
-  loadQuickstartDiagram(category, name) {
-      var thisComp = this;
-      this.diagService.loadQuickstartDiagram
-        (category, name,
-          function onSuccess(qsDiagContext) {
-            thisComp.importXmlAsDiagram(qsDiagContext);
-          },
-          function onFailure(error) {
-            Toast.show("danger", 2000, error.message);
-          }
-        )
-  }
+  //   var model = new Maps();
+  //   model.GraphModel.Id = this.shortUID.randomUUID(6);
+  //   model.GraphModel.DisplayName = 'Azure Maps'
+  //   var modelJsonString = JSON.stringify(model);
 
-  groupCells(){
-    //http://jgraph.github.io/mxgraph/docs/js-api/files/view/mxGraph-js.html#mxGraph.groupCells
+  //   this.graph.insertVertex
+  //     (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
+  //     "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+  //       this.azureIcons.AzureMaps());
+  // }
 
-    if (this.graph.getSelectionCount() == 1)
-		{
-			this.graph.setCellStyles('container', '1');
-		}
-		else
-		{
-			this.graph.setSelectionCell(this.mxClientOverrides.groupCells(null, 0));
-		}
-  }
+  // addTimeSeriesInsights = (dropContext) => {
 
-  unGroupCells(){
-    var selectedCell = this.graph.getSelectionCell();
+  //   var model = new TimeSeriesInsights();
+  //   model.GraphModel.Id = this.shortUID.randomUUID(6);
+  //   model.GraphModel.DisplayName = 'Time Series Insights'
+  //   var modelJsonString = JSON.stringify(model);
+
+  //   this.graph.insertVertex
+  //     (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
+  //     "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
+  //       this.azureIcons.TimeSeriesInsights());
+  // }  
+
+
+  // //callbacks from Ref components
+  // fromVMPropPanelSaveModel(vmModel) {
+  //     var vmCell = this.graph.getModel().getCell(vmModel.GraphModel.Id);
+  //     vmCell.value.ProvisionContext = vmModel.ProvisionContext; 
+  // }
+
+  // loadQuickstartDiagram(category, name) {
+  //     var thisComp = this;
+  //     this.diagService.loadQuickstartDiagram
+  //       (category, name,
+  //         function onSuccess(qsDiagContext) {
+  //           thisComp.importXmlAsDiagram(qsDiagContext);
+  //         },
+  //         function onFailure(error) {
+  //           Toast.show("danger", 2000, error.message);
+  //         }
+  //       )
+  // }
+
+  // groupCells(){
+  //   //http://jgraph.github.io/mxgraph/docs/js-api/files/view/mxGraph-js.html#mxGraph.groupCells
+
+  //   if (this.graph.getSelectionCount() == 1)
+	// 	{
+	// 		this.graph.setCellStyles('container', '1');
+	// 	}
+	// 	else
+	// 	{
+	// 		this.graph.setSelectionCell(this.mxClientOverrides.groupCells(null, 0));
+	// 	}
+  // }
+
+  // unGroupCells(){
+  //   var selectedCell = this.graph.getSelectionCell();
     
-    if(selectedCell != null)
-    {
-      //presebt subnet being ungroup out of VNet
-      var result = Utils.TryParseUserObject(selectedCell.value);
-      if(result.isUserObject && result.userObject.GraphModel.ResourceType == ResourceType.Subnet())
-      {
-        Toaster.create({
-          position: Position.TOP,
-          autoFocus: false,
-          canEscapeKeyClear: true
-        }).show({intent: Intent.WARNING, timeout: 2000, message: Messages.SubnetUngroupVNetNotAllowed()});
-        return;
-      }
-      else{
-       this.graph.ungroupCells();
-      }
-    }
-  }
+  //   if(selectedCell != null)
+  //   {
+  //     //presebt subnet being ungroup out of VNet
+  //     var result = Utils.TryParseUserObject(selectedCell.value);
+  //     if(result.isUserObject && result.userObject.GraphModel.ResourceType == ResourceType.Subnet())
+  //     {
+  //       Toaster.create({
+  //         position: Position.TOP,
+  //         autoFocus: false,
+  //         canEscapeKeyClear: true
+  //       }).show({intent: Intent.WARNING, timeout: 2000, message: Messages.SubnetUngroupVNetNotAllowed()});
+  //       return;
+  //     }
+  //     else{
+  //      this.graph.ungroupCells();
+  //     }
+  //   }
+  // }
 
   // rerenderAllAnimatedTrafficFlow() {
   //   var allVerticies = this.graph.getChildVertices(this.graph.getDefaultParent());
@@ -4962,83 +4739,83 @@ setBadgeVisibilityOnUnsaveChanges = () => {
   // }
 
 
-  copyToClipboard =() => {
-    var cells = this.graph.getSelectionCells();
-      if(cells == null)
-      return;
+  // copyToClipboard =() => {
+  //   var cells = this.graph.getSelectionCells();
+  //     if(cells == null)
+  //     return;
 
-      var result = this.graph.getExportableCells(cells);
+  //     var result = this.graph.getExportableCells(cells);
     
-      mxClipboard.parents = new Object();
+  //     mxClipboard.parents = new Object();
     
-      for (var i = 0; i < result.length; i++)
-      {
-        mxClipboard.parents[i] = this.graph.model.getParent(cells[i]);
-      }
+  //     for (var i = 0; i < result.length; i++)
+  //     {
+  //       mxClipboard.parents[i] = this.graph.model.getParent(cells[i]);
+  //     }
     
-      mxClipboard.insertCount = 1;
-      mxClipboard.setCells(this.graph.cloneCells(result));
+  //     mxClipboard.insertCount = 1;
+  //     mxClipboard.setCells(this.graph.cloneCells(result));
     
-      return result;
-  }
+  //     return result;
+  // }
 
-  pasteFromClipboard = () => {
-    if (!mxClipboard.isEmpty())
-      {
-        var cells = this.graph.getImportableCells(mxClipboard.getCells());
-        var delta = mxClipboard.insertCount * mxClipboard.STEPSIZE;
-        var parent = this.graph.getDefaultParent();
+  // pasteFromClipboard = () => {
+  //   if (!mxClipboard.isEmpty())
+  //     {
+  //       var cells = this.graph.getImportableCells(mxClipboard.getCells());
+  //       var delta = mxClipboard.insertCount * mxClipboard.STEPSIZE;
+  //       var parent = this.graph.getDefaultParent();
     
-        this.graph.model.beginUpdate();
-        try
-        {
-          for (var i = 0; i < cells.length; i++)
-          {
-            if(this.azureValidator.isVM(cells[i]))
-            {
-                var selectedCell = this.graph.getSelectionCell();
+  //       this.graph.model.beginUpdate();
+  //       try
+  //       {
+  //         for (var i = 0; i < cells.length; i++)
+  //         {
+  //           if(this.azureValidator.isVM(cells[i]))
+  //           {
+  //               var selectedCell = this.graph.getSelectionCell();
 
-                if(!this.azureValidator.isSubnet(selectedCell))
-                {
-                    Toaster.create({
-                      position: Position.TOP,
-                      autoFocus: false,
-                      canEscapeKeyClear: true
-                    }).show({intent: Intent.WARNING, timeout: 2000, message: Messages.VMInSubnet()});
-                    return;
-                }
-                else{
-                  mxClipboard.parents[i] = selectedCell;
-                }
-            }
+  //               if(!this.azureValidator.isSubnet(selectedCell))
+  //               {
+  //                   Toaster.create({
+  //                     position: Position.TOP,
+  //                     autoFocus: false,
+  //                     canEscapeKeyClear: true
+  //                   }).show({intent: Intent.WARNING, timeout: 2000, message: Messages.VMInSubnet()});
+  //                   return;
+  //               }
+  //               else{
+  //                 mxClipboard.parents[i] = selectedCell;
+  //               }
+  //           }
             
-            if(this.azureValidator.isAppGateway(cells[i]) &&
-               !this.azureValidator.isResourceinDedicatedSubnet(mxClipboard.parents[i]))
-            {
-                Toaster.create({
-                  position: Position.TOP,
-                  autoFocus: false,
-                  canEscapeKeyClear: true
-                }).show({intent: Intent.DANGER, timeout: 2000, message: Messages.AppGatewayNotInSubnetError()});
-                return;
-            }
+  //           if(this.azureValidator.isAppGateway(cells[i]) &&
+  //              !this.azureValidator.isResourceinDedicatedSubnet(mxClipboard.parents[i]))
+  //           {
+  //               Toaster.create({
+  //                 position: Position.TOP,
+  //                 autoFocus: false,
+  //                 canEscapeKeyClear: true
+  //               }).show({intent: Intent.DANGER, timeout: 2000, message: Messages.AppGatewayNotInSubnetError()});
+  //               return;
+  //           }
 
-            var tmp = (mxClipboard.parents != null && this.graph.model.contains(mxClipboard.parents[i])) ?
-                mxClipboard.parents[i] : parent;
-            cells[i] = this.graph.importCells([cells[i]], delta, delta, tmp)[0];
+  //           var tmp = (mxClipboard.parents != null && this.graph.model.contains(mxClipboard.parents[i])) ?
+  //               mxClipboard.parents[i] : parent;
+  //           cells[i] = this.graph.importCells([cells[i]], delta, delta, tmp)[0];
             
-          }
-        }
-        finally
-        {
-          this.graph.model.endUpdate();
-        }
+  //         }
+  //       }
+  //       finally
+  //       {
+  //         this.graph.model.endUpdate();
+  //       }
     
-        // Increments the counter and selects the inserted cells
-        mxClipboard.insertCount++;
-        this.graph.setSelectionCells(cells);
-      }
-  }
+  //       // Increments the counter and selects the inserted cells
+  //       mxClipboard.insertCount++;
+  //       this.graph.setSelectionCells(cells);
+  //     }
+  // }
 
     retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         if(pasteEvent.clipboardData == false){
