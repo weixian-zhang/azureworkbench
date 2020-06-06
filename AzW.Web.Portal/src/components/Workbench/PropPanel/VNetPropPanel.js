@@ -40,7 +40,7 @@ export default class VNetPropPanel extends Component {
           className="propPanelDrawer">
               <Grid container spacing={12} className="propPanelGrid">
                 <Grid item xs={12}>
-                  <AppBar position="static" color = "transparent">
+                  {/* <AppBar position="static" color = "transparent">
                     <Tabs value={this.state.value} onChange={this.handleChange} >
                       <Tab label="Diagram" value="diagram" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'diagram' ? "bold" : "" }}/>
                       <Tab label="Provision" value="provision" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'provision' ? "bold" : "" }}/>
@@ -67,12 +67,12 @@ export default class VNetPropPanel extends Component {
                                         />
                               </div>
                         </FormGroup>
-                    </div>
+                    </div> */}
                     
                      {this.renderProvisionTab()}
                             
                     
-                     {this.renderCalculatorTab()}
+                     {/* {this.renderCalculatorTab()} */}
                 </Grid>
               </Grid>
       </Drawer>
@@ -84,8 +84,8 @@ export default class VNetPropPanel extends Component {
   }
 
   renderProvisionTab() {
-    if(this.state.value != 'provision')
-      return null;
+    // if(this.state.value != 'provision')
+    //   return null;
     
     return (
         <div className = "propPanelTabContent">
@@ -160,14 +160,19 @@ export default class VNetPropPanel extends Component {
                style={{marginBottom:'5px'}}>
                 Subnets
               </Grid>
-              {
-                    this.state.userObject.GraphModel.SubnetsAndCidrs.map(x => {
-                        return <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom:'2px'}}>
+                  {
+                    (this.state.userObject.GraphModel.SubnetsAndCidrs.length == 0)
+                    ? null
+                    : this.state.userObject.GraphModel.SubnetsAndCidrs.map(x => {
+                        if(x.subnetName == '' )
+                          return null;
+                        else
+                          return <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
                           <Grid item>
-                            {x.subnetName} : {x.cidr} ({x.addressCount} addresses, {x.usableAddress} usable)
+                          {x.subnetName} : {x.cidr} (Total {x.addressCount} addresses, {x.usableAddress} usable), Last IP: {x.lastIP}
                           </Grid>
                         </Grid>
-                    })
+                      })
                   }
             </Grid>
       </div>

@@ -195,10 +195,9 @@ import QuickstartDiagramContext from '../../models/services/QuickstartDiagramCon
 import ProvisionHelper from './Helpers/ProvisionHelper';
 import Toast from './Helpers/Toast';
 
-import BlackTickPNG from '../../assets/azure_icons/shape-black-tick.png';
 import GojsManager from "./Helpers/GojsManager";
 import Function from "../../models/Function";
-
+import IPCIDR  from 'ip-cidr';
 import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
 
  export default class DiagramEditor extends Component {
@@ -548,7 +547,7 @@ initDiagramBehaviors() {
 
   this.initDiagramModifiedEvent();
 
-  this.generalContextmenu = this.initGeneralContextMenu();
+  this.generalContextmenu = this.initContextMenu();
   this.diagram.contextMenu = this.generalContextmenu;
 }
 
@@ -604,7 +603,7 @@ createTextTemplate() {
           selectionChanged: function(p) {
             p.layerName = (p.isSelected ? "Foreground" : '');
           },
-          contextMenu: this.initGeneralContextMenu()
+          contextMenu: this.initContextMenu()
         },
         new go.Binding("nodetype"),
         new go.Binding("location", "loc", go.Point.parse),
@@ -645,7 +644,7 @@ createPictureShapeTemplate() {
       selectionChanged: function(p) {
         p.layerName = (p.isSelected ? "Foreground" : '');
       },
-      contextMenu: this.initGeneralContextMenu()
+      contextMenu: this.initContextMenu()
     },
     // the main object is a Panel that contains a Picture
     this.$(go.Panel, "Vertical",
@@ -697,7 +696,7 @@ createNonVIRAzureResourceTemplate() {
         selectionChanged: function(p) {
           p.layerName = (p.isSelected ? "Foreground" : '');
         },
-        contextMenu: this.initGeneralContextMenu(),
+        contextMenu: this.initContextMenu(),
         doubleClick: function(e, node) {
           var azcontext = node.data.azcontext;
           thisComp.determineResourcePropertyPanelToShow
@@ -761,7 +760,7 @@ createShapeTemplate() {
         selectionChanged: function(p) {
           p.layerName = (p.isSelected ? "Foreground" : '');
         },
-        contextMenu: this.initGeneralContextMenu()
+        contextMenu: this.initContextMenu()
       },
       new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
       new go.Binding("zOrder").makeTwoWay(),
@@ -842,7 +841,7 @@ initLinkTemplate(linkTemplateMap) {
                 p.layerName = (p.isSelected ? "Foreground" : '');
               },
               selectionAdorned: false,
-              contextMenu: this.initGeneralContextMenu()
+              contextMenu: this.initContextMenu()
             },
             {
               routing: go.Link.Normal
@@ -893,7 +892,7 @@ initLinkTemplate(linkTemplateMap) {
               p.layerName = (p.isSelected ? "Foreground" : '');
             },
             selectionAdorned: false,
-            contextMenu: this.initGeneralContextMenu()
+            contextMenu: this.initContextMenu()
           },
           {
             adjusting: go.Link.Stretch,
@@ -938,7 +937,7 @@ initLinkTemplate(linkTemplateMap) {
               p.layerName = (p.isSelected ? "Foreground" : '');
             },
             selectionAdorned: false,
-            contextMenu: this.initGeneralContextMenu()
+            contextMenu: this.initContextMenu()
           },
           new go.Binding("points").makeTwoWay(),
           this.$(go.Shape,  // the highlight shape, normally transparent
@@ -980,7 +979,7 @@ createGroupTemplate() {
       {
         selectionObjectName: "PANEL",  // selection handle goes around shape, not label
         ungroupable: true,  // enable Ctrl-Shift-G to ungroup a selected Group
-        contextMenu: this.initGeneralContextMenu()
+        contextMenu: this.initContextMenu()
       },
         this.$(go.Panel, "Auto",
         { name: "PANEL" },
@@ -1047,7 +1046,7 @@ initDiagramModifiedEvent() {
     });
 }
 
-initGeneralContextMenu() {
+initContextMenu() {
 
   var thisComp = this;
 
@@ -1195,7 +1194,20 @@ createVNetTemplate() {
     selectionObjectName: "VNET",
     locationObjectName: "VNET",
     ungroupable: false,
-    contextMenu: this. initGeneralContextMenu()
+    contextMenu: this. initContextMenu(),
+    doubleClick: function(e, vnet) {
+    
+        var result =  thisComp.getSubnetsCidrsAzContextOfVNet(vnet);
+        
+        var azcontext = vnet.data.azcontext;
+        
+        azcontext.GraphModel.SubnetsAndCidrs = result.SubnetsCidrs;
+
+      thisComp.determineResourcePropertyPanelToShow
+        (azcontext, function onContextSaveCallback(savedContext){
+          vnet.azcontext = savedContext;
+        });
+    }
   },
   new go.Binding("azcontext"),
   new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
@@ -1238,11 +1250,11 @@ createVNetTemplate() {
           desiredSize: new go.Size(30,30),
           alignment: new go.Spot(1, 0, -40, -12),
           source: require('../../assets/azure_icons/Networking Service Color/nat-gateway.png'),
-          doubleClick: function(e, picture) {
-            var azcontext = picture.natgwazcontext;
+          doubleClick: function(e, shape) {
+            var azcontext = shape.natgwazcontext;
             thisComp.determineResourcePropertyPanelToShow
               (azcontext, function onContextSaveCallback(savedContext){
-                  picture.azcontext = savedContext;
+                shape.azcontext = savedContext;
               });
           }
         },
@@ -1268,8 +1280,24 @@ createSubnetTemplate() {
       resizeObjectName: "SUBNET",
       selectionObjectName: "SUBNET",
       locationObjectName: "SUBNET",
-      contextMenu: this.initGeneralContextMenu(),
-      dragComputation: this.makeSubnetVIRStayInGroup
+      contextMenu: this.initContextMenu(),
+      dragComputation: this.makeSubnetVIRStayInGroup,
+      doubleClick: function(e, subnet) {
+
+        var vnet = subnet.containingGroup;
+
+        var result =  thisComp.getSubnetsCidrsAzContextOfVNet(vnet);
+        
+        var azcontext = subnet.data.azcontext;
+        
+        azcontext.GraphModel.VNetAddressSpace = result.VNetAddressSpace;
+        azcontext.GraphModel.SubnetsAndCidrs = result.SubnetsCidrs;
+
+        thisComp.determineResourcePropertyPanelToShow
+          (azcontext, function onContextSaveCallback(savedContext){
+            subnet.azcontext = savedContext;
+          });
+      }
     },
     new go.Binding("azcontext", "azcontext"),
     new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
@@ -1334,6 +1362,35 @@ createSubnetTemplate() {
 return subnetTemplate;
 }
 
+getSubnetsCidrsAzContextOfVNet(vnetGroup) {
+  if(!Utils.isAzContextExist(vnetGroup))
+      throw 'getSubnetsCidrsAzContextOfVNet - vnetGroup azcontext missing';
+
+    var result = {
+        VNetAddressSpace: vnetGroup.data.azcontext.ProvisionContext.AddressSpace,
+        SubnetsCidrs: []
+    };
+
+    vnetGroup.memberParts.each((p) => {
+      if(!Utils.isAzContextExist(p))
+        throw 'getSubnetsCidrsAzContextOfVNet - subnet azcontext missing';
+
+        var subnetAzContext = p.data.azcontext;
+
+        result.SubnetsCidrs.push({
+          subnetName: subnetAzContext.ProvisionContext.Name,
+          cidr: subnetAzContext.ProvisionContext.AddressSpace,
+          addressCount: Utils.getIPCountFromCidr(subnetAzContext.ProvisionContext.AddressSpace),
+          usableAddress: Utils.getIPCountFromCidr(subnetAzContext.ProvisionContext.AddressSpace) - 5,
+          lastIP: subnetAzContext.ProvisionContext.AddressSpace != ''
+            ? new IPCIDR(subnetAzContext.ProvisionContext.AddressSpace).end()
+            : ''
+        });
+    });
+
+    return result;
+}
+
 makeSubnetVIRStayInGroup(part, pt, gridpt) {
   // don't constrain top-level nodes
   var grp = part.containingGroup;
@@ -1368,7 +1425,7 @@ createVIRAzureResourceTemplate() {
         selectionChanged: function(p) {
           p.layerName = (p.isSelected ? "Foreground" : '');
         },
-        contextMenu: this.initGeneralContextMenu(),
+        contextMenu: this.initContextMenu(),
         doubleClick: function(e, node) {
           var azcontext = node.data.azcontext;
           thisComp.determineResourcePropertyPanelToShow

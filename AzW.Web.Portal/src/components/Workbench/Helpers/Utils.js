@@ -113,6 +113,19 @@ export default class Utils
             return false;
     }
 
+    // static isAzContextExistForVNetSubnet(node) {
+    //     if(node == null)
+    //         return false;
+            
+    //     if((node.data !== 'undefined' && typeof node.data.azcontext !== 'undefined') || 
+    //         (typeof node.data.nsgazcontext !== 'undefined' || 
+    //         typeof node.data.udrazcontext !== 'undefined' ||
+    //         typeof node.data.natgwazcontext !== 'undefined' ))
+    //         return true;
+    //     else    
+    //         return false;
+    // }
+
     static getAzContextResourceType(node) {
         if(!Utils.isAzContextExist(node))
             return null;
@@ -253,7 +266,7 @@ export default class Utils
     }
 
     static getIPCountFromCidr(cidr) {
-        if(Utils.IsNullOrUndefine(cidr))
+        if(Utils.IsNullOrUndefine(cidr) ** Utils.isCidr(cidr))
             return 0;
         
         var addrCount = 0;
@@ -295,43 +308,43 @@ export default class Utils
             return false;
     }
 
-    static vnetGetSubnetsAndCidrs = (graph, vnetCell, subnetName) => {
-        if(Utils.IsNullOrUndefine(vnetCell))
-          return [];
+    // static vnetGetSubnetsAndCidrs = (graph, vnetCell, subnetName) => {
+    //     if(Utils.IsNullOrUndefine(vnetCell))
+    //       return [];
         
-        var subnetNamesAndCidrs = [];
+    //     var subnetNamesAndCidrs = [];
   
-        var childs = graph.getChildVertices(vnetCell);
+    //     var childs = graph.getChildVertices(vnetCell);
   
-        childs.map(x => {
-            var result = Utils.TryParseUserObject(x);
+    //     childs.map(x => {
+    //         var result = Utils.TryParseUserObject(x);
   
-            if(result.isUserObject == true &&
-               result.userObject.ProvisionContext.ResourceType == ResourceType.Subnet())
-            {
-                var context = result.userObject.ProvisionContext;
-                var addressCount = Utils.getIPCountFromCidr(context.AddressSpace);
-                var usableAddresses = 0;
-                if(addressCount != 0)
-                  usableAddresses = addressCount - 5;
+    //         if(result.isUserObject == true &&
+    //            result.userObject.ProvisionContext.ResourceType == ResourceType.Subnet())
+    //         {
+    //             var context = result.userObject.ProvisionContext;
+    //             var addressCount = Utils.getIPCountFromCidr(context.AddressSpace);
+    //             var usableAddresses = 0;
+    //             if(addressCount != 0)
+    //               usableAddresses = addressCount - 5;
                 
-                var snc = new SubnetsCidrs();
-                snc.subnetName = context.Name;
-                snc.cidr = context.AddressSpace;
-                snc.addressCount = addressCount;
-                snc.usableAddress = usableAddresses;
+    //             var snc = new SubnetsCidrs();
+    //             snc.subnetName = context.Name;
+    //             snc.cidr = context.AddressSpace;
+    //             snc.addressCount = addressCount;
+    //             snc.usableAddress = usableAddresses;
 
-              //check and prevent adding of subnet & cidr for active Subnet Prop panel
-              if(Utils.IsNullOrUndefine(subnetName))
-                    subnetNamesAndCidrs.push(snc);
-              else
-              {
-                if(result.userObject.ProvisionContext.Name != subnetName)               
-                    subnetNamesAndCidrs.push(snc);
-              }
-            }
-        });
+    //           //check and prevent adding of subnet & cidr for active Subnet Prop panel
+    //           if(Utils.IsNullOrUndefine(subnetName))
+    //                 subnetNamesAndCidrs.push(snc);
+    //           else
+    //           {
+    //             if(result.userObject.ProvisionContext.Name != subnetName)               
+    //                 subnetNamesAndCidrs.push(snc);
+    //           }
+    //         }
+    //     });
   
-        return subnetNamesAndCidrs;
-    }
+    //     return subnetNamesAndCidrs;
+    // }
 }

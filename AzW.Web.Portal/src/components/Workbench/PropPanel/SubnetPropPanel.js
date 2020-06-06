@@ -46,7 +46,7 @@ export default class SubnetPropPanel extends Component {
           className="propPanelDrawer">
               <Grid container spacing={12} className="propPanelGrid">
                 <Grid item xs={12}>
-                  <AppBar position="static" color = "transparent">
+                  {/* <AppBar position="static" color = "transparent">
                     <Tabs value={this.state.value}  onChange={this.handleChange} >
                       <Tab label="Diagram" value="diagram" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'diagram' ? "bold" : "" }}/>
                       <Tab label="Provision" value="provision" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'provision' ? "bold" : "" }}/>
@@ -73,11 +73,11 @@ export default class SubnetPropPanel extends Component {
                                         />
                               </div>
                         </FormGroup>
-                    </div>
+                    </div> */}
                     
                     {this.renderProvisionTab()}
 
-                    {this.renderCalculatorTab()}
+                    {/* {this.renderCalculatorTab()} */}
                 </Grid>
                 <Grid item xs={12}>
                   
@@ -92,8 +92,8 @@ export default class SubnetPropPanel extends Component {
   }
 
   renderProvisionTab() {
-    if(this.state.value != 'provision')
-      return null;
+    // if(this.state.value != 'provision')
+    //   return null;
 
       return (
         <div className = "propPanelTabContent">
@@ -103,7 +103,7 @@ export default class SubnetPropPanel extends Component {
               justify="center"
               alignItems="center"
               spacing={1} style={{marginTop: '15px', width: '100%'}}>
-              <Grid container item direction="row" xs="12" spacing="3" justify="flex-start" alignItems="center">
+              <Grid container item direction="row" xs="12" justify="flex-start" alignItems="center">
                 <Grid item sm={3}>
                     <label>Subnet Name</label>
                 </Grid>
@@ -117,7 +117,7 @@ export default class SubnetPropPanel extends Component {
                     }} />
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center"
+              <Grid container item direction="row" xs="12" justify="flex-start" alignItems="center"
                style={{marginBottom: '18px'}}>
                 <Grid item sm={3}>
                     <label>Address Space</label>
@@ -147,16 +147,9 @@ export default class SubnetPropPanel extends Component {
                         </Typography>
                       :   null
                     }
-                    {/* {
-                        (!this.state.isAddressWithinVNetRange) ?
-                          <Typography style={{fontSize:10,color:'red',display:'block', marginTop:'3px'}} variant="body2">
-                            Address range not within VNet Cidr range
-                          </Typography>
-                        :   null
-                    } */}
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+              <Grid container item direction="row" xs="12" justify="flex-start" alignItems="center">
                 <Grid item>
                   <label>VNet Address: </label>
                   <label>
@@ -170,13 +163,18 @@ export default class SubnetPropPanel extends Component {
               </Grid>
               
                   {
-                    this.state.userObject.GraphModel.SubnetsAndCidrs.map(x => {
-                        return <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+                    (this.state.userObject.GraphModel.SubnetsAndCidrs.length == 0)
+                    ? null
+                    : this.state.userObject.GraphModel.SubnetsAndCidrs.map(x => {
+                        if(x.subnetName == '' )
+                          return null;
+                        else
+                          return <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
                           <Grid item>
-                          {x.subnetName} : {x.cidr} ({x.addressCount} addresses, {x.usableAddress} usable)
+                          {x.subnetName} : {x.cidr} (Total {x.addressCount} addresses, {x.usableAddress} usable), Last IP: {x.lastIP}
                           </Grid>
                         </Grid>
-                    })
+                      })
                   }
                 
             </Grid>
@@ -199,7 +197,7 @@ export default class SubnetPropPanel extends Component {
       
       var valid = true;
 
-      if(subnetCidr.isValid() && Utils.isCidr(subnetAddr))
+      if(Utils.isCidr(subnetAddr) && subnetCidr.isValid())
       {
           //within vnet range
           if(this.cidrRanger.doSubnetsOverlap
@@ -207,21 +205,28 @@ export default class SubnetPropPanel extends Component {
           {
               if(Utils.getCidrPrefix(subnetAddr) >= 
                 Utils.getCidrPrefix(this.state.userObject.GraphModel.VNetAddressSpace))
-              {
                 this.setState({isAddressWithinVNetRange: true});
-              }
               else
               {
                 this.setState({isAddressWithinVNetRange: false});
+                return;
               }
               
           }
-          else {
+          else
               this.setState({isAddressWithinVNetRange: true});
-          }
           
-          for(var item of this.state.userObject.GraphModel.SubnetsAndCidrs)
+          //check subnets
+          var existingSubnets = this.state.userObject.GraphModel.SubnetsAndCidrs;
+          
+          if(existingSubnets.length <= 1)
+            return true;
+
+          for(var item of existingSubnets)
           {
+              if(item.cidr == undefined)
+                  continue;
+
               //prevent validate its ownself
               if(item.subnetName != this.state.userObject.ProvisionContext.Name)
               {
