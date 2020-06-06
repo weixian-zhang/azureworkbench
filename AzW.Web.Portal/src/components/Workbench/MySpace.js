@@ -143,21 +143,15 @@ export default class MySpace extends Component {
                                   <TableCell align="right">{diagram.diagramName}</TableCell>
                                   <TableCell align="right">{new moment(diagram.dateTimeSaved).format('MMMM Do YYYY, h:mm:ss a')}</TableCell>
                                   <TableCell align="right">
-                                    <Tooltip content='save current diagram to this space' position={Position.TOP}>
-                                      <Button icon="floppy-disk"
-                                        onClick={() =>
-                                          this.promptCurrentDiagramToThisSpace(diagram.collectionName, diagram.diagramName)} />
-                                    </Tooltip>
+                                    <Button icon="floppy-disk"
+                                          onClick={() =>
+                                            this.promptCurrentDiagramToThisSpace(diagram.collectionName, diagram.diagramName)} />
                                   </TableCell>
                                   <TableCell align="right">
-                                    <Tooltip content='load diagram' position={Position.TOP}>
-                                      <Button text="" icon="cloud-download" onClick={() => this.loadDiagramFromWorkspace(diagram)} /> 
-                                    </Tooltip>
+                                    <Button text="" icon="cloud-download" onClick={() => this.loadDiagramFromWorkspace(diagram)} /> 
                                   </TableCell>
                                   <TableCell align="left">
-                                    <Tooltip content='delete diagram' position={Position.TOP}>
-                                      <Button text="" icon="delete" intent='danger' onClick={() => this.openDeleteConfirmDialog(diagram)} />
-                                    </Tooltip>
+                                    <Button text="" icon="delete" intent='danger' onClick={() => this.openDeleteConfirmDialog(diagram)} />
                                   </TableCell>
                                 </TableRow>
                             ))}
@@ -300,7 +294,7 @@ export default class MySpace extends Component {
 
                 var diagramContext = new AnonymousDiagramContext();
                 diagramContext.DiagramXml = diagramXml;
-                thisComp.props.DiagramEditor.importXmlAsDiagram(diagramContext);
+                thisComp.props.DiagramEditor.importJsonDiagram(diagramContext);
                 thisComp.setState({isOpen: false});
 
                 Toaster.create({

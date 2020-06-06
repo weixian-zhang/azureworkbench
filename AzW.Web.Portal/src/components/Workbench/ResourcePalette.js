@@ -705,7 +705,7 @@ export default class ResourcePalette extends Component {
               resourceType: ResourceType.LinuxVM()
             },
             {
-              Name: 'vm scale sets',
+              Name: 'vm scale sets vmss',
               Tooltip: 'VM Scale Sets',
               Image: require('../../assets/azure_icons/ComputeServiceColor/VM/VM Scale Sets.png'),
               Provisionable: false,

@@ -104,8 +104,8 @@ export default class Header extends Component {
                      <MenuItem  text="Import Workbench file(.azwb)" onClick={this.importWorkbenchFormat} />
                      <MenuDivider />
                      <MenuItem  text="Export as SVG" onClick={this.exportDiagramAsSVG} />
-                     <MenuItem  text="Export as PNG" />
-                     <MenuItem  text="Export as PDF" onClick={this.exportDiagramAsPDF} />
+                     <MenuItem  text="Export as PNG"  onClick={this.exportDiagramAsPNG}/>
+                     {/* <MenuItem  text="Export as PDF" onClick={this.exportDiagramAsPDF} /> */}
                      <MenuItem  text="Export as Workbench file(.azwb)" onClick={this.exportWorkbenchFormat} />
                    </Menu>
                } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.HOVER}>
@@ -245,6 +245,11 @@ export default class Header extends Component {
  exportDiagramAsPDF = () => {
     var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
     diagramEditor.exportDiagramAsPDF();
+ }
+
+ exportDiagramAsPNG = () => {
+  var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
+  diagramEditor.exportAsPng();
  }
 
  exportDiagramAsSVG = () => {

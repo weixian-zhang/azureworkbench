@@ -104,9 +104,10 @@ export default class Utils
         if(node == null)
             return false;
             
-        if(node.data !== 'undefined' &&
-            typeof node.data.azcontext !== 'undefined' && 
-            typeof node.data.azcontext.ProvisionContext !== 'undefined')
+        if((node.data !== 'undefined' && typeof node.data.azcontext !== 'undefined') || 
+            (typeof node.data.nsgazcontext !== 'undefined' || 
+            typeof node.data.udrazcontext !== 'undefined' ||
+            typeof node.data.natgwazcontext !== 'undefined' ))
             return true;
         else    
             return false;
@@ -173,6 +174,36 @@ export default class Utils
               }
         }
         return false;
+    }
+
+    static isNSG(part) {
+        if(!Utils.isAzContextExist(part))
+            return false;
+        
+        if(part.data.nsgazcontext.ProvisionContext.ResourceType == ResourceType.NSG())
+            return true;
+        else
+            return false;
+    }
+
+    static isUDR(part) {
+        if(!Utils.isAzContextExist(part))
+            return false;
+        
+        if(part.data.udrazcontext.ProvisionContext.ResourceType == ResourceType.RouteTable())
+            return true;
+        else
+            return false;
+    }
+
+    static isNATGW(part) {
+        if(!Utils.isAzContextExist(part))
+            return false;
+        
+        if(part.data.natgwazcontext.ProvisionContext.ResourceType == ResourceType.NatGateway())
+            return true;
+        else
+            return false;
     }
 
     static IsNullOrUndefine(obj) {

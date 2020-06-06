@@ -37,7 +37,7 @@ export default class Workbench extends Component {
     return (
         <div className="workbenchgrid-container">
           <ResourcePalette DiagramEditor={this.diagramEditor} addResourceToDiagramEditor={this.addResourceToDiagramEditor}/>
-          <DiagramEditor ref={this.diagramEditor} />
+          <DiagramEditor ref={this.diagramEditor} queryString={this.state.queryString} />
           {/* { renderResourcePalette ? <ResourcePalette mxgraphManager={this.graphManager}  addResourceToDiagramEditor={this.addResourceToDiagramEditor} /> : '' } */}
           {/* <DiagramEditor ref={this.diagramEditor} Index={this.Index} queryString={this.state.queryString}  mxgraphManagerReadyCallback={this.mxgraphManagerReadyCallback} Workbench={this} /> */}
         </div>

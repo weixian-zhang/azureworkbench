@@ -1,5 +1,5 @@
 import ResourceType from './ResourceType'
-export default class ServiceBus
+export default class RouteTable
 {
     constructor (){
         this.GraphModel = {

@@ -20,19 +20,14 @@ export default class OverlayAbout extends Component {
                         <b>Azure Workbench</b>
                     </Typography>
                     <Typography variant="body1" align="left" gutterBottom>
-                        This site is not related to Microsoft or Azure.
-                        Hope you enjoy using this tool and it can effectively help you in your daily work.
+                        Azure Workbench is a hobby project and is not related to Microsoft or Azure.
+                        Hope you enjoy using this tool.
                     </Typography>
                     <br />
                     <Typography variant="body1" align="left" gutterBottom>
-                        Tons of features are lined in the roadmap,
-                        next up, deploying diagram to your Azure subscription.
-                        Follow by calculate Azure pricing as you drag resource onto canvas...
-                    </Typography>
-                    <br />
-                    <Typography variant="body1" align="left" gutterBottom>
-                        Your feedback is upmost important for me to stablize Workbench.
-                        Please let me know at: <b>weixianzhang@outlook.com</b>
+                        I am constantly working on bug fixes and new features. 
+                        Your feedback is upmost important for me, 
+                        please let me know at: <b>weixzha@microsoft.com</b>
                     </Typography>
                 </Card>
             </Overlay>

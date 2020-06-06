@@ -8,6 +8,7 @@ import {InputGroup, Classes, Button, Intent, Overlay, Toaster, Position} from "@
 import * as go from 'gojs';
 import { PanningTool } from 'gojs';
 import './GojsExtensions/Figures';
+import * as LocalStorageCommandHandler from './GojsExtensions/LocalStorageCommandHandler';
 
 import GoNodeType from './Helpers/GoNodeType';
 
@@ -111,6 +112,7 @@ import RouteTable from "../../models/RouteTable";
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
 
 //property panels
+import RouteTablePropPanel from './PropPanel/RouteTablePropPanel';
 import CognitivePropPanel from './PropPanel/CognitivePropPanel';
 import BotsServicePropPanel from './PropPanel/BotsServicePropPanel';
 import GenomicsPropPanel from './PropPanel/GenomicsPropPanel';
@@ -235,6 +237,7 @@ import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
 
   componentDidMount() {
 
+    this.pasteImageFromBrowserClipboard();
     this.initDiagramCanvas();
 
     this.gojsManager = new GojsManager(this.diagram, this);
@@ -256,7 +259,6 @@ import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
     // this.addUpDownLeftRightArrowToMoveCells();
     // this.addDropPNGAZWBFileHandler();
     
-    // this.initPasteImageFromBrowserClipboard();
     this.addKeyPressShortcuts();
     this.PromptSaveBeforeCloseBrowser();
 
@@ -274,6 +276,7 @@ import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
         <MLServiceWorkspacePropPanel ref={this.mlsvcworkspacePropPanel} /> 
 
         <NatGatewayPropPanel ref={this.natgwPropPanel} />
+        <RouteTablePropPanel ref={this.rtPropPanel} />
         <PrivateEndpointPropPanel ref={this.privateendpointPropPanel} />
         <AzStoragePropPanel ref={this.azstoragePropPanel} />
         <OverlayPreviewDiagram ref={this.previewOverlay} />
@@ -374,6 +377,7 @@ import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
     this.genomicsPropPanel = React.createRef();
     this.mlsvcworkspacePropPanel = React.createRef();
     this.natgwPropPanel = React.createRef();
+    this.rtPropPanel = React.createRef();
     this.privateendpointPropPanel = React.createRef();
     this.azstoragePropPanel = React.createRef();
     this.nsgPropPanel = React.createRef();
@@ -461,6 +465,8 @@ import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
           "undoManager.isEnabled": true,
           'animationManager.isEnabled': false,  // turn off automatic animations
 
+          //commandHandler: new LocalStorageCommandHandler(),
+
           // "resizingTool.computeMinSize": function() {
           //   var group = this.adornedObject.part;
           //   var membnds = group.diagram.computePartsBounds(group.memberParts);
@@ -525,9 +531,12 @@ import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
     this.initDiagramBehaviors();
 
     var model =
-    new go.GraphLinksModel(this.nodeDataArray, this.linkDataArray);
+      new go.GraphLinksModel(this.nodeDataArray, this.linkDataArray);
+
+    //!important, without these 2 properties, when load saved diagram, links won't be connected to parts
     model.linkFromPortIdProperty = "fromPort";
     model.linkToPortIdProperty = "toPort";
+
     this.diagram.model = model;
 }
 
@@ -627,6 +636,7 @@ createPictureShapeTemplate() {
       locationSpot: go.Spot.Center
     },
     new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+    new go.Binding("zOrder").makeTwoWay(),
     { 
       selectable: true,
       resizable: true, 
@@ -691,13 +701,14 @@ createNonVIRAzureResourceTemplate() {
         doubleClick: function(e, node) {
           var azcontext = node.data.azcontext;
           thisComp.determineResourcePropertyPanelToShow
-            (null, azcontext, function onContextSaveCallback(savedContext){
+            (azcontext, function onContextSaveCallback(savedContext){
                 node.data.azcontext = savedContext;
             });
         }
       },
       new go.Binding("azcontext", "azcontext").makeTwoWay(),
       new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+      new go.Binding("zOrder").makeTwoWay(),
       this.$(go.Panel, "Vertical",
           //new go.Binding("desiredSize", "size", go.Size.parse), //follows panel resize below
           this.$(go.Panel, "Table",
@@ -753,6 +764,7 @@ createShapeTemplate() {
         contextMenu: this.initGeneralContextMenu()
       },
       new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+      new go.Binding("zOrder").makeTwoWay(),
       this.$(go.Shape,
         {
           name: 'SHAPE',
@@ -781,8 +793,6 @@ createShapeTemplate() {
     
     return shapeTemplate;
 }
-
-//https://gojs.net/latest/samples/draggableLink.html
 
 makePort(name, align, spot, output, input, figure) {
   var horizontal = align.equals(go.Spot.Top) || align.equals(go.Spot.Bottom);
@@ -828,9 +838,9 @@ initLinkTemplate(linkTemplateMap) {
               relinkableTo: true,
               reshapable: true,
               resegmentable: false,
-              // mouse-overs subtly highlight links:
-              //mouseEnter: function(e, link) { link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
-              //mouseLeave: function(e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; },
+              selectionChanged: function(p) {
+                p.layerName = (p.isSelected ? "Foreground" : '');
+              },
               selectionAdorned: false,
               contextMenu: this.initGeneralContextMenu()
             },
@@ -838,6 +848,7 @@ initLinkTemplate(linkTemplateMap) {
               routing: go.Link.Normal
             },
             new go.Binding("points").makeTwoWay(),
+            new go.Binding("zOrder").makeTwoWay(),
             this.$(go.Shape,  // the highlight shape, normally transparent
               { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" },
               new go.Binding("stroke").makeTwoWay(),
@@ -878,9 +889,9 @@ initLinkTemplate(linkTemplateMap) {
             relinkableTo: true,
             reshapable: true,
             resegmentable: true,
-            // mouse-overs subtly highlight links:
-            //mouseEnter: function(e, link) { link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
-            //mouseLeave: function(e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; },
+            selectionChanged: function(p) {
+              p.layerName = (p.isSelected ? "Foreground" : '');
+            },
             selectionAdorned: false,
             contextMenu: this.initGeneralContextMenu()
           },
@@ -923,9 +934,9 @@ initLinkTemplate(linkTemplateMap) {
             relinkableTo: true,
             reshapable: true,
             resegmentable: true,
-            // mouse-overs subtly highlight links:
-            //mouseEnter: function(e, link) { link.findObject("HIGHLIGHT").stroke = "rgba(30,144,255,0.2)"; },
-            //mouseLeave: function(e, link) { link.findObject("HIGHLIGHT").stroke = "transparent"; },
+            selectionChanged: function(p) {
+              p.layerName = (p.isSelected ? "Foreground" : '');
+            },
             selectionAdorned: false,
             contextMenu: this.initGeneralContextMenu()
           },
@@ -1041,80 +1052,137 @@ initGeneralContextMenu() {
   var thisComp = this;
 
   return this.$("ContextMenu",
-  this.$("ContextMenuButton",
-    this.$(go.TextBlock, "Add Subnet"),
-        { 
-          click: function(e, obj) {
-            thisComp.createSubnet(obj.part.data.key);
-          } 
-        },
-        new go.Binding("visible", "", function(o) {
-            return Utils.isVNet(o.diagram.selection.first());
-        }).ofObject()),
-    this.$("ContextMenuButton",
-      this.$(go.TextBlock, "Undo"),
-          { click: function(e, obj) { e.diagram.commandHandler.undo(); } },
-          new go.Binding("visible", "", function(o) {
-              return o.diagram.commandHandler.canUndo();
-          }).ofObject()),
-    this.$("ContextMenuButton",
-      this.$(go.TextBlock, "Redo"),
-          { click: function(e, obj) { e.diagram.commandHandler.redo(); } },
-          new go.Binding("visible", "", function(o) {
-            return o.diagram.commandHandler.canRedo();
-          }).ofObject()),
-    this.$("ContextMenuButton",
-      this.$(go.TextBlock, "Group"),
-            { 
-              click: function(e, obj) 
-              { 
-                e.diagram.commandHandler.groupSelection(); 
-            } },
-            new go.Binding("visible", "", 
-              function(o) {
-                return o.diagram.commandHandler.canGroupSelection();
-              }).ofObject()),
-    this.$("ContextMenuButton",
-      this.$(go.TextBlock, "Ungroup"),
-              { 
-                click: function(e, obj) 
-                { 
-                  e.diagram.commandHandler.ungroupSelection(); 
-              } },
-              new go.Binding("visible", "", 
-                function(o) {
-                  return o.diagram.commandHandler.canUngroupSelection();
-                }).ofObject()),
-    this.$("ContextMenuButton",
-      this.$(go.TextBlock, "Bring to Front"),
-          { 
-            click: function(e, obj) 
-            { 
-              var nodes = e.diagram.selection;
-              var it = nodes.iterator;
-              while (it.next()) {
-                  if(isNaN(it.value.zOrder))
-                      it.value.zOrder = 10;
-                  else 
-                      it.value.zOrder += 10;
-              }
-            }
-          }),
       this.$("ContextMenuButton",
-          this.$(go.TextBlock, "Style"),
+        this.$(go.TextBlock, "Add Subnet"),
+            { 
+              click: function(e, obj) {
+                thisComp.createSubnet(obj.part.data.key);
+              } 
+            },
+            new go.Binding("visible", "", function(o) {
+                return Utils.isVNet(o.diagram.selection.first());
+            }).ofObject()),
+
+        this.$("ContextMenuButton",
+          this.$(go.TextBlock, "Add/Remove NSG"),
+              { 
+                click: function(e, obj) {
+                  if(Utils.isNSG(obj.part)) {
+                      if(obj.part.data.nsgVisible == false)
+                        thisComp.diagram.model.setDataProperty(obj.part.data, 'nsgVisible', true);
+                      else
+                        thisComp.diagram.model.setDataProperty(obj.part.data, 'nsgVisible', false);
+                  }
+                } 
+              },
+              new go.Binding("visible", "", function(o) {
+                  return Utils.isSubnet(o.diagram.selection.first());
+              }).ofObject()
+        ),
+
+        this.$("ContextMenuButton",
+          this.$(go.TextBlock, "Add/Remove UDR"),
+              { 
+                click: function(e, obj) {
+                  if(Utils.isUDR(obj.part)) {
+                      if(obj.part.data.udrVisible == false)
+                        thisComp.diagram.model.setDataProperty(obj.part.data, 'udrVisible', true);
+                      else
+                        thisComp.diagram.model.setDataProperty(obj.part.data, 'udrVisible', false);
+                  }
+                } 
+              },
+              new go.Binding("visible", "", function(o) {
+                  return Utils.isSubnet(o.diagram.selection.first());
+              }).ofObject()
+          ),
+        
+        this.$("ContextMenuButton",
+          this.$(go.TextBlock, "Add/Remove NAT Gateway"),
+              { 
+                click: function(e, obj) {
+                  if(Utils.isNATGW(obj.part)) {
+                      if(obj.part.data.natgwVisible == false)
+                        thisComp.diagram.model.setDataProperty(obj.part.data, 'natgwVisible', true);
+                      else
+                        thisComp.diagram.model.setDataProperty(obj.part.data, 'natgwVisible', false);
+                  }
+                } 
+              },
+              new go.Binding("visible", "", function(o) {
+                  return Utils.isVNet(o.diagram.selection.first());
+              }).ofObject()
+          ),
+
+        this.$("ContextMenuButton",
+          this.$(go.TextBlock, "Undo"),
+              { click: function(e, obj) { e.diagram.commandHandler.undo(); } },
+              new go.Binding("visible", "", function(o) {
+                  return o.diagram.commandHandler.canUndo();
+              }).ofObject()),
+
+        this.$("ContextMenuButton",
+          this.$(go.TextBlock, "Redo"),
+              { click: function(e, obj) { e.diagram.commandHandler.redo(); } },
+              new go.Binding("visible", "", function(o) {
+                return o.diagram.commandHandler.canRedo();
+              }).ofObject()),
+
+        this.$("ContextMenuButton",
+          this.$(go.TextBlock, "Group"),
+                { 
+                  click: function(e, obj) 
+                  { 
+                    e.diagram.commandHandler.groupSelection(); 
+                } },
+                new go.Binding("visible", "", 
+                  function(o) {
+                    return o.diagram.commandHandler.canGroupSelection();
+                  }).ofObject()),
+
+        this.$("ContextMenuButton",
+          this.$(go.TextBlock, "Ungroup"),
+                  { 
+                    click: function(e, obj) 
+                    { 
+                      e.diagram.commandHandler.ungroupSelection(); 
+                  } },
+                  new go.Binding("visible", "", 
+                    function(o) {
+                      return o.diagram.commandHandler.canUngroupSelection();
+                    }).ofObject()),
+
+        this.$("ContextMenuButton",
+          this.$(go.TextBlock, "Bring to Front"),
               { 
                 click: function(e, obj) 
                 { 
-                  var node = e.diagram.selection.first();
-                  thisComp.openStylePanel(node);
+                  var nodes = e.diagram.selection;
+                  var it = nodes.iterator;
+                  while (it.next()) {
+                      if(isNaN(it.value.zOrder))
+                          it.value.zOrder = 10;
+                      else 
+                          it.value.zOrder += 10;
+                  }
                 }
-              },
-              new go.Binding("visible", "", 
-                function(o) {
-                  return o.diagram.selection.first() != null;
-                }).ofObject()
-            )
-  );
+              }),
+
+          this.$("ContextMenuButton",
+              this.$(go.TextBlock, "Style"),
+                  { 
+                    click: function(e, obj) 
+                    { 
+                      var node = e.diagram.selection.first();
+                      thisComp.openStylePanel(node);
+                    }
+                  },
+                  new go.Binding("visible", "", 
+                    function(o) {
+                      return o.diagram.selection.first() != null;
+                    }).ofObject()
+                )
+    );
 }
 
 createVNetTemplate() {
@@ -1149,8 +1217,7 @@ createVNetTemplate() {
       new go.Binding("fill").makeTwoWay(),
       new go.Binding("stroke").makeTwoWay()
       ),
-  // this.$(go.Placeholder,    // represents the area of all member parts,
-  //       { padding: 5}),  // with some extra padding around them
+  
     this.$(go.TextBlock,
         { 
           editable: true,
@@ -1166,6 +1233,22 @@ createVNetTemplate() {
           alignment: go.Spot.TopRight, alignmentFocus: go.Spot.BottomRight,
           source: require('../../assets/azure_icons/Networking Service Color/Virtual Networks.png')
         }),
+        this.$(go.Picture, {
+          stretch: go.GraphObject.Fill,
+          desiredSize: new go.Size(30,30),
+          alignment: new go.Spot(1, 0, -40, -12),
+          source: require('../../assets/azure_icons/Networking Service Color/nat-gateway.png'),
+          doubleClick: function(e, picture) {
+            var azcontext = picture.natgwazcontext;
+            thisComp.determineResourcePropertyPanelToShow
+              (azcontext, function onContextSaveCallback(savedContext){
+                  picture.azcontext = savedContext;
+              });
+          }
+        },
+          new go.Binding('visible', 'natgwVisible').makeTwoWay(),
+          new go.Binding('natgwazcontext').makeTwoWay()
+        ),
     this.makePort("T", go.Spot.Top, go.Spot.TopSide, true, true),
     this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
     this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
@@ -1177,7 +1260,7 @@ createVNetTemplate() {
 
 //https://gojs.net/latest/samples/regroupingTreeView.html
 createSubnetTemplate() {
-
+  var thisComp = this;
   var subnetTemplate =
     this.$(go.Group, "Spot",
     {
@@ -1210,6 +1293,38 @@ createSubnetTemplate() {
       new go.Binding("text").makeTwoWay(),
       new go.Binding("stroke", "textStroke").makeTwoWay(),
       new go.Binding("font").makeTwoWay()),
+      this.$(go.Picture, {
+        stretch: go.GraphObject.Fill,
+        desiredSize: new go.Size(24,24),
+        alignment: new go.Spot(0, 0, 6, 0),
+        source: require('../../assets/azure_icons/Networking Service Color/Network Security Groups (Classic).png'),
+        doubleClick: function(e, picture) {
+          var azcontext = picture.nsgazcontext;
+          thisComp.determineResourcePropertyPanelToShow
+            (azcontext, function onContextSaveCallback(savedContext){
+                picture.azcontext = savedContext;
+            });
+        }
+      },
+        new go.Binding('visible', 'nsgVisible').makeTwoWay(),
+        new go.Binding('nsgazcontext').makeTwoWay()
+      ),
+      this.$(go.Picture, {
+        stretch: go.GraphObject.Fill,
+        desiredSize: new go.Size(25,25),
+        alignment: new go.Spot(0, 0, 31, 0),
+        source: require('../../assets/azure_icons/Networking Service Color/Route Tables.png'),
+        doubleClick: function(e, picture) {
+          var azcontext = picture.udrazcontext;
+          thisComp.determineResourcePropertyPanelToShow
+            (azcontext, function onContextSaveCallback(savedContext){
+              picture.azcontext = savedContext;
+            });
+        }
+      },
+        new go.Binding('visible', 'udrVisible').makeTwoWay(),
+        new go.Binding('udrazcontext').makeTwoWay()
+      ),
       this.makePort("T", go.Spot.Top, go.Spot.TopSide, true, true),
       this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
       this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
@@ -1257,7 +1372,7 @@ createVIRAzureResourceTemplate() {
         doubleClick: function(e, node) {
           var azcontext = node.data.azcontext;
           thisComp.determineResourcePropertyPanelToShow
-            (null, azcontext, function onContextSaveCallback(savedContext){
+            (azcontext, function onContextSaveCallback(savedContext){
                 node.data.azcontext = savedContext;
             });
         },
@@ -1315,7 +1430,7 @@ createShape(dropContext) {
       fill: 'white',
       stroke: 'black',
       textStroke: 'black',
-      font: '18px Segoe UI',
+      font: '14px Segoe UI',
       strokeDashArray: null,
       nodetype: GoNodeType.Shape(),
       figure: figure, 
@@ -1333,6 +1448,8 @@ createVNet(dropContext) {
   this.diagram.model.addNodeData
     ({key: vnetKey, text: 'vnet', 
       azcontext: new VNet(),
+      natgwazcontext: new NatGateway(),
+      natgwVisible: false,
       fill: 'transparent',
       stroke: 'deepskyblue',
       textStroke: 'black',
@@ -1342,8 +1459,6 @@ createVNet(dropContext) {
       loc: go.Point.stringify(canvasPoint),
       isGroup: true,
       category: 'vnet'});
-
-  //this.createSubnet(vnetKey);
 }
 
 createSubnet(vnetKey, subnetNodekey = '') {
@@ -1364,9 +1479,17 @@ createSubnet(vnetKey, subnetNodekey = '') {
   this.diagram.model.addNodeData
     ({key: subnetKey,
       azcontext: new Subnet(),
+      nsgazcontext: new NSG(),
+      udrazcontext: new RouteTable(),
+
+      nsgVisible: false,
+      udrVisible: false,
+
       text: subnetKey, 
+
       group: vnet.key,
       isGroup:true,
+
       figure:'RoundedRectangle',
       desiredSize: subnetSize,
       fill: 'transparent',
@@ -1374,7 +1497,9 @@ createSubnet(vnetKey, subnetNodekey = '') {
       textStroke: 'black',
       font: '15px Segoe UI',
       strokeDashArray: null,
+
       nodetype: GoNodeType.Shape(),
+
       loc: go.Point.stringify(subnetLoc), category: 'subnet'});
 }
 
@@ -1485,7 +1610,7 @@ createVIROntoSubnet(dropContext) {
         source: image, 
         loc: go.Point.stringify(virLoc),
         size: go.Size.stringify(new go.Size(40,40)),
-        font: '18px Segoe UI',
+        font: '14px Segoe UI',
         stroke: 'black',
         nodetype: GoNodeType.ImageShape(),
         category: 'virresource'});
@@ -1501,10 +1626,11 @@ createPictureShape(dropContext) {
     ({key: shapeKey, 
       text: label, 
       source: image, 
-      font: '18px Segoe UI',
+      font: '14px Segoe UI',
       stroke: 'black',
       nodetype: GoNodeType.ImageShape(),
       size: go.Size.stringify(new go.Size(80,80)),
+      zOrder: NaN,
       loc: go.Point.stringify(canvasPoint), category: 'picshape'});
 }
 
@@ -1519,7 +1645,7 @@ createNonVIRAzureResource(dropContext) {
       azcontext: dropContext.azcontext,
       source: image, 
       size: go.Size.stringify(new go.Size(40,40)),
-      font: '18px Segoe UI',
+      font: '14px Segoe UI',
       stroke: 'black',
       nodetype: GoNodeType.ImageShape(),
       loc: go.Point.stringify(canvasPoint), category: 'outofvnetazureresource'});
@@ -1533,7 +1659,7 @@ createText(dropContext) {
   this.diagram.model.addNodeData
     ({
       key: shapeKey, 
-      font:'18px Segoe UI', 
+      font:'14px Segoe UI', 
       text: 'text',
       stroke: 'black', 
       loc: go.Point.stringify(canvasPoint),
@@ -1607,6 +1733,10 @@ addKeyPressShortcuts() {
 
     if (e.control && e.key === "S") {  // could also check for e.control or e.shift
       thisComp.saveDiagramToBrowser();
+    }
+
+    if (e.control && e.key === "V") {  
+        e.bubbles = true; //!important, continue with browser paste event
     }
 
     var parts = thisComp.diagram.selection;
@@ -1707,6 +1837,7 @@ loadDraftDiagramFromBrowser = () => {
  var jsonStr = LocalStorage.get(LocalStorage.KeyNames.TempLocalDiagram);
  var loadedModel = go.Model.fromJson(jsonStr);
 
+ this.diagram.clear();
  this.diagram.model = loadedModel;
 }
 
@@ -1721,50 +1852,110 @@ PromptSaveBeforeCloseBrowser() {
 }
 
 //create vertex from browser clipboard image
-initPasteImageFromBrowserClipboard = () => {
-        
+async pasteImageFromBrowserClipboard() {
+
   var thisComp = this;
+
   window.addEventListener("paste", function(e){
 
       // Handle the event
       thisComp.retrieveImageFromClipboardAsBase64(e, function(imageDataBase64){
-          
-        var pt = mxUtils.convertPoint
-        (thisComp.graphManager.container, mxEvent.getClientX(e), mxEvent.getClientY(e));
-          // var tr = thisComp.graph.view.translate;
-          // var scale = thisComp.graph.view.scale;
-          // var x = pt.x / scale - tr.x;
-          // var y = pt.y / scale - tr.y;
 
         // If there's an image, open it in the browser as a new window :)
           if(imageDataBase64){
 
-            thisComp.createPictureShape(
-              {source: imageDataBase64,
-                label: '', x: 50, y: 50
-              });
-            //example: data:image/png;base64,iVBORw0KGgoAAAAN......
+            var cursorPt = thisComp.diagram.lastInput.viewPoint;
 
+            thisComp.createPictureShape
+            ({source: imageDataBase64,
+              label: 'picture', x: cursorPt.x, y: cursorPt.y});
           }
       });
       
       //if there is item in clipboard, and clipboard item is copy image from websites
       //and item is not Vertx
-      // if(e.clipboardData.items.length != 0) {
-      //   var tempElement = document.createElement("input");
-      //   tempElement.style.cssText = "width:0!important;padding:0!important;border:0!important;margin:0!important;outline:none!important;boxShadow:none!important;";
-      //   document.body.appendChild(tempElement);
-      //   tempElement.value = ' ' // Empty string won't work!
-      //   tempElement.select();
-      //   document.execCommand("copy");
-      //   document.body.removeChild(tempElement);
-
-      //   if(!mxClipboard.isEmpty())
-      //       mxClipboard.setCells([]);
-      // }
+      if(e.clipboardData.items.length != 0) {
+        var tempElement = document.createElement("input");
+        tempElement.style.cssText = "width:0!important;padding:0!important;border:0!important;margin:0!important;outline:none!important;boxShadow:none!important;";
+        document.body.appendChild(tempElement);
+        tempElement.value = ' ' // Empty string won't work!
+        tempElement.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempElement);
+      }
 
   }, false);
 }
+
+retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
+  if(pasteEvent.clipboardData == false){
+      if(typeof(callback) == "function"){
+          callback(undefined);
+      }
+  };
+
+  var items = pasteEvent.clipboardData.items;
+
+  if(items == undefined){
+      if(typeof(callback) == "function"){
+          callback(undefined);
+      }
+  };
+
+  var thisComp = this;
+
+  for (var i = 0; i < items.length; i++) {
+      // Skip content if not image
+      if (items[i].type.indexOf("image") == -1) continue;
+      // Retrieve image on clipboard as blob
+      var blob = items[i].getAsFile();
+
+      if(blob == null)
+          continue;
+      
+      if(thisComp.checkFileLargerThanLimit(blob.size, 400)) {
+          Toast.show('warning',  3500, 'PNG file size cannot be over 400Kb, try compressing it.')
+          return;
+      }
+
+      // Create an abstract canvas and get context
+      var mycanvas = document.createElement("canvas");
+      var ctx = mycanvas.getContext('2d');
+      
+      // Create an image
+      var img = new Image();
+
+      // Once the image loads, render the img on the canvas
+      img.onload = function(){
+          // Update dimensions of the canvas with the dimensions of the image
+          mycanvas.width = this.width;
+          mycanvas.height = this.height;
+
+          // Draw the image
+          ctx.drawImage(img, 0, 0);
+
+          // Execute callback with the base64 URI of the image
+          if(typeof(callback) == "function"){
+            var dataUrl = mycanvas.toDataURL();
+            callback(dataUrl);
+          }
+      };
+
+      // Crossbrowser support for URL
+      var URLObj = window.URL || window.webkitURL;
+
+      // Creates a DOMString containing a URL representing the object given in the parameter
+      // namely the original Blob
+      img.src = URLObj.createObjectURL(blob);
+  }
+}
+
+// getImageFormatFromBrowserClipboard(imageUrl) {
+//   var getSlashIndex = imageUrl.indexOf('/') + 1
+//   var getSemiColonIndex = imageUrl.indexOf(';')
+//   var imageFormat = imageUrl.slice(getSlashIndex, getSemiColonIndex);
+//   return imageFormat;
+// }
 
 
 setBadgeVisibilityOnUnsaveChanges = () => {
@@ -1774,7 +1965,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
           this.setGlobal({saveBadgeInvisible: true});
   }
 
-  addDropPNGAZWBFileHandler = () => {
+  dropPNGAZWBFileHandler = () => {
 
     var thisComp = this;
 
@@ -2455,11 +2646,18 @@ setBadgeVisibilityOnUnsaveChanges = () => {
     }
   }
 
-  determineResourcePropertyPanelToShow = (cell, userObject, onContextSaveCallback) => {
+  determineResourcePropertyPanelToShow = (userObject, onContextSaveCallback) => {
 
     let thisComp = this;
 
     switch (userObject.GraphModel.ResourceType) {
+
+      
+      case ResourceType.RouteTable():
+        this.rtPropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
       case ResourceType.Cognitive():
         this.cognitivePropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
@@ -2478,6 +2676,11 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       case ResourceType.MLServiceWorkspace():
         this.mlsvcworkspacePropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+      case ResourceType.NatGateway():
+        this.natgwPropPanel.current.show(userObject, function(savedUserObject){
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
       case ResourceType.NatGateway():
@@ -2880,1807 +3083,13 @@ setBadgeVisibilityOnUnsaveChanges = () => {
     }
   }
 
-  // addStraightArrow(dropContext){
-
-  //   var links = this.state.linkDataArray;
-  //   links.push({from: "", to: "", routing: go.Link.Normal});
-  //   this.setState({linkDataArray: links});
-
-  //   // this.graphManager.graph.getModel().beginUpdate();
-  //   //   try
-  //   //   {
-  //   //     var parent = this.graph.getDefaultParent();
-
-  //   //     // var edgeModel = new Edge();
-  //   //     // edgeModel.GraphModel.IconId = this.shortUID.randomUUID(6);
-
-
-  //   //     var styleString = this.graphManager.getDefaultStraightEdgeStyleString();
-
-  //   //     var cell = new mxCell(this.shortUID.randomUUID(6),
-  //   //       new mxGeometry(dropContext.x, dropContext.y, 50, 50), styleString);
-  //   //       cell.geometry.setTerminalPoint(new mxPoint(dropContext.x, dropContext.y), false);
-  //   //       cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), true);
-  //   //       cell.geometry.points =  [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
-  //   //       cell.edge = true;
-  //   //       cell.collapsed = false;
-
-  //   //     var straigthArrow= this.graph.addCell(cell, parent);
-
-  //   //     this.graph.scrollCellToVisible(straigthArrow);
-  //   //   }
-  //   //   finally
-  //   //   {
-  //   //     // Updates the display
-  //   //     this.graphManager.graph.getModel().endUpdate();
-  //   //   }
-  // }
-
-  // addElbowArrow(dropContext) {
-
-  //     this.graphManager.graph.getModel().beginUpdate();
-  //     try
-  //     {
-  //       var parent = this.graph.getDefaultParent();
-
-  //       // var edgeModel = new Edge();
-  //       // edgeModel.GraphModel.IconId = this.shortUID.randomUUID(6);
-
-  //       var styleString = this.graphManager.getDefaultElbowEdgeStyleString();
-
-  //       var cell = new mxCell(this.shortUID.randomUUID(6),
-  //         new mxGeometry(dropContext.x, dropContext.y, 50, 50), styleString);
-  //       cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 30, dropContext.y + 30), true);
-  //       cell.geometry.setTerminalPoint(new mxPoint(dropContext.x + 50, dropContext.y - 50), false);
-  //       cell.geometry.points = [new mxPoint(dropContext.x, dropContext.y), new mxPoint(dropContext.x + 30, dropContext.y - 30)];
-  //       cell.geometry.relative = true;
-  //       cell.edge = true;
-  //       cell.collapsed = false;
-
-  //       var elbowArrow = this.graph.addCell(cell, parent);
-
-  //       this.graph.scrollCellToVisible(elbowArrow);
-  //     }
-  //     finally
-  //     {
-  //       // Updates the display
-  //       this.graphManager.graph.getModel().endUpdate();
-  //     }
-  // }
-
-  // addCylinder(dropContext){
-  //   var style = this.graphManager.getDefaultCylinderStyleString();
-
-  //   var cell = this.graph.insertVertex(
-  //     this.graph.getDefaultParent(),
-  //     null,
-  //     'cylinder',
-  //     dropContext.x,
-  //     dropContext.y,
-  //     100,
-  //     100,
-  //     style
-  //   );
-  //   cell.collapsed = false;
-  //   this.graph.scrollCellToVisible(cell);
-  // };
-
-  // addHexagon(dropContext){
-  //   var style = this.graphManager.getDefaultHexagonStyleString();
-
-  //   var cell = this.graph.insertVertex(
-  //     this.graph.getDefaultParent(),
-  //     null,
-  //     'hexagon',
-  //     dropContext.x,
-  //     dropContext.y,
-  //     100,
-  //     100,
-  //     style
-  //   );
-  //   cell.collapsed = false;
-  //   this.graph.scrollCellToVisible(cell);
-  // }
-
-  // addLabel = (dropContext) => {
-  //   this.graphManager.graph.getModel().beginUpdate();
-  //   try
-  //   {
-  //     var randomId = this.shortUID.randomUUID(6);
-
-  //     var cell = this.graph.insertVertex
-  //       (this.graph.getDefaultParent(), null, 'text',
-  //         dropContext.x, dropContext.y, 80, 30,
-  //         this.graphManager.getDefaultTextStyleString());
-  //     cell.collapsed = false;
-  //     this.graph.scrollCellToVisible(cell);
-  //   }
-  //   finally
-  //   {
-  //     // Updates the display
-  //     this.graphManager.graph.getModel().endUpdate();
-  //   }
-  // }
-
-  // addRectangle = (dropContext) => {
-  //   var cell = this.graph.insertVertex(
-  //     this.graph.getDefaultParent(),
-  //     null,
-  //     'rectangle',
-  //     dropContext.x,
-  //     dropContext.y,
-  //     150,
-  //     100,
-  //     this.graphManager.getDefaultRectStyleString()
-  //   );
-  //   cell.collapsed = false;
-  //   this.graph.scrollCellToVisible(cell);
-  // }
-
-  // addRoundedRectangle = (dropContext) => {
-  //   var cell = this.graph.insertVertex(
-  //     this.graph.getDefaultParent(),
-  //     null,
-  //     'rectangle',
-  //     dropContext.x,
-  //     dropContext.y,
-  //     150,
-  //     100,
-  //     this.graphManager.getDefaultRoundedRectStyleString()
-  //   );
-  //   cell.collapsed = false;
-  //   this.graph.scrollCellToVisible(cell);
-  // }
   
-
-  // addTriangle = (dropContext) => {
-
-  //   var style = this.graphManager.getDefaultTriangleStyleString();
-
-  //   var cell = this.graph.insertVertex(
-  //     this.graph.getDefaultParent(),
-  //     null,
-  //     'triangle',
-  //     dropContext.x,
-  //     dropContext.y,
-  //     100,
-  //     100,
-  //     style
-  //   );
-  //   cell.collapsed = false;
-  //   this.graph.scrollCellToVisible(cell);
-  // }
-
-  // addCircle = (dropContext) => {
-
-  //   var circleStyle = this.graphManager.getDefaultEllipseStyleString();
-  //   var cell = this.graph.insertVertex(
-  //     this.graph.getDefaultParent(),
-  //     null,
-  //     'circle',
-  //     dropContext.x,
-  //     dropContext.y,
-  //     100,
-  //     100,
-  //     circleStyle
-  //   );
-  // }
-
-  // addUser = (dropContext) => {
-  //   var cell = this.graph.insertVertex
-  //         (this.graph.getDefaultParent(), null, 'user', dropContext.x, dropContext.y, 50, 50,
-  //         "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
-  //         this.azureIcons.User());
-  //   cell.collapsed = false;
-  // }
-
-  // addUserBlue = (dropContext) => {
-  //   var cell = this.graph.insertVertex
-  //         (this.graph.getDefaultParent(), null, 'user', dropContext.x, dropContext.y, 50, 50,
-  //         "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
-  //         this.azureIcons.addUserBlue());
-  //   cell.collapsed = false;
-  // }
-
-  // add3DBox = (dropContext) => {
-  //   var cell = this.graph.insertVertex
-  //         (this.graph.getDefaultParent(), null, 'box', dropContext.x, dropContext.y, 50, 50,
-  //         "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-  //         this.azureIcons.Shape3DBox());
-  //   cell.collapsed = false;
-  // }
-  
-
-  // addUserGroup = (dropContext) => {
-  //   var cell = this.graph.insertVertex
-  //         (this.graph.getDefaultParent(), null, 'user', dropContext.x, dropContext.y, 50, 50,
-  //         "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
-  //         this.azureIcons.addUserGroup());
-  //   cell.collapsed = false;
-  // }
-
-
-  // addOnpremDC = (dropContext) => {
-  //   var cell = this.graph.insertVertex
-  //         (this.graph.getDefaultParent(), null, '<p style="margin: 0px auto">datacenter</p>', dropContext.x, dropContext.y, 50, 50,
-  //         "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontSize=13;editable=1;verticalLabelPosition=bottom;shape=image;image=" +
-  //         require('../../assets/azure_icons/shape-dc.png'));
-  //   cell.collapsed = false;
-  // }
-
-  // addInternet = (dropContext) => {
-  //   var cell = this.graph.insertVertex
-  //   (this.graph.getDefaultParent(), null, 'internet', dropContext.x, dropContext.y, 60, 60,
-  //   "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
-  //     this.azureIcons.Internet());
-  //   cell.collapsed = false;
-  // }
-
-  // addClientDevice = (dropContext) => {
-  //   var cell = this.graph.insertVertex
-  //   (this.graph.getDefaultParent(), null, 'laptop', dropContext.x, dropContext.y, 60, 60,
-  //   "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;shape=image;image=data:image/svg+xml," +
-  //     this.azureIcons.ClientDevice());
-  //   cell.collapsed = false;
-  // }
-
-  // addADFSDevice = (dropContext) => {
-  //   var cell = this.graph.insertVertex
-  //   (this.graph.getDefaultParent(), null, 'ADFS', dropContext.x, dropContext.y, 60, 60,
-  //   "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-  //     this.azureIcons.ADFS());
-  //   cell.collapsed = false;
-  // }
-
-  // addAndriodDevice = (dropContext) => {
-  //   var cell = this.graph.insertVertex
-  //   (this.graph.getDefaultParent(), null, 'Andriod', dropContext.x, dropContext.y, 60, 60,
-  //   "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-  //     this.azureIcons.Andriod());
-  //   cell.collapsed = false;
-  // }
-
-  // addiPhoneDevice = (dropContext) => {
-  //   var cell = this.graph.insertVertex
-  //   (this.graph.getDefaultParent(), null, 'iPhone', dropContext.x, dropContext.y, 60, 60,
-  //   "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-  //     this.azureIcons.iPhone());
-  //   cell.collapsed = false;
-  // }
-
-  // addShapeVM1 = (dropContext) => {
-  //   var cell = this.graph.insertVertex
-  //   (this.graph.getDefaultParent(), null, 'VM', dropContext.x, dropContext.y, 60, 60,
-  //   "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-  //     this.azureIcons.ShapeVM1());
-  //     cell.collapsed = false;
-  // }
-
-  // addShapeVM2 = (dropContext) => {
-  //   var cell = this.graph.insertVertex
-  //   (this.graph.getDefaultParent(), null, 'VM', dropContext.x, dropContext.y, 60, 60,
-  //   "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-  //     this.azureIcons.ShapeVM2());
-  //     cell.collapsed = false;
-  // }
-
-  // addShapeServer1 = (dropContext) => {
-  //   var cell = this.graph.insertVertex
-  //   (this.graph.getDefaultParent(), null, 'Physical Server', dropContext.x, dropContext.y, 60, 60,
-  //   "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-  //     this.azureIcons.ShapeServer1());
-  //     cell.collapsed = false;
-  // }
-
-  // addShapeServer2 = (dropContext) => {
-  //   var cell = this.graph.insertVertex
-  //   (this.graph.getDefaultParent(), null, 'Physical Blade Server', dropContext.x, dropContext.y, 60, 60,
-  //   "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-  //     this.azureIcons.ShapeServer2());
-  //     cell.collapsed = false;
-  // }
-
-  // addShapeDBBlack = (dropContext) => {
-  //   var cell = this.graph.insertVertex
-  //   (this.graph.getDefaultParent(), null, 'Database', dropContext.x, dropContext.y, 60, 60,
-  //   "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-  //     this.azureIcons.ShapeDBBlack());
-  //     cell.collapsed = false;
-  // }
-
-  // addShapeDBBlackHA = (dropContext) => {
-  //   var cell = this.graph.insertVertex
-  //   (this.graph.getDefaultParent(), null, 'Database', dropContext.x, dropContext.y, 60, 60,
-  //   "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-  //     this.azureIcons.ShapeDBBlackHA());
-  //     cell.collapsed = false;
-  // }
-
-  // addShapeDBBlue = (dropContext) => {
-  //   var cell = this.graph.insertVertex
-  //   (this.graph.getDefaultParent(), null, 'Database', dropContext.x, dropContext.y, 60, 60,
-  //   "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-  //     this.azureIcons.ShapeDBBlue());
-  //     cell.collapsed = false;
-  // }
-
-  // addShapeFirewall = (dropContext) => {
-  //   var cell = this.graph.insertVertex
-  //   (this.graph.getDefaultParent(), null, 'Firewall', dropContext.x, dropContext.y, 60, 60,
-  //   "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-  //     this.azureIcons.ShapeFirewall());
-  //     cell.collapsed = false;
-  // }
-
-  
-  
-//   addPrivateEndpoint = (dropContext) => {
-
-//       this.graphManager.graph.getModel().beginUpdate();
-//       try
-//       {
-//           //overlay event listener
-//           https://stackoverflow.com/questions/45708656/drag-event-on-mxgraph-overlay
-//           // Creates a new overlay with an image and a tooltip
-
-//           var model = new PrivateEndpoint();
-//           model.resourceType = ResourceType.PrivateEndpoint();
-//           model.GraphModel.Id = this.shortUID.randomUUID(6);
-//           model.ProvisionContext.Name = 'privateendpoint_' + model.GraphModel.Id;
-//           model.GraphModel.DisplayName = 'Private Endpoint';
-//               var jsonModel = JSON.stringify(model);
-          
-//           var parent = this.graph.getDefaultParent();
-
-//           var cell = this.graph.insertVertex
-//           (parent, model.GraphModel.IconId ,jsonModel, dropContext.x, dropContext.y, 30, 30,
-//           "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/png," +
-//             this.azureIcons.PrivateEndpoint());
-//             cell.collapsed = false;
-//     }
-//     finally
-//     {
-//       // Updates the display
-//       this.graphManager.graph.getModel().endUpdate();
-//     }
-//   }
-
-
-//   addVNet = (dropContext) => {
-
-//       this.graphManager.graph.getModel().beginUpdate();
-//       try
-//       {
-//           //overlay event listener
-//           https://stackoverflow.com/questions/45708656/drag-event-on-mxgraph-overlay
-//           // Creates a new overlay with an image and a tooltip
-//           var vnetIconOverlay = new mxCellOverlay(
-//             new mxImage(require('../../assets/azure_icons/Networking Service Color/Virtual Networks.png'),20, 20),
-//             null,  mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP
-//           );
-
-//           var vnetModel = new VNet();
-//               vnetModel.resourceType = ResourceType.VNet();
-//               vnetModel.GraphModel.Id = this.shortUID.randomUUID(6);
-//               vnetModel.ProvisionContext.Name = 'vnet_' + vnetModel.GraphModel.Id;
-//               vnetModel.GraphModel.DisplayName = vnetModel.ProvisionContext.Name;
-//               var jsonstrVnet = JSON.stringify(vnetModel);
-          
-//           var vnetStyle = this.graphManager.getVNetStyle();
-
-//           var cell = this.graph.insertVertex(
-//                 this.graph.getDefaultParent(),
-//                 vnetModel.GraphModel.Id,
-//                 jsonstrVnet,
-//                 dropContext.x,
-//                 dropContext.y,
-//                 400,
-//                 300,
-//                 vnetStyle
-//               );
-
-//           cell.collapsed = false;
-
-//           this.graph.addCellOverlay(cell, vnetIconOverlay);
-//     }
-//     finally
-//     {
-//       // Updates the display
-//       this.graphManager.graph.getModel().endUpdate();
-//     }
-
-//     return cell;;
-// }
-
-//   addSubnet = (vnetCell, loadContext) => {
-    
-//         var subnetLogoOverlay = new mxCellOverlay(
-//           new mxImage(require('../../assets/azure_icons/Networking Service Color/Subnet.svg'),20, 20),
-//           'Subnet',  mxConstants.ALIGN_Right, mxConstants.ALIGN_TOP
-//         );
-
-//         if(loadContext == undefined) {
-
-//           var subnet = new Subnet();
-//           subnet.GraphModel.Id = this.shortUID.randomUUID(6);
-//           subnet.ProvisionContext.Name = "subnet_" + subnet.GraphModel.Id;
-//           subnet.GraphModel.DisplayName = subnet.ProvisionContext.Name
-
-//           var jsonstrSubnet = JSON.stringify(subnet);
-
-//           this.graphManager.translateToParentGeometryPoint(vnetCell)
-
-//           var subnetStyle = this.graphManager.getSubnetStyle();
-
-//           var subnetVertex = this.graph.insertVertex(
-//             vnetCell,
-//             subnet.GraphModel.Id,
-//             jsonstrSubnet,
-//             ((vnetCell.getGeometry().x /2) / 2) - 15,
-//             vnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
-//             vnetCell.getGeometry().width - 90,
-//             100,
-//             subnetStyle
-//           );
-//           subnetVertex.collapsed = false;
-//         }
-//         else {
-//             this.graph.getModel().getCell(loadContext.parent.id);
-//         }
- 
-//         this.graph.addCellOverlay(subnetVertex, subnetLogoOverlay);
-//        // this.graph.addCellOverlay(subnetVertex, nsgOverlay);
-//   }
-
-//   addNSG(subnetCell) {
-
-//     if(this.azureValidator.subnetHasNSG(subnetCell))
-//     {
-//       Toast.show('warning', 2000, 'NSG exist for subnet')
-//       return;
-//     }
-
-//     var nsg = new NSG();
-//     nsg.GraphModel.Id = this.shortUID.randomUUID(6);
-//     nsg.GraphModel.DisplayName = '';
-//     nsg.ProvisionContext.Name = "nsg-" + nsg.GraphModel.Id;
-
-//     var jsonstrNsg = JSON.stringify(nsg);
-
-//     var nsgVertex = this.graph.insertVertex(
-//       subnetCell,
-//       nsg.GraphModel.Id,
-//       jsonstrNsg,
-//       0,
-//       0, //subnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
-//       22, //width
-//       22, //height
-//       "resizable=1;editable=0;shape=image;image=data:image/svg+xml," + this.azureIcons.NSG()
-//     );
-//     nsgVertex.collapsed = false;
-//     nsgVertex.geometry.offset = new mxPoint(-12, -15);
-//     nsgVertex.geometry.relative = true;
-//     this.graph.refresh();
-//   }
-
-//   addUDR(subnetCell) {
-
-//     if(this.azureValidator.subnetHasUDR(subnetCell))
-//     {
-//       Toast.show('warning', 2000, 'Route Table exist for subnet')
-//       return;
-//     }
-
-//     var udr = new RouteTable();
-//     udr.GraphModel.Id = this.shortUID.randomUUID(6);
-//     udr.GraphModel.DisplayName = '';
-//     udr.ProvisionContext.Name = "udr-" + udr.GraphModel.Id;
-//     var jsonstrUdr = JSON.stringify(udr);
-
-//     var udrVertex = this.graph.insertVertex(
-//       subnetCell,
-//       udr.GraphModel.Id,
-//       jsonstrUdr,
-//       0,
-//       0, //subnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
-//       24, //width
-//       24, //height
-//       "resizable=1;editable=0;shape=image;image=data:image/svg+xml," + this.azureIcons.RouteTable()
-//     );
-//     udrVertex.collapsed = false;
-//     udrVertex.geometry.offset = new mxPoint(-12, -17);
-//     udrVertex.geometry.relative = true;
-//     this.graph.refresh();
-//   }
-
-//   addNatGateway(vnetCell) {
-
-//     if(this.azureValidator.vnetHasNatGateway(vnetCell))
-//     {
-//       Toast.show('warning', 2000, 'Nat Gateway exist for VNet')
-//       return;
-//     }
-
-//     var natgw = new NatGateway();
-//     natgw.GraphModel.Id = this.shortUID.randomUUID(6);
-//     natgw.GraphModel.DisplayName = '';
-//     natgw.ProvisionContext.Name = "natgw-" + natgw.GraphModel.Id;
-//     var jsonStr = JSON.stringify(natgw);
-
-//     var natgwVertex = this.graph.insertVertex(
-//       vnetCell,
-//       natgw.GraphModel.Id,
-//       jsonStr,
-//       0,
-//       0, //subnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
-//       35, //width
-//       35, //height
-//       "resizable=1;editable=0;shape=image;image=data:image/png," + this.azureIcons.NatGateway()
-//     );
-//     natgwVertex.collapsed = false;
-//     natgwVertex.geometry.offset = new mxPoint(-12, -17);
-//     natgwVertex.geometry.relative = true;
-//     this.graph.refresh();
-//   }
-
-//   addGatewaySubnet(vnetCell){
-
-//       var subnetLogoOverlay = new mxCellOverlay(
-//         new mxImage(require('../../assets/azure_icons/Networking Service Color/Subnet.svg'),20, 20),
-//         'Subnet',  mxConstants.ALIGN_Right, mxConstants.ALIGN_TOP
-//       );
-
-//       var subnet = new Subnet();
-//       subnet.GraphModel.Id = this.shortUID.randomUUID(6);
-//       subnet.ProvisionContext.Name = "GatewaySubnet";
-//       subnet.GraphModel.DisplayName = subnet.ProvisionContext.Name
-//       subnet.GraphModel.IsGatewaySubnet = true;
-
-//       var jsonstrSubnet = JSON.stringify(subnet);
-
-//       this.graphManager.translateToParentGeometryPoint(vnetCell)
-
-//       var subnetVertex = this.graph.insertVertex(
-//         vnetCell,
-//         subnet.GraphModel.Id,
-//         jsonstrSubnet,
-//         ((vnetCell.getGeometry().x /2) / 2) - 15,
-//         vnetCell.getGeometry().y + Math.floor((Math.random() * 15) + 1),
-//         vnetCell.getGeometry().width - 90,
-//         100,
-//         'subnetstyle'
-//        );
-      
-//        subnetVertex.collapsed = false;
-
-//     this.graph.addCellOverlay(subnetVertex, subnetLogoOverlay);
-//   }
-
-//   addNLB = (dropContext) => {
-    
-//       var nlb = new NLB();
-//         nlb.GraphModel.ResourceType = 'nlb';
-//         nlb.GraphModel.Id = this.shortUID.randomUUID(6);
-//         nlb.GraphModel.DisplayName = 'azure load balancer';
-//         nlb.ProvisionContext.Name = "azlb_" + nlb.GraphModel.Id;
-        
-//       var result = this.azureValidator.isResourceDropinSubnet();
-
-//       var parent = this.graph.getDefaultParent(); //set default parent, external NLB
-
-//       if(result.isInSubnet)
-//       {
-//           nlb.ProvisionContext.IsInternalNLB = true;
-//           parent = result.subnetCell;
-//           var subnetCenterPt = Utils.getCellCenterPoint(result.subnetCell);
-//           dropContext.x = subnetCenterPt.x;
-//           dropContext.y = subnetCenterPt.y;
-//       }
-      
-//       var nlbJsonString = JSON.stringify(nlb);
-
-//       var cell = this.graph.insertVertex
-//         (parent, nlb.GraphModel.IconId ,nlbJsonString, dropContext.x, dropContext.y, 30, 30,
-//         "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/svg+xml," +
-//           this.azureIcons.NLB());
-//       cell.collapsed = false;
-//   }
-
-//   addAppGw = (dropContext) => {
-
-//       var subnetCell = this.graph.getSelectionCell();
-//       if(!this.azureValidator.isResourceinDedicatedSubnet(subnetCell))
-//       {
-//         Toaster.create({
-//             position: Position.TOP,
-//             autoFocus: false,
-//             canEscapeKeyClear: true
-//           }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.AppGatewayNotInSubnetError()});
-//           return;
-//       }
-
-//       var dropContext = Utils.getCellCenterPoint(subnetCell);
-
-//       var appgw = new AppGateway();
-//         appgw.GraphModel.Id = this.shortUID.randomUUID(6);
-//         appgw.ProvisionContext.Name = ResourceType.AppGw() + "_" + appgw.GraphModel.Id;
-//         appgw.GraphModel.DisplayName = 'app gateway'
-//         var appgwJsonString = JSON.stringify(appgw);
-
-//       var cell = this.graph.insertVertex
-//         (subnetCell, appgw.GraphModel.IconId ,appgwJsonString, dropContext.x, dropContext.y, 50, 50,
-//         "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," +
-//           this.azureIcons.AppGateway());
-//       cell.collapsed = false;
-//   }
-
-//   addDNSPrivateZone = (dropContext) => {
-//       var parent = this.graph.getDefaultParent();
-//       var dropContext = this.graphManager.translateToParentGeometryPoint(dropContext, parent);
-
-//       var dnsPrivateZone = new DNSPrivateZone();
-//       dnsPrivateZone.GraphModel.Id = this.shortUID.randomUUID(6);
-//       dnsPrivateZone.GraphModel.ResourceType = ResourceType.DNSPrivateZone();
-//       dnsPrivateZone.GraphModel.DisplayName = 'DNS Private Zone';
-
-//       var dnsPrivateZoneJsonString = JSON.stringify(dnsPrivateZone);
-
-//       var cell = this.graph.insertVertex
-//         (parent, dnsPrivateZone.GraphModel.IconId ,dnsPrivateZoneJsonString, dropContext.x, dropContext.y, 50, 50,
-//         "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/svg+xml," +
-//           this.azureIcons.DNSPrivateZone());
-//       cell.collapsed = false;
-//   }
-
-//   addVMSS = (dropContext) => {
-
-//     var result = this.azureValidator.isResourceDropinSubnet();
-
-//     if(dropContext.resourceType == ResourceType.VMSS() && !result.isInSubnet)
-//     {
-//       Toaster.create({
-//         position: Position.TOP,
-//         autoFocus: false,
-//         canEscapeKeyClear: true
-//       }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.VMInSubnet()});
-//       return;
-//     }
-
-//     if(this.azureValidator.isGatewaySubnet(result.subnetCell)) {
-//       Toaster.create({
-//         position: Position.TOP,
-//         autoFocus: false,
-//         canEscapeKeyClear: true
-//       }).show({intent: Intent.DANGER, timeout: 5000, message: Messages.NonVNetGwInGatewaySubnetError()});
-//       return;
-//     }
-
-//     if(this.azureValidator.isVMinSubnetTakenByDedicatedSubnetResource(result.subnetCell))
-//     {
-//       Toaster.create({
-//         position: Position.TOP,
-//         autoFocus: false,
-//         canEscapeKeyClear: true
-//       }).show({intent: Intent.DANGER, timeout: 8000, message: Messages.ResourceInSubnetTakenByDedicatedSubnetResource()});
-//       return;
-//     }
-
-//      var vmssModel = new VMSS();
-//      vmssModel.GraphModel.IconId = this.shortUID.randomUUID(6);
-//      vmssModel.ProvisionContext.Name = "vmss_" + vmssModel.GraphModel.IconId;
-//      vmssModel.GraphModel.DisplayName = vmssModel.ProvisionContext.Name;
-//      var userObj = JSON.stringify(vmssModel);
-
-//      this.graphManager.graph.getModel().beginUpdate();
-//      try
-//      {
-//         var subnetCenterPt = Utils.getCellCenterPoint(result.subnetCell);
-
-//         var vmss = this.graph.insertVertex
-//           (result.subnetCell, vmssModel.GraphModel.IconId ,userObj,
-//            subnetCenterPt.x, subnetCenterPt.y, 40, 40,
-//           "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/svg+xml," + this.azureIcons.VMSS());
-//     }
-//      finally
-//      {
-//        this.graphManager.graph.getModel().endUpdate();
-//      }
-//   }
-
-//   addAppService = (dropContext) => {
-//     var parent = this.graph.getDefaultParent();
-//     var dropContext = this.graphManager.translateToParentGeometryPoint(dropContext, parent);
-
-//     var appsvc = new AppService();
-//     appsvc.GraphModel.Id = this.shortUID.randomUUID(6);
-//     appsvc.GraphModel.ResourceType = ResourceType.AppService();
-//     appsvc.GraphModel.DisplayName = 'App Service'
-      
-//     var appsvcJsonString = JSON.stringify(appsvc);
-
-//     this.graph.insertVertex
-//       (parent, appsvc.GraphModel.IconId ,appsvcJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.AppService());
-//   }
-
-//   addASE = (dropContext) => {
-
-//     var subnetCell = this.graph.getSelectionCell();
-//     if(!this.azureValidator.isResourceinDedicatedSubnet(subnetCell))
-//     {
-//       Toaster.create({
-//           position: Position.TOP,
-//           autoFocus: false,
-//           canEscapeKeyClear: true
-//         }).show({intent: Intent.DANGER, timeout: 5000, message: Messages.ASEInSubnet()});
-//         return;
-//     }
-
-//     if(this.azureValidator.isGatewaySubnet(subnetCell)) {
-//       Toaster.create({
-//         position: Position.TOP,
-//         autoFocus: false,
-//         canEscapeKeyClear: true
-//       }).show({intent: Intent.DANGER, timeout: 5000, message: Messages.NonVNetGwInGatewaySubnetError()});
-//       return;
-//     }
-
-
-//     var subnetCenterPt = Utils.getCellCenterPoint(subnetCell);
-
-//     var ase = new ASE();
-//     ase.GraphModel.Id = this.shortUID.randomUUID(6);
-//     ase.GraphModel.DisplayName = 'App Service Environment'
-
-//     var aseJsonString = JSON.stringify(ase);
-
-//     this.graph.insertVertex
-//       (subnetCell, ase.GraphModel.IconId ,aseJsonString, subnetCenterPt.x, subnetCenterPt.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.ASE());
-//   }
-
-//   addFunc = (dropContext) => {
-//     var func = new Func();
-//     func.GraphModel.Id = this.shortUID.randomUUID(6);
-//     func.GraphModel.DisplayName = 'Function'
-
-//     var funcJsonString = JSON.stringify(func);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, func.GraphModel.IconId ,funcJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;shape=image;image=data:image/png," +
-//         this.azureIcons.FunctionApp());
-//   }
-
-//   addAzSearch = (dropContext) => {
-//     var azsearch = new AzureSearch();
-//     azsearch.GraphModel.Id = this.shortUID.randomUUID(6);
-//     azsearch.GraphModel.DisplayName = 'Azure Search'
-
-//     var azsearchJsonString = JSON.stringify(azsearch);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, azsearch.GraphModel.IconId ,azsearchJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.AzureSearch());
-//   }
-  
-//   addSignalR = (dropContext) => {
-//     var signalr = new SignalR();
-//     signalr.GraphModel.Id = this.shortUID.randomUUID(6);
-//     signalr.GraphModel.DisplayName = 'SignalR'
-
-//     var signalrJsonString = JSON.stringify(signalr);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, signalr.GraphModel.IconId ,signalrJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.SignalR());
-//   }
-
-//   addAppSvcCert = (dropContext) => {
-//     var appsvccert = new AppServiceCert();
-//     appsvccert.GraphModel.Id = this.shortUID.randomUUID(6);
-//     appsvccert.GraphModel.DisplayName = 'App Service Cert'
-
-//     var appsvccertJsonString = JSON.stringify(appsvccert);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, appsvccert.GraphModel.IconId ,appsvccertJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.AppServiceCert());
-//   }
-
-//   addAppSvcDomain = (dropContext) => {
-//     var appsvcdomain = new AppServiceDomain();
-//     appsvcdomain.GraphModel.Id = this.shortUID.randomUUID(6);
-//     appsvcdomain.GraphModel.DisplayName = 'App Service Domain'
-
-//     var appsvcdomainJsonString = JSON.stringify(appsvcdomain);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, appsvcdomain.GraphModel.IconId ,appsvcdomainJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.AppServiceDomain());
-//   }
-
-//   addSharedImageGallery = (dropContext) => {
-//     var model = new SharedImageGallery();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Shared Image Gallery'
-
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.SharedImageGallery());
-//   }
-
-//   addAppConfig = (dropContext) => {
-//     var model = new AppConfig();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'App Configuration'
-
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.AppConfig());
-//   }
-  
-
-//   addPublicIp = (dropContext) => {
-//     var model = new PublicIp();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Public IP'
-
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.PublicIp());
-//   }
-  
-
-//   addFrontDoor = (dropContext) => {
-//     var model = new FrontDoor();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Front Door'
-
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.FrontDoor());
-//   }
-  
-//   addExpressRouteCircuit = (dropContext) => {
-//     var model = new ExpressRouteCircuit();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'ExpressRoute Circuit'
-
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.ExpressRouteCircuit());
-//   }
-
-//   addTrafficManager = (dropContext) => {
-//     var model = new TrafficManager();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Traffic Manager'
-
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.TrafficManager());
-//   }
-  
-//   addDevTestLab = (dropContext) => {
-//     var model = new DevTestLab();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'DevTest Lab'
-
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.DevTestLab());
-//   }
-
-//   addVNetGateway = (dropContext) => {
-
-//     var result = this.azureValidator.isResourceDropinSubnet();
-
-//     var isVNetGatewayInGatewaySubnet =
-//       this.azureValidator.isGatewaySubnet(result.subnetCell);
-
-//     if(!result.isInSubnet || !isVNetGatewayInGatewaySubnet)
-//     {
-//         Toaster.create({
-//           position: Position.TOP,
-//           autoFocus: false,
-//           canEscapeKeyClear: true
-//         }).show({intent: Intent.DANGER, timeout: 8000, message: Messages.VNetGatewayNotInGatewaySubnet()});
-//         return;
-//     }
-
-//     var model = new VirtualNetworkGateway();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Virtual Network Gateway';
-//     var modelJsonString = JSON.stringify(model);
-
-//     var dropContext = Utils.getCellCenterPoint(result.subnetCell);
-
-//     this.graph.insertVertex
-//       (result.subnetCell, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.VNetGateway());
-//   }
-
-//   addCDN = (dropContext) => {
-//     var model = new AzureCDN();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Azure CDN'
-
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId ,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.CDN());
-//   }
-
-//   addASG = (dropContext) => {
-//     this.graph.insertVertex
-//       (this.graph.parent, '','Application Security Group', dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.ASG());
-//   }
-
-//   addNIC = (dropContext) => {
-//     this.graph.insertVertex
-//       (this.graph.parent, '','Network Interface', dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.NIC());
-//   }
-
-//   addBlobStorage = (dropContext) => {
-
-//     var model = new BlobStorage();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Blob Storage'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId, modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.BlobStorage());
-//   }
-
-//   addAzFile = (dropContext) => {
-
-//     var model = new AzFile();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Azure File'
-//     var modelJson = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.Id,modelJson, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.AzureFile());
-//   }
-  
-//   addFileSync = (dropContext) => {
-
-//     var model = new FileSync();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Azure File Sync'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.FileSync());
-//   }
-  
-//   addNetAppFile = (dropContext) => {
-
-//     var model = new NetAppFile();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'NetApp File'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.NetAppFile());
-//   }
-
-//   addQueueStorage = (dropContext) => {
-
-//     var model = new QueueStorage();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Queue Storage'
-//     var modelJson = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.Id, modelJson, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.QueueStorage());
-//   }
-  
-//   addTableStorage = (dropContext) => {
-
-//     var model = new TableStorage();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Table Storage'
-//     var modelJson = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.Id, modelJson, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.TableStorage());
-//   }
-
-//   addDatabox = (dropContext) => {
-//     this.graph.insertVertex
-//       (this.graph.parent, '','Data box', dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.Databox());
-//   }
-
-//   addPostgreSQL = (dropContext) => {
-
-//     var model = new PostgreSQL();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Azure Database for PostgreSQL'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.PostgreSQL());
-//   }
-
-//   addMariaDB = (dropContext) => {
-
-//     var model = new MariaDB();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Azure Database for MariaDB'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.MariaDB());
-//   }
-
-//   addSQLDB = (dropContext) => {
-
-//     var model = new SQLDB();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'SQLDB'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.SQLDB());
-//   }
-  
-//   addCosmos = (dropContext) => {
-
-//     var model = new Cosmos();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Cosmos'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.Cosmos());
-//   }
-
-//   addMySQL = (dropContext) => {
-
-//     var model = new MySQL();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Azure Database for MySQL'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.MySQL());
-//   }
-
-//   addSQLElasticPool = (dropContext) => {
-
-//     var model = new SQLElasticPool();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Azure SQL Elastic Pool'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.SQLElasticPool());
-//   }
-
-//   addSQLMI = (dropContext) => {
-
-//     var subnetCell = this.graph.getSelectionCell();
-//     if(!this.azureValidator.isResourceinDedicatedSubnet(subnetCell))
-//     {
-//       Toaster.create({
-//           position: Position.TOP,
-//           autoFocus: false,
-//           canEscapeKeyClear: true
-//         }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.SQLMINotInDedicatedSubnetError()});
-//         return;
-//     }
-
-//     var model = new SQLMI();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'SQL Managed Instance'
-//     var modelJsonString = JSON.stringify(model);
-
-//     var subnetCenterPt = Utils.getCellCenterPoint(subnetCell);
-
-//     this.graph.insertVertex
-//       (subnetCell, model.GraphModel.IconId,modelJsonString, subnetCenterPt.x, subnetCenterPt.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.SQLMI());
-//   }
-
-//   addSQLStretchDB = (dropContext) => {
-
-//     this.graph.insertVertex
-//       (this.graph.parent, '', 'SQL Stretch DB', dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.SQLStretchDB());
-//   }
-
-//   addRedis = (dropContext) => {
-
-//     var model = new Redis();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Azure Cache for Redis'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.Redis());
-//   }
-
-//   addDataLakeStorage = (dropContext) => {
-
-//     var model = new DataLakeStorage();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Data Lake Storage'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.DataLakeStorage());
-//   }
-
-//   addSynapse = (dropContext) => {
-
-//     var model = new SynapseAnalytics();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Synapse Analytics'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.Synapse());
-//   }
-
-//   addDataExplorer = (dropContext) => {
-
-//     var model = new DataExplorer();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Data Factory'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.DataExplorer());
-//   }
-
-  
-
-//   addDatabricks = (dropContext) => {
-
-//     var model = new Databricks();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Databricks'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.Databricks());
-//   }
-
-//   addDataFactory = (dropContext) => {
-
-//     var model = new DataFactory();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Data Factory'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.DataFactory());
-//   }
-
-//   addDataLakeAnalytics = (dropContext) => {
-
-//     var model = new DataLakeAnalytics();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Data Lake Analytics'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.DataLakeAnalytics());
-//   }
-
-//   addHdInsight = (dropContext) => {
-
-//     var model = new HdInsight();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'HdInsight'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.HdInsight());
-//   }
-
-//   addCognitive = (dropContext) => {
-
-//     var model = new Cognitive();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Cognitive Service'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.Cognitive());
-//   }
-
-//   addBotsService = (dropContext) => {
-
-//     var model = new BotsService();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Bots Service'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.BotsService());
-//   }
-
-//   addGenomics = (dropContext) => {
-
-//     var model = new Genomics();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Genomics'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.Genomics());
-//   }
-
-//   addMLServiceWorkspace = (dropContext) => {
-
-//     var model = new MLServiceWorkspace();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Machine Learning Service Workspace'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.MLServiceWorkspace());
-//   }
-
-//   addContainerInstance = (dropContext) => {
-
-//     var model = new ContainerInstance();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Container Instance'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.ContainerInstance());
-//   }
-
-//   addContainerRegistry = (dropContext) => {
-
-//     var model = new ContainerRegistry();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Container Registry'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.ContainerRegistry());
-//   }
-
-//   addKubernetes = (dropContext) => {
-
-//     var subnetCell = this.graph.getSelectionCell();
-
-//     var result = this.azureValidator.isResourceDropinSubnet(subnetCell);
-
-//     if(!result.isInSubnet)
-//     {
-//         Toast.show('warning', 3000, 'Kubernetes must be in a subnet');
-//         return;
-//     }
-
-//     var dropContext = Utils.getCellCenterPoint(subnetCell);
-
-//     var model = new Kubernetes();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Kubernetes'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (subnetCell, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.Kubernetes());
-//   }
-
-
-//   addAPIM = (dropContext) => {
-
-//     var model = new APIM();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'API Management'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.APIM());
-//   }
-
-//   addASB = (dropContext) => {
-
-//     var model = new ServiceBus();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Service Bus'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.ASB());
-//   }
-
-//   addLogicApp = (dropContext) => {
-
-//     var model = new LogicApp();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Logic App'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.LogicApp());
-//   }
-
-//   addISE = (dropContext) => {
-
-//     var subnetCell = this.graph.getSelectionCell();
-//     if(!this.azureValidator.isResourceinDedicatedSubnet(subnetCell))
-//     {
-//       Toaster.create({
-//           position: Position.TOP,
-//           autoFocus: false,
-//           canEscapeKeyClear: true
-//         }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.ISENotInSubnetError()});
-//         return;
-//     }
-
-//     var dropContext = Utils.getCellCenterPoint(subnetCell);
-
-//     var model = new IntegratedServiceEnvironment();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Integrated Service Environment'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (subnetCell, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.ISE());
-    
-//     Toaster.create({
-//       position: Position.TOP,
-//       autoFocus: false,
-//       canEscapeKeyClear: true
-//     }).show({intent: Intent.SUCCESS, timeout: 8000, message: Messages.ISESubnetInfo()});
-//   }
-
-//   addEventGridTopic = (dropContext) => {
-
-//     var model = new EventGridTopic();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Event Grid Topic'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.EventGridTopic());
-//   }
-
-//   addEventGridSubscription = (dropContext) => {
-
-//     var model = new EventGridSubscription();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Event Grid Subscription'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.EventGridSubscription());
-//   }
-
-//   addStreamAnalytics = (dropContext) => {
-
-//     var model = new StreamAnalytics();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Stream Analytics'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.StreamAnalytics());
-//   }
-
-//   addEventHub = (dropContext) => {
-
-//     var model = new EventHub();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Event Hub'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.EventHub());
-//   }
-
-  
-
-//   addSendGrid = (dropContext) => {
-
-//     this.graph.insertVertex
-//       (this.graph.parent, '','SendGrid', dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.SendGrid());
-//   }
-   
-//   addRelay = (dropContext) => {
-
-//     var model = new Relay();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Azure Relay'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.Relay());
-
-//  }
-
-//  addFirewall = (dropContext) => {
-
-//     var subnetCell = this.graph.getSelectionCell();
-
-//     if(!this.azureValidator.isResourceinDedicatedSubnet(subnetCell))
-//     {
-//       Toaster.create({
-//           position: Position.TOP,
-//           autoFocus: false,
-//           canEscapeKeyClear: true
-//         }).show({intent: Intent.DANGER, timeout: 3000, message: Messages.FirewallNotInSubnetError()});
-//         return;
-//     }
-
-//     if(this.azureValidator.isGatewaySubnet(subnetCell)) {
-//       Toaster.create({
-//         position: Position.TOP,
-//         autoFocus: false,
-//         canEscapeKeyClear: true
-//       }).show({intent: Intent.DANGER, timeout: 5000, message: Messages.NonVNetGwInGatewaySubnetError()});
-//       return;
-//     }
-
-//     var dropContext = Utils.getCellCenterPoint(subnetCell);
-
-//     var model = new AzureFirewall();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Firewall'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (subnetCell, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.Firewall());
-//   }
-
-//   addSentinel = (dropContext) => {
-
-//     var model = new Sentinel();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Sentinel'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.Sentinel());
-//   }
-
-//   addKeyVault = (dropContext) => {
-
-//     var model = new KeyVault();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Key Vault'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.KeyVault());
-//   }
-
-//   addSecurityCenter = (dropContext) => {
-//     this.graph.insertVertex
-//       (this.graph.parent, '','Security Center', dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.SecurityCenter());
-//   }
-
-//   addDDoSStandard = (dropContext) => {
-
-//     var model = new DDoSStandard();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Azure DDoS Protection Standard'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.DDoSStandard());
-//   }
-
-//   addBastion = (dropContext) => {
-
-//     var subnetCell = this.graph.getSelectionCell();
-//     if(!this.azureValidator.isResourceinDedicatedSubnet(subnetCell))
-//     {
-//       Toaster.create({
-//           position: Position.TOP,
-//           autoFocus: false,
-//           canEscapeKeyClear: true
-//         }).show({intent: Intent.DANGER, timeout: 5000, message: Messages.BastionNotInSubnetError()});
-//         return;
-//     }
-
-//     if(this.azureValidator.isGatewaySubnet(subnetCell)) {
-//       Toaster.create({
-//         position: Position.TOP,
-//         autoFocus: false,
-//         canEscapeKeyClear: true
-//       }).show({intent: Intent.DANGER, timeout: 5000, message: Messages.NonVNetGwInGatewaySubnetError()});
-//       return;
-//     }
-
-//     if(this.azureValidator.isVMinSubnetTakenByDedicatedSubnetResource(subnetCell))
-//     {
-//       Toaster.create({
-//         position: Position.TOP,
-//         autoFocus: false,
-//         canEscapeKeyClear: true
-//       }).show({intent: Intent.DANGER, timeout: 8000, message: Messages.ResourceInSubnetTakenByDedicatedSubnetResource()});
-//       return;
-//     }
-
-//     var dropContext = Utils.getCellCenterPoint(subnetCell);
-
-//     var model = new Bastion();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Bastion'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (subnetCell, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.Bastion());
-//   }
-
-//   addRecoveryServiceVault = (dropContext) => {
-
-//     var model = new RecoveryServiceVault();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Recovery Service Vault'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.RecoveryServiceVault());
-//   }
-
-//   addAppInsights = (dropContext) => {
-
-//     var model = new AppInsights();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Application Insights'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.AppInsights());
-//   }
-
-//   addLogAnalytics = (dropContext) => {
-
-//     var model = new LogAnalytics();
-//     model.GraphModel.Id = this.shortUID.randomUUID(6);
-//     model.GraphModel.DisplayName = 'Log Analytics Workspace'
-//     var modelJsonString = JSON.stringify(model);
-
-//     this.graph.insertVertex
-//       (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-//       "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-//         this.azureIcons.LogAnalytics());
-//   }
-
-  // addAutomation = (dropContext) => {
-
-  //   var model = new Automation();
-  //   model.GraphModel.Id = this.shortUID.randomUUID(6);
-  //   model.GraphModel.DisplayName = 'Automation'
-  //   var modelJsonString = JSON.stringify(model);
-
-  //   this.graph.insertVertex
-  //     (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-  //     "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-  //       this.azureIcons.Automation());
-  // }
-
-  // addAAD = (dropContext) => {
-
-  //   this.graph.insertVertex
-  //     (this.graph.parent, '', 'Azure AD', dropContext.x, dropContext.y, 50, 50,
-  //     "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-  //       this.azureIcons.AAD());
-  // }
-
-  // addAADB2C = (dropContext) => {
-
-  //   var model = new AADB2C();
-  //   model.GraphModel.Id = this.shortUID.randomUUID(6);
-  //   model.GraphModel.DisplayName = 'Azure B2C'
-  //   var modelJsonString = JSON.stringify(model);
-
-  //   this.graph.insertVertex
-  //     (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-  //     "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-  //       this.azureIcons.AADB2C());
-  // }
-
-  // addIoTHub = (dropContext) => {
-
-  //   var model = new IoTHub();
-  //   model.GraphModel.Id = this.shortUID.randomUUID(6);
-  //   model.GraphModel.DisplayName = 'IoT Hub'
-  //   var modelJsonString = JSON.stringify(model);
-
-  //   this.graph.insertVertex
-  //     (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-  //     "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-  //       this.azureIcons.IoTHub());
-  // }
-
-  // addIoTCentral = (dropContext) => {
-
-  //   var model = new IoTCentral();
-  //   model.GraphModel.Id = this.shortUID.randomUUID(6);
-  //   model.GraphModel.DisplayName = 'IoT Central Application'
-  //   var modelJsonString = JSON.stringify(model);
-
-  //   this.graph.insertVertex
-  //     (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-  //     "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-  //       this.azureIcons.IoTCentral());
-  // }
-
-
-  // addAzureMaps = (dropContext) => {
-
-  //   var model = new Maps();
-  //   model.GraphModel.Id = this.shortUID.randomUUID(6);
-  //   model.GraphModel.DisplayName = 'Azure Maps'
-  //   var modelJsonString = JSON.stringify(model);
-
-  //   this.graph.insertVertex
-  //     (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-  //     "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-  //       this.azureIcons.AzureMaps());
-  // }
-
-  // addTimeSeriesInsights = (dropContext) => {
-
-  //   var model = new TimeSeriesInsights();
-  //   model.GraphModel.Id = this.shortUID.randomUUID(6);
-  //   model.GraphModel.DisplayName = 'Time Series Insights'
-  //   var modelJsonString = JSON.stringify(model);
-
-  //   this.graph.insertVertex
-  //     (this.graph.parent, model.GraphModel.IconId,modelJsonString, dropContext.x, dropContext.y, 50, 50,
-  //     "fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;fontColor=black;editable=0;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-  //       this.azureIcons.TimeSeriesInsights());
-  // }  
 
 
   // //callbacks from Ref components
   // fromVMPropPanelSaveModel(vmModel) {
   //     var vmCell = this.graph.getModel().getCell(vmModel.GraphModel.Id);
   //     vmCell.value.ProvisionContext = vmModel.ProvisionContext; 
-  // }
-
-  // loadQuickstartDiagram(category, name) {
-  //     var thisComp = this;
-  //     this.diagService.loadQuickstartDiagram
-  //       (category, name,
-  //         function onSuccess(qsDiagContext) {
-  //           thisComp.importXmlAsDiagram(qsDiagContext);
-  //         },
-  //         function onFailure(error) {
-  //           Toast.show("danger", 2000, error.message);
-  //         }
-  //       )
   // }
 
   // groupCells(){
@@ -4759,7 +3168,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
   //     edgeModel.GraphModel.IsLeftToRight = false;
   //     this.animateTrafficFlowInternalRender(edge, edgeModel);
   //   }
-  //   //executed from importXmlAsDiagram() logic for loadFromDraft, Import .azwb or Load from Shared Link
+  //   //executed from importJsonDiagram() logic for loadFromDraft, Import .azwb or Load from Shared Link
   //   else {
   //     this.animateTrafficFlowInternalRender(edge, edgeModel);
   //   }
@@ -4880,238 +3289,129 @@ setBadgeVisibilityOnUnsaveChanges = () => {
   //     }
   // }
 
-    retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
-        if(pasteEvent.clipboardData == false){
-            if(typeof(callback) == "function"){
-                callback(undefined);
-            }
-        };
     
-        var items = pasteEvent.clipboardData.items;
-    
-        if(items == undefined){
-            if(typeof(callback) == "function"){
-                callback(undefined);
-            }
-        };
 
-        var clipboardResult = {
-            imageBase64: '',
-            imageFormat: ''
-        }
-        var thisComp = this;
-    
-        for (var i = 0; i < items.length; i++) {
-            // Skip content if not image
-            if (items[i].type.indexOf("image") == -1) continue;
-            // Retrieve image on clipboard as blob
-            var blob = items[i].getAsFile();
+  // createVertexFromBrowserClipboard(clipboardResult) {
 
-            if(blob == null)
-                continue;
-            
-            if(thisComp.checkFileLargerThanLimit(blob.size, 400)) {
-                Toast.show('warning',  3500, 'PNG file size cannot be over 400Kb, try compressing it.')
-                return;
-            }
-    
-            // Create an abstract canvas and get context
-            var mycanvas = document.createElement("canvas");
-            var ctx = mycanvas.getContext('2d');
-            
-            // Create an image
-            var img = new Image();
-    
-            // Once the image loads, render the img on the canvas
-            img.onload = function(){
-                // Update dimensions of the canvas with the dimensions of the image
-                mycanvas.width = this.width;
-                mycanvas.height = this.height;
-    
-                // Draw the image
-                ctx.drawImage(img, 0, 0);
-    
-                // Execute callback with the base64 URI of the image
-                if(typeof(callback) == "function"){
-                  var dataUrl = mycanvas.toDataURL();
-                  var imageFormat = thisComp.getImageFormatFromBrowserClipboard(dataUrl);
-                  var base64Image = dataUrl.split(',')[1];
-
-                  clipboardResult.imageBase64 = base64Image;
-                  clipboardResult.imageFormat = imageFormat;
-
-                  callback(clipboardResult);
-                }
-            };
-    
-            // Crossbrowser support for URL
-            var URLObj = window.URL || window.webkitURL;
-    
-            // Creates a DOMString containing a URL representing the object given in the parameter
-            // namely the original Blob
-            img.src = URLObj.createObjectURL(blob);
-        }
-    }
-
-  getImageFormatFromBrowserClipboard(imageUrl) {
-      var getSlashIndex = imageUrl.indexOf('/') + 1
-      var getSemiColonIndex = imageUrl.indexOf(';')
-      var imageFormat = imageUrl.slice(getSlashIndex, getSemiColonIndex);
-      return imageFormat;
-      //data:image/png;base64,iVBORw0KGgoAA
-    }
-
-  createVertexFromBrowserClipboard(clipboardResult) {
-
-    this.graphManager.graph.getModel().beginUpdate();
-      var style = 'fontColor=black;fontSize=12;editable=1;verticalLabelPosition=bottom;shape=image;image=';
+  //   this.graphManager.graph.getModel().beginUpdate();
+  //     var style = 'fontColor=black;fontSize=12;editable=1;verticalLabelPosition=bottom;shape=image;image=';
       
-      if(clipboardResult.imageFormat == 'png')
-        style += 'data:image/png,' + clipboardResult.imageBase64;
+  //     if(clipboardResult.imageFormat == 'png')
+  //       style += 'data:image/png,' + clipboardResult.imageBase64;
 
-      this.graph.insertVertex
-      (this.graph.getDefaultParent(), '', '',
-      MouseEvent.clientX, MouseEvent.clientY, 800, 900, //native javascript MouseEvent 
-      style);
-      //data:image/svg+xml,
-      this.graphManager.graph.getModel().endUpdate();
-  }
+  //     this.graph.insertVertex
+  //     (this.graph.getDefaultParent(), '', '',
+  //     MouseEvent.clientX, MouseEvent.clientY, 800, 900, //native javascript MouseEvent 
+  //     style);
+  //     //data:image/svg+xml,
+  //     this.graphManager.graph.getModel().endUpdate();
+  // }
 
 
-  loadSharedDiagram = () => {
-      if(Utils.IsNullOrUndefine(this.state.queryString)) //querystring is object contains path and querystring
-        return;
-
-      var parsedQS =  queryString.parse(this.state.queryString.search)
-      var anonyDiagramId = parsedQS.id
-
-      if(Utils.IsNullOrUndefine(anonyDiagramId))
-      return;
-      
-      this.graph.removeCells(this.graph.getChildVertices(this.graph.getDefaultParent()),false);
-
-      var thisComp = this;
-
-      this.diagramService.loadAnonymousDiagram(parsedQS.id)
-        .then(function (response) {
-            var adc = new AnonymousDiagramContext();
-            adc.UID = response.data.UID;
-            adc.DiagramName = response.data.DiagramName;
-            adc.DiagramXml = response.data.DiagramXml;
-            adc.SharedLink = response.data.SharedLink;
-            thisComp.importXmlAsDiagram(adc);
-
-            Toaster.create({
-              position: Position.TOP,
-              autoFocus: false,
-              canEscapeKeyClear: true
-            }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.ShareLinkLoadedSuccess()});
-            return;
-        })
-        .catch(function (error) {
-          console.log(error);
-          Toaster.create({
-            position: Position.TOP,
-            autoFocus: false,
-            canEscapeKeyClear: true
-          }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.ShareLinkLoadedError()});
-          return;
-        })
-        .finally(function () {
-          
-        });
-  }
-
-  importXmlAsDiagram = (anonymousDiagramContext ) => {
+  importJsonDiagram = (anonymousDiagramContext) => {
 
     if(anonymousDiagramContext == undefined ||
        anonymousDiagramContext.DiagramXml == undefined)
       return;
 
-      window['mxImage'] = mxImage;   
-      window['mxCellOverlay'] = mxCellOverlay;  
-      window['mxCell'] = mxCell;
-      window['mxCellPath'] = mxCellPath;
-      window['mxGeometry'] = mxGeometry;
-      window['mxCodec'] = mxCodec;
-      window['mxPoint'] = mxPoint;
-      window['mxEditor'] = mxEditor;
-      window['mxGeometry'] = mxGeometry;
-      window['mxDefaultKeyHandler'] = mxDefaultKeyHandler;
-      window['mxDefaultPopupMenu'] = mxDefaultPopupMenu;
-      window['mxGraph'] = mxGraph;
-      window['mxStylesheet'] = mxStylesheet;
-      window['mxDefaultToolbar'] = mxDefaultToolbar;
-      window['mxGraphModel'] = mxGraphModel;
-      window['mxGraphSelectionModel'] = mxGraphSelectionModel;
-      window['mxGraphModel'] = mxGraphModel;
-      window['mxChildChange'] = mxChildChange;
-      window['mxChildChangeCodec'] = mxChildChangeCodec;
-      window['mxCellCodec'] = mxCellCodec;
-      window['mxUtils'] = mxUtils;
+      // window['mxImage'] = mxImage;   
+      // window['mxCellOverlay'] = mxCellOverlay;  
+      // window['mxCell'] = mxCell;
+      // window['mxCellPath'] = mxCellPath;
+      // window['mxGeometry'] = mxGeometry;
+      // window['mxCodec'] = mxCodec;
+      // window['mxPoint'] = mxPoint;
+      // window['mxEditor'] = mxEditor;
+      // window['mxGeometry'] = mxGeometry;
+      // window['mxDefaultKeyHandler'] = mxDefaultKeyHandler;
+      // window['mxDefaultPopupMenu'] = mxDefaultPopupMenu;
+      // window['mxGraph'] = mxGraph;
+      // window['mxStylesheet'] = mxStylesheet;
+      // window['mxDefaultToolbar'] = mxDefaultToolbar;
+      // window['mxGraphModel'] = mxGraphModel;
+      // window['mxGraphSelectionModel'] = mxGraphSelectionModel;
+      // window['mxGraphModel'] = mxGraphModel;
+      // window['mxChildChange'] = mxChildChange;
+      // window['mxChildChangeCodec'] = mxChildChangeCodec;
+      // window['mxCellCodec'] = mxCellCodec;
+      // window['mxUtils'] = mxUtils;
 
-      var doc = mxUtils.parseXml(anonymousDiagramContext.DiagramXml);
-      
-      var codec = new mxCodec(doc);
-      
-      codec.decode(doc.documentElement, this.graph.getModel());
+      var model = go.Model.fromJson(anonymousDiagramContext.DiagramXml);
 
-      //re-add cell overlays
-      var cells =
-        this.graph.getChildVertices(this.graph.getDefaultParent());
+      this.diagram.clear();
+      this.diagram.model = model;
+
+      //reset unsave changes state on new diagram import
+      this.setState({unsavedChanges: false}, () => {
+        this.setBadgeVisibilityOnUnsaveChanges()});
       
-        if(cells != undefined)
-        {
-            cells.map(cell => {
+      //codec.decode(doc.documentElement, this.graph.getModel());
+
+      // //re-add cell overlays
+      // var cells =
+      //   this.graph.getChildVertices(this.graph.getDefaultParent());
+      
+      //   if(cells != undefined)
+      //   {
+      //       cells.map(cell => {
               
-              var result = Utils.TryParseUserObject(cell.value);
+      //         var result = Utils.TryParseUserObject(cell.value);
 
-              if(result.isUserObject &&
-                 JSON.parse(cell.value).GraphModel.ResourceType == 'vnet')
-              {
-                this.graph.removeCellOverlays(cell);
+      //         if(result.isUserObject &&
+      //            JSON.parse(cell.value).GraphModel.ResourceType == 'vnet')
+      //         {
+      //           this.graph.removeCellOverlays(cell);
 
-                var vnetIconOverlay = new mxCellOverlay(
-                  new mxImage(window.location.origin + require('../../assets/azure_icons/Networking Service Color/Virtual Network (Classic).svg'),25, 25),
-                  null,  mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP
-                );
+      //           var vnetIconOverlay = new mxCellOverlay(
+      //             new mxImage(window.location.origin + require('../../assets/azure_icons/Networking Service Color/Virtual Network (Classic).svg'),25, 25),
+      //             null,  mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP
+      //           );
 
-                this.graph.addCellOverlay(cell, vnetIconOverlay);
+      //           this.graph.addCellOverlay(cell, vnetIconOverlay);
 
-                var childSubnets =
-                   this.graph.getChildVertices(cell);
+      //           var childSubnets =
+      //              this.graph.getChildVertices(cell);
                 
-                if(childSubnets != null)
-                {
-                  childSubnets.map(subnet => {
-                    this.graph.removeCellOverlays(subnet);
+      //           if(childSubnets != null)
+      //           {
+      //             childSubnets.map(subnet => {
+      //               this.graph.removeCellOverlays(subnet);
 
-                    // var nsgOverlay = new mxCellOverlay(
-                    //   new mxImage(require('../../assets/azure_icons/Networking Service Color/Network Security Groups (Classic).svg'),20, 20),
-                    //   null,  mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP
-                    // );
+      //               // var nsgOverlay = new mxCellOverlay(
+      //               //   new mxImage(require('../../assets/azure_icons/Networking Service Color/Network Security Groups (Classic).svg'),20, 20),
+      //               //   null,  mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP
+      //               // );
             
-                    var subnetLogoOverlay = new mxCellOverlay(
-                      new mxImage(require('../../assets/azure_icons/Networking Service Color/Subnet.svg'),15, 15),
-                      'Subnet',  mxConstants.ALIGN_Right, mxConstants.ALIGN_TOP
-                    );
+      //               var subnetLogoOverlay = new mxCellOverlay(
+      //                 new mxImage(require('../../assets/azure_icons/Networking Service Color/Subnet.svg'),15, 15),
+      //                 'Subnet',  mxConstants.ALIGN_Right, mxConstants.ALIGN_TOP
+      //               );
     
-                    //this.graph.addCellOverlay(subnet, nsgOverlay);
-                    this.graph.addCellOverlay(subnet, subnetLogoOverlay);
+      //               //this.graph.addCellOverlay(subnet, nsgOverlay);
+      //               this.graph.addCellOverlay(subnet, subnetLogoOverlay);
 
-                  })
-                }
-              }
-            });
+      //             })
+      //           }
+      //         }
+      //       });
+      //   }
+  }
 
-            //reset unsave changes state on new diagram import
-            this.setState({unsavedChanges: false}, () => {
-              this.setBadgeVisibilityOnUnsaveChanges()});
-        }
+   loadQuickstartDiagram(category, name) {
+      var thisComp = this;
+      this.diagService.loadQuickstartDiagram
+        (category, name,
+          function onSuccess(qsDiagContext) {
+            thisComp.importJsonDiagram(qsDiagContext);
+          },
+          function onFailure(error) {
+            Toast.show("danger", 2000, error.message);
+          }
+        )
   }
 
   shareDiagram(){
-    if(!this.graphManager.isCellExist())
+    if(Utils.isCanvasEmpty())
       {
         Toaster.create({
           position: Position.TOP,
@@ -5121,23 +3421,19 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         return;
       }
 
-    this.Index.showProgress(true, 'Generating Share link...');
-
     var thisComp = this;
     var anonyDiagramContext = new AnonymousDiagramContext();
-    anonyDiagramContext.DiagramName = this.shortUID.randomUUID(6);
-    anonyDiagramContext.DiagramXml = this.getDiagramAsXml();
+    anonyDiagramContext.DiagramName = Utils.uniqueId('diagram');
+    anonyDiagramContext.DiagramXml = this.diagram.model.toJson();
     anonyDiagramContext.DateTimeSaved = new Date();
 
-    var shareLink = this.diagramService
+    this.diagramService
       .saveAnonymousDiagram(anonyDiagramContext,
         function (shareLink){
 
-          thisComp.Index.showProgress(false);
           thisComp.setState({shareLink: shareLink, showShareDiagramPopup: true});
         },
         function(error){
-          thisComp.Index.showProgress(false);
           Toaster.create({
             position: Position.TOP,
             autoFocus: false,
@@ -5145,6 +3441,45 @@ setBadgeVisibilityOnUnsaveChanges = () => {
           }).show({intent: Intent.DANGER, timeout: 3000, message: error.message});
         });
   }
+
+  loadSharedDiagram = () => {
+    if(Utils.IsNullOrUndefine(this.state.queryString)) //querystring is object contains path and querystring
+      return;
+
+    var parsedQS =  queryString.parse(this.state.queryString.search)
+    var anonyDiagramId = parsedQS.id
+
+    if(Utils.IsNullOrUndefine(anonyDiagramId))
+    return;
+
+    var thisComp = this;
+
+    this.diagramService.loadAnonymousDiagram(parsedQS.id)
+      .then(function (response) {
+          var adc = new AnonymousDiagramContext();
+          adc.UID = response.data.UID;
+          adc.DiagramName = response.data.DiagramName;
+          adc.DiagramXml = response.data.DiagramXml;
+          adc.SharedLink = response.data.SharedLink;
+          thisComp.importJsonDiagram(adc);
+
+          Toaster.create({
+            position: Position.TOP,
+            autoFocus: false,
+            canEscapeKeyClear: true
+          }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.ShareLinkLoadedSuccess()});
+          return;
+      })
+      .catch(function (error) {
+        console.log(error);
+        Toaster.create({
+          position: Position.TOP,
+          autoFocus: false,
+          canEscapeKeyClear: true
+        }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.ShareLinkLoadedError()});
+        return;
+      });
+}
 
   copySharedLink = () => {
     var el = document.createElement('textarea');
@@ -5163,14 +3498,14 @@ setBadgeVisibilityOnUnsaveChanges = () => {
     return;
   }
 
-  getDiagramAsXml(){
-    var encoder = new mxCodec();
+  // getDiagramAsXml(){
+  //   var encoder = new mxCodec();
 
-    var node = encoder.encode(this.graph.getModel());
+  //   var node = encoder.encode(this.graph.getModel());
 
-    var diagramInXml = mxUtils.getXml(node, true);
-    return diagramInXml;
-  }
+  //   var diagramInXml = mxUtils.getXml(node, true);
+  //   return diagramInXml;
+  // }
 
   importWorkbenchFormat(azwbFile) {
 
@@ -5179,10 +3514,10 @@ setBadgeVisibilityOnUnsaveChanges = () => {
     const reader = new FileReader();
     reader.readAsText(azwbFile);
     reader.onload = function() {
-      const xml = reader.result;
+      const jsonDiagram = reader.result;
       var diagContext = new AnonymousDiagramContext();
-      diagContext.DiagramXml = xml;
-      thisComp.importXmlAsDiagram(diagContext);
+      diagContext.DiagramXml = jsonDiagram;
+      thisComp.importJsonDiagram(diagContext);
     };
   
     reader.onerror = function() {
@@ -5191,15 +3526,15 @@ setBadgeVisibilityOnUnsaveChanges = () => {
   }
 
   exportWorkbenchFormat() {
-    if(!this.graphManager.isCellExist())
+    if(Utils.isCanvasEmpty())
     {
       Toast.show('primary', 2000, Messages.NoCellOnGraph());
       return;
     }
 
-    var xmlString = this.getDiagramAsXml();
+    var diagramJson = this.diagram.model.toJson();
 
-    const url = window.URL.createObjectURL(new Blob([xmlString]));
+    const url = window.URL.createObjectURL(new Blob([diagramJson]));
           const link = document.createElement('a');
           link.href = url;
           link.target = "azwbFileDownloader"; //name of iframe
@@ -5209,7 +3544,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
   }
 
   saveDiagramToWorkspace(collectionName, diagramName) {
-    if(!this.graphManager.isCellExist())
+    if(Utils.isCanvasEmpty())
     {
       Toaster.create({
         position: Position.TOP,
@@ -5221,17 +3556,15 @@ setBadgeVisibilityOnUnsaveChanges = () => {
 
     var diagramContext = new WorkspaceDiagramContext();
     diagramContext.CollectionName = collectionName;
-    diagramContext.UID = this.shortUID.randomUUID(6);;
+    diagramContext.UID = this.shortUID.randomUUID(6);
     diagramContext.DiagramName = diagramName;
-    diagramContext.DiagramXml = this.getDiagramAsXml();
+    diagramContext.DiagramXml = this.diagram.model.toJson();
     diagramContext.DateTimeSaved = Date.now();
 
     var thisComp = this;
 
     this.diagramService.saveDiagramToWorkspace(diagramContext,
       function onSuccess() {
-
-        thisComp.Index.showProgress(false);
         thisComp.setState({unsavedChanges: false}, () => {
           thisComp.setBadgeVisibilityOnUnsaveChanges()});
 
@@ -5243,7 +3576,6 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         return;
       },
       function onError(error) {
-        thisComp.Index.showProgress(false);
         Toaster.create({
           position: Position.TOP,
           autoFocus: false,
@@ -5255,7 +3587,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
 
 
   exportAsSvg(){
-    if(!this.graphManager.isCellExist())
+    if(Utils.isCanvasEmpty())
     {
       Toaster.create({
         position: Position.TOP,
@@ -5264,12 +3596,9 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.NoCellOnGraph()});
       return;
     }
-
-    this.Index.showProgress(true, 'Generating SVG...');
-
-    var svg = this.getDiagramSvg();
    
-    // get svg data
+    var svg = this.diagram.makeSvg({scale: 1, background: "white" });
+
     var svgXmlString = new XMLSerializer().serializeToString(svg);
 
     const blob = new Blob([svgXmlString], {type: 'image/svg+xml'});
@@ -5279,13 +3608,10 @@ setBadgeVisibilityOnUnsaveChanges = () => {
     link.setAttribute('download', 'diagram.svg');
     document.body.appendChild(link);
     link.click();
-
-    this.Index.showProgress(false);
   }
 
-  exportDiagramAsPDF(){
-
-    if(!this.graphManager.isCellExist())
+  exportAsPng() {
+    if(Utils.isCanvasEmpty())
     {
       Toaster.create({
         position: Position.TOP,
@@ -5295,22 +3621,51 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       return;
     }
 
-    this.Index.showProgress(true, 'Generating PDF...');
+    var blob = this.diagram.makeImageData
+      ({ background: "white", returnType: "blob", callback: callback });
 
-    this.graph.getSelectionModel().clear();
-
-    var svg = this.getDiagramSvg();
+    function callback(blob) {
+      var link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', 'diagram.png');
+      document.body.appendChild(link);
+      link.click();
+    }
    
-    // get svg data
+    // var image = this.diagram.makeImage
+    //   ({scale: 1, background: "white" });
+
+    // const blob = new Blob([image], {type: 'image/png'});
+
+    // var link = document.createElement("a");
+    // link.href = URL.createObjectURL(blob);
+    // link.setAttribute('download', 'diagram.png');
+    // document.body.appendChild(link);
+    // link.click();
+  }
+
+  exportDiagramAsPDF(){
+
+    if(Utils.isCanvasEmpty())
+    {
+      Toaster.create({
+        position: Position.TOP,
+        autoFocus: false,
+        canEscapeKeyClear: true
+      }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.NoCellOnGraph()});
+      return;
+    }
+
+    var svg = this.diagram.makeSvg({ scale: 1, background: "white" });
+
     var svgXmlString = new XMLSerializer().serializeToString(svg);
+    
     var svgXmlBase64 = window.btoa(svgXmlString);
 
     var thisComp = this;
     this.diagramService.exportDiagramAsPNG(svgXmlBase64,
       function onSuccess(pdfByteArray)
       {
-        thisComp.Index.showProgress(false);
-
         const url = window.URL.createObjectURL(new Blob([pdfByteArray]));
           const link = document.createElement('a');
           link.href = url;
@@ -5327,14 +3682,10 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         return;
       },
       function onError(error){
-        thisComp.Index.showProgress(false);
         console.log(error);
       });
   }
 
-  getDiagramSvg(){
-    return document.getElementById('diagramEditor').lastChild;
-  }
 
   deployDiagramToAzure = (subscription) => {
 

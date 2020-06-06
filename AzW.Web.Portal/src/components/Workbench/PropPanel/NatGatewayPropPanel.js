@@ -29,7 +29,7 @@ export default class NatGatewayPropPanel extends Component {
   render = () => {
     return (
       <Drawer
-          title="NAT Gateway Properties"
+          title="NAT Gateway Azure Properties"
           autoFocus= {true}
           canEscapeKeyClose= {true}
           canOutsideClickClose= {true}
@@ -43,7 +43,7 @@ export default class NatGatewayPropPanel extends Component {
           className="propPanelDrawer">
               <Grid container spacing={12} className="propPanelGrid">
                 <Grid item xs={12}>
-                  <AppBar position="static" color = "transparent">
+                  {/* <AppBar position="static" color = "transparent">
                     <Tabs  value={this.state.value}  onChange={this.handleChange} >
                       <Tab label="Diagram" value="diagram" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'diagram' ? "bold" : "" }}/>
                       <Tab label="Provision" value="provision" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'provision' ? "bold" : "" }}/>
@@ -70,11 +70,11 @@ export default class NatGatewayPropPanel extends Component {
                                         />
                               </div>
                         </FormGroup>
-                  </div>
+                  </div> */}
 
                   {this.renderProvisionTab()}
 
-                  {this.renderCalculatorTab()}
+                  {/* {this.renderCalculatorTab()} */}
                     
                 </Grid>
               </Grid>
@@ -83,8 +83,8 @@ export default class NatGatewayPropPanel extends Component {
   }
 
   renderProvisionTab() {
-    if(this.state.value != 'provision')
-      return null;
+    // if(this.state.value != 'provision')
+    //   return null;
     
     return (
         <div className = "propPanelTabContent">

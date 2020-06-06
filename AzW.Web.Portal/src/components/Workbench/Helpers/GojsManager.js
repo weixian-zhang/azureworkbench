@@ -45,6 +45,7 @@ export default class GojsManager
       }
   
       overridePasteSelectionHandleVNetSubnetPasteInGroup() {
+        
         this.diagram.commandHandler.copySelection = function() {
           
           var items = this.diagram.selection;
@@ -73,27 +74,6 @@ export default class GojsManager
             this.diagram.commandHandler.copiedVIRAndSubnets = [];
             go.CommandHandler.prototype.copySelection.call(this.diagram.commandHandler);
           }
-
-
-          // var copiedParts = this.diagram.selection;
-
-          // var cpIterator = copiedParts.iterator;
-
-          // while(cpIterator.next()) {
-          //   var part = cpIterator.value;
-
-          //   if(Utils.isPartVIR(part))
-              
-
-          // }
-          
-          // if (items.count > 0) {  // if there are any selected items, save them to a clipboard
-          //   this.diagram.commandHandler._itemClipboard = items;
-          //   go.CommandHandler.prototype.copySelection.call(this.diagram.commandHandler);
-
-          // } 
-          // else// otherwise just copy nodes and/or links, as usual
-          //   go.CommandHandler.prototype.copySelection.call(this.diagram.commandHandler);
         }
 
         var diagram = this.diagram;
