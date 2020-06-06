@@ -4,7 +4,9 @@ import React, { Component } from "react";
 import ResourcePalette from "./ResourcePalette";
 import DiagramEditor from "./DiagramEditor";
 import AuthService from "../../services/AuthService";
-import Toast from "./Helpers/Toast";
+
+import $ from 'jquery';
+import 'jquery-ui-dist/jquery-ui';
 
 import "../../assets/css/WorkbenchGrid.css";
 
@@ -26,10 +28,12 @@ export default class Workbench extends Component {
     this.diagramEditor = React.createRef();
 
     this.authService = new AuthService();
+
+    
   }
 
   componentDidMount() {
-    
+    this.initDropPNGSVGAZWBFileOnCanvas();
   }
 
   render = () => {
@@ -42,6 +46,42 @@ export default class Workbench extends Component {
           {/* <DiagramEditor ref={this.diagramEditor} Index={this.Index} queryString={this.state.queryString}  mxgraphManagerReadyCallback={this.mxgraphManagerReadyCallback} Workbench={this} /> */}
         </div>
     );
+  }
+
+  initDropPNGSVGAZWBFileOnCanvas() {
+    var thisComp = this;
+    $("#diagramEditor").on("dragover", function(event) {
+      event.preventDefault();  
+      event.stopPropagation();
+      $(this).addClass('dragging');
+    });
+    
+    $("#diagramEditor").on("dragleave", function(event) {
+        event.preventDefault();  
+        event.stopPropagation();
+        $(this).removeClass('dragging');
+    });
+    
+    $("#diagramEditor").on("drop", function(event) {
+        event.preventDefault();  
+        event.stopPropagation();
+        thisComp.diagramEditor.current.onDropPNGAZWBFileHandler(event);
+    });
+    // var editor = document.getElementById("diagramEditor");
+    // editor.addEventListener("dragenter", function(evt) {
+    //   // Here you could also set effects on the Diagram,
+    //   // such as changing the background color to indicate an acceptable drop zone
+
+    //   // Requirement in some browsers, such as Internet Explorer
+    //   evt.preventDefault();
+    // }, false);
+    // editor.addEventListener('drop', function(evt){
+    //   // prevent default action
+    //   // (open as link for some elements in some browsers)
+    //   evt.preventDefault();
+
+    //   this.diagramEditor.current.onDropPNGAZWBFileHandler(evt);
+    // },false);
   }
 
   addResourceToDiagramEditor = (dropContext) => {
