@@ -10,12 +10,9 @@ export default class AzureSearch
 
         this.ProvisionContext = {
             ResourceType: ResourceType.AzureSearch(),
-            Deployable: true,
-            HighCost: false,
-            
             Name: '',
             Location: '',
-            Tags: [],
+            ResourceGroupName: ''
         };
         this.CalculatorContext = {
             IsFree: false,

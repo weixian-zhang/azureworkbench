@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import BlobStorage from '../../../models/BlobStorage';
+import StorageAccount from '../../../models/StorageAccount';
 import { FormGroup, MenuItem, Drawer, Intent, Button, Switch } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
 import Tabs from '@material-ui/core/Tabs';
@@ -17,7 +17,7 @@ export default class AzStoragePropPanel extends Component {
 
       this.state ={
         isOpen: false,
-        userObject: new BlobStorage(), //default to blob, but can be Table,Queue,AzFile
+        userObject: new StorageAccount(), //default to blob, but can be Table,Queue,AzFile
         storageSku: [],
         value: 'diagram', //tabs
 
@@ -47,7 +47,7 @@ export default class AzStoragePropPanel extends Component {
           className="propPanelDrawer">
               <Grid container spacing={12} className="propPanelGrid">
                 <Grid item xs={12}>
-                  <AppBar position="static" color = "transparent">
+                  {/* <AppBar position="static" color = "transparent">
                     <Tabs  value={this.state.value}  onChange={this.handleChange} >
                       <Tab label="Diagram" value="diagram" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'diagram' ? "bold" : "" }}/>
                       <Tab label="Provision" value="provision" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'provision' ? "bold" : "" }}/>
@@ -74,11 +74,11 @@ export default class AzStoragePropPanel extends Component {
                                 />
                               </div>
                         </FormGroup>
-                  </div>
+                  </div> */}
 
                   {this.renderProvisionTab()}
 
-                  {this.renderCalculatorTab()}
+                  {/* {this.renderCalculatorTab()} */}
                     
                 </Grid>
               </Grid>
@@ -87,8 +87,8 @@ export default class AzStoragePropPanel extends Component {
   }
 
   renderProvisionTab() {
-    if(this.state.value != 'provision')
-      return null;
+    // if(this.state.value != 'provision')
+    //   return null;
     
     return (
         <div className = "propPanelTabContent">

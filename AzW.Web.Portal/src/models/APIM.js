@@ -10,14 +10,11 @@ export default class APIM
 
         this.ProvisionContext = {
             ResourceType: ResourceType.APIM(),
-            Deployable: true,
-            HighCost: false,
-            
             Name: '',
             Location: '',
-            Tags: [],
+            ResourceGroupName: '',
 
-            VNetAddress: '',
+            VNetName: '',
             SubnetName: ''
         };
         this.CalculatorContext = {

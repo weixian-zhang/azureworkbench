@@ -20,13 +20,13 @@ export default class OverlayAbout extends Component {
                         <b>Azure Workbench</b>
                     </Typography>
                     <Typography variant="body1" align="left" gutterBottom>
-                        Azure Workbench is a hobby project and is not related to Microsoft or Azure.
-                        Hope you enjoy using this tool.
+                        Azure Workbench is not related to Microsoft or Azure.
+                        It's my hobby project hope you enjoy using this tool.
                     </Typography>
                     <br />
                     <Typography variant="body1" align="left" gutterBottom>
                         I am constantly working on bug fixes and new features. 
-                        Your feedback is upmost important for me, 
+                        Your feedback is upmost important 
                         please let me know at: <b>weixzha@microsoft.com</b>
                     </Typography>
                 </Card>

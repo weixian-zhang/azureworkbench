@@ -10,12 +10,9 @@ export default class AppGateway
 
         this.ProvisionContext = {
             ResourceType: ResourceType.Bastion(),
-            Deployable: true,
-            HighCost: false,
-            
             Name: '',
             Location: '',
-            Tags: [],
+            ResourceGroupName: '',
 
             VNetAddress: '',
             SubnetName: ''

@@ -30,6 +30,15 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
 import mxClientOverrides from './Helpers/mxClientOverrides';
 
 //models
+import SendGrid from "../../models/SendGrid";
+import SecurityCenter from "../../models/SecurityCenter";
+import Databox from "../../models/Databox";
+import NetworkWatcher from "../../models/NetworkWatcher";
+import ASG from "../../models/ASG";
+import NIC from "../../models/NIC";
+import DedicatedHost from "../../models/DedicatedHost";
+import AzureBatch from "../../models/AzureBatch";
+import AzureADDomainService from "../../models/AzureADDomainService";
 import Cognitive from "../../models/Cognitive";
 import BotsService from "../../models/BotsService";
 import Genomics from "../../models/Genomics";
@@ -81,10 +90,7 @@ import MariaDB from "../../models/MariaDB";
 import PostgreSQL from "../../models/PostgreSQL";
 import FileSync from "../../models/FileSync";
 import NetAppFile from "../../models/NetAppFile";
-import BlobStorage from "../../models/BlobStorage";
-import TableStorage from "../../models/TableStorage";
-import QueueStorage from "../../models/QueueStorage";
-import AzFile from "../../models/AzFile";
+import StorageAccount from "../../models/StorageAccount";
 import AzureCDN from "../../models/AzureCDN";
 import VirtualNetworkGateway from "../../models/VirtualNetworkGateway";
 import DevTestLab from "../../models/DevTestLab";
@@ -112,6 +118,10 @@ import RouteTable from "../../models/RouteTable";
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
 
 //property panels
+
+import SecurityCenterPropPanel from './PropPanel/SecurityCenterPropPanel';
+import DataBoxPropPanel from './PropPanel/DataBoxPropPanel';
+import ApplicationSecurityGroupPropPanel from './PropPanel/ApplicationSecurityGroupPropPanel';
 import RouteTablePropPanel from './PropPanel/RouteTablePropPanel';
 import CognitivePropPanel from './PropPanel/CognitivePropPanel';
 import BotsServicePropPanel from './PropPanel/BotsServicePropPanel';
@@ -125,7 +135,7 @@ import SubnetPropPanel from "./PropPanel/SubnetPropPanel";
 import VNetPropPanel from "./PropPanel/VNetPropPanel";
 import NLBPropPanel from "./PropPanel/NLBPropPanel";
 import AppGwPropPanel from "./PropPanel/AppGwPropPanel";
-import DNSPrivateZonePropPanel from "./PropPanel/DNSPrivateZone";
+import DNSPrivateZonePropPanel from "./PropPanel/DNSPrivateZonePropPanel";
 import AppServicePropPanel from "./PropPanel/AppSvcPropPanel";
 import ASEPropPanel from "./PropPanel/ASEPropPanel";
 import FuncPropPanel from "./PropPanel/FuncPropPanel";
@@ -169,7 +179,8 @@ import RelayPropPanel from "./PropPanel/RelayPropPanel";
 import LogicAppPropPanel from "./PropPanel/LogicAppPropPanel";
 import ISEPropPanel from "./PropPanel/ISEPropPanel";
 import EventGridTopicPropPanel from "./PropPanel/EventGridTopicPropPanel";
-import EventGridSubscriptionPropPanel from "./PropPanel/EventGridTopicPropPanel";
+import EventGridSubscriptionPropPanel from "./PropPanel/EventGridSubscriptionPropPanel";
+import EventHubPropPanel from "./PropPanel/EventHubPropPanel";
 import StreamAnalyticsPropPanel from "./PropPanel/StreamAnalyticsPropPanel";
 import AppConfigurationPropPanel from "./PropPanel/AppConfigurationPropPanel";
 import FirewallPropPanel from "./PropPanel/FirewallPropPanel";
@@ -187,6 +198,8 @@ import MapsPropPanel from "./PropPanel/MapsPropPanel";
 import TimeSeriesPropPanel from "./PropPanel/TimeSeriesPropPanel";
 import IoTCentralPropPanel from "./PropPanel/IoTCentralPropPanel";
 import NSGPropPanel from "./PropPanel/NSGPropPanel";
+import AzureBatchPropPanel from "./PropPanel/AzureBatchPropPanel";
+import DedicatedHostPropPanel from "./PropPanel/DedicatedHostPropPanel";
 
 import OverlayPreviewDiagram from "./OverlayPreviewDiagram";
 import ARMService from "../../services/ARMService";
@@ -269,12 +282,18 @@ import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
     return (
       <div id="diagramEditor" className="diagramEditor">
 
+        <EventHubPropPanel ref={this.eventhubPropPanel} />
+        <AzureBatchPropPanel ref={this.batchPropPanel} />
+        <DedicatedHostPropPanel ref={this.dedicatedhostPropPanel} />
         <CognitivePropPanel ref={this.cognitivePropPanel} />
         <BotsServicePropPanel ref={this.botsPropPanel} />
         <GenomicsPropPanel ref={this.genomicsPropPanel} />
         <MLServiceWorkspacePropPanel ref={this.mlsvcworkspacePropPanel} /> 
 
         <NatGatewayPropPanel ref={this.natgwPropPanel} />
+        <SecurityCenterPropPanel  ref={this.ascPropPanel} />
+        <DataBoxPropPanel ref={this.databoxPropPanel} />
+        <ApplicationSecurityGroupPropPanel ref={this.asgPropPanel} />
         <RouteTablePropPanel ref={this.rtPropPanel} />
         <PrivateEndpointPropPanel ref={this.privateendpointPropPanel} />
         <AzStoragePropPanel ref={this.azstoragePropPanel} />
@@ -371,12 +390,18 @@ import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
   }
 
   initRef() {
+    this.eventhubPropPanel = React.createRef();
+    this.batchPropPanel = React.createRef();
+    this.dedicatedhostPropPanel = React.createRef();
     this.cognitivePropPanel = React.createRef();
     this.botsPropPanel = React.createRef();
     this.genomicsPropPanel = React.createRef();
     this.mlsvcworkspacePropPanel = React.createRef();
+    this.databoxPropPanel = React.createRef();
     this.natgwPropPanel = React.createRef();
+    this.ascPropPanel = React.createRef();
     this.rtPropPanel = React.createRef();
+    this.asgPropPanel = React.createRef();
     this.privateendpointPropPanel = React.createRef();
     this.azstoragePropPanel = React.createRef();
     this.nsgPropPanel = React.createRef();
@@ -681,6 +706,71 @@ createPictureShapeTemplate() {
     );
 
   return template;
+}
+
+createSkuBasedVIR(dropContext) {
+  switch(dropContext.resourceType) {
+      case ResourceType.ContainerInstance():
+        if(this.diagram.selection.first() != null)
+          this.createVIROntoSubnet({
+            resourceType: ResourceType.ContainerInstance(),
+            x: dropContext.x,
+            y: dropContext.y
+          })
+        else
+          this.createNonVIRAzureResource({
+            source: require('../../assets/azure_icons/Container Service Color/Container Instances.png'),
+            label: 'public container instance', x: dropContext.x, y: dropContext.y,
+            azcontext: new ContainerInstance()
+          });
+      break;
+      case ResourceType.NLB():
+        if(this.diagram.selection.first() != null)
+          this.createVIROntoSubnet({
+            resourceType: ResourceType.NLB(),
+            x: dropContext.x,
+            y: dropContext.y
+          })
+        else
+          this.createNonVIRAzureResource({
+            source: require('../../assets/azure_icons/Networking Service Color/Load Balancers.png'),
+            label: 'external load balancer', x: dropContext.x, y: dropContext.y,
+            azcontext: new NLB()
+          });
+      break;
+      case ResourceType.APIM():
+
+        if(this.diagram.selection.first() != null)
+        this.createVIROntoSubnet({
+          resourceType: ResourceType.APIM(),
+          x: dropContext.x,
+          y: dropContext.y
+        })
+      else
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Integration Service Color/API Management Services.png'),
+          label: 'non-premium apim', x: dropContext.x, y: dropContext.y,
+          azcontext: new APIM()
+        });
+
+      break;
+      case ResourceType.Redis():
+
+        if(this.diagram.selection.first() != null)
+        this.createVIROntoSubnet({
+          resourceType: ResourceType.Redis(),
+          x: dropContext.x,
+          y: dropContext.y
+        })
+        else
+          this.createNonVIRAzureResource({
+            source: require('../../assets/azure_icons/Databases Service Color/Azure Cache for Redis.png'),
+            label: 'non-premium redis', x: dropContext.x, y: dropContext.y,
+            azcontext: new Redis()
+          });
+
+      break;
+  }
 }
 
 createNonVIRAzureResourceTemplate() {
@@ -1324,7 +1414,7 @@ createSubnetTemplate() {
       this.$(go.Picture, {
         stretch: go.GraphObject.Fill,
         desiredSize: new go.Size(24,24),
-        alignment: new go.Spot(0, 0, 6, 0),
+        alignment: new go.Spot(0, 0, 6, -15),
         source: require('../../assets/azure_icons/Networking Service Color/Network Security Groups (Classic).png'),
         doubleClick: function(e, picture) {
           var azcontext = picture.nsgazcontext;
@@ -1340,7 +1430,7 @@ createSubnetTemplate() {
       this.$(go.Picture, {
         stretch: go.GraphObject.Fill,
         desiredSize: new go.Size(25,25),
-        alignment: new go.Spot(0, 0, 31, 0),
+        alignment: new go.Spot(0, 0, 31, -15),
         source: require('../../assets/azure_icons/Networking Service Color/Route Tables.png'),
         doubleClick: function(e, picture) {
           var azcontext = picture.udrazcontext;
@@ -1587,8 +1677,28 @@ createVIROntoSubnet(dropContext) {
     var virLoc = new go.Point(subnet.location.x + 60, subnet.location.y +40);
 
     switch(dropContext.resourceType) {
+        case ResourceType.ContainerInstance():
+            if(!Utils.isVIRinDedicatedSubnet(subnet)) {
+              Toast.show('warining', 7000, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
+              return;
+            }
+            text = 'private container instance';
+            nodeKey = Utils.uniqueId('ci');
+            image = require('../../assets/azure_icons/Container Service Color/Container Instances.png');
+            azcontext = new ContainerInstance();
+        break;
+        case ResourceType.PrivateEndpoint():
+          if(Utils.isSubnetTakenByDedicatedSubnetVIR(subnet)) {
+            Toast.show('warining', 7000, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
+            return;
+          }
+          text = 'private endpoint';
+          nodeKey = Utils.uniqueId('pendp');
+          image = require('../../assets/azure_icons/Networking Service Color/private-endpoint.png');
+          azcontext = new PrivateEndpoint();
+        break;
         case ResourceType.WindowsVM():
-          if(Utils.isVMinSubnetTakenByVIRRequiredDedicatedSubnet(subnet)) {
+          if(Utils.isSubnetTakenByDedicatedSubnetVIR(subnet)) {
             Toast.show('warining', 7000, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
             return;
           }
@@ -1605,10 +1715,9 @@ createVIROntoSubnet(dropContext) {
             vm.GraphModel.ResourceType = ResourceType.WindowsVM();
             azcontext = vm;
           }
-
         break;
         case ResourceType.LinuxVM():
-          if(Utils.isVMinSubnetTakenByVIRRequiredDedicatedSubnet(subnet)) {
+          if(Utils.isSubnetTakenByDedicatedSubnetVIR(subnet)) {
             Toast.show('warining', 7000, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
             return;
           }
@@ -1627,7 +1736,7 @@ createVIROntoSubnet(dropContext) {
           }
         break;
         case ResourceType.VMSS():
-          if(Utils.isVMinSubnetTakenByVIRRequiredDedicatedSubnet(subnet)) {
+          if(Utils.isSubnetTakenByDedicatedSubnetVIR(subnet)) {
             Toast.show('warining', 2500, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
             return;
           }
@@ -1636,6 +1745,16 @@ createVIROntoSubnet(dropContext) {
           nodeKey = 'vmss-' + this.shortUID.randomUUID(6);
           image = require('../../assets/azure_icons/ComputeServiceColor/VM/VM Scale Sets.png');
           azcontext = new VMSS();
+        break;
+        case ResourceType.Batch():  
+          if(Utils.isSubnetTakenByDedicatedSubnetVIR(subnet)) {
+            Toast.show('warining', 2500, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
+            return;
+          }    
+          text = 'batch';
+          nodeKey = Utils.uniqueId('batch');
+          image = require('../../assets/azure_icons/ComputeServiceColor/Batch Accounts.png');
+          azcontext = new AzureBatch();
         break;
         case ResourceType.Firewall():
           if(!Utils.isVIRinDedicatedSubnet(subnet)) {
@@ -1657,6 +1776,169 @@ createVIROntoSubnet(dropContext) {
           image = require('../../assets/azure_icons/Security Service Color/azure-bastion-icon.png');
           azcontext = new Bastion();
         break;
+        case ResourceType.AppGw():
+          if(!Utils.isVIRinDedicatedSubnet(subnet)) {
+            Toast.show('warining', 2500, Messages.VIRMustBeInDedicatedSubnet());
+            return;
+          }
+          text = 'app gateway';
+          nodeKey = 'appgw-' + this.shortUID.randomUUID(6);
+          image = require('../../assets/azure_icons/Networking Service Color/Application Gateway.png');
+          azcontext = new AppGateway();
+        break;
+        case ResourceType.ASE():
+          if(!Utils.isVIRinDedicatedSubnet(subnet)) {
+            Toast.show('warining', 2500, Messages.VIRMustBeInDedicatedSubnet());
+            return;
+          }
+          text = 'ase';
+          nodeKey = Utils.uniqueId('ase');
+          image = require('../../assets/azure_icons/Web Service Color/App Service Environments.png');
+          azcontext = new ASE();
+        break;
+        case ResourceType.ISE():
+          if(!Utils.isVIRinDedicatedSubnet(subnet)) {
+            Toast.show('warining', 2500, Messages.VIRMustBeInDedicatedSubnet());
+            return;
+          }
+          text = 'ise';
+          nodeKey = Utils.uniqueId('ise');
+          image = require('../../assets/azure_icons/Integration Service Color/Integration Service Environments.png');
+          azcontext = new IntegratedServiceEnvironment();
+        break;
+        case ResourceType.SQLMI():
+          if(!Utils.isVIRinDedicatedSubnet(subnet)) {
+            Toast.show('warining', 2500, Messages.VIRMustBeInDedicatedSubnet());
+            return;
+          }
+          text = 'sql mi';
+          nodeKey = Utils.uniqueId('sqlmi');
+          image = require('../../assets/azure_icons/Databases Service Color/SQL Managed Instances.png');
+          azcontext = new SQLMI();
+        break;
+        case ResourceType.HdInsight():
+          if(!Utils.isVIRinDedicatedSubnet(subnet)) {
+            Toast.show('warining', 2500, Messages.VIRMustBeInDedicatedSubnet());
+            return;
+          }
+
+          text = 'hdinsight';
+          nodeKey = Utils.uniqueId('hdinsight');
+          image = require('../../assets/azure_icons/Analytics Service Color/HDInsightClusters.png');
+          azcontext = new HdInsight();
+        break;
+        case ResourceType.Databricks():
+          if(!Utils.isVIRinDedicatedSubnet(subnet)) {
+            Toast.show('warining', 2500, Messages.VIRMustBeInDedicatedSubnet());
+            return;
+          }
+
+          text = 'databricks';
+          nodeKey = Utils.uniqueId('databricks');
+          image = require('../../assets/azure_icons/Analytics Service Color/Azure Databricks.png');
+          azcontext = new Databricks();
+        break;
+        case ResourceType.AADDomainService():
+          if(!Utils.isVIRinDedicatedSubnet(subnet)) {
+            Toast.show('warining', 2500, Messages.VIRMustBeInDedicatedSubnet());
+            return;
+          }
+
+          text = 'aad domain service';
+          nodeKey = Utils.uniqueId('databricks');
+          image = require('../../assets/azure_icons/Identity Service Color/azuread-domainservice.png');
+          azcontext = new AzureADDomainService();
+        break;
+        case ResourceType.Kubernetes():
+          if(!Utils.isVIRinDedicatedSubnet(subnet)) {
+            Toast.show('warining', 2500, Messages.VIRMustBeInDedicatedSubnet());
+            return;
+          }
+
+          text = 'k8s';
+          nodeKey = Utils.uniqueId('k8s');
+          image = require('../../assets/azure_icons/Container Service Color/Kubernetes Services.png');
+          azcontext = new Kubernetes();
+        break;
+        case ResourceType.NetAppFile():
+          if(!Utils.isVIRinDedicatedSubnet(subnet)) {
+            Toast.show('warining', 2500, Messages.VIRMustBeInDedicatedSubnet());
+            return;
+          }
+
+          text = 'netapp files';
+          nodeKey = Utils.uniqueId('netapp');
+          image = require('../../assets/azure_icons/Storage Service Color/Azure NetApp files.png');
+          azcontext = new NetAppFile();
+        break;
+        case ResourceType.VirtualNetworkGateway():
+          if(!Utils.isVIRinDedicatedSubnet(subnet)) {
+            Toast.show('warining', 2500, Messages.VIRMustBeInDedicatedSubnet());
+            return;
+          }
+
+          text = 'vnet gateway';
+          nodeKey = Utils.uniqueId('vnetgw');
+          image = require('../../assets/azure_icons/Networking Service Color/Virtual Network Gateways.png');
+          azcontext = new VirtualNetworkGateway();
+        break;
+        case ResourceType.ASE():
+          if(!Utils.isVIRinDedicatedSubnet(subnet)) {
+            Toast.show('warining', 2500, Messages.VIRMustBeInDedicatedSubnet());
+            return;
+          }
+
+          text = 'ase';
+          nodeKey = Utils.uniqueId('vnetgw');
+          image = require('../../assets/azure_icons/Networking Service Color/Virtual Network Gateways.png');
+          azcontext = new VirtualNetworkGateway();
+          break;
+        case ResourceType.NLB():
+          if(Utils.isSubnetTakenByDedicatedSubnetVIR(subnet)) {
+            Toast.show('warining', 7000, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
+            return;
+          }
+
+          text = 'internal lb';
+          nodeKey = Utils.uniqueId('internallb');
+          image = require('../../assets/azure_icons/Networking Service Color/Load Balancers.png');
+          
+          var nlb = new NLB();
+          nlb.IsInternalNLB = true;
+          azcontext = nlb
+          break;
+        case ResourceType.APIM():
+          if(Utils.isSubnetTakenByDedicatedSubnetVIR(subnet)) {
+            Toast.show('warining', 7000, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
+            return;
+          }
+
+          text = 'apim premium';
+          nodeKey = Utils.uniqueId('apimpremium');
+          image = require('../../assets/azure_icons/Integration Service Color/API Management Services.png');
+          azcontext = new APIM();
+          break;
+        case ResourceType.Redis():
+            if(Utils.isSubnetTakenByDedicatedSubnetVIR(subnet)) {
+              Toast.show('warining', 7000, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
+              return;
+            }
+  
+            text = 'redis premium';
+            nodeKey = Utils.uniqueId('redispremium');
+            image = require('../../assets/azure_icons/Databases Service Color/Azure Cache for Redis.png');
+            azcontext = new Redis();
+            break;
+        case ResourceType.ContainerInstance():
+              if(!Utils.isVIRinDedicatedSubnet(subnet)) {
+                Toast.show('warining', 2500, Messages.VIRMustBeInDedicatedSubnet());
+                return;
+              }
+              text = 'private container instance';
+              nodeKey = Utils.uniqueId('privateci');
+              image = require('../../assets/azure_icons/Container Service Color/Container Instances.png');
+              azcontext = new ContainerInstance();
+            break;
     }
 
     this.diagram.model.addNodeData
@@ -2119,9 +2401,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
   addResourceToEditorFromPalette = (dropContext) => {
 
     switch(dropContext.resourceType) {
-      // case softwareResourceType:
-      //   this.addSoftwareShape(dropContext);
-      //   break;
+
       case 'Orthognal Arrow':
         this.createLink({routing: go.Link.Orthogonal, x: dropContext.x, y: dropContext.y});
         break;
@@ -2480,6 +2760,13 @@ setBadgeVisibilityOnUnsaveChanges = () => {
           azcontext: new AppConfig()
         });
         break;
+        case ResourceType.DedicatedHost():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/ComputeServiceColor/azure-dedicatedhost.png'),
+          label: 'dedicated host', x: dropContext.x, y: dropContext.y,
+          azcontext: new DedicatedHost()
+        });
+        break;
       case ResourceType.SharedImageGallery():
         this.createNonVIRAzureResource({
           source: require('../../assets/azure_icons/ComputeServiceColor/Shared Image Galleries.png'),
@@ -2495,51 +2782,89 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         });
         break;
       case ResourceType.PublicIp():
-        this.addPublicIp(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Networking Service Color/Public IP Addresses.png'),
+          label: 'public ip', x: dropContext.x, y: dropContext.y,
+          azcontext: new PublicIp()
+        });
         break;
       case ResourceType.TrafficManager():
-        this.addTrafficManager(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Networking Service Color/Traffic Manager Profiles.png'),
+          label: 'traffic manager', x: dropContext.x, y: dropContext.y,
+          azcontext: new TrafficManager()
+        });
         break;
-      case ResourceType.VirtualNetworkGateway():
-        this.addVNetGateway(dropContext);
-        break;
+      case ResourceType.NetworkWatcher():
+          this.createNonVIRAzureResource({
+            source: require('../../assets/azure_icons/Networking Service Color/Network Watcher.png'),
+            label: 'network watcher', x: dropContext.x, y: dropContext.y,
+            azcontext: new NetworkWatcher()
+          });
+      break;
       case ResourceType.CDN():
-        this.addCDN(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Networking Service Color/CDN Profiles.png'),
+          label: 'cdn', x: dropContext.x, y: dropContext.y,
+          azcontext: new AzureCDN()
+        });
         break;
         case ResourceType.ASG():
-      this.addASG(dropContext);
+          this.createNonVIRAzureResource({
+            source: require('../../assets/azure_icons/Networking Service Color/Application Security Groups.png'),
+            label: 'application security group', x: dropContext.x, y: dropContext.y,
+            azcontext: new ASG()
+          });
         break;
       case ResourceType.NIC():
-        this.addNIC(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Networking Service Color/Network Interfaces.png'),
+          label: 'nic', x: dropContext.x, y: dropContext.y,
+          azcontext: new NIC()
+        });
         break;
 
-      case ResourceType.BlobStorage():
-        this.addBlobStorage(dropContext);
-        break;
-      case ResourceType.AzFile():
-        this.addAzFile(dropContext);
-        break;
-      case ResourceType.QueueStorage():
-        this.addQueueStorage(dropContext);
-        break;
-      case ResourceType.TableStorage():
-        this.addTableStorage(dropContext);
+      case ResourceType.StorageAccount():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Storage Service Color/Blob Storage.png'),
+          label: 'storage account', x: dropContext.x, y: dropContext.y,
+          azcontext: new StorageAccount()
+        });
         break;
       case ResourceType.Databox():
-        this.addDatabox(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Storage Service Color/Data Box.png'),
+          label: 'databox', x: dropContext.x, y: dropContext.y,
+          azcontext: new Databox()
+        });
         break;
-
       case ResourceType.PostgreSQL():
-        this.addPostgreSQL(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Databases Service Color/Azure Database for PostgreSQL servers.png'),
+          label: 'postgresql', x: dropContext.x, y: dropContext.y,
+          azcontext: new PostgreSQL()
+        });
         break;
       case ResourceType.MariaDB():
-        this.addMariaDB(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Databases Service Color/Azure Database for MariaDB servers.png'),
+          label: 'mariadb', x: dropContext.x, y: dropContext.y,
+          azcontext: new MariaDB()
+        });
         break;
       case ResourceType.SQLDB():
-        this.addSQLDB(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Databases Service Color/SQL Databases.png'),
+          label: 'sql db', x: dropContext.x, y: dropContext.y,
+          azcontext: new SQLDB()
+        });
         break;
       case ResourceType.CosmosDB():
-        this.addCosmos(dropContext);
+        this.createNonVIRAzureResource({
+          source:require('../../assets/azure_icons/Databases Service Color/Azure Cosmos DB.png'),
+          label: 'cosmos db', x: dropContext.x, y: dropContext.y,
+          azcontext: new Cosmos()
+        });
         break;
       case ResourceType.PrivateEndpoint():
         this.addPrivateEndpoint(dropContext);
@@ -2551,129 +2876,250 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         });
         break;
       case ResourceType.NLB():
-        this.addNLB(dropContext);
+        this.createSkuBasedVIR({
+          resourceType: ResourceType.NLB(),
+          x: dropContext.x,
+          y: dropContext.y
+        });
         break;
       case ResourceType.DNSPrivateZone():
-        this.addDNSPrivateZone(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Networking Service Color/DNS Private Zones.png'),
+          label: 'private dns zone', x: dropContext.x, y: dropContext.y,
+          azcontext: new DNSPrivateZone()
+        });
         break;
       case ResourceType.FrontDoor():
-        this.addFrontDoor(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Networking Service Color/Front Doors.png'),
+          label: 'front door', x: dropContext.x, y: dropContext.y,
+          azcontext: new FrontDoor()
+        });
         break;
       case ResourceType.ExpressRouteCircuit():
-        this.addExpressRouteCircuit(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Networking Service Color/ExpressRoute Circuits.png'),
+          label: 'expressroute circuit', x: dropContext.x, y: dropContext.y,
+          azcontext: new ExpressRouteCircuit()
+        });
         break;
       case ResourceType.AzFileSync():
-        this.addFileSync(dropContext);
-        break;
-      case ResourceType.NetAppFile():
-        this.addNetAppFile(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Storage Service Color/Storage Sync Services.png'),
+          label: 'az file sync', x: dropContext.x, y: dropContext.y,
+          azcontext: new FileSync()
+        });
         break;
       case ResourceType.MySQL():
-        this.addMySQL(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Databases Service Color/Azure Database for MySQL servers.png'),
+          label: 'mysql', x: dropContext.x, y: dropContext.y,
+          azcontext: new MySQL()
+        });
         break;
       case ResourceType.SQLElasticPool():
-        this.addSQLElasticPool(dropContext);
-        break;
-      case ResourceType.SQLStretchDB():
-        this.addSQLStretchDB(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Databases Service Color/Elastic Database Pools.png'),
+          label: 'elastic db pool', x: dropContext.x, y: dropContext.y,
+          azcontext: new SQLElasticPool()
+        });
         break;
       case ResourceType.Redis():
-        this.addRedis(dropContext);
+        this.createSkuBasedVIR({
+          resourceType: ResourceType.Redis(),
+          x: dropContext.x,
+          y: dropContext.y
+        });
         break;
       case ResourceType.DataLakeStorage():
         this.addDataLakeStorage(dropContext);
         break;
       case ResourceType.Synapse():
-        this.addSynapse(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Databases Service Color/synapseanalytics.png'),
+          label: 'synapse', x: dropContext.x, y: dropContext.y,
+          azcontext: new SynapseAnalytics()
+        });
         break;
 
       case ResourceType.DataExplorer():
-        this.addDataExplorer(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Analytics Service Color/Azure Data Explorer Clusters.png'),
+          label: 'data explorer', x: dropContext.x, y: dropContext.y,
+          azcontext: new DataExplorer()
+        });
         break;
 
       case ResourceType.Databricks():
-        this.addDatabricks(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Analytics Service Color/Azure Databricks.png'),
+          label: 'databricks', x: dropContext.x, y: dropContext.y,
+          azcontext: new Databricks()
+        });
         break;
 
       case ResourceType.DataFactory():
-        this.addDataFactory(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Analytics Service Color/Data Factories.png'),
+          label: 'data factory', x: dropContext.x, y: dropContext.y,
+          azcontext: new DataFactory()
+        });
         break;
 
       case ResourceType.DataLakeAnalytics():
-        this.addDataLakeAnalytics(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Analytics Service Color/Data Lake Analytics.png'),
+          label: 'datalake analytics', x: dropContext.x, y: dropContext.y,
+          azcontext: new DataLakeAnalytics()
+        });
         break;
       case ResourceType.HdInsight():
-        this.addHdInsight(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Analytics Service Color/HDInsightClusters.png'),
+          label: 'hdinsight', x: dropContext.x, y: dropContext.y,
+          azcontext: new HdInsight()
+        });
         break;
 
       case ResourceType.Cognitive():
-        this.addCognitive(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/AI and ML Service Color/Cognitive Services.png'),
+          label: 'cognitive', x: dropContext.x, y: dropContext.y,
+          azcontext: new Cognitive()
+        });
         break;
       case ResourceType.BotsService():
-        this.addBotsService(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/AI and ML Service Color/Bot Services.png'),
+          label: 'bot service', x: dropContext.x, y: dropContext.y,
+          azcontext: new BotsService()
+        });
         break;
       case ResourceType.Genomics():
-        this.addGenomics(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/AI and ML Service Color/Genomics Accounts.png'),
+          label: 'genomics', x: dropContext.x, y: dropContext.y,
+          azcontext: new Genomics()
+        });
         break;
       case ResourceType.MLServiceWorkspace():
-        this.addMLServiceWorkspace(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/AI and ML Service Color/Machine Learning Service Workspaces.png'),
+          label: 'ml', x: dropContext.x, y: dropContext.y,
+          azcontext: new MLServiceWorkspace()
+        });
         break;
 
       case ResourceType.ContainerInstance():
-        this.addContainerInstance(dropContext);
+        this.createSkuBasedVIR({
+          resourceType: ResourceType.ContainerInstance(),
+          x: dropContext.x,
+          y: dropContext.y
+        });
         break;
       case ResourceType.ContainerRegistry():
-        this.addContainerRegistry(dropContext);
-        break;
-      case ResourceType.Kubernetes():
-        this.addKubernetes(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Container Service Color/Container Registries.png'),
+          label: 'container registry', x: dropContext.x, y: dropContext.y,
+          azcontext: new ContainerRegistry()
+        });
         break;
       
       case ResourceType.APIM():
-        this.addAPIM(dropContext);
+        this.createSkuBasedVIR({
+          resourceType: ResourceType.APIM(),
+          x: dropContext.x,
+          y: dropContext.y
+        });
         break;
       case ResourceType.ASB():
-        this.addASB(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Integration Service Color/Azure Service Bus.png'),
+          label: 'service bus', x: dropContext.x, y: dropContext.y,
+          azcontext: new ServiceBus()
+        });
         break;
       case ResourceType.LogicApp():
-        this.addLogicApp(dropContext);
-        break;
-      case ResourceType.ISE():
-        this.addISE(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Integration Service Color/Logic Apps.png'),
+          label: 'logic app', x: dropContext.x, y: dropContext.y,
+          azcontext: new LogicApp()
+        });
         break;
       case ResourceType.EventGridTopic():
-        this.addEventGridTopic(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Integration Service Color/Event Grid Topics.png'),
+          label: 'event grid topic', x: dropContext.x, y: dropContext.y,
+          azcontext: new EventGridTopic()
+        });
         break;
       case ResourceType.EventGridSubscription():
-        this.addEventGridSubscription(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Integration Service Color/Event Grid Subscriptions.png'),
+          label: 'event grid subscription', x: dropContext.x, y: dropContext.y,
+          azcontext: new EventGridSubscription()
+        });
         break;
       case ResourceType.StreamAnalytics():
-        this.addStreamAnalytics(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Integration Service Color/Stream-Analytics.png'),
+          label: 'stream analytics', x: dropContext.x, y: dropContext.y,
+          azcontext: new StreamAnalytics()
+        });
         break;
       case ResourceType.EventHub():
-        this.addEventHub(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Integration Service Color/event hub.png'),
+          label: 'event hub', x: dropContext.x, y: dropContext.y,
+          azcontext: new EventHub()
+        });
         break;
       case ResourceType.SendGrid():
-        this.addSendGrid(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Integration Service Color/SendGrid Accounts.png'),
+          label: 'sendgrid', x: dropContext.x, y: dropContext.y,
+          azcontext: new SendGrid()
+        });
         break;
       case ResourceType.Relay():
-        this.addRelay(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Integration Service Color/Azure Service Bus Relays.png'),
+          label: 'relay', x: dropContext.x, y: dropContext.y,
+          azcontext: new Relay()
+        });
         break;
   
       case ResourceType.Firewall():
         this.addFirewall(dropContext);
         break;
       case ResourceType.Sentinel():
-        this.addSentinel(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Security Service Color/Azure Sentinel.png'),
+          label: 'sentinel', x: dropContext.x, y: dropContext.y,
+          azcontext: new Sentinel()
+        });
         break;
       case ResourceType.KeyVault():
-        this.addKeyVault(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Security Service Color/Key Vaults.png'),
+          label: 'key vault', x: dropContext.x, y: dropContext.y,
+          azcontext: new KeyVault()
+        });
         break;
       case ResourceType.SecurityCenter():
-        this.addSecurityCenter(dropContext);
+        this.createNonVIRAzureResource({
+          source:  require('../../assets/azure_icons/Security Service Color/Security Center.png'),
+          label: 'security center', x: dropContext.x, y: dropContext.y,
+          azcontext: new SecurityCenter()
+        });
         break;
       case ResourceType.DDoSStandard():
-        this.addDDoSStandard(dropContext);
+        this.createNonVIRAzureResource({
+          source:  require('../../assets/azure_icons/Security Service Color/DDOS Protection Plans.png'),
+          label: 'ddos standard', x: dropContext.x, y: dropContext.y,
+          azcontext: new DDoSStandard()
+        });
+        break;
         break;
       case ResourceType.RecoveryServiceVault():
         this.addRecoveryServiceVault(dropContext);
@@ -2717,13 +3163,33 @@ setBadgeVisibilityOnUnsaveChanges = () => {
     let thisComp = this;
 
     switch (userObject.GraphModel.ResourceType) {
-
       
+      case ResourceType.SecurityCenter():
+        this.ascPropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+      case ResourceType.Batch():
+        this.batchPropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+      case ResourceType.DedicatedHost():
+        this.dedicatedhostPropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
       case ResourceType.RouteTable():
         this.rtPropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
+      case ResourceType.ASG():
+          this.asgPropPanel.current.show(userObject, function(savedUserObject){
+             onContextSaveCallback(Utils.deepClone(savedUserObject));
+          });
+          break;
+        
       case ResourceType.Cognitive():
         this.cognitivePropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
@@ -2749,36 +3215,23 @@ setBadgeVisibilityOnUnsaveChanges = () => {
             onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
-      case ResourceType.NatGateway():
-        this.natgwPropPanel.current.show(userObject, function(savedUserObject){
-            onContextSaveCallback(Utils.deepClone(savedUserObject));
-        });
         break;
       case ResourceType.PrivateEndpoint():
         this.privateendpointPropPanel.current.show(userObject, function(savedUserObject){
             onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
-      case ResourceType.AzFile():
+      case ResourceType.StorageAccount():
         this.azstoragePropPanel.current.show(userObject, function(savedUserObject){
             onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
-      case ResourceType.QueueStorage():
-        this.azstoragePropPanel.current.show(userObject, function(savedUserObject){
-            onContextSaveCallback(Utils.deepClone(savedUserObject));
-        });
-        break;
-      case ResourceType.TableStorage():
-        this.azstoragePropPanel.current.show(userObject, function(savedUserObject){
-            onContextSaveCallback(Utils.deepClone(savedUserObject));
-        });
-        break;
-      case ResourceType.BlobStorage():
-        this.azstoragePropPanel.current.show(userObject, function(savedUserObject){
-            onContextSaveCallback(Utils.deepClone(savedUserObject));
-        });
-        break;
+      case ResourceType.Databox():
+          this.databoxPropPanel.current.show(userObject, function(savedUserObject){
+              onContextSaveCallback(Utils.deepClone(savedUserObject));
+          });
+      break;
+        
       case ResourceType.NSG():
         this.nsgPropPanel.current.show(userObject, function(savedUserObject){
             onContextSaveCallback(Utils.deepClone(savedUserObject));
@@ -2874,6 +3327,12 @@ setBadgeVisibilityOnUnsaveChanges = () => {
             onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
+      case ResourceType.EventHub():
+        this.eventhubPropPanel.current.show(userObject, function(savedUserObject){
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+      break;
+        
       case ResourceType.ISE():
         this.isePropPanel.current.show(userObject, function(savedUserObject){
             onContextSaveCallback(Utils.deepClone(savedUserObject));
@@ -2969,6 +3428,12 @@ setBadgeVisibilityOnUnsaveChanges = () => {
             onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
+      case ResourceType.SQLMI():
+          this.sqlmiPropPanel.current.show(userObject, function(savedUserObject){
+              onContextSaveCallback(Utils.deepClone(savedUserObject));
+          });
+        break;
+        
       case ResourceType.MariaDB():
         this.mariadbPropPanel.current.show(userObject, function(savedUserObject){
             onContextSaveCallback(Utils.deepClone(savedUserObject));
@@ -3092,41 +3557,14 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         });
         break;
       case ResourceType.VNet():
-        //get all subnet names and cidrs
-        // userObject.GraphModel.SubnetsAndCidrs =
-        //   Utils.vnetGetSubnetsAndCidrs(thisComp.graph, cell);
-
         this.vnetPropPanel.current.show(userObject, function(savedUserObject){
             onContextSaveCallback(Utils.deepClone(savedUserObject));
-
         });
         break;
       case ResourceType.Subnet():
           
-        // if(this.azureValidator.isGatewaySubnet(cell))
-        //     return;
-
-        //   //pass into Subnet Prop Panel
-        //   //vnet address and subnet cidrs.
-        //   //This is purely for UI cidr validation, does not affect provisioning
-        //   var vnetCell = cell.parent;
-        //   var vnetProContext=  Utils.TryParseUserObject(vnetCell);
-
-        //   userObject.GraphModel.VNetAddressSpace =
-        //     vnetProContext.userObject.ProvisionContext.AddressSpace;
-
-        //   userObject.GraphModel.SubnetsAndCidrs =
-        //     Utils.vnetGetSubnetsAndCidrs(thisComp.graph, vnetCell, userObject.ProvisionContext.Name);
-          
-        //TODO: 
           this.subnetPropPanel.current.show(userObject, function(savedUserObject){
-            //save values to subnet pro-context
               onContextSaveCallback(Utils.deepClone(savedUserObject));
-
-            //save subnet names and cidrs to VNet pro-context
-            // vnetProContext.userObject.GraphModel.SubnetsAndCidrs = 
-            // Utils.vnetGetSubnetsAndCidrs(thisComp.graph, cell.parent);
-            // thisComp.graph.model.setValue(vnetCell, JSON.stringify(vnetProContext.userObject));
           });
           break;
       case ResourceType.NLB():

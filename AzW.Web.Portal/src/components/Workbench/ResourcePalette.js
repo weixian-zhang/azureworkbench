@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import {InputGroup, Button} from "@blueprintjs/core";
 import { makeStyles } from '@material-ui/core/styles';
+import Toolbar from '@material-ui/core/Toolbar';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -9,6 +10,7 @@ import Badge from '@material-ui/core/Badge';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AppBar from '@material-ui/core/AppBar';
 import Utils from './Helpers/Utils';
+import Container from '@material-ui/core/Container';
 
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
@@ -714,6 +716,24 @@ export default class ResourcePalette extends Component {
               resourceType: ResourceType.VMSS()
             },
             {
+              Name: 'batch',
+              Tooltip: 'Azure Batch',
+              Image: require('../../assets/azure_icons/ComputeServiceColor/Batch Accounts.png'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Batch()
+            },
+            {
+              Name: 'vm dedicated host',
+              Tooltip: 'Dedicated Host',
+              Image: require('../../assets/azure_icons/ComputeServiceColor/azure-dedicatedhost.png'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.DedicatedHost()
+            },
+            {
               Name: 'vm devtest lab',
               Tooltip: 'DevTest Labs',
               Image: require('../../assets/azure_icons/ComputeServiceColor/Azure DevTest Labs.png'),
@@ -876,23 +896,23 @@ export default class ResourcePalette extends Component {
           groupSearchVisible: true,
           resources: [
             {
-                Name: 'blob storage',
-                Tooltip: 'Blob Storage',
+                Name: 'blob table queue file storage',
+                Tooltip: 'Azure Storage Account',
                 Image: require('../../assets/azure_icons/Storage Service Color/Blob Storage.png'),
                 Provisionable: true,
                 IsPng: false,
                 IsVisible:true,
-                ref: this.blobstorageIcon
+                resourceType: ResourceType.StorageAccount()
             },
-            {
-              Name: 'files file',
-              Tooltip: 'Azure File',
-              Image: require('../../assets/azure_icons/azure-storage-files.png'),
-              Provisionable: true,
-              IsPng: false,
-              IsVisible:true,
-              ref: this.azfileIcon
-            },
+            // {
+            //   Name: 'files file',
+            //   Tooltip: 'Azure File',
+            //   Image: require('../../assets/azure_icons/azure-storage-files.png'),
+            //   Provisionable: true,
+            //   IsPng: false,
+            //   IsVisible:true,
+            //   ref: this.azfileIcon
+            // },
             {
               Name: 'file sync',
               Tooltip: 'Azure File Sync',
@@ -900,7 +920,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.azfilesyncIcon
+              resourceType: ResourceType.AzFileSync()
             },
             {
               Name: 'netapp files',
@@ -909,34 +929,16 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.netappfileIcon
-            },
-            {
-              Name: 'queue storage',
-              Tooltip: 'Queue Storage',
-              Image: require('../../assets/azure_icons/Storage Service Color/Queues Storage.png'),
-              Provisionable: true,
-              IsPng: false,
-              IsVisible:true,
-              ref: this.queuestorageIcon
-            },
-            {
-              Name: 'table storage',
-              Tooltip: 'Table Storage',
-              Image: require('../../assets/azure_icons/Storage Service Color/Table Storage.png'),
-              Provisionable: true,
-              IsPng: false,
-              IsVisible:true,
-              ref: this.tablestorageIcon
+              resourceType: ResourceType.NetAppFile()
             },
             {
               Name: 'data box',
-              Tooltip: 'Databox',
+              Tooltip: 'Data Box',
               Image: require('../../assets/azure_icons/Storage Service Color/Data Box.png'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.databoxIcon
+              resourceType: ResourceType.Databox()
             }
           ]
         }
@@ -994,7 +996,7 @@ export default class ResourcePalette extends Component {
             },
             {
               Name: 'sql elastic pool',
-              Tooltip: 'Azure SQL Elastic Pool',
+              Tooltip: ' SQL Elastic Database Pool',
               Image: require('../../assets/azure_icons/Databases Service Color/Elastic Database Pools.png'),
               Provisionable: false,
               IsPng: false,
@@ -1009,15 +1011,6 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.SQLMI()
-            },
-            {
-              Name: 'sql stretch',
-              Tooltip: 'SQL Stretch DB',
-              Image: require('../../assets/azure_icons/Databases Service Color/SQL Server stretch Databases.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.SQLStretchDB()
             },
             {
               Name: 'redis',
@@ -1188,7 +1181,7 @@ export default class ResourcePalette extends Component {
                 Provisionable: false,
                 IsPng: false,
                 IsVisible:true,
-                ref: this.apimIcon
+                resourceType: ResourceType.APIM()
             },
             {
               Name: 'service bus asb',
@@ -1197,7 +1190,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.asbIcon
+              resourceType: ResourceType.ASB()
             },
             {
               Name: 'relays',
@@ -1206,7 +1199,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.relayIcon
+              resourceType: ResourceType.Relay()
             },
             {
               Name: 'logic app',
@@ -1215,16 +1208,16 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.logicAppIcon
+              resourceType: ResourceType.LogicApp()
             },
             {
               Name: 'integration service environment ise',
-              Tooltip: 'Integration Service Environment',
+              Tooltip: 'Integration Service Environment for Logic App',
               Image: require('../../assets/azure_icons/Integration Service Color/Integration Service Environments.png'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.iseIcon
+              resourceType: ResourceType.ISE()
             },
             {
               Name: 'event grid topic',
@@ -1233,7 +1226,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.eventGridTopicIcon
+              resourceType: ResourceType.EventGridTopic()
             },
             {
               Name: 'event grid subscription',
@@ -1242,7 +1235,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.eventGridSubIcon
+              resourceType: ResourceType.EventGridSubscription()
             },
             {
               Name: 'stream analytics',
@@ -1251,7 +1244,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.streamanalyticsIcon
+              resourceType: ResourceType.StreamAnalytics()
             },
             {
               Name: 'event hub',
@@ -1260,7 +1253,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.eventhubIcon
+              resourceType: ResourceType.EventHub()
             },
             {
               Name: 'sendgrid email',
@@ -1269,7 +1262,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              ref: this.sendgridSubIcon
+              resourceType: ResourceType.SendGrid()
             }
           ]
         }
@@ -1380,6 +1373,15 @@ export default class ResourcePalette extends Component {
               resourceType: ResourceType.Automation()
             },
             {
+              Name: 'arc',
+              Tooltip: 'Azure Arc',
+              Image: require('../../assets/azure_icons/Management and Governance Service Color/azure-arc.png'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Arc()
+            },
+            {
               Name: 'ad aad oauth oidc openid',
               Tooltip: 'Azure AD',
               Image: require('../../assets/azure_icons/Identity Service Color/Azure AD.png'),
@@ -1396,6 +1398,15 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.AADB2C()
+            },
+            {
+              Name: 'ad ad domain service',
+              Tooltip: 'Azure AD Domain Service',
+              Image: require('../../assets/azure_icons/Identity Service Color/azuread-domainservice.png'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.AADDomainService()
             }
           ]
         }
@@ -1453,23 +1464,23 @@ export default class ResourcePalette extends Component {
   render() {
     
     return(
-        <div className='sidebar'>
-          <AppBar position="static" color="transparent">
+        <div className="sidebar">
+          <AppBar position="sticky" color="transparent">
             <InputGroup
-                        leftIcon="filter"
-                        rightElement={
-                          <Button
-                            icon="cross"
-                            minimal={true}
-                            onClick={this.handleSearchboxClear} />
-                        }
-                        onChange={this.searchResources}
-                        value={this.state.searchText}
-                        placeholder="Search resources..."
-                        fill={true} />
+              leftIcon="filter"
+              rightElement={
+                <Button
+                  icon="cross"
+                  minimal={true}
+                  onClick={this.handleSearchboxClear} />
+              }
+              onChange={this.searchResources}
+              value={this.state.searchText}
+              placeholder="Search resources..."
+              fill={true} />
           </AppBar>
-          <div className="resourcePalette">
-            {
+          <Container disableGutters="true" maxWidth="sm" style={{maxHeight: '100%', overflow: 'auto'}}>
+          {
               this.state.filteredResources.map(rsc => {
                 return (
                   <ExpansionPanel
@@ -1512,8 +1523,7 @@ export default class ResourcePalette extends Component {
                 )
               })
             }
-            
-          </div>
+          </Container>
         </div>
     );
   };
@@ -1600,74 +1610,7 @@ export default class ResourcePalette extends Component {
       helper: 'clone',
       zIndex: 10000,
       appendTo: "body"
-      //TODO: drag VIR and highlight subnet
-      // drag: function (evt, ui) {
-      //   var diagram = thisComp.props.DiagramEditor.current.getDiagram();
-
-      //   var mx = evt.clientX; // - bbox.left * ((can.width / pixelratio) / bbw);
-      //   var my = evt.clientY; // - bbox.top * ((can.height / pixelratio) / bbh);
-      //   var point = diagram.transformViewToDoc(new go.Point(mx, my));
-      //   var subnet = diagram.findPartAt(point, true);
-      //   if (subnet instanceof go.Node) {
-      //       var azcontext = subnet.data.azcontext;
-      //       if(azcontext != undefined || azcontext != null) {
-      //         if(azcontext.ProvisionContext.ResourceType == ResourceType.Subnet()) {
-      //           highlightNode(diagram,subnet);
-      //         }
-      //       }
-      //   }
-      //   else
-      //     highlightNode(diagram,null);
-      // },
-      // stop: function () {
-      //   var diagram = thisComp.props.DiagramEditor.current.getDiagram();
-      //   highlightNode(diagram,null);
-      // }
-    });
-
-    // function highlightNode(diagram, node) {  // may be null
-    //   var oldskips = diagram.skipsUndoManager;
-    //   diagram.skipsUndoManager = true;
-    //   diagram.startTransaction("highlight");
-    //   if (node !== null) {
-    //     diagram.highlight(node);
-    //   } else {
-    //     diagram.clearHighlighteds();
-    //   }
-    //   diagram.commitTransaction("highlight");
-    //   diagram.skipsUndoManager = oldskips;
-    // }
-
-    // $("#diagramEditor").bind({
-    //   dragover: function(e) {
-    //     var a = 'a';
-    //   },
-    //   dragleave: function(e) {
-    //     var a = 'a';
-    //   }
-    // });
-
-    //highlight subnet for VIR
-    //$('#diagramEditor').bind('dragover', function(){
-        // var diagramEditor = event.target;
-
-        // if (!(diagramEditor instanceof HTMLCanvasElement)) return;
-
-        // var diagram = this.props.DiagramEditor.getDiaram();
-
-        // var mx = event.clientX; // - bbox.left * ((can.width / pixelratio) / bbw);
-        // var my = event.clientY; // - bbox.top * ((can.height / pixelratio) / bbh);
-        // var point = diagram.transformViewToDoc(new go.Point(mx, my));
-        // var subnet = diagram.findPartAt(point, true);
-
-        // if (subnet instanceof go.Node) {
-        //   highlightNode(subnet);
-        // }
-
-
-    //});
-
-    
+    });    
 
     $("#diagramEditor").droppable({
       accept: ".tile-item", 
@@ -1685,7 +1628,7 @@ export default class ResourcePalette extends Component {
           });
         }
         else 
-          thisComp.props.addResourceToDiagramEditor({
+          thisComp.props.DiagramEditor.current.addResourceToEditorFromPalette({
             resourceType: resourceType,
             x: x,
             y: y

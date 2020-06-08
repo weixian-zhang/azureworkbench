@@ -41,38 +41,9 @@ export default class FirewallPropPanel extends Component {
           className="propPanelDrawer">
               <Grid container spacing={12} className="propPanelGrid">
                 <Grid item xs={12}>
-                  <AppBar position="static" color = "transparent">
-                    <Tabs  value={this.state.value}  onChange={this.handleChange} >
-                      <Tab label="Diagram" value="diagram" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'diagram' ? "bold" : "" }}/>
-                      <Tab label="Provision" value="provision" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'provision' ? "bold" : "" }}/>
-                      <Tab label="Calculator" value="calculator" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'calculator' ? "bold" : "" }}/>
-                    </Tabs>
-                  </AppBar>
-                  <Typography
-                      className = "propPanelTabContent"
-                      hidden={this.state.value !== 'diagram'}>
-                        <FormGroup
-                              label="Icon Display Name"
-                              labelFor="icon-display-name"
-                              inline={true}
-                              intent={Intent.PRIMARY}>
-                              <div class="bp3-input-group .modifier">
-                                                                     <textarea class="bp3-input .modifier bp3-large bp3-fill"
-                                        style={{'max-width':'250px', 'max-height':'200px'}}
-                                        maxlength="80"
-                                        dir="auto"
-                                        prop='DisplayName'
-                                        value={this.state.userObject.GraphModel.DisplayName}
-                                        onChange={this.onDiagramIconNameChange}
-                                        autoFocus ={true}
-                                        />
-                              </div>
-                        </FormGroup>
-                    </Typography>
                     
                     {this.renderProvisionTab()}
 
-                    {this.renderCalculatorTab()}
                 </Grid>
               </Grid>
       </Drawer>
@@ -80,8 +51,6 @@ export default class FirewallPropPanel extends Component {
   }
 
   renderProvisionTab() {
-    if(this.state.value != 'provision')
-      return null;
     
     return (
         <div className="propPanelTabContent">

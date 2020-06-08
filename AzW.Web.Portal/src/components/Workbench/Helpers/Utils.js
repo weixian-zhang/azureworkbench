@@ -7,9 +7,12 @@ export default class Utils
 {
     //follows Tooltip name
     static isResourceTypeVIR(resourceType) {
-        var VIR = [ResourceType.VM(), ResourceType.WindowsVM(), ResourceType.LinuxVM(),ResourceType.VMSS(),
+        var VIR = [ResourceType.VM(), ResourceType.WindowsVM(), ResourceType.LinuxVM(), ResourceType.VMSS(),
+            ResourceType.Batch(), ResourceType.HdInsight(), ResourceType.Databricks(), ResourceType.AADDomainService(),
+            ResourceType.Kubernetes(),ResourceType.NetAppFile(), ResourceType.VirtualNetworkGateway(),
             ResourceType.ASE(),ResourceType.AppGw(),ResourceType.Firewall(),ResourceType.Bastion(),
-            ResourceType.VMSS(), ResourceType.SQLMI()];
+            ResourceType.VMSS(), ResourceType.SQLMI(), ResourceType.ISE(),
+            ResourceType.PrivateEndpoint()];
             
         for(var x of VIR) {
             if(x == resourceType)
@@ -26,6 +29,24 @@ export default class Utils
             return true;
         else
             return false;
+    }
+
+    static isDedicatedSubnetVIR(node) {
+
+        if(!Utils.isAzContextExist(node))
+             throw 'isDedicatedSubnetVIR - node.data.azcontext is null';
+
+        var VIR = [ ResourceType.ASE(),ResourceType.AppGw(), ResourceType.ISE(),
+            ResourceType.Firewall(),ResourceType.Bastion(), ResourceType.VirtualNetworkGateway(),
+            ResourceType.SQLMI(), ResourceType.NetAppFile()];
+        
+        var resourceType = node.data.azcontext.ProvisionContext.ResourceType;
+            
+        for(var x of VIR) {
+            if(x == resourceType)
+                return true;
+        }
+        return false;
     }
 
     static isNonVIRAzResource(part) {
@@ -63,14 +84,14 @@ export default class Utils
     };
 
     static isVIRinDedicatedSubnet(subnetNode) {
-
+        
         if(subnetNode.memberParts.count > 0)
             return false;
         else
             return true;
     }
 
-    static isVMinSubnetTakenByVIRRequiredDedicatedSubnet(subnet) {
+    static isSubnetTakenByDedicatedSubnetVIR(subnet) {
         
         var it = subnet.memberParts.iterator;
         while(it.next()) {
@@ -79,23 +100,6 @@ export default class Utils
            if(Utils.isDedicatedSubnetVIR(node)) {
             return true;
             }
-        }
-        return false;
-    }
-
-    static isDedicatedSubnetVIR(node) {
-
-        if(!Utils.isAzContextExist(node))
-             throw 'isDedicatedSubnetVIR - node.data.azcontext is null';
-
-        var VIR = [ ResourceType.ASE(),ResourceType.AppGw(),
-            ResourceType.Firewall(),ResourceType.Bastion(), ResourceType.SQLMI()];
-        
-        var resourceType = node.data.azcontext.ProvisionContext.ResourceType;
-            
-        for(var x of VIR) {
-            if(x == resourceType)
-                return true;
         }
         return false;
     }

@@ -3,6 +3,8 @@ export default class ResourceType
     static WindowsVM() {return 'vmWindows'; }
     static LinuxVM() {return 'vmLinux'; }
     static VM() {return 'vm'; }
+    static Batch() {return 'batch'; }
+    static DedicatedHost() {return 'dedicatedhost'; }
     static VMSS() {return 'vmss'; }
     static AppService() {return 'appsvc'; }
     static ASE() {return 'ase'; }
@@ -32,6 +34,7 @@ export default class ResourceType
     static ASG() {return 'asg'; }
     static NIC() {return 'nic'; }
     static NatGateway() {return 'natgw'; }
+    static StorageAccount() {return 'storageaccount'; }
     static BlobStorage() {return 'blobstorage'; }
     static AzFile() {return 'azfile'; }
     static AzFileSync() {return 'azfilesync'; }
@@ -87,9 +90,11 @@ export default class ResourceType
     static AppInsights() {return 'appinsights'; }
     static LogAnalytics() {return 'loganalytics'; }
     static Automation() {return 'automation'; }
+    static Arc() {return 'arc'; }
 
     static AAD() {return 'aad'; }
     static AADB2C() {return 'aadb2c'; }
+    static AADDomainService() {return 'aaddomainservice'; }
     static IoTHub() {return 'iothub'; }
     static IoTCentral() {return 'iotcentral'; }
     static AzureMaps() {return 'maps'; }

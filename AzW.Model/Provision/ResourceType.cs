@@ -30,9 +30,7 @@ namespace AzW.Model
             public const string CDN = "cdn";
             public const string ASG = "asg";
             public const string NIC = "nic";
-            public const string BlobStorage = "blobstorage";
-            public const string QueueStorage = "queuestorage";
-            public const string TableStorage = "tablestorage";
+            public const string StorageAccount = "storageaccount";
             public const string AzFile = "azfile";
             public const string AzFileSync = "azfilesync";
             public const string NetAppFile = "netappfile";

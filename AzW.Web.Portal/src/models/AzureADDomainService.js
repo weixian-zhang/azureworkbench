@@ -1,19 +1,18 @@
 import ResourceType from './ResourceType'
-export default class AzFile
+export default class AzureADDomainService
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.AzFile(),
+            ResourceType: ResourceType.AADDomainService(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.AzFile(),
+            ResourceType: ResourceType.AADDomainService(),
             Name: '',
             Location: '',
             ResourceGroupName: '',
-            SkuName: ''
         };
         this.CalculatorContext = {
             IsFree: false,

@@ -10,15 +10,9 @@ export default class AzureCDN
 
         this.ProvisionContext = {
             ResourceType: ResourceType.CDN(),
-            Deployable: true,
-            HighCost: false,
-            
             Name: '',
             Location: '',
-            Tags: [],
-
-            VNetAddress: '',
-            SubnetName: ''
+            ResourceGroupName: ''
         };
         this.CalculatorContext = {
             IsFree: false,

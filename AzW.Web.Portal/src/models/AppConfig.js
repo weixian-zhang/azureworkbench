@@ -10,12 +10,9 @@ export default class AppConfig
 
         this.ProvisionContext = {
             ResourceType: ResourceType.AppConfig(),
-            Deployable: true,
-            HighCost: false,
-            
             Name: '',
             Location: '',
-            Tags: [],
+            ResourceGroupName: ''
         };
         this.CalculatorContext = {
             IsFree: false,

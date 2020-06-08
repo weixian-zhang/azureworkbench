@@ -92,7 +92,7 @@ export default class AppServicePropPanel extends Component {
               justify="center"
               alignItems="center"
               spacing={1} style={{marginTop: '15px', width: '100%'}}>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+              <Grid container item direction="row" xs="12" justify="flex-start" alignItems="center">
                 <Grid item sm={4}>
                     <label>Name</label>
                 </Grid>
@@ -106,7 +106,7 @@ export default class AppServicePropPanel extends Component {
                     }} />
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+              <Grid container item direction="row" xs="12" justify="flex-start" alignItems="center">
                 <Grid item sm={4}>
                     <label>Resource Group</label>
                 </Grid>
@@ -122,7 +122,7 @@ export default class AppServicePropPanel extends Component {
                   }/>
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+              <Grid container item direction="row" xs="12"  justify="flex-start" alignItems="center">
                 <Grid item sm={4}>
                     <label>Location</label>
                 </Grid>
@@ -138,7 +138,7 @@ export default class AppServicePropPanel extends Component {
                   }/>
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+              <Grid container item direction="row" xs="12"  justify="flex-start" alignItems="center">
                 <Grid item sm={4}>
                     <label>App Service Plan Name</label>
                 </Grid>
@@ -152,7 +152,7 @@ export default class AppServicePropPanel extends Component {
                     }} />
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
+              <Grid container item direction="row" xs="12"  justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
                 <Grid item sm={3}>
                   <Switch checked={this.state.userObject.ProvisionContext.IsLinux} label="Is Linux"
                     onChange={(e) => {
@@ -162,7 +162,7 @@ export default class AppServicePropPanel extends Component {
                     }} />
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+              <Grid container item direction="row" xs="12"  justify="flex-start" alignItems="center">
                 <Grid item sm={4}>
                     <label>Tier</label>
                 </Grid>
@@ -191,7 +191,7 @@ export default class AppServicePropPanel extends Component {
                         rightIcon="double-caret-vertical" style={{width: '170px', maxWidth: '170px'}}/>
                   </Select>
                 </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+              <Grid container item direction="row" xs="12"  justify="flex-start" alignItems="center">
                 <Grid item sm={4}>
                     <label>Runtime Stack</label>
                 </Grid>

@@ -10,12 +10,9 @@ export default class AppInsights
 
         this.ProvisionContext = {
             ResourceType: ResourceType.AppInsights(),
-            Deployable: true,
-            HighCost: false,
-            
             Name: '',
             Location: '',
-            Tags: [],
+            ResourceGroupName: ''
         };
         this.CalculatorContext = {
             IsFree: false,

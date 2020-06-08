@@ -77,17 +77,9 @@ namespace AzW.Infrastructure.AzureServices
                                 WebApp webapp = jObj.ToObject<WebApp>();
                                 await CreateAppService(webapp);
                             break;
-                            case ResourceType.BlobStorage:
+                            case ResourceType.StorageAccount:
                                 Model.StorageAccount blob = jObj.ToObject<Model.StorageAccount>();
                                 await CreateStorageAccountAsync(blob);
-                            break;
-                            case ResourceType.QueueStorage:
-                                Model.StorageAccount queue = jObj.ToObject<Model.StorageAccount>();
-                                await CreateStorageAccountAsync(queue);
-                            break;
-                            case ResourceType.TableStorage:
-                                Model.StorageAccount table = jObj.ToObject<Model.StorageAccount>();
-                                await CreateStorageAccountAsync(table);
                             break;
                             case ResourceType.AzFile:
                                 Model.StorageAccount file = jObj.ToObject<Model.StorageAccount>();

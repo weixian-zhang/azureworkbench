@@ -50,6 +50,7 @@ export default class Workbench extends Component {
 
   initDropPNGSVGAZWBFileOnCanvas() {
     var thisComp = this;
+
     $("#diagramEditor").on("dragover", function(event) {
       event.preventDefault();  
       event.stopPropagation();
@@ -63,9 +64,11 @@ export default class Workbench extends Component {
     });
     
     $("#diagramEditor").on("drop", function(event) {
-        event.preventDefault();  
-        event.stopPropagation();
-        thisComp.diagramEditor.current.onDropPNGAZWBFileHandler(event);
+      if(event.target.className == '') { //icons in resourcepalette classname is 'diagrameditor ui-draggable'
+          event.preventDefault();  
+          event.stopPropagation();
+          thisComp.diagramEditor.current.onDropPNGAZWBFileHandler(event);
+      }
     });
     // var editor = document.getElementById("diagramEditor");
     // editor.addEventListener("dragenter", function(evt) {

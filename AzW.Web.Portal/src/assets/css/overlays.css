@@ -68,7 +68,7 @@
       background-color: #fff;
       border: 1px solid #000;
       text-align:center;
-      height: 230px;/*height needs to be set*/
+      height: 210px;/*height needs to be set*/
       width: 600px;
       margin: auto;
       position: fixed;
@@ -76,7 +76,6 @@
       right: 0;
       bottom: 0;
       left: 0;
-      overflow: auto;
     }
   
     .overlay-preview {

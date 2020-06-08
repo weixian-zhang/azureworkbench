@@ -1,19 +1,18 @@
 import ResourceType from './ResourceType'
-export default class TableStorage
+export default class DedicatedHost
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.TableStorage(),
+            ResourceType: ResourceType.DedicatedHost(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.TableStorage(),
+            ResourceType: ResourceType.DedicatedHost(),
             Name: '',
             Location: '',
             ResourceGroupName: '',
-            SkuName: ''
         };
         this.CalculatorContext = {
             IsFree: false,

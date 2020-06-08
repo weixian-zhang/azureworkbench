@@ -1,19 +1,18 @@
 import ResourceType from './ResourceType'
-export default class BlobStorage
+export default class AzureArc
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.BlobStorage(),
+            ResourceType: ResourceType.Arc(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.BlobStorage(),
+            ResourceType: ResourceType.Arc(),
             Name: '',
             Location: '',
-            ResourceGroupName: '',
-            SkuName: ''
+            ResourceGroupName: ''
         };
         this.CalculatorContext = {
             IsFree: false,
