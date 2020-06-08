@@ -45,19 +45,6 @@ export default class ResourcePalette extends Component {
   }
   
 
-  componentWillMount() {
-    
-      var useStyles = makeStyles(theme => ({
-        root: {
-          width: '100%',
-        },
-        heading: {
-          fontSize: theme.typography.pxToRem(15),
-          fontWeight: theme.typography.fontWeightRegular,
-        },
-      }));
-  }
-
   componentDidMount = () =>  
   {
       this.makeIconsDraggable();
@@ -968,13 +955,22 @@ export default class ResourcePalette extends Component {
               resourceType: ResourceType.MariaDB()
             },
             {
-              Name: 'sql',
+              Name: 'sql tsql',
               Tooltip: 'Azure SQL',
               Image: require('../../assets/azure_icons/Databases Service Color/SQL Databases.png'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.SQLDB()
+            },
+            {
+              Name: 'elastic job agent tsql script',
+              Tooltip: 'Elastic Job Agent',
+              Image: require('../../assets/azure_icons/Databases Service Color/azure-sqlelasticjobagent.png'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.ElasticJobAgent()
             },
             {
               Name: 'cosmos mongo cassandra graph documentdb',
@@ -1356,7 +1352,7 @@ export default class ResourcePalette extends Component {
             },
             {
               Name: 'log analytics monitor',
-              Tooltip: 'Log Analytics',
+              Tooltip: 'Log Analytics (AzMonitor)',
               Image: require('../../assets/azure_icons/Management and Governance Service Color/Log Analytics Workspaces.png'),
               Provisionable: false,
               IsPng: false,
@@ -1479,7 +1475,7 @@ export default class ResourcePalette extends Component {
               placeholder="Search resources..."
               fill={true} />
           </AppBar>
-          <Container disableGutters="true" maxWidth="sm" style={{maxHeight: '100%', overflow: 'auto'}}>
+          <Container disableGutters="true">
           {
               this.state.filteredResources.map(rsc => {
                 return (

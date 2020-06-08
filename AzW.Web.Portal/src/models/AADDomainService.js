@@ -1,15 +1,15 @@
 import ResourceType from './ResourceType'
-export default class AADB2C
+export default class AADDomainService
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.AADB2C(),
+            ResourceType: ResourceType.AADDomainService(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.AADB2C(),
+            ResourceType: ResourceType.AADDomainService(),
             Name: '',
             Location: '',
             ResourceGroupName: ''

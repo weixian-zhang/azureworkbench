@@ -30,6 +30,7 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
 import mxClientOverrides from './Helpers/mxClientOverrides';
 
 //models
+import AADDomainService from "../../models/AADDomainService";
 import SendGrid from "../../models/SendGrid";
 import SecurityCenter from "../../models/SecurityCenter";
 import Databox from "../../models/Databox";
@@ -115,10 +116,14 @@ import ResourceType from '../../models/ResourceType';
 import ASE from "../../models/ASE";
 import NSG from "../../models/NSG";
 import RouteTable from "../../models/RouteTable";
+import Arc from "../../models/Arc";
+import ElasticJobAgent from "../../models/ElasticJobAgent";
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
 
 //property panels
-
+import ElasticJobAgentPropPanel from './PropPanel/ElasticJobAgentPropPanel';
+import AADDomainServicePropPanel from './PropPanel/AADDomainServicePropPanel';
+import AzureArcPropPanel from './PropPanel/AzureArcPropPanel';
 import SecurityCenterPropPanel from './PropPanel/SecurityCenterPropPanel';
 import DataBoxPropPanel from './PropPanel/DataBoxPropPanel';
 import ApplicationSecurityGroupPropPanel from './PropPanel/ApplicationSecurityGroupPropPanel';
@@ -291,6 +296,9 @@ import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
         <MLServiceWorkspacePropPanel ref={this.mlsvcworkspacePropPanel} /> 
 
         <NatGatewayPropPanel ref={this.natgwPropPanel} />
+        <AzureArcPropPanel ref={this.arcPropPanel} />
+        <ElasticJobAgentPropPanel ref={this.elasticjobagentPropPanel} />
+        <AADDomainServicePropPanel ref={this.aaddomainservicePropPanel} />
         <SecurityCenterPropPanel  ref={this.ascPropPanel} />
         <DataBoxPropPanel ref={this.databoxPropPanel} />
         <ApplicationSecurityGroupPropPanel ref={this.asgPropPanel} />
@@ -400,6 +408,9 @@ import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
     this.databoxPropPanel = React.createRef();
     this.natgwPropPanel = React.createRef();
     this.ascPropPanel = React.createRef();
+    this.elasticjobagentPropPanel = React.createRef();
+    this.aaddomainservicePropPanel = React.createRef();
+    this.arcPropPanel = React.createRef();
     this.rtPropPanel = React.createRef();
     this.asgPropPanel = React.createRef();
     this.privateendpointPropPanel = React.createRef();
@@ -2859,8 +2870,15 @@ setBadgeVisibilityOnUnsaveChanges = () => {
           azcontext: new SQLDB()
         });
         break;
+      case ResourceType.ElasticJobAgent():
+          this.createNonVIRAzureResource({
+            source: require('../../assets/azure_icons/Databases Service Color/azure-sqlelasticjobagent.png'),
+            label: 'elastic job agent', x: dropContext.x, y: dropContext.y,
+            azcontext: new ElasticJobAgent()
+          });
+        break;
       case ResourceType.CosmosDB():
-        this.createNonVIRAzureResource({
+          this.createNonVIRAzureResource({
           source:require('../../assets/azure_icons/Databases Service Color/Azure Cosmos DB.png'),
           label: 'cosmos db', x: dropContext.x, y: dropContext.y,
           azcontext: new Cosmos()
@@ -3122,35 +3140,80 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
         break;
       case ResourceType.RecoveryServiceVault():
-        this.addRecoveryServiceVault(dropContext);
+        this.createNonVIRAzureResource({
+          source:  require('../../assets/azure_icons/Management and Governance Service Color/SiteRecovery.png'),
+          label: 'site recovery', x: dropContext.x, y: dropContext.y,
+          azcontext: new RecoveryServiceVault()
+        });
         break;
       case ResourceType.AppInsights():
-        this.addAppInsights(dropContext);
+        this.createNonVIRAzureResource({
+          source:  require('../../assets/azure_icons/Management and Governance Service Color/AppInsights.png'),
+          label: 'app insights', x: dropContext.x, y: dropContext.y,
+          azcontext: new AppInsights()
+        });
         break;
       case ResourceType.LogAnalytics():
-        this.addLogAnalytics(dropContext);
+        this.createNonVIRAzureResource({
+          source:  require('../../assets/azure_icons/Management and Governance Service Color/Log Analytics Workspaces.png'),
+          label: 'log analytics', x: dropContext.x, y: dropContext.y,
+          azcontext: new LogAnalytics()
+        });
         break;
       case ResourceType.Automation():
-        this.addAutomation(dropContext);
-        break;
+        this.createNonVIRAzureResource({
+          source:  require('../../assets/azure_icons/Management and Governance Service Color/Automation Accounts.png'),
+          label: 'automation', x: dropContext.x, y: dropContext.y,
+          azcontext: new Automation()
+        });
+      break;
+      case ResourceType.Arc():
+        this.createNonVIRAzureResource({
+          source:  require('../../assets/azure_icons/Management and Governance Service Color/azure-arc.png'),
+          label: 'azure arc', x: dropContext.x, y: dropContext.y,
+          azcontext: new Arc()
+        });
+      break;
 
       case ResourceType.AAD():
-        this.addAAD(dropContext);
-        break;
+        this.createPictureShape
+        ({source: require('../../assets/azure_icons/Identity Service Color/Azure AD.png'),
+          label: 'aad', x: dropContext.x, y: dropContext.y});
+      break;
       case ResourceType.AADB2C():
-        this.addAADB2C(dropContext);
+        this.createNonVIRAzureResource({
+          source:  require('../../assets/azure_icons/Identity Service Color/Azure AD B2C.png'),
+          label: 'aad b2c', x: dropContext.x, y: dropContext.y,
+          azcontext: new AADB2C()
+        });
         break;
       case ResourceType.IoTHub():
-        this.addIoTHub(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Internet of Things Service Color/Azure IoT Hub.png'),
+          label: 'iot hub', x: dropContext.x, y: dropContext.y,
+          azcontext: new IoTHub()
+        });
         break;
       case ResourceType.IoTCentral():
-        this.addIoTCentral(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Internet of Things Service Color/IoT Central Applications.png'),
+          label: 'iot central', x: dropContext.x, y: dropContext.y,
+          azcontext: new IoTCentral()
+        });
       break;
       case ResourceType.AzureMaps():
-        this.addAzureMaps(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Internet of Things Service Color/Azure Maps.png'),
+          label: 'maps', x: dropContext.x, y: dropContext.y,
+          azcontext: new Maps()
+        });
         break;
       case ResourceType.TimeSeriesInsights():
-        this.addTimeSeriesInsights(dropContext);
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Internet of Things Service Color/Time Series Insights environments.png'),
+          label: 'time series insights', x: dropContext.x, y: dropContext.y,
+          azcontext: new TimeSeriesInsights()
+        });
         break;
 
       default:
@@ -3164,6 +3227,21 @@ setBadgeVisibilityOnUnsaveChanges = () => {
 
     switch (userObject.GraphModel.ResourceType) {
       
+    case ResourceType.AADDomainService():
+      this.aaddomainservicePropPanel.current.show(userObject, function(savedUserObject){
+         onContextSaveCallback(Utils.deepClone(savedUserObject));
+      });
+      break;
+    case ResourceType.ElasticJobAgent():
+      this.elasticjobagentPropPanel.current.show(userObject, function(savedUserObject){
+         onContextSaveCallback(Utils.deepClone(savedUserObject));
+      });
+      break;
+      case ResourceType.Arc():
+        this.arcPropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
       case ResourceType.SecurityCenter():
         this.ascPropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));

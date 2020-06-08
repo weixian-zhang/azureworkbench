@@ -1,18 +1,18 @@
 import ResourceType from './ResourceType'
-export default class AADB2C
+export default class Arc
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.AADB2C(),
+            ResourceType: ResourceType.Arc(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.AADB2C(),
+            ResourceType: ResourceType.Arc(),
             Name: '',
             Location: '',
-            ResourceGroupName: ''
+            ResourceGroupName: '',
         };
         this.CalculatorContext = {
             IsFree: false,

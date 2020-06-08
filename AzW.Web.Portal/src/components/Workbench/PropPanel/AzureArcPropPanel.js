@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Maps from '../../../models/Maps';
+import Arc from '../../../models/Arc';
 import { FormGroup, Drawer, Intent, Button, Switch } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
 import Tabs from '@material-ui/core/Tabs';
@@ -10,13 +10,13 @@ import SelectLocation from '../SelectLocation';
 import SelectResourceGroup from '../SelectResourceGroup';
 import Utils from '../Helpers/Utils';
 
-export default class MapsPropPanel extends Component {
+export default class AzureArcPropPanel extends Component {
   constructor(props) {
       super(props);
 
       this.state ={
         isOpen: false,
-        userObject: new Maps(),
+        userObject: new Arc(),
 
         saveCallback: function () {},
       }
@@ -28,7 +28,7 @@ export default class MapsPropPanel extends Component {
   render = () => {
     return (
       <Drawer
-          title="Azure Maps Properties"
+          title="Arc Properties"
           autoFocus= {true}
           canEscapeKeyClose= {true}
           canOutsideClickClose= {true}

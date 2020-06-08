@@ -110,7 +110,7 @@ div.mxRubberband {
   position: relative;
   flex-grow: 0;
   width: 275px;
-  overflow-y: hidden;
+  overflow-y: auto;
   overflow-x: hidden;
 }
 

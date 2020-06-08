@@ -47,6 +47,7 @@ export default class ResourceType
     static SQLDB() {return 'sqldb'; }
     static CosmosDB() {return 'cosmos'; }
     static MySQL() {return 'mysql'; }
+    static ElasticJobAgent() {return 'elasticjobagent'; }
     static SQLElasticPool() {return 'sqlelasticpool'; }
     static SQLMI() {return 'sqlmi'; }
     static SQLStretchDB() {return 'sqlstretchdb'; }
