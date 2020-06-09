@@ -8,7 +8,6 @@ import {InputGroup, Classes, Button, Intent, Overlay, Toaster, Position} from "@
 import * as go from 'gojs';
 import { PanningTool } from 'gojs';
 import './GojsExtensions/Figures';
-import * as LocalStorageCommandHandler from './GojsExtensions/LocalStorageCommandHandler';
 
 import GoNodeType from './Helpers/GoNodeType';
 
@@ -217,6 +216,8 @@ import GojsManager from "./Helpers/GojsManager";
 import Function from "../../models/Function";
 import IPCIDR  from 'ip-cidr';
 import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
+import LocalStorageCommandHandler from './GojsExtensions/LocalStorageCommandHandler';
+import OrthogonalLinkReshapingTool from './GojsExtensions/LinkReshaping';
 
  export default class DiagramEditor extends Component {
  
@@ -498,17 +499,10 @@ import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
           initialContentAlignment: go.Spot.Center,
           initialAutoScale: go.Diagram.Uniform,
           "undoManager.isEnabled": true,
-          'animationManager.isEnabled': false,  // turn off automatic animations
+          'animationManager.isEnabled': false,  // turn off automatic animation
 
-          //commandHandler: new LocalStorageCommandHandler(),
+          //"linkReshapingTool": new OrthogonalLinkReshapingTool(),
 
-          // "resizingTool.computeMinSize": function() {
-          //   var group = this.adornedObject.part;
-          //   var membnds = group.diagram.computePartsBounds(group.memberParts);
-          //   membnds.addMargin(GroupMargin);
-          //   membnds.unionPoint(group.location);
-          //   return membnds.size;
-          // },
           autoScrollRegion: new go.Margin(2, 2, 2, 2),
           allowHorizontalScroll: true,
           allowVerticalScroll : true,
@@ -533,35 +527,36 @@ import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
           allowClipboard: true,
           
           "draggingTool.dragsLink": true,
-          "linkingTool.isUnconnectedLinkValid": true,
           "relinkingTool.isUnconnectedLinkValid": true,
-          
-          // "draggingTool.isGridSnapEnabled": false,
-
-          // "InitialLayoutCompleted": function(e) {
-          //   // if not all Nodes have real locations, force a layout to happen
-          //   if (!e.diagram.nodes.all(function(n) { return n.location.isReal(); })) {
-          //     e.diagram.layoutDiagram(true);
-          //   }
-          // }//,
-          // "ModelChanged": function(e) {
-          //   if (e.isTransactionFinished) {
-          //     //thisComp.setState({incrementalChanges: thisComp.diagram.model.toIncrementalJson(e)});
-          //     // this records each Transaction as a JSON-format string
-          //     //thisComp.saveDiagramToBrowser(thisComp.diagram.model.toIncrementalJson(e));
-          //   }
-          // },
+          "linkingTool.isUnconnectedLinkValid": true,
+          "linkingTool.temporaryLink":
+              this.$(go.Link,
+                {
+                  routing: go.Link.AvoidsNodes,
+                  curve: go.Link.JumpOver,
+                  corner: 5, toShortLength: 4,
+                  relinkableFrom: true,
+                  relinkableTo: true,
+                  reshapable: true,
+                  resegmentable: true
+                },
+                new go.Binding("points").makeTwoWay(),
+                this.$(go.Shape, { strokeWidth: 1.5 })
+              ),
+          "linkingTool.archetypeLinkData": { 
+            fromArrow: '',
+            toArrow: 'Standard',
+            stroke: 'black',
+            strokeWidth: 1.5,
+            strokeDashArray: null,
+            nodetype: GoNodeType.Link(),
+            category: 'ortho'
+          }
       });
     this.diagram.layout.isInitial = false;
 
-    //drag scroll
-//https://forum.nwoods.com/t/highlight-the-autoscrollregion-to-aware-user-to-scroll-diagram-while-dragging/11162/2
-
     this.diagram.scrollMode = go.Diagram.InfiniteScroll;
-    
-    // temporary links used by LinkingTool and RelinkingTool are also orthogonal:
-    this.diagram.toolManager.linkingTool.temporaryLink.routing = go.Link.Orthogonal;
-    this.diagram.toolManager.relinkingTool.temporaryLink.routing = go.Link.Orthogonal;
+
 
     this.initDiagramBehaviors();
 
@@ -579,12 +574,20 @@ initDiagramBehaviors() {
 
   this.initTemplates();
 
+  //this.initCrossBrowserDiagramCopyPaste();
+
   this.initPanningwithRightMouseClick();
 
   this.initDiagramModifiedEvent();
 
   this.generalContextmenu = this.initContextMenu();
   this.diagram.contextMenu = this.generalContextmenu;
+}
+
+initCrossBrowserDiagramCopyPaste() {
+  require(["./GojsExtensions/LocalStorageCommandHandler"], function(app) {
+    app.init();
+  });
 }
 
 initPanningwithRightMouseClick() {
@@ -656,7 +659,15 @@ createTextTemplate() {
           new go.Binding('stroke', 'stroke').makeTwoWay(),
           new go.Binding('font', 'font').makeTwoWay(),
           new go.Binding("text").makeTwoWay()
-        )
+        ),
+          this.makePort("TL", go.Spot.TopLeft, go.Spot.Top, true, true),
+          this.makePort("BL", go.Spot.BottomLeft, go.Spot.Top, true, true),
+          this.makePort("TR", go.Spot.TopRight, go.Spot.Top, true, true),
+          this.makePort("BR", go.Spot.BottomRight,  go.Spot.Top, true, true),
+          this.makePort("T", go.Spot.Top,  go.Spot.TopSide, true, true),
+          this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true),
+          this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
+          this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true)
     );
 
     return textTemplate;
@@ -710,10 +721,10 @@ createPictureShapeTemplate() {
           new go.Binding("font").makeTwoWay(),
           new go.Binding("stroke").makeTwoWay())
         ),
-        this.makePort("T", go.Spot.Top, go.Spot.TopSide, true, true),
-        this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
-        this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
-        this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true)
+          this.makePort("T", go.Spot.Top,  go.Spot.TopSide, true, true),
+          this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true),
+          this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
+          this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true)
     );
 
   return template;
@@ -837,10 +848,10 @@ createNonVIRAzureResourceTemplate() {
             new go.Binding("stroke").makeTwoWay()
             ),
           ),
-          this.makePort("T", go.Spot.Top, go.Spot.TopSide, true, true),
+          this.makePort("T", go.Spot.Top,  go.Spot.TopSide, true, true),
+          this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true),
           this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
-          this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
-          this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true)
+          this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true)
       );
 
   return template;
@@ -850,7 +861,7 @@ createShapeTemplate() {
 
   var thisComp = this;
 
-  var shapeTemplate = this.$(go.Node, "Auto",
+  var shapeTemplate = this.$(go.Node, "Spot",
       {
         movable: true,
         selectable: true,
@@ -885,16 +896,24 @@ createShapeTemplate() {
         new go.Binding("stroke", "textStroke").makeTwoWay(),
         new go.Binding("font").makeTwoWay()),
 
-        this.makePort("T", go.Spot.Top, go.Spot.TopSide, true, true),
-        this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
-        this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
-        this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true)
+        // this.makePort("T", go.Spot.Top,  go.Spot.TopSide, true, true),
+        //   this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true),
+        //   this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
+        //   this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true)
+        // this.makeShapePort("TL", go.Spot.TopLeft, go.Spot.TopLeft, go.Spot.TopLeft , true, true),
+        // this.makeShapePort("BL", go.Spot.BottomLeft, go.Spot.BottomLeft, go.Spot.BottomLeft, true, true),
+        // this.makeShapePort("TR", go.Spot.TopRight, go.Spot.TopRight, go.Spot.TopRight, true, true),
+        // this.makeShapePort("BR", go.Spot.BottomRight, go.Spot.BottomRight, go.Spot.BottomRight, true, true),
+        this.makeShapePort("T", go.Spot.Top, go.Spot.Top, go.Spot.TopSide, true, true),
+        this.makeShapePort("B", go.Spot.Bottom, go.Spot.Bottom, go.Spot.BottomSide, true, true),
+        this.makeShapePort("L", go.Spot.Left, go.Spot.Left, go.Spot.LeftSide, true, true),
+        this.makeShapePort("R", go.Spot.Right, go.Spot.Right, go.Spot.RightSide, true, true)
       );
     
     return shapeTemplate;
 }
 
-makePort(name, align, spot, output, input, figure) {
+makePort(name, align, spot, output, input) {
   var horizontal = align.equals(go.Spot.Top) || align.equals(go.Spot.Bottom);
   // the port is basically just a transparent rectangle that stretches along the side of the node,
   // and becomes colored when the mouse passes over it
@@ -905,6 +924,36 @@ makePort(name, align, spot, output, input, figure) {
       width: horizontal ? NaN : 8,  // if not stretching horizontally, just 8 wide
       height: !horizontal ? NaN : 8,  // if not stretching vertically, just 8 tall
       alignment: align,  // align the port on the main Shape
+      stretch: (horizontal ? go.GraphObject.Horizontal : go.GraphObject.Vertical),
+      portId: name,  // declare this object to be a "port"
+      fromSpot: spot,  // declare where links may connect at this port
+      fromLinkable: output,  // declare whether the user may draw links from here
+      fromLinkableDuplicates: true,
+      toLinkableDuplicates: true,
+      toSpot: spot,  // declare where links may connect at this port
+      toLinkable: input,  // declare whether the user may draw links to here
+      cursor: "pointer",  // show a different cursor to indicate potential link point
+      mouseEnter: function(e, port) {  // the PORT argument will be this Shape
+        if (!e.diagram.isReadOnly) port.fill = "#d3d3d3"; //"rgba(255,0,255,0.5)";
+      },
+      mouseLeave: function(e, port) {
+        port.fill = "transparent";
+      }
+    });
+}
+
+makeShapePort(name, align, alignFocus, spot, output, input, figure) {
+  var horizontal = align.equals(go.Spot.Top) || align.equals(go.Spot.Bottom);
+  // the port is basically just a transparent rectangle that stretches along the side of the node,
+  // and becomes colored when the mouse passes over it
+  return this.$(go.Shape, 
+    {
+      fill: "transparent",  // changed to a color in the mouseEnter event handler
+      strokeWidth: 0,  // no stroke
+      width: horizontal ? NaN : 8,  // if not stretching horizontally, just 8 wide
+      height: !horizontal ? NaN : 8,  // if not stretching vertically, just 8 tall
+      alignment: align,  // align the port on the main Shape
+      alignmentFocus: alignFocus,
       stretch: (horizontal ? go.GraphObject.Horizontal : go.GraphObject.Vertical),
       portId: name,  // declare this object to be a "port"
       fromSpot: spot,  // declare where links may connect at this port
@@ -1362,10 +1411,14 @@ createVNetTemplate() {
           new go.Binding('visible', 'natgwVisible').makeTwoWay(),
           new go.Binding('natgwazcontext').makeTwoWay()
         ),
-    this.makePort("T", go.Spot.Top, go.Spot.TopSide, true, true),
-    this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
-    this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
-    this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true)
+        this.makePort("TL", go.Spot.TopLeft, go.Spot.BottomRight, go.Spot.Top, true, true),
+        this.makePort("B", go.Spot.BottomLeft, go.Spot.TopRight, go.Spot.Top, true, true),
+        this.makePort("L", go.Spot.TopRight, go.Spot.BottomLeft, go.Spot.Top, true, true),
+        this.makePort("R", go.Spot.BottomRight, go.Spot.TopRight, go.Spot.Top, true, true),
+        this.makePort("T", go.Spot.Top, go.Spot.Bottom, go.Spot.Top, true, true),
+        this.makePort("B", go.Spot.Bottom, go.Spot.Top, go.Spot.Top, true, true),
+        this.makePort("L", go.Spot.Left, go.Spot.Right, go.Spot.Top, true, true),
+        this.makePort("R", go.Spot.Right, go.Spot.Left, go.Spot.Top, true, true)
   );
 
   return groupTemplate;
@@ -1454,10 +1507,14 @@ createSubnetTemplate() {
         new go.Binding('visible', 'udrVisible').makeTwoWay(),
         new go.Binding('udrazcontext').makeTwoWay()
       ),
-      this.makePort("T", go.Spot.Top, go.Spot.TopSide, true, true),
-      this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
-      this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
-      this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true)
+      this.makePort("TL", go.Spot.TopLeft, go.Spot.BottomRight, go.Spot.Top, true, true),
+        this.makePort("B", go.Spot.BottomLeft, go.Spot.TopRight, go.Spot.Top, true, true),
+        this.makePort("L", go.Spot.TopRight, go.Spot.BottomLeft, go.Spot.Top, true, true),
+        this.makePort("R", go.Spot.BottomRight, go.Spot.TopRight, go.Spot.Top, true, true),
+        this.makePort("T", go.Spot.Top, go.Spot.Bottom, go.Spot.Top, true, true),
+        this.makePort("B", go.Spot.Bottom, go.Spot.Top, go.Spot.Top, true, true),
+        this.makePort("L", go.Spot.Left, go.Spot.Right, go.Spot.Top, true, true),
+        this.makePort("R", go.Spot.Right, go.Spot.Left, go.Spot.Top, true, true)
     );
 
 return subnetTemplate;
@@ -1566,10 +1623,14 @@ createVIRAzureResourceTemplate() {
             new go.Binding("stroke").makeTwoWay()
             ),
           ),
-          this.makePort("T", go.Spot.Top, go.Spot.TopSide, true, true),
+          this.makePort("TL", go.Spot.TopLeft, go.Spot.Top, true, true),
+          this.makePort("BL", go.Spot.BottomLeft, go.Spot.Top, true, true),
+          this.makePort("TR", go.Spot.TopRight, go.Spot.Top, true, true),
+          this.makePort("BR", go.Spot.BottomRight,  go.Spot.Top, true, true),
+          this.makePort("T", go.Spot.Top,  go.Spot.TopSide, true, true),
+          this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true),
           this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
-          this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true),
-          this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true)
+          this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true)
       );
 
   return template;
@@ -2711,6 +2772,11 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       case 'Calico':
         this.createPictureShape
         ({source: require('../../assets/azure_icons/software/software-calico.png'),
+          label: '', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Jenkins':
+        this.createPictureShape
+        ({source: require('../../assets/azure_icons/software/software-jenkins.png'),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Azure Resource Group (shape)':

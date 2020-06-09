@@ -329,7 +329,6 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/azure_icons/software/software-c#.png'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapecsharp
             },
             {
               Name: 'dapr framework microservice',
@@ -337,7 +336,6 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/azure_icons/software/software-dapr.png'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapedapr
             },
             {
               Name: 'docker container',
@@ -345,7 +343,6 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/azure_icons/software/software-docker.png'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapedocker
             },
             {
               Name: 'elastic search elk',
@@ -353,7 +350,6 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/azure_icons/software/software-elasticsearch.png'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapeelasticsearch
             },
             {
               Name: 'enterprise service bus esb middleware',
@@ -361,7 +357,6 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/azure_icons/software/software-esbmiddleware.png'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapeesbmiddleware
             },
             {
               Name: 'github git',
@@ -369,7 +364,6 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/azure_icons/software/software-github.png'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapegithub
             },
             {
               Name: 'github actions git',
@@ -377,7 +371,6 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/azure_icons/software/software-githubactions.png'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapegithubactions
             },
             {
               Name: 'go lang',
@@ -385,7 +378,13 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/azure_icons/software/software-golang.png'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapegolang
+            },
+            {
+              Name: 'jenkins',
+              Tooltip: 'Jenkins',
+              Image: require('../../assets/azure_icons/software/software-jenkins.png'),
+              IsPng: false,
+              IsVisible:true,
             },
             {
               Name: 'grafana',
@@ -558,32 +557,35 @@ export default class ResourcePalette extends Component {
               Tooltip: 'Zipkin',
               Image: require('../../assets/azure_icons/software/software-Zipkin.png'),
               IsPng: false,
-              IsVisible:true,
-              ref: this.shapezipkin
+              IsVisible:true
             },
             {
               Name: 'jaeger microservice',
               Tooltip: 'Jaeger',
               Image: require('../../assets/azure_icons/software/software-jaeger.png'),
               IsPng: false,
-              IsVisible:true,
-              ref: this.shapejaeger
+              IsVisible:true
             },
             {
               Name: 'calico microservice',
               Tooltip: 'Calico',
               Image: require('../../assets/azure_icons/software/software-calico.png'),
               IsPng: false,
-              IsVisible:true,
-              ref: this.shapecalico
+              IsVisible:true
+            },
+            {
+              Name: 'cmd cli command exe',
+              Tooltip: 'CLI',
+              Image: require('../../assets/azure_icons/software/software-cli.png'),
+              IsPng: false,
+              IsVisible:true
             },
             {
               Name: 'resource group',
               Tooltip: 'Azure Resource Group (shape)',
               Image: require('../../assets/azure_icons/software/software-resourcegroup.png'),
               IsPng: false,
-              IsVisible:true,
-              ref: this.shaperesourcegroup
+              IsVisible:true
             },
           ]
         }

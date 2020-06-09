@@ -120,3 +120,5 @@ LocalStorageCommandHandler.prototype.canPasteSelection = function(pos) {
     return go.CommandHandler.prototype.canPasteSelection(pos);
   }
 };
+
+export default LocalStorageCommandHandler;
