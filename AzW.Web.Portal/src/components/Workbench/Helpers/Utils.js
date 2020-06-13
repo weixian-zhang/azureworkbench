@@ -343,6 +343,10 @@ export default class Utils
         
     }
 
+    static pngDataUrl(base64Image) {
+        return 'data:image/png;base64,' + base64Image;
+    }
+
     static isCidr(cidr) {
         if(Utils.IsNullOrUndefine(cidr))
             return false;

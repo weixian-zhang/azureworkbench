@@ -1,26 +1,28 @@
 {
   "files": {
     "main.css": "/static/css/main.7714f095.chunk.css",
-    "main.js": "/static/js/main.de496db0.chunk.js",
-    "main.js.map": "/static/js/main.de496db0.chunk.js.map",
-    "runtime-main.js": "/static/js/runtime-main.738a38a2.js",
-    "runtime-main.js.map": "/static/js/runtime-main.738a38a2.js.map",
+    "main.js": "/static/js/main.d52ee9d5.chunk.js",
+    "main.js.map": "/static/js/main.d52ee9d5.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.bf091a8c.js",
+    "runtime-main.js.map": "/static/js/runtime-main.bf091a8c.js.map",
     "static/css/2.4383e497.chunk.css": "/static/css/2.4383e497.chunk.css",
-    "static/js/2.cf365b82.chunk.js": "/static/js/2.cf365b82.chunk.js",
-    "static/js/2.cf365b82.chunk.js.map": "/static/js/2.cf365b82.chunk.js.map",
+    "static/js/2.0b61ed02.chunk.js": "/static/js/2.0b61ed02.chunk.js",
+    "static/js/2.0b61ed02.chunk.js.map": "/static/js/2.0b61ed02.chunk.js.map",
+    "static/js/3.36f4c104.chunk.js": "/static/js/3.36f4c104.chunk.js",
+    "static/js/3.36f4c104.chunk.js.map": "/static/js/3.36f4c104.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.771d47a8cf7b2cf0aba2cdd75ffe1fab.js": "/precache-manifest.771d47a8cf7b2cf0aba2cdd75ffe1fab.js",
+    "precache-manifest.1e573df63aa24536cb3006a301ed342b.js": "/precache-manifest.1e573df63aa24536cb3006a301ed342b.js",
     "service-worker.js": "/service-worker.js",
     "static/css/2.4383e497.chunk.css.map": "/static/css/2.4383e497.chunk.css.map",
     "static/css/main.7714f095.chunk.css.map": "/static/css/main.7714f095.chunk.css.map",
-    "static/js/2.cf365b82.chunk.js.LICENSE.txt": "/static/js/2.cf365b82.chunk.js.LICENSE.txt",
+    "static/js/2.0b61ed02.chunk.js.LICENSE.txt": "/static/js/2.0b61ed02.chunk.js.LICENSE.txt",
     "static/media/App Configuration.png": "/static/media/App Configuration.a2bcb9f5.png",
     "static/media/Azure AD.png": "/static/media/Azure AD.d3ca8f60.png",
     "static/media/Logic Apps.png": "/static/media/Logic Apps.c7575782.png",
     "static/media/Machine Learning Service Workspaces.png": "/static/media/Machine Learning Service Workspaces.6432fe6b.png",
     "static/media/SQL Managed Instances.png": "/static/media/SQL Managed Instances.05ac2693.png",
     "static/media/azure-arc.png": "/static/media/azure-arc.01f80964.png",
-    "static/media/azure-dns.png": "/static/media/azure-dns.1e7cf088.png",
+    "static/media/azure-dns.png": "/static/media/azure-dns.dfcc3771.png",
     "static/media/azure-sqlelasticjobagent.png": "/static/media/azure-sqlelasticjobagent.7969700f.png",
     "static/media/azworkbench-logo.png": "/static/media/azworkbench-logo.c00d87fa.png",
     "static/media/blueprint-icons.css": "/static/media/icons-20.cef8cdbb.woff",
@@ -70,10 +72,10 @@
     "static/media/tutorial-copyimageotherwebsite.png": "/static/media/tutorial-copyimageotherwebsite.cd0c5222.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.738a38a2.js",
+    "static/js/runtime-main.bf091a8c.js",
     "static/css/2.4383e497.chunk.css",
-    "static/js/2.cf365b82.chunk.js",
+    "static/js/2.0b61ed02.chunk.js",
     "static/css/main.7714f095.chunk.css",
-    "static/js/main.de496db0.chunk.js"
+    "static/js/main.d52ee9d5.chunk.js"
   ]
 }

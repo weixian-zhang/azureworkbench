@@ -50,7 +50,14 @@ export default class GojsManager
           
           var items = this.diagram.selection;
 
-          if (items.count > 0) {  // only handles VIRs and subnets, rest copy/paste as usual
+          //if more than 1 selection, copy as usual, don't hinder paste
+          if(items.count > 1) {
+              this.diagram.commandHandler.copiedVIRAndSubnets = [];
+              go.CommandHandler.prototype.copySelection.call(this.diagram.commandHandler);
+            return;
+          }
+
+          if (items.count == 1) {  // only handles VIRs and subnets, rest copy/paste as usual
             
             var copiedVIRAndSubnets = [];
 
@@ -78,6 +85,7 @@ export default class GojsManager
 
         var diagram = this.diagram;
         var diagramEditor = this.diagramEditor;
+        //paste
         this.diagram.commandHandler.pasteSelection = function() {
 
           var itemClipboard = this.diagram.commandHandler.copiedVIRAndSubnets;

@@ -11,18 +11,12 @@ using System.Threading.Tasks;
 using System.Xml;
 using AzW.Infrastructure.Data;
 using AzW.Model;
-using DinkToPdf;
-using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 
-using Syncfusion.HtmlConverter;
-using Syncfusion.Pdf;
-
-using Svg;
 using AzW.Secret;
 using System.Text.RegularExpressions;
 using Serilog.Core;
@@ -34,13 +28,11 @@ namespace AzW.Web.API
     public class DiagramController : BaseController
     {
         public DiagramController
-            (IDiagramRepository repo,
-             WorkbenchSecret secret, Logger logger, SynchronizedConverter html2pdfConverter)
+            (IDiagramRepository repo, WorkbenchSecret secret, Logger logger)
         {
             _diagramRepo = repo;
             _secret = secret;
             _logger = logger;
-            _html2pdfConverter = html2pdfConverter;
         }
 
         [HttpGet("dia/qs")]
@@ -173,7 +165,7 @@ namespace AzW.Web.API
                 using(var ms = new MemoryStream()) {
                     using (Document pdfDoc = new Document(iTextSharp.text.PageSize.A3.Rotate()))
                     {
-                        pdfDoc.SetMargins(0, 0, 0, 0);
+                        pdfDoc.SetMargins(5, 5, 5, 5);
                         //pdfDoc.SetPageSize(iTextSharp.text.PageSize.A4.Rotate());
 
                         // step 2
@@ -196,30 +188,6 @@ namespace AzW.Web.API
 
                      return new FileContentResult(ms.ToArray(), "application/octet-stream");
                 }
-
-              
-                // using(var ms = new MemoryStream())
-                // {  
-                //         var htmlDoc = new HtmlToPdfDocument()
-                //         {
-                //             GlobalSettings = {
-                //                 ColorMode = DinkToPdf.ColorMode.Color,
-                //                 PaperSize = PaperKind.A3,
-                //                 Orientation = Orientation.Landscape,
-                //             },
-                //             Objects = {
-                //                 new DinkToPdf.ObjectSettings()
-                //                 {
-                //                     HtmlContent = $"{utfString}"
-                //                 }
-                //             }
-                //         };
-                    
-                //     byte[] pdf = _html2pdfConverter.Convert(htmlDoc);
-
-                //     return new FileContentResult(pdf, "application/octet-stream");
-                // }
-
             }              
             catch (Exception ex)
             {
@@ -228,12 +196,10 @@ namespace AzW.Web.API
                 throw ex;
             }
         }
-
-        private readonly IConverter _pdfConverter;
+        
         private IDiagramRepository _diagramRepo;
         private WorkbenchSecret _secret;
         private Logger _logger;
-        private SynchronizedConverter _html2pdfConverter;
     }
 
     public class ExportPngParam

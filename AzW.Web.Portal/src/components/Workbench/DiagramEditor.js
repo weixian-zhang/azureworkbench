@@ -217,9 +217,7 @@ import GojsManager from "./Helpers/GojsManager";
 import Function from "../../models/Function";
 import IPCIDR  from 'ip-cidr';
 import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
-import LocalStorageCommandHandler from './GojsExtensions/LocalStorageCommandHandler';
-import OrthogonalLinkReshapingTool from './GojsExtensions/LinkReshaping';
-import { utimesSync } from "fs";
+import AzureIcons from './Helpers/AzureIcons';
 
  export default class DiagramEditor extends Component {
  
@@ -566,9 +564,10 @@ import { utimesSync } from "fs";
 
 initDiagramBehaviors() {
 
-  this.initTemplates();
+  var forelayer = this.diagram.findLayer("Foreground");
+  this.diagram.addLayerBefore(this.$(go.Layer, { name: "foreground" }), forelayer);
 
-  //this.initCrossBrowserDiagramCopyPaste();
+  this.initTemplates();
 
   this.initPanningwithRightMouseClick();
 
@@ -676,7 +675,7 @@ createPictureShapeTemplate() {
       locationSpot: go.Spot.Center
     },
     new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-    new go.Binding("zOrder").makeTwoWay(),
+    // new go.Binding("zOrder").makeTwoWay(),
     { 
       selectable: true,
       resizable: true, 
@@ -699,10 +698,13 @@ createPictureShapeTemplate() {
           new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
           this.$(go.Picture,
             {
-              stretch: go.GraphObject.Fill
+              stretch: go.GraphObject.Fill,
+              width: 80,
+              height: 80
             },
             {row:0,column:0},
-            new go.Binding("source","source")
+            new go.Binding("source","source"),
+            new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)
           )
         ),//panel
         this.$(go.TextBlock,
@@ -1282,18 +1284,20 @@ initContextMenu() {
                     }).ofObject()),
 
         this.$("ContextMenuButton",
-          this.$(go.TextBlock, "Bring to Front"),
+          this.$(go.TextBlock, "Zoom to Fit"),
               { 
                 click: function(e, obj) 
                 { 
-                  var nodes = e.diagram.selection;
-                  var it = nodes.iterator;
-                  while (it.next()) {
-                      if(isNaN(it.value.zOrder))
-                          it.value.zOrder = 10;
-                      else 
-                          it.value.zOrder += 10;
-                  }
+                  e.diagram.commandHandler.zoomToFit();
+
+                  // var nodes = e.diagram.selection;
+                  // var it = nodes.iterator;
+                  // while (it.next()) {
+                  //     if(isNaN(it.value.zOrder))
+                  //         it.value.zOrder = 10;
+                  //     else 
+                  //         it.value.zOrder += 10;
+                  // }
                 }
               }),
 
@@ -2018,7 +2022,7 @@ createPictureShape(dropContext) {
       font: '14px Segoe UI',
       stroke: 'black',
       nodetype: GoNodeType.ImageShape(),
-      size: go.Size.stringify(new go.Size(80,80)),
+      size: go.Size.stringify(new go.Size(50,50)),
       zOrder: NaN,
       loc: go.Point.stringify(canvasPoint), category: 'picshape'});
 }
@@ -2033,7 +2037,7 @@ createNonVIRAzureResource(dropContext) {
       text: label, 
       azcontext: dropContext.azcontext,
       source: image, 
-      size: go.Size.stringify(new go.Size(40,40)),
+      size: go.Size.stringify(new go.Size(50,50)),
       font: '14px Segoe UI',
       stroke: 'black',
       nodetype: GoNodeType.ImageShape(),
@@ -2515,7 +2519,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
       case 'User Blue':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/shape-userblue.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.UserBlue()), //require('../../assets/azure_icons/shape-userblue.png'),
           label: 'user', x: dropContext.x, y: dropContext.y});
         break;
       case '3D Cube':
@@ -2528,7 +2532,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
       case 'User Ian':
         this.createPictureShape
-        ({source:require('../../assets/azure_icons/shape-user-ian.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.UserIAN()), 
           label: 'user', x: dropContext.x, y: dropContext.y});
         break;
       case 'Datacenter':
@@ -2538,12 +2542,12 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
       case 'Internet':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/shape-internet.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.Internet()),
           label: 'Internet', x: dropContext.x, y: dropContext.y});
         break;
       case 'Client Machine':
         this.createPictureShape
-          ({source: require('../../assets/azure_icons/shape-computer.png'), //_Flat Symbols/CnE_Enterprise/Laptop computer.png'),
+          ({source: Utils.pngDataUrl(AzureIcons.Computer()), // require('../../assets/azure_icons/shape-computer.png'), //_Flat Symbols/CnE_Enterprise/Laptop computer.png'),
             label: 'laptop', x: dropContext.x, y: dropContext.y});
         break;
       case 'TV':
@@ -2553,7 +2557,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
       case 'Kiosk':
         this.createPictureShape
-          ({source: require('../../assets/azure_icons/shape-kiosk.png'), //_Flat Symbols/CnE_Enterprise/Laptop computer.png'),
+          ({source: Utils.pngDataUrl(AzureIcons.Kiosk()),//require('../../assets/azure_icons/shape-kiosk.png'), //_Flat Symbols/CnE_Enterprise/Laptop computer.png'),
             label: 'kiosk', x: dropContext.x, y: dropContext.y});
         break;
       case 'Tablet':
@@ -2573,7 +2577,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
       case 'Andriod':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/shape-andriod.png'),
+        ({source:  Utils.pngDataUrl(AzureIcons.Andriod()),//require('../../assets/azure_icons/shape-andriod.png'),
           label: 'andriod', x: dropContext.x, y: dropContext.y});
         break;
       case 'iPhone':
@@ -2598,7 +2602,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
       case 'Blade Server':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/shape-server2.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeServer2()),
           label: 'blade server', x: dropContext.x, y: dropContext.y});
         break;
       case 'Database Black':
@@ -2613,12 +2617,12 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       break;
       case 'Database Blue':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/shape-dbblue.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeDBBlue()),
           label: 'database', x: dropContext.x, y: dropContext.y});
       break;
       case 'Firewall':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/shape-firewall.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeFirewall()),
           label: 'firewall', x: dropContext.x, y: dropContext.y});
       break;
 
@@ -2635,7 +2639,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       break;
       case 'Azure DevOps':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-azuredevops.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeAzureDevOps()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'C#':
@@ -2650,12 +2654,12 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       break;
       case 'Docker':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-docker.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeDocker()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'ElasticSearch':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-elasticsearch.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeElasticSearch()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Enterprise Service Bus':
@@ -2665,32 +2669,32 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       break;
       case 'GitHub':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-github.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeGithub()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'GitHub Actions':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-githubactions.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeGithubActions()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Go':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-golang.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeGo()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Grafana':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-grafana.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeGrafana()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Hashicorp Consul':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-hashicorpconsul.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeHashicorpConsul()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Terraform':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-hashicorpterraform.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeHashicorpTerraform()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Hashicorp Vault':
@@ -2700,117 +2704,117 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       break;
       case 'InfluxDB':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-influxdb.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeInfluxDB()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Java':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-java.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeJava()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Javascript':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-javascript.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeJavascript()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Kafka':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-kafka.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeKafka()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Kubernetes (shape)':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-kubernetes.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeKube()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Message Queue':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-messagequeue.png'),
+        ({source:Utils.pngDataUrl(AzureIcons.ShapeMessageQueue()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'MongoDB':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-mongodb.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeMongoDB()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case '.Net Core':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-netcore.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeNetCore()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Nginx':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-nginxplus.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeNginx()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Nginx Plus':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-nginxplus.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeNginxPlus()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'NodeJS':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-node.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeNode()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Powershell':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-powershell.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapePowershell()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Power BI':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-powerbi.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapePowerBI()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Python':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-python.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapePython()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'RabbitMQ':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-rabbitmq.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeRabbitMQ()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Ruby On Rails':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-rubyonrails.png'), 
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeRubyOnRails()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Traefik':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-traefik.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeTraefik()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Zipkin':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-Zipkin.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeZipkin()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Jaeger':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-jaeger.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeJaeger()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Calico':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-calico.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeCalico()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Jenkins':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-jenkins.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeJenkins()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Azure Resource Group (shape)':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-resourcegroup.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeResourceGroup()),
           label: 'resource group', x: dropContext.x, y: dropContext.y});
       break;
       case 'Azure':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-azure.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeAzure()),
           label: 'Azure', x: dropContext.x, y: dropContext.y});
       break;
       case ResourceType.AppService():
@@ -2860,7 +2864,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
       case ResourceType.AppConfig():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Web Service Color/App Configuration.png'),
+          source: Utils.pngDataUrl(AzureIcons.AppConfig()),
           label: 'app configuration', x: dropContext.x, y: dropContext.y,
           azcontext: new AppConfig()
         });
@@ -2966,7 +2970,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
       case ResourceType.ElasticJobAgent():
           this.createNonVIRAzureResource({
-            source: require('../../assets/azure_icons/Databases Service Color/azure-sqlelasticjobagent.png'),
+            source: Utils.pngDataUrl(AzureIcons.ElasticJobAgent()),
             label: 'elastic job agent', x: dropContext.x, y: dropContext.y,
             azcontext: new ElasticJobAgent()
           });
@@ -2996,7 +3000,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
       case ResourceType.DNS():
           this.createNonVIRAzureResource({
-            source: require('../../assets/azure_icons/Networking Service Color/azure-dns.png'),
+            source: Utils.pngDataUrl(AzureIcons.DNS()),
             label: 'dns zone', x: dropContext.x, y: dropContext.y,
             azcontext: new DNS()
           });
@@ -3055,7 +3059,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
       case ResourceType.Synapse():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Databases Service Color/synapseanalytics.png'),
+          source: Utils.pngDataUrl(AzureIcons.Synapse()),
           label: 'synapse', x: dropContext.x, y: dropContext.y,
           azcontext: new SynapseAnalytics()
         });
@@ -3123,7 +3127,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
       case ResourceType.MLServiceWorkspace():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/AI and ML Service Color/Machine Learning Service Workspaces.png'),
+          source: Utils.pngDataUrl(AzureIcons.MachineLearningWorkspace()),
           label: 'ml', x: dropContext.x, y: dropContext.y,
           azcontext: new MLServiceWorkspace()
         });
@@ -3270,7 +3274,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       break;
       case ResourceType.Arc():
         this.createNonVIRAzureResource({
-          source:  require('../../assets/azure_icons/Management and Governance Service Color/azure-arc.png'),
+          source:  Utils.pngDataUrl(AzureIcons.AzureArc()),
           label: 'azure arc', x: dropContext.x, y: dropContext.y,
           azcontext: new Arc()
         });
@@ -3278,7 +3282,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
 
       case ResourceType.AAD():
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/Identity Service Color/Azure AD.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeAAD()),
           label: 'aad', x: dropContext.x, y: dropContext.y});
       break;
       case ResourceType.AADB2C():
@@ -4212,7 +4216,11 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       return;
     }
    
-    var svg = this.diagram.makeSvg({scale: 1, background: "white" });
+    var svg = this.diagram.makeSvg({ scale: 1.0,
+      background: "transparent", showTemporary:true,
+      maxSize: new go.Size(Infinity, Infinity)});
+
+    //var svg =document.getElementById('diagramEditor').firstChild;
 
     var svgXmlString = new XMLSerializer().serializeToString(svg);
 
@@ -4236,27 +4244,18 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       return;
     }
 
-    var blob = this.diagram.makeImageData
-      ({ scale: 2, returnType: "blob", callback: callback });
+    var png = this.diagram.makeImageData({ scale: 1.0,
+      background: "white", returnType: 'blob', callback: callback,
+      maxSize: new go.Size(Infinity, Infinity)});
 
-    function callback(blob) {
-      var link = document.createElement("a");
+      function callback(blob) {
+        var link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.setAttribute('download', 'diagram.png');
       document.body.appendChild(link);
       link.click();
-    }
-   
-    // var image = this.diagram.makeImage
-    //   ({scale: 1, background: "white" });
+      }
 
-    // const blob = new Blob([image], {type: 'image/png'});
-
-    // var link = document.createElement("a");
-    // link.href = URL.createObjectURL(blob);
-    // link.setAttribute('download', 'diagram.png');
-    // document.body.appendChild(link);
-    // link.click();
   }
 
   exportDiagramAsPDF(){
@@ -4270,12 +4269,6 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.NoCellOnGraph()});
       return;
     }
-
-    // var svg = this.diagram.makeSvg({ scale: 2, background: "white" });
-
-    // var svgXmlString = new XMLSerializer().serializeToString(svg);
-    
-    // var svgXmlBase64 = window.btoa(svgXmlString);
 
     var base64Image = this.diagram.makeImageData({ scale: 1.0,
       background: "white",

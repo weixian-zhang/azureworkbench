@@ -23,7 +23,6 @@ using Serilog.Core;
 using Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters;
 using System.Reflection;
 using System.IO;
-using DinkToPdf;
 using Serilog.Events;
 using Microsoft.AspNetCore.Diagnostics;
 
@@ -204,9 +203,6 @@ namespace AzW.Web.API
                 return new CacheRepository
                     (_secrets.RedisConnString, _secrets.RedisHost, _secrets.RedisPassword);
             });
-
-            var html2pdfConverter = CreateDink2PDFLibwkhtmltoxConverter();
-             services.AddSingleton<SynchronizedConverter>(sp => {return html2pdfConverter ;} );
         }
 
         private void InitSecrets()
@@ -233,29 +229,6 @@ namespace AzW.Web.API
                 .WriteTo
                 .ApplicationInsights(_secrets.AppInsightsKey, new TraceTelemetryConverter())
                 .CreateLogger();
-        }
-
-        private SynchronizedConverter CreateDink2PDFLibwkhtmltoxConverter()
-        {
-            string dllPath;
-            
-            _logger.Information($"At Startup.CreateDink2PDFLibwkhtmltoxConverter, env var: {_secrets.LibwkhtmltoxPath}");
-            
-            if(!string.IsNullOrEmpty(_secrets.LibwkhtmltoxPath))
-                dllPath = _secrets.LibwkhtmltoxPath;     
-            else
-            {
-                //local debug only
-                dllPath =
-                    Path.Combine(Directory.GetCurrentDirectory(), "AzW.Web.API", "libwkhtmltox.dll");
-            }
-
-            CustomAssemblyLoadContext context = new CustomAssemblyLoadContext(_logger);
-            context.LoadUnmanagedLibrary(dllPath);
-
-            var converter = new SynchronizedConverter(new PdfTools());
-
-            return converter;
         }
 
         private WorkbenchSecret _secrets;
