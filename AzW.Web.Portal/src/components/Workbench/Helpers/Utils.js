@@ -34,7 +34,7 @@ export default class Utils
     static isDedicatedSubnetVIR(node) {
 
         if(!Utils.isAzContextExist(node))
-             throw 'isDedicatedSubnetVIR - node.data.azcontext is null';
+             return false;
 
         var VIR = [ ResourceType.ASE(),ResourceType.AppGw(), ResourceType.ISE(),
             ResourceType.Firewall(),ResourceType.Bastion(), ResourceType.VirtualNetworkGateway(),
@@ -50,7 +50,7 @@ export default class Utils
     }
 
     static isNonVIRAzResource(part) {
-        if(Utils.isAzContextExist(part) && !Utils.isPartVIR(part))
+        if(!Utils.isPartVIR(part))
             return true;
         else
             return false;
@@ -107,28 +107,23 @@ export default class Utils
     static isAzContextExist(node) {
         if(node == null)
             return false;
-            
-        if((node.data !== 'undefined' && typeof node.data.azcontext !== 'undefined') || 
-            (typeof node.data.nsgazcontext !== 'undefined' || 
-            typeof node.data.udrazcontext !== 'undefined' ||
-            typeof node.data.natgwazcontext !== 'undefined' ))
-            return true;
-        else    
+        
+        if(node.data === undefined)
             return false;
+        if(node.data.azcontext === undefined)
+            return false;
+        if( node.data.azcontext.ProvisionContext === undefined)
+            return false;
+            
+        return true;
     }
 
-    // static isAzContextExistForVNetSubnet(node) {
-    //     if(node == null)
-    //         return false;
-            
-    //     if((node.data !== 'undefined' && typeof node.data.azcontext !== 'undefined') || 
-    //         (typeof node.data.nsgazcontext !== 'undefined' || 
-    //         typeof node.data.udrazcontext !== 'undefined' ||
-    //         typeof node.data.natgwazcontext !== 'undefined' ))
-    //         return true;
-    //     else    
-    //         return false;
-    // }
+    static isAzureResource(node) {
+        if(Utils.isAzContextExist(node))
+            return true;
+        else
+            return false;
+    }
 
     static getAzContextResourceType(node) {
         if(!Utils.isAzContextExist(node))
@@ -164,6 +159,56 @@ export default class Utils
             return false;
     }
 
+    static isNLB(node) {
+        if(!Utils.isAzContextExist(node))
+            return false;
+        
+        if(Utils.getAzContextResourceType(node) == ResourceType.NLB())
+            return true;
+        else
+            return false;
+    }
+
+    static isInternalNLB(node) {
+        if(!Utils.isAzContextExist(node))
+            return false;
+        
+        var pc = node.data.azcontext.ProvisionContext;
+        
+        if(Utils.getAzContextResourceType(node) == ResourceType.NLB() &&
+            pc.IsInternalNLB == true)
+            return true;
+        else
+            return false;
+    }
+
+    static isAppGw(node) {
+        if(!Utils.isAzContextExist(node))
+            return false;
+        
+        if(Utils.getAzContextResourceType(node) == ResourceType.AppGw())
+            return true;
+        else
+            return false;
+    }
+
+    static isFirewall(node) {
+        if(!Utils.isAzContextExist(node))
+            return false;
+        
+        if(Utils.getAzContextResourceType(node) == ResourceType.Firewall())
+            return true;
+        else
+            return false;
+    }
+
+    static ProContext(node) {
+        if(!Utils.isAzContextExist(node))
+            return null;
+        
+        return node.data.azcontext.ProvisionContext;
+    }
+
     static uniqueId(prefix) {
         if(prefix != null)
             return prefix + '-' + new ShortUniqueId().randomUUID(6);
@@ -175,22 +220,18 @@ export default class Utils
         return JSON.parse(JSON.stringify(obj));
     }
 
-    static IsVM(cell) {
-        if(cell != null && cell.value != null){
-            var result = this.TryParseUserObject(cell.value);
-
-            if(!result.isUserObject)
-                return false;
-
-            if(result.isUserObject &&
-                result.userObject.ProvisionContext.ResourceType == ResourceType.WindowsVM() ||
-                result.userObject.ProvisionContext.ResourceType == ResourceType.LinuxVM() ||
-                result.userObject.ProvisionContext.ResourceType == ResourceType.VM())
-              {
-                    return true;
-              }
-        }
+    static IsVM(node) {
+        if(!Utils.isAzContextExist(node))
         return false;
+
+        var pc = node.data.azcontext.ProvisionContext;
+    
+        if(pc.ResourceType == ResourceType.VM() ||
+            pc.ResourceType == ResourceType.WindowsVM() ||
+            pc.ResourceType == ResourceType.LinuxVM())
+            return true;
+        else
+            return false;
     }
 
     static isNSG(part) {

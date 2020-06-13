@@ -61,6 +61,14 @@ namespace AzW.Infrastructure.AzureServices
                                 VM vm = jObj.ToObject<VM>();
                                 await CreateVMAsync(vm);
                             break;
+                            case ResourceType.WindowsVM:
+                                VM windowsVM = jObj.ToObject<VM>();
+                                await CreateVMAsync(windowsVM);
+                            break;
+                            case ResourceType.LinuxVM:
+                                VM linuxVM = jObj.ToObject<VM>();
+                                await CreateVMAsync(linuxVM);
+                            break;
                             case ResourceType.NLB:
                                 NLB nlb = jObj.ToObject<NLB>();
                                 await CreateNLBAsync(nlb);
@@ -204,17 +212,32 @@ namespace AzW.Infrastructure.AzureServices
 
             foreach(var inbound in nsg.InboundRules)
             {
+                if(isNSGRuleHaveEmptyFields(inbound))
+                    continue;
+
                 CreateNSGRule(ruleDef, inbound, true);
             }
 
             foreach(var outbound in nsg.OutboundRules)
             {
+                if(isNSGRuleHaveEmptyFields(outbound))
+                    continue;
+
                 CreateNSGRule(ruleDef, outbound, false);
             }
 
             INetworkSecurityGroup nsgCreated = await ruleDef.CreateAsync();
 
             _nsgs.Add(nsgCreated.Name, nsgCreated);            
+        }
+
+        private bool isNSGRuleHaveEmptyFields(NSGRule rule) {
+            if(String.IsNullOrEmpty(rule.Name) || 
+                String.IsNullOrEmpty(rule.ToAddresses) ||
+                String.IsNullOrEmpty(rule.FromAddresses))
+                return true;
+            else
+                return false;
         }
 
         private void CreateNSGRule

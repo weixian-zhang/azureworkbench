@@ -42,6 +42,7 @@ export default class ResourcePalette extends Component {
         visibility: "hidden"
       }
     }
+
   }
   
 
@@ -167,13 +168,40 @@ export default class ResourcePalette extends Component {
          groupSearchVisible: true,
          resources: [
            {
-               Name: 'client laptop',
+               Name: 'client laptop com',
                Tooltip: 'Client Machine',
-               Image: require('../../assets/azure_icons/_Flat Symbols/CnE_Enterprise/Laptop computer.png'),
+               Image: require('../../assets/azure_icons/shape-computer.png'),
                IsPng: false,
                IsVisible:true,
-               ref: this.clientIcon
            },
+           {
+            Name: 'tv television tele',
+            Tooltip: 'TV',
+            Image: require('../../assets/azure_icons/shape-tv.png'),
+            IsPng: false,
+            IsVisible:true,
+            },
+            {
+              Name: 'kiosk',
+              Tooltip: 'Kiosk',
+              Image: require('../../assets/azure_icons/shape-kiosk.png'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'tablet apple andriod',
+              Tooltip: 'Tablet',
+              Image: require('../../assets/azure_icons/shape-tablet.png'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'switch network',
+              Tooltip: 'Switch',
+              Image: require('../../assets/azure_icons/shape-switch.png'),
+              IsPng: false,
+              IsVisible:true,
+            },
            {
                Name: 'ADFS active directory federation service',
                Tooltip: 'ADFS',
@@ -587,6 +615,13 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true
             },
+            {
+              Name: 'azure',
+              Tooltip: 'Azure',
+              Image: require('../../assets/azure_icons/software/software-azure.png'),
+              IsPng: false,
+              IsVisible:true
+            },
           ]
         }
        },
@@ -775,6 +810,15 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.AppGw()
+            },
+            {
+              Name: 'dns zone',
+              Tooltip: 'Azure DNS',
+              Image: require('../../assets/azure_icons/Networking Service Color/azure-dns.png'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.DNS()
             },
             {
               Name: 'dns private zone',
@@ -1272,7 +1316,7 @@ export default class ResourcePalette extends Component {
           groupSearchVisible: true,
           resources: [
             {
-                Name: 'firewall',
+                Name: 'firewall azfw',
                 Tooltip: 'Azure Firewall',
                 Image: require('../../assets/azure_icons/Security Service Color/Azure Firewall.png'),
                 Provisionable: true,
@@ -1463,8 +1507,11 @@ export default class ResourcePalette extends Component {
     
     return(
         <div className="sidebar">
-          <AppBar position="sticky" color="transparent">
-            <InputGroup
+          {/* <div style={{position:"sticky", top: 0}}>
+
+          </div> */}
+          <AppBar position="sticky" style={{"z-index": "10"}}>
+          <InputGroup
               leftIcon="filter"
               rightElement={
                 <Button

@@ -51,7 +51,7 @@ export default class MySpace extends Component {
       const tableStyle = makeStyles({
         table: {
           minWidth: 650,
-          minWidth: 700,
+          minWidth: 600,
         },
       });
       const classes = tableStyle;
@@ -59,50 +59,25 @@ export default class MySpace extends Component {
         return (
           <div>
             <Overlay isOpen={this.state.isOpen} onClose={this.handleClose}>
-                  <Dialog 
-                          icon="help"
-                          onClose={this.handleThisSpaceDialogClose}
-                          title="Save current diagram to this Space"
-                          isOpen={this.state.saveThisSpaceDialogOpen} >
-                    <p>
-                        You are about to save your current diagram on canvas to this Space,
-                         which will override existing diagram: {this.state.saveThisSpaceDiagramName}.
-                    </p>
-                    <p>
-                      <strong>
-                        Do you want to continue?
-                      </strong>
-                    </p>
-                    <div style={{display:'inline', width:'100%','text-align': 'right'}}>
-                      <Button text="Yes" onClick={this.saveDiagramToThisSpace} intent="success"/>
-                      <Button text="No" onClick={this.handleThisSpaceDialogClose} style={{marginLeft:'5px'}}/>
-                    </div>
-                    
-                  </Dialog>
+
+              <Overlay isOpen={this.state.saveThisSpaceDialogOpen}  onClose={this.handleThisSpaceDialogClose}>
+                <Card className='myspace-overrideexistingrow-overlay'  elevation={Elevation.TWO}>
+                  <p>
+                      You are about to save your current diagram on canvas 
+                        which overrides this record: <b>{this.state.saveThisSpaceDiagramName}</b>
+                  </p>
+                  <p>
+                    <strong>
+                      Do you want to continue?
+                    </strong>
+                  </p>
+                  <div style={{display:'inline', width:'100%','text-align': 'right'}}>
+                    <Button text="Yes" onClick={this.saveDiagramToThisSpace} intent="success"/>
+                    <Button text="No" onClick={this.handleThisSpaceDialogClose} style={{marginLeft:'5px'}}/>
+                  </div>
+                  </Card>
+                </Overlay>
                 <Card className='workspace-overlay-box' interactive={false} elevation={Elevation.TWO}>
-                    <H4 align={Alignment.LEFT}>
-                        <Typography variant='button'>Browser Storage</Typography>
-                    </H4> 
-                    {
-                    (!this.isLocalDraftDiagramExist()) ? 
-                    <Label className=''>
-                    You do not have any draft diagram saved locally in browser                         
-                    </Label> :
-                    <div>
-                        <Badge
-                            badgeContent={1}
-                            color='primary'
-                            badgeStyle={{top: 12, right: 12}}
-                          >
-                          <Button text="Load draft diagram from browser" icon="import"
-                          onClick={this.loadDraftDiagramFromBrowser} />
-                        </Badge>
-                        <span className="bp3-navbar-divider"></span>
-                        <Button text="Delete draft diagram from browser" icon="delete"
-                        onClick={this.deleteDraftDiagramFromBrowser} />
-                     </div>
-                    }
-                    <hr />
                     <H4 align={Alignment.LEFT}>
                       <Typography variant='button'>My Space</Typography>
                     </H4> 
@@ -191,7 +166,8 @@ export default class MySpace extends Component {
         this.setState({
           saveThisSpaceDialogOpen: false,
           saveThisSpaceCollection: '',
-          saveThisSpaceDiagramName: ''
+          saveThisSpaceDiagramName: '',
+          isDeleteConfirmationDialogOpen: false
         });
       }
       saveDiagramToThisSpace = () => {
@@ -201,22 +177,22 @@ export default class MySpace extends Component {
         this.setState({ isOpen: false});
       }
 
-      isLocalDraftDiagramExist() {
-        if(LocalStorage.get(LocalStorage.KeyNames.TempLocalDiagram) === null)
-            return false;
-        else
-            return true;
-      }
+      // isLocalDraftDiagramExist() {
+      //   if(LocalStorage.get(LocalStorage.KeyNames.TempLocalDiagram) === null)
+      //       return false;
+      //   else
+      //       return true;
+      // }
 
-      loadDraftDiagramFromBrowser = () => {
-          this.setState({ isOpen: false});
-          this.props.DiagramEditor.loadDraftDiagramFromBrowser();
-      }
+      // loadDraftDiagramFromBrowser = () => {
+      //     this.setState({ isOpen: false});
+      //     this.props.DiagramEditor.loadDraftDiagramFromBrowser();
+      // }
 
-      deleteDraftDiagramFromBrowser = () => {
-        LocalStorage.remove(LocalStorage.KeyNames.TempLocalDiagram);
-        this.setState({ isOpen: false });
-      }
+      // deleteDraftDiagramFromBrowser = () => {
+      //   LocalStorage.remove(LocalStorage.KeyNames.TempLocalDiagram);
+      //   this.setState({ isOpen: false });
+      // }
       
       getCollectionFromWorkspace = () => {
         if(!this.authService.isUserLogin())

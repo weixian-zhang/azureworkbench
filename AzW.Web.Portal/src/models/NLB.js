@@ -13,7 +13,7 @@ export default class NLB
             Deployable: true,
             HighCost: false,
             
-            Name: '',
+            Name: 'nlb-web',
             Location: '',
             ResourceGroupName: '',
             IsInternalNLB: false,
@@ -22,8 +22,8 @@ export default class NLB
             VNetName: '',
             SubnetName: '',
             FrontendPort: 443,
-            BackendpoolName: '',
-            LoadBalancingRuleName: '',
+            BackendpoolName: 'backend-web',
+            LoadBalancingRuleName: 'lbrule-web',
             LoadBalanceToExistingVMNames: []
         }; 
         this.CalculatorContext = {

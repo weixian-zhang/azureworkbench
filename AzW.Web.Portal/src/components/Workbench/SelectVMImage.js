@@ -103,9 +103,12 @@ export default class SelectVMImage extends Component {
     }
 
     initPreviouslySelectedValue = () =>{
-        var previouslySelectedValue = this.props.SelectedImageName;
+        var previouslySelectedValue = this.props.SelectedImage;
+
+        var imageDisplayName =
+            previouslySelectedValue.VMOffer + ', ' + previouslySelectedValue.VMSKU;
 
         if(!Utils.IsNullOrUndefine(previouslySelectedValue))
-            this.setState({searchQuery:previouslySelectedValue});
+            this.setState({searchQuery: imageDisplayName});
     }
 }

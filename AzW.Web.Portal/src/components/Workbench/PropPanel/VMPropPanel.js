@@ -172,7 +172,7 @@ export default class VMPropPanel extends Component {
                 </Grid>
                 <Grid item >
                   <SelectVMImage
-                   SelectedImageName = {this.state.userObject.ProvisionContext.VMSKU}
+                   SelectedImage = {this.state.userObject.ProvisionContext}
                    onValueChange={
                       (vm) => {
                         var uo = this.state.userObject;

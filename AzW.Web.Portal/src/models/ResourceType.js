@@ -16,6 +16,7 @@ export default class ResourceType
     static NLB() {return 'nlb'; }
     static AppGw() {return 'appgw'; }
     static DNSPrivateZone() {return 'dnsprivatezone'; }
+    static DNS() {return 'dns'; }
     static AzureSearch() {return 'search'; }
     static SignalR() {return 'signalr'; }
     static AppServiceCert() {return 'appsvccert'; }

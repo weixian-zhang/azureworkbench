@@ -15,7 +15,7 @@
     background-color: #fff;
     border: 1px solid #000;
     text-align:center;
-    height: 750px;/*height needs to be set*/
+    height: 680px;/*height needs to be set*/
     width: 900px;
     margin: auto;
     position: fixed;
@@ -38,12 +38,25 @@
     bottom: 0;
     left: 0;
   }
+  .myspace-overrideexistingrow-overlay {
+    background-color: #fff;
+    border: 1px solid #000;
+    text-align:center;
+    height: 150px;/*height needs to be set*/
+    width: 320px;
+    margin: auto;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
   .saveto-workspace-overlay-box {
       background-color: #fff;
       border: 1px solid #000;
       text-align:center;
-      height: 270px;/*height needs to be set*/
-      width: 550px;
+      height: 280px;/*height needs to be set*/
+      width: 430px;
       margin: auto;
       position: fixed;
       top: 0;
@@ -55,7 +68,7 @@
       background-color: #fff;
       border: 1px solid #000;
       text-align:center;
-      height: 100px;/*height needs to be set*/
+      height: 120px;/*height needs to be set*/
       width: 350px;
       margin: auto;
       position: fixed;

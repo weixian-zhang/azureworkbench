@@ -14,7 +14,7 @@ export default class Subnet
         this.ProvisionContext = {
             ResourceType: ResourceType.Subnet(),
 
-            Name: '',
+            Name: 'subnet-web',
             AddressSpace: '',
             NSGName: ''
         };

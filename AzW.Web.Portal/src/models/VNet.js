@@ -12,7 +12,7 @@ export default class VNet
         this.ProvisionContext = {
             ResourceType: ResourceType.VNet(),
            
-            Name: '',
+            Name: 'vnet-internet',
             Location: '',
             ResourceGroupName: '',
             AddressSpace: '10.0.0.0/24',

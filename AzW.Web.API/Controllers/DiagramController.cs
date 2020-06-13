@@ -16,6 +16,8 @@ using DinkToPdf.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 
 using Syncfusion.HtmlConverter;
 using Syncfusion.Pdf;
@@ -162,32 +164,61 @@ namespace AzW.Web.API
 
             try
              {
+                
+                string pureBase64 = svgbase64.Replace("data:image/png;base64,", "");
+                var byteArray = Convert.FromBase64String(pureBase64);
 
-                var byteArray = Convert.FromBase64String(svgbase64);
+                string utfString = Encoding.UTF8.GetString(byteArray, 0, byteArray.Length);
 
-                string utfString = Encoding.UTF8.GetString(byteArray, 0, byteArray.Length);  
-              
-                using(var ms = new MemoryStream())
-                {  
-                        var htmlDoc = new HtmlToPdfDocument()
-                        {
-                            GlobalSettings = {
-                                ColorMode = DinkToPdf.ColorMode.Color,
-                                PaperSize = PaperKind.A3,
-                                Orientation = Orientation.Landscape,
-                            },
-                            Objects = {
-                                new DinkToPdf.ObjectSettings()
-                                {
-                                    HtmlContent = $"{utfString}"
-                                }
-                            }
-                        };
+                using(var ms = new MemoryStream()) {
+                    using (Document pdfDoc = new Document(iTextSharp.text.PageSize.A3.Rotate()))
+                    {
+                        pdfDoc.SetMargins(0, 0, 0, 0);
+                        //pdfDoc.SetPageSize(iTextSharp.text.PageSize.A4.Rotate());
+
+                        // step 2
+                        PdfWriter pdfWriter = PdfWriter.GetInstance(pdfDoc, ms);
+        
+                        //open the stream 
+                        pdfDoc.Open();
+
+                        iTextSharp.text.Image img = iTextSharp.text.Image.GetInstance(byteArray);
+    
+                        img.Alignment = iTextSharp.text.Image.ALIGN_CENTER;
+                        img.Border = iTextSharp.text.Rectangle.NO_BORDER;
+                        img.BorderColor = iTextSharp.text.BaseColor.WHITE;
+                        img.ScaleToFit(PageSize.A3.Rotate());
                     
-                    byte[] pdf = _html2pdfConverter.Convert(htmlDoc);
+                        pdfDoc.Add(img);
+        
+                        pdfDoc.Close();
+                    }
 
-                    return new FileContentResult(pdf, "application/octet-stream");
+                     return new FileContentResult(ms.ToArray(), "application/octet-stream");
                 }
+
+              
+                // using(var ms = new MemoryStream())
+                // {  
+                //         var htmlDoc = new HtmlToPdfDocument()
+                //         {
+                //             GlobalSettings = {
+                //                 ColorMode = DinkToPdf.ColorMode.Color,
+                //                 PaperSize = PaperKind.A3,
+                //                 Orientation = Orientation.Landscape,
+                //             },
+                //             Objects = {
+                //                 new DinkToPdf.ObjectSettings()
+                //                 {
+                //                     HtmlContent = $"{utfString}"
+                //                 }
+                //             }
+                //         };
+                    
+                //     byte[] pdf = _html2pdfConverter.Convert(htmlDoc);
+
+                //     return new FileContentResult(pdf, "application/octet-stream");
+                // }
 
             }              
             catch (Exception ex)

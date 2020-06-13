@@ -1,13 +1,14 @@
 import React, { Component } from "reactn";
 import {useGlobal} from 'reactn';
-import {  PopoverInteractionKind, Popover, Menu, Position, MenuItem,MenuDivider, Classes, Icon, Utils } from "@blueprintjs/core";
+import { Button, Label, Elevation, Card, Overlay, PopoverInteractionKind, Popover, Menu, Position, MenuItem,MenuDivider, Classes, Icon, Utils } from "@blueprintjs/core";
 import Badge from '@material-ui/core/Badge';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import CloudIcon from '@material-ui/icons/Cloud';
+import LocalMall from '@material-ui/icons/LocalMall';
+import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import FolderIcon from '@material-ui/icons/Folder';
 import HelpIcon from '@material-ui/icons/Help';
 import QuickStart from '@material-ui/icons/FlashOn';
@@ -42,7 +43,8 @@ export default class Header extends Component {
         isAboutOpen: false,
         quickstart: {category:'', name:''},
         acctMenuAnchor: null,
-        acctMenuOpen: false
+        acctMenuOpen: false,
+        isDeleteConfirmationDialogOpen: false
     }
 
     this.fileInput = React.createRef();
@@ -64,10 +66,6 @@ export default class Header extends Component {
         }
     };
 
-  }
-
-  componentDidMount() { 
-    
   }
 
   render() {
@@ -99,13 +97,15 @@ export default class Header extends Component {
                         <MenuItem  text="Save to Browser" onClick={this.saveToLocal} />
                         <MenuItem  text="Save to Workspace" onClick={this.savetoWorkspace} />
                       </Badge>
-                      
+                     <MenuDivider />
+                     <MenuItem  text="Load Draft from Browser" onClick={this.loadDiagramFromrBrowser} />
+                     <MenuItem  text="Delete Draft from Browser" onClick={this.openDeleteConfirmDialog} />
                      <MenuDivider />
                      <MenuItem  text="Import Workbench file(.azwb)" onClick={this.importWorkbenchFormat} />
                      <MenuDivider />
                      <MenuItem  text="Export as SVG" onClick={this.exportDiagramAsSVG} />
                      <MenuItem  text="Export as PNG"  onClick={this.exportDiagramAsPNG}/>
-                     {/* <MenuItem  text="Export as PDF" onClick={this.exportDiagramAsPDF} /> */}
+                     <MenuItem  text="Export as PDF" onClick={this.exportDiagramAsPDF} />
                      <MenuItem  text="Export as Workbench file(.azwb)" onClick={this.exportWorkbenchFormat} />
                    </Menu>
                } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.HOVER}>
@@ -118,7 +118,7 @@ export default class Header extends Component {
               
               <IconButton color="inherit" aria-label="Edit" onClick={this.showWorkspace}>
                 <Tippy content="My Space" followCursor={true} placement="bottom">
-                  <CloudIcon  />
+                  <LocalMall  />
                 </Tippy>
               </IconButton>
 
@@ -153,12 +153,12 @@ export default class Header extends Component {
                           }/>
                      </MenuItem>
                      <MenuItem  text="Kubernetes">
-                      <MenuItem text="Secured Microservices"
+                      <MenuItem text="Private Cluster"
                             onClick={
                               () => {
                                 var qs = this.state.quickstart;
                                 qs.category = 'Kube';
-                                qs.name = 'Secured-Micro';
+                                qs.name = 'PrivateCluster';
                                 this.setState({quickstart:qs});
                                 this.loadQuickstartDiagram();
                               }
@@ -180,7 +180,7 @@ export default class Header extends Component {
                 <Popover content=
                { 
                    <Menu className={Classes.ELEVATION_1}>
-                     {this.state.isLogin == true ? <MenuItem labelElement={<Icon icon="log-out" />} text="Logout" onClick={this.logout} /> : ''}
+                     {this.state.isLogin == true ? <MenuItem labelElement={<PowerSettingsNewIcon />} text="Logout" onClick={this.logout} /> : ''}
                      {this.state.isLogin == false ? <MenuItem labelElement={<Icon icon="log-in" />} text="Login" onClick={this.login} /> : '' }
                      <MenuItem  text="About Azure Workbench" onClick={this.showAboutOverlay} />
                    </Menu>
@@ -204,6 +204,17 @@ export default class Header extends Component {
             </section>
           </Toolbar>
         </AppBar>
+        <Overlay isOpen={this.state.isDeleteConfirmationDialogOpen}  onClose={this.handleDeletConfirmClose}>
+          <Card className='workspace-deletediagramdialog-overlay-box'  elevation={Elevation.TWO}>
+            <Label>
+              Are you sure you want to delete diagram from browser storage?
+            </Label>
+            <Button text="Confirm" icon="delete" onClick={this.deleteDiagramFromrBrowser } />
+            <span className="bp3-navbar-divider"></span>
+            <Button text="Cancel" onClick={() => 
+                this.setState({ isDeleteConfirmationDialogOpen: false})} />
+          </Card>
+        </Overlay>
       </div>
     );
   }
@@ -227,6 +238,12 @@ export default class Header extends Component {
     diagramEditor.showWorkspace();
  }
 
+ openDeleteConfirmDialog = (diagramContext) => {
+  this.setState({
+    isDeleteConfirmationDialogOpen: true
+  });
+}
+
  shareDiagram = () => {
      var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
      diagramEditor.shareDiagram();
@@ -241,6 +258,16 @@ export default class Header extends Component {
     var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
     diagramEditor.saveDiagramToBrowser();
  }
+
+ loadDiagramFromrBrowser = () => {
+  var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
+  diagramEditor.loadDraftDiagramFromBrowser();
+ }
+
+ deleteDiagramFromrBrowser = () => {
+  var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
+  diagramEditor.deleteDraftDiagramFromBrowser();
+}
 
  exportDiagramAsPDF = () => {
     var diagramEditor =  this.props.Workbench.current.getDiagramEditor();

@@ -1,373 +1,428 @@
 import Utils from "./Utils";
 import ResourceType from '../../../models/ResourceType';
+import * as go from 'gojs';
 
 export default class ProvisionHelper
 {
-    ExtractProvisionContexts = (graph) => {
-        this.graph = graph;
-        var cells = this.graph.getChildVertices(this.graph.getDefaultParent());
+    ExtractProvisionContexts = (diagram) => {
 
+        if(Utils.isCanvasEmpty())
+            return [];
+        
         var provisionContexts = [];
 
-        cells.map(cell => {
+        var allNodes = diagram.nodes;
 
-            var result = Utils.TryParseUserObject(cell.value);
+        while (allNodes.next()) {
+            
+            var node = allNodes.value; 
 
-            if(result.isUserObject)
-            {
-                var userObject = result.userObject;
+            if(!(node instanceof go.Link) &&
+                !Utils.isSubnet(node) &&
+                Utils.isAzContextExist(node)) {
 
                 //ordering is important!
-                this.getNSGs(userObject, cell, provisionContexts);
+                if(this.getNSGs(node, provisionContexts))
+                    continue;
 
-                this.getVNetContext(userObject, cell, provisionContexts);
+                if(this.getVNetContext(node, provisionContexts))
+                    continue;
 
-                this.getVMContexts(userObject, cell, provisionContexts);
+                if(this.getVMContexts(node, provisionContexts))
+                    continue;
 
-                this.getInternalNLBContexts(userObject, cell, provisionContexts);
+                if(this.getInternalNLBContexts(node, provisionContexts))
+                    continue;
 
-                this.getExternalNLBContexts(userObject, cell, provisionContexts);
+                if(this.getExternalNLBContexts(node, provisionContexts))
+                    continue;
 
-                this.getAppGatewayContexts(userObject, cell, provisionContexts);
+                if(this.getAppGatewayContexts(node, provisionContexts))
+                    continue;
 
-                this.getFirewallContexts(userObject, cell, provisionContexts);
+                if(this.getFirewallContexts(node, provisionContexts))
+                    continue;
 
-                this.getAllResourcesOutsideVNetContexts(userObject, cell, provisionContexts);
+                if(this.getAllNonVIRContexts(node, provisionContexts))
+                    continue;
+
             }
-        });
+        }
 
-        return provisionContexts;
+        return this.sortProvisionContexts(provisionContexts);
     }
 
-    getVNetContext = (userObject, cell, provisionContexts) => {
-        
-        if(userObject.ProvisionContext.ResourceType == ResourceType.VNet())
-        {
-            var vnetUserObject = userObject;
+    
+    sortProvisionContexts(proContexts) {
 
-            var subnetCells = this.getSubnetCells(userObject, cell);
+        if(proContexts.length == 0)
+            return [];
         
-            if(Utils.IsNullOrUndefine(subnetCells))
+        var sortedContexts = [];
+
+        var i = 0;
+
+        //nsg
+        if(proContexts.find(p => p.ResourceType == ResourceType.NSG()) != null) {
+
+            while(proContexts.find(p => p.ResourceType == ResourceType.NSG()) != null) {
+                for(var pc of proContexts) {
+        
+                    if(pc.ResourceType == ResourceType.NSG()) {
+
+                        sortedContexts.push(pc);
+
+                        var index = proContexts.findIndex
+                            (p => p.Name == pc.Name && p.ResourceType == pc.ResourceType);
+
+                        proContexts.splice(index, 1);
+
+                        continue;
+                    }
+                }
+            }
+        }
+
+        //vnet
+        if(proContexts.find(p => p.ResourceType == ResourceType.VNet()) != null){
+
+            while(proContexts.find(p => p.ResourceType == ResourceType.VNet()) != null) {
+                for(var pc of proContexts) {
+
+                    if(pc.ResourceType == ResourceType.VNet()) {
+
+                        sortedContexts.push(pc);
+
+                        var index = proContexts.findIndex
+                            (p => p.Name == pc.Name && p.ResourceType == pc.ResourceType);
+
+                        proContexts.splice(index, 1);
+
+                        continue;
+                    }
+                }
+            }
+        }
+
+        //vm
+        if(proContexts.find(p => p.ResourceType == ResourceType.WindowsVM() ||
+                p.ResourceType == ResourceType.LinuxVM()) != null) {
+
+            while(proContexts.find(p => 
+                p.ResourceType == ResourceType.WindowsVM()||
+                p.ResourceType == ResourceType.LinuxVM()) != null) {
+                    
+                for(var pc of proContexts) {
+
+                    if(pc.ResourceType == ResourceType.WindowsVM() ||
+                        pc.ResourceType == ResourceType.LinuxVM()) {
+
+                        sortedContexts.push(pc);
+
+                        var index = proContexts.findIndex
+                            (p => p.Name == pc.Name && p.ResourceType == pc.ResourceType);
+
+                        proContexts.splice(index, 1);
+
+                        continue;
+                    }
+                }
+            }
+        }
+
+        //rest of resources
+        for(var pc of proContexts) {
+            sortedContexts.push(pc);
+        }
+
+        return sortedContexts;
+    }
+
+    getVNetContext = (node, provisionContexts) => {
+        
+        if(Utils.isVNet(node))
+        {
+            var vnet = node;
+
+            var subnets = this.getSubnetNodes(vnet);
+        
+            if(subnets.length == 0)
                 return;
             
                 var subnetProContexts = [];
 
-                subnetCells.map(subnetCell => {
+                subnets.map(subNode => {
 
-                var subnet = Utils.TryParseUserObject(subnetCell.value);
+                    if(Utils.isSubnet(subNode)) {
 
-                var nsgName = this.getNSGNameForSubnet(subnetCell);
-                subnet.userObject.ProvisionContext.NSGName = nsgName;
+                        var subnetProContext = Utils.ProContext(subNode);
 
-                subnetProContexts.push(subnet.userObject.ProvisionContext);
-            });
+                        var nsgName = this.getNSGNameForSubnet(subNode);
+                        subnetProContext.NSGName = nsgName;
 
-            vnetUserObject.ProvisionContext.Subnets = subnetProContexts; //set subnets
+                        subnetProContexts.push(subnetProContext);
+                    }
+                });
 
-            provisionContexts.push(vnetUserObject.ProvisionContext);
+            var vnetProContext = Utils.ProContext(vnet);
+
+            vnetProContext.Subnets = subnetProContexts; //set subnets
+
+            provisionContexts.push(vnetProContext);
+
+            return true;
         }
     }
 
-    getInternalNLBContexts = (userObject, cell, provisionContexts) => {
-        var subnetCells = this.getSubnetCells(userObject, cell);
+    getInternalNLBContexts = (node, provisionContexts) => {
 
-        if(Utils.IsNullOrUndefine(subnetCells.length))
-            return;
-
-        var cellsInSubnets = this.getCellsInSubnets(subnetCells);
-
-        cellsInSubnets.map(cell => {
-            var result = Utils.TryParseUserObject(cell.value);
-
-            if(result.isUserObject &&
-                result.userObject.ProvisionContext.ResourceType == ResourceType.NLB())
-            {
-                var nlbCell = cell;
-                var nlbContext = result.userObject.ProvisionContext;
-
-                nlbContext.VNetName = this.getResourceVNetName(nlbCell);
-
-                nlbContext.SubnetName = this.getResourceSubnetName(nlbCell);
-
-                var vmNames = this.getEdgeConnectedVMs(nlbCell);
-                nlbContext.LoadBalanceToExistingVMNames = vmNames;
-
-                provisionContexts.push(nlbContext);
-            }
-            
-        });
-    }
-
-    getExternalNLBContexts(userObject, cell, provisionContexts) {
-        if(userObject.ProvisionContext.ResourceType == ResourceType.NLB() &&
-            userObject.ProvisionContext.IsInternalNLB == false)
+        if(Utils.isInternalNLB(node))
         {
-            var nlbContext = userObject.ProvisionContext;
-            var vmNames = this.getEdgeConnectedVMs(cell);
-            nlbContext.LoadBalanceToExistingVMNames = vmNames;
+            var nlb = node;
 
-            provisionContexts.push(nlbContext);
+            var nlbProContext = Utils.ProContext(nlb);
+
+            nlbProContext.VNetName = this.getResourceVNetName(nlb);
+
+            nlbProContext.SubnetName = this.getResourceSubnetName(nlb);
+
+            var vmNames = this.getLinkConnectedVMs(nlb);
+            nlbProContext.LoadBalanceToExistingVMNames = vmNames;
+
+            provisionContexts.push(nlbProContext);
+
+            return true;
         }
     }
 
-    getAppGatewayContexts = (userObject, cell, provisionContexts) => {
-        if(userObject.ProvisionContext.ResourceType != ResourceType.VNet())
+    getExternalNLBContexts(node, provisionContexts) {
+
+        if(Utils.isNLB(node) && !Utils.isInternalNLB(node))
+        {
+            var nlbProContext = Utils.ProContext(node);
+
+            var vmNames = this.getLinkConnectedVMs(node);
+
+            nlbProContext.LoadBalanceToExistingVMNames = vmNames;
+
+            provisionContexts.push(nlbProContext);
+
+            return true;
+        }
+    }
+
+    getAppGatewayContexts = (node, provisionContexts) => {
+
+        if(Utils.isAppGw(node))
+        {
+            var appgw = node;
+
+            var appgwProContext = Utils.ProContext(node);
+
+            appgwProContext.VNetName = this.getResourceVNetName(appgw);
+
+            appgwProContext.SubnetName = this.getResourceSubnetName(appgw);
+
+            var vmNames = this.getLinkConnectedVMs(appgw);
+            appgwProContext.LoadBalanceToExistingVMNames = vmNames;
+
+            provisionContexts.push(appgwProContext);
+
+            return true;
+        }
+    }
+
+    getVMContexts = (node, provisionContexts) => {
+
+        if(Utils.IsVM(node))
+        {
+            var vm = node;
+
+            var vmProContext = Utils.ProContext(vm);
+
+            vmProContext.VNetName = this.getResourceVNetName(vm);
+
+            vmProContext.SubnetName = this.getResourceSubnetName(vm);
+
+            provisionContexts.push(vmProContext);
+
+            return true;
+        }
+    }
+    
+    getNSGs = (node, provisionContexts) => {
+
+        if(!Utils.isVNet(node))
             return;
+        
+        var vnetNode = node;
 
-        var subnetCells = this.getSubnetCells(userObject, cell);
+        var subnets = this.getSubnetNodes(vnetNode);
 
-        if(Utils.IsNullOrUndefine(subnetCells.length))
+        if(subnets.length == 0)
             return;
-
-        var cellsInSubnets = this.getCellsInSubnets(subnetCells);
-
-        cellsInSubnets.map(cell => {
-            var result = Utils.TryParseUserObject(cell.value);
-
-            if(result.isUserObject &&
-                result.userObject.ProvisionContext.ResourceType == ResourceType.AppGw())
-            {
-                var appgwCell = cell;
-                var appgwContext = result.userObject.ProvisionContext;
-
-                appgwContext.VNetName = this.getResourceVNetName(appgwCell);
-
-                appgwContext.SubnetName = this.getResourceSubnetName(appgwCell);
-
-                var vmNames = this.getEdgeConnectedVMs(appgwCell);
-                appgwContext.LoadBalanceToExistingVMNames = vmNames;
-
-                provisionContexts.push(appgwContext);
-            }
+        
+        subnets.map(sub => {
             
+            var nsgPart = sub.findObject("NSG");
+
+            if(nsgPart.visible == true) {
+                
+                var vnetNode = sub.containingGroup;
+
+                nsgPart.nsgazcontext.ProvisionContext.VNetName =
+                    this.getVNetNameFromNode(vnetNode);
+
+                nsgPart.nsgazcontext.ProvisionContext.SubnetName =
+                    this.getSubnetNameFromNode(sub);
+
+                provisionContexts.push(nsgPart.nsgazcontext.ProvisionContext);
+
+                return true;
+            }
         });
     }
 
-    getEdgeConnectedVMs(cell) {
-        if(cell.edges == null || cell.edges.length == 0)
-            return null;
+    getFirewallContexts= (node, provisionContexts) => {
+
+        if(Utils.isFirewall(node))
+        {
+            var azfw = node;
+
+            var azfwProContext = Utils.ProContext(azfw);
+
+            azfwProContext.VNetName = this.getResourceVNetName(azfw);
+
+            azfwProContext.SubnetName = this.getResourceSubnetName(azfw);
+
+            provisionContexts.push(azfwProContext);
+
+            return true;
+        }
+    }
+
+    //for nlb and appgw
+    getLinkConnectedVMs(node) {
+
+        // get all links out from it
+        //appgw, nlb
+        var links = node.findLinksOutOf();
 
         var vmNames = [];
 
-        cell.edges.map(x => {
+        while (links.next()) { // for each link get the link text and toNode text
 
-            var source = x.source;
-            var target = x.target;
+            var link = links.value;
+            
+            var toNode = link.toNode;
+            var fromNode  = link.fromNode ; //could be from instead of to
 
-            if(Utils.IsVM(source))
-            {
-                var result =  Utils.TryParseUserObject(source);
-                vmNames.push(result.userObject.ProvisionContext.Name);
+            if(toNode != null && Utils.IsVM(toNode)) {
+                vmNames.push(toNode.data.azcontext.ProvisionContext.Name);
             }
-
-            if(Utils.IsVM(target))
-            {
-                var result =  Utils.TryParseUserObject(target);
-                vmNames.push(result.userObject.ProvisionContext.Name);
+            
+            if(fromNode != null && Utils.IsVM(fromNode)) {
+                vmNames.push(fromNode.data.azcontext.ProvisionContext.Name);
             }
-        });
+        }
 
         return vmNames;
     }
-    
-    getVMContexts = (userObject, cell, provisionContexts) => {
 
-        if(userObject.ProvisionContext.ResourceType != ResourceType.VNet())
-            return;
+    getAllNonVIRContexts = (node, provisionContexts) => {
 
-        var subnetCells = this.getSubnetCells(userObject, cell);
-
-        if(Utils.IsNullOrUndefine(subnetCells.length))
-            return;
-
-        var cellsInSubnets = this.getCellsInSubnets(subnetCells);
-
-        if(Utils.IsNullOrUndefine(cellsInSubnets))
-            return provisionContexts;
-        
-        cellsInSubnets.map(cell => {
-
-            var result = Utils.TryParseUserObject(cell.value);
-
-            if(result.isUserObject &&
-                result.userObject.ProvisionContext.ResourceType == ResourceType.VM())
-            {
-                var vmCell = cell;
-                var vmContext = result.userObject.ProvisionContext;
-
-                //get vnet name
-                // var vnetCell = vmCell.parent.parent;
-                // var vnetResult = Utils.TryParseUserObject(vnetCell.value);
-                vmContext.VNetName = this.getResourceVNetName(vmCell); // vnetResult.userObject.ProvisionContext.Name;
-
-                //get subnet name
-                // var subnetCell = vmCell.parent;
-                // var subnetResult =  Utils.TryParseUserObject(subnetCell.value);
-                vmContext.SubnetName = this.getResourceSubnetName(vmCell); //subnetResult.userObject.ProvisionContext.Name;
-
-                provisionContexts.push(vmContext);
-            }
-        })
-
-        return provisionContexts;
-    }
-    
-    getNSGs = (userObject, cell, provisionContexts) => {
-
-        if(userObject.ProvisionContext.ResourceType != ResourceType.VNet())
-            return;
-
-        var subnetCells = this.getSubnetCells(userObject, cell);
-
-        if(Utils.IsNullOrUndefine(subnetCells.length))
-            return;
-
-        var cellsInSubnets = this.getCellsInSubnets(subnetCells);
-
-        if(Utils.IsNullOrUndefine(cellsInSubnets))
-            return provisionContexts;
-        
-        cellsInSubnets.map(cell => {
-
-            var result = Utils.TryParseUserObject(cell.value);
-
-            if(result.isUserObject &&
-               result.userObject.ProvisionContext.ResourceType == ResourceType.NSG())
-               {
-                    var nsgProContext = result.userObject.ProvisionContext;
-
-                    provisionContexts.push(nsgProContext);
-               }
-        });
-    }
-
-    getFirewallContexts= (userObject, cell, provisionContexts) => {
-
-        if(userObject.ProvisionContext.ResourceType != ResourceType.VNet())
-            return;
-
-        var subnetCells = this.getSubnetCells(userObject, cell);
-
-        if(Utils.IsNullOrUndefine(subnetCells.length))
-            return;
-
-        var cellsInSubnets = this.getCellsInSubnets(subnetCells);
-
-        cellsInSubnets.map(cell => {
-            var result = Utils.TryParseUserObject(cell.value);
-
-            if(result.isUserObject &&
-                result.userObject.ProvisionContext.ResourceType == ResourceType.Firewall())
-            {
-                var azfwCell = cell;
-                var azfwCellContext = result.userObject.ProvisionContext;
-
-                azfwCellContext.VNetName = this.getResourceVNetName(azfwCell);
-
-                azfwCellContext.SubnetName = this.getResourceSubnetName(azfwCell);
-
-                provisionContexts.push(azfwCellContext);
-            }
-            
-        });
-    }
-
-    getAllResourcesOutsideVNetContexts = (userObject, cell, provisionContexts) => {
-
-        if(userObject.ProvisionContext.ResourceType != ResourceType.VNet() &&
-        userObject.ProvisionContext.ResourceType != ResourceType.NLB())
+        if(!Utils.isPartVIR(node))
         {
-            var proContext = userObject.ProvisionContext;
+            var proContext = Utils.ProContext(node);
             provisionContexts.push(proContext);
+            return true;
         }
         return provisionContexts;
     }
 
     //helper
-    getResourceVNetName(cell) {
-        var vnetCell = cell.parent.parent;
-        var vnetResult = Utils.TryParseUserObject(vnetCell.value);
-        return vnetResult.userObject.ProvisionContext.Name;
+    getResourceVNetName(node) {
+        var vnet = node.containingGroup.containingGroup;
+        if(Utils.isVNet(vnet))
+            return vnet.data.azcontext.ProvisionContext.Name;
+        else
+            return "";
     }
 
-    getResourceSubnetName(cell) {
-        var subnetCell = cell.parent;
-        var subnetResult =  Utils.TryParseUserObject(subnetCell.value);
-        return subnetResult.userObject.ProvisionContext.Name;
+    getResourceSubnetName(node) {
+        var subnet = node.containingGroup;
+        if(Utils.isSubnet(subnet))
+            return subnet.data.azcontext.ProvisionContext.Name;
+        else
+            return "";
     }
 
-    getNSGNameForSubnet(subnetCell)
+    getVNetNameFromNode(vnetNode) {
+        if(!Utils.isAzContextExist(vnetNode))
+            return "";
+
+        return vnetNode.data.azcontext.ProvisionContext.Name;
+    }
+
+    getSubnetNameFromNode(subnetNode) {
+        if(!Utils.isAzContextExist(subnetNode))
+            return "";
+
+        return subnetNode.data.azcontext.ProvisionContext.Name;
+    }
+
+    getNSGNameForSubnet(subnetNode)
     {
-        var children = this.graph.getChildVertices(subnetCell);
+        var nsgPart = subnetNode.findObject("NSG");
 
-        if(Utils.IsNullOrUndefine(children))
-            return '';
-        
-        for(var x of children)
-        {
-            var result = Utils.TryParseUserObject(x.value);
-
-            if(result.isUserObject &&
-                result.userObject.ProvisionContext.ResourceType == ResourceType.NSG())
-            {
-                return result.userObject.ProvisionContext.Name;
-            }
-        }
-        return '';
+        if(nsgPart.visible == true)
+            return nsgPart.nsgazcontext.ProvisionContext.Name;
+        else
+            return "";
     }
 
-    getSubnetCells(userObject, cell) {
+    getSubnetNodes(vnetNode) {
 
-        if(userObject.ProvisionContext.ResourceType == ResourceType.VNet())
+        if(Utils.isVNet(vnetNode))
         {
-            var subnetCells = [];
+            var subnets = [];
 
-            var cellsInVNets = this.graph.getChildVertices(cell);
-    
-            if(Utils.IsNullOrUndefine(cellsInVNets))
-                return [];
-            else
-            {
-                cellsInVNets.map(cell => {
+            var ite = vnetNode.memberParts.iterator;
 
-                    var result = Utils.TryParseUserObject(cell);
+            while(ite.next()) {
+                var childNode = ite.value;
 
-                    if(result.isUserObject &&
-                       result.userObject.ProvisionContext.ResourceType == ResourceType.Subnet())
-                       {
-                        subnetCells.push(cell);
-                       }
-                });
+                if(Utils.isSubnet(childNode)) {
+                    subnets.push(childNode);
+                }
             }
-            
-            return subnetCells;
 
+            return subnets;
         }
         else return [];
     }
 
     //helper
-    getCellsInSubnets(subnetCells) {
+    getNodesInSubnets(subnets) {
         
-        var cellsInSubnets = [];
+        var nodesInSubnets = [];
 
-        subnetCells.map(cell => {
+        subnets.map(sub => {
 
-            var cellsInSubnet = this.graph.getChildVertices(cell);
+            if(Utils.isSubnet(sub)) {
 
-            if(!Utils.IsNullOrUndefine(cellsInSubnet))
-            {
-                cellsInSubnet.map(cellInSub => {
+                var childs = sub.memberParts;
 
-                    cellsInSubnets.push(cellInSub);
-                    
+                childs.each((c) => {
+
+                    if(Utils.isAzureResource(c)) {
+                        nodesInSubnets.push(c);
+                    }
                 })
-               
             }
-
         });
 
-        return cellsInSubnets;
+        return nodesInSubnets;
 
     }
 }

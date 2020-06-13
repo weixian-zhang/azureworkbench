@@ -10,13 +10,13 @@ export default class AppService
 
         this.ProvisionContext = {
             ResourceType: ResourceType.AppService(),
-            Name: '',
+            Name: 'appsvc-web',
             Location: '',
             ResourceGroupName: '',
-            PlanName: '',
+            PlanName: 'asp-web-dev',
             IsLinux: false,
-            PricingTier: '',
-            RuntimeStack: ''
+            PricingTier: 'Standard1',
+            RuntimeStack: 'NETCore_V2_2'
         };
         this.CalculatorContext = {
             IsFree: false,

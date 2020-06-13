@@ -13,7 +13,6 @@ import GoNodeType from './Helpers/GoNodeType';
 
 //3rd-party libraries
 import ShortUniqueId from 'short-unique-id';
-import AzureIcons from "./Helpers/AzureIcons";
 import Messages from "./Helpers/Messages";
 import Utils from "./Helpers/Utils";
 import MxGraphManager from './Helpers/MxGraphManager';
@@ -29,6 +28,7 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
 import mxClientOverrides from './Helpers/mxClientOverrides';
 
 //models
+import DNS from "../../models/DNS";
 import AADDomainService from "../../models/AADDomainService";
 import SendGrid from "../../models/SendGrid";
 import SecurityCenter from "../../models/SecurityCenter";
@@ -140,6 +140,7 @@ import VNetPropPanel from "./PropPanel/VNetPropPanel";
 import NLBPropPanel from "./PropPanel/NLBPropPanel";
 import AppGwPropPanel from "./PropPanel/AppGwPropPanel";
 import DNSPrivateZonePropPanel from "./PropPanel/DNSPrivateZonePropPanel";
+import DNSZonePropPanel from "./PropPanel/DNSZonePropPanel";
 import AppServicePropPanel from "./PropPanel/AppSvcPropPanel";
 import ASEPropPanel from "./PropPanel/ASEPropPanel";
 import FuncPropPanel from "./PropPanel/FuncPropPanel";
@@ -218,6 +219,7 @@ import IPCIDR  from 'ip-cidr';
 import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
 import LocalStorageCommandHandler from './GojsExtensions/LocalStorageCommandHandler';
 import OrthogonalLinkReshapingTool from './GojsExtensions/LinkReshaping';
+import { utimesSync } from "fs";
 
  export default class DiagramEditor extends Component {
  
@@ -227,8 +229,6 @@ import OrthogonalLinkReshapingTool from './GojsExtensions/LinkReshaping';
     this.$ = go.GraphObject.make;
 
     this.shortUID = new ShortUniqueId();
-    this.graph = null;
-    this.azureIcons = AzureIcons;
 
     //state
     this.state = {
@@ -267,14 +267,6 @@ import OrthogonalLinkReshapingTool from './GojsExtensions/LinkReshaping';
     this.diagramService = new DiagramService();
     this.provisionService = new ProvisionService();
     this.provisionHelper = new ProvisionHelper();
-
-    // this.addDblClickEventToOpenPropPanel();
-    // this.addDeleteKeyEventToDeleteVertex();
-    // this.addContextMenu();
-    // this.addCtrlZEventToUndo();
-    // this.addCtrlAEventSelectAll();
-    // this.addCtrlCCtrlVCopyPasteVertices();
-    // this.addUpDownLeftRightArrowToMoveCells();
     
     this.addKeyPressShortcuts();
     this.PromptSaveBeforeCloseBrowser();
@@ -376,6 +368,7 @@ import OrthogonalLinkReshapingTool from './GojsExtensions/LinkReshaping';
         <NLBPropPanel ref={this.nlbPropPanel} />
         <AppGwPropPanel ref={this.appgwPropPanel} />
         <DNSPrivateZonePropPanel ref={this.dnsPrivateZonePropPanel} />
+        <DNSZonePropPanel ref={this.dnszonePropPanel} />
         <Overlay isOpen={this.state.showShareDiagramPopup} onClose={this.closeShareDiagramPopup} >
           <div style={{width: '400px',height:'100px'}} className={[Classes.CARD, Classes.ELEVATION_4, "login-overlay"]}>
           <InputGroup
@@ -427,6 +420,7 @@ import OrthogonalLinkReshapingTool from './GojsExtensions/LinkReshaping';
     this.nlbPropPanel = React.createRef();
     this.appgwPropPanel = React.createRef();
     this.dnsPrivateZonePropPanel = React.createRef();
+    this.dnszonePropPanel = React.createRef();
     this.appsvcPropPanel = React.createRef();
     this.asePropPanel = React.createRef();
     this.funcPropPanel = React.createRef();
@@ -537,8 +531,8 @@ import OrthogonalLinkReshapingTool from './GojsExtensions/LinkReshaping';
                   corner: 5, toShortLength: 4,
                   relinkableFrom: true,
                   relinkableTo: true,
-                  reshapable: true,
-                  resegmentable: true
+                  reshapable: true
+                  //resegmentable: true
                 },
                 new go.Binding("points").makeTwoWay(),
                 this.$(go.Shape, { strokeWidth: 1.5 })
@@ -637,15 +631,20 @@ createTextTemplate() {
           selectionObjectName: "TEXT",
           movable: true,
           selectable: true,
-          resizable: false,
+          resizable: true,
           rotatable: true,
+          width: 100,
+          height: 30,
+          margin: 2,
           selectionChanged: function(p) {
             p.layerName = (p.isSelected ? "Foreground" : '');
           },
           contextMenu: this.initContextMenu()
         },
         new go.Binding("nodetype"),
-        new go.Binding("location", "loc", go.Point.parse),
+        new go.Binding("width").makeTwoWay(),
+        new go.Binding("height").makeTwoWay(),
+        new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         this.$(go.TextBlock,
           { 
             name: "TEXT",
@@ -653,21 +652,16 @@ createTextTemplate() {
             isMultiline: true,
             font: 'Segoe UI',
             stroke: 'black',
-            textAlign: 'center'
-            //desiredSize: new go.Size(50,50)
+            textAlign: "center"
           },
           new go.Binding('stroke', 'stroke').makeTwoWay(),
           new go.Binding('font', 'font').makeTwoWay(),
           new go.Binding("text").makeTwoWay()
         ),
-          this.makePort("TL", go.Spot.TopLeft, go.Spot.Top, true, true),
-          this.makePort("BL", go.Spot.BottomLeft, go.Spot.Top, true, true),
-          this.makePort("TR", go.Spot.TopRight, go.Spot.Top, true, true),
-          this.makePort("BR", go.Spot.BottomRight,  go.Spot.Top, true, true),
-          this.makePort("T", go.Spot.Top,  go.Spot.TopSide, true, true),
-          this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true),
-          this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
-          this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true)
+        this.makePort("T", go.Spot.Top,  go.Spot.TopSide, true, true),
+        this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true),
+        this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
+        this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true)
     );
 
     return textTemplate;
@@ -714,7 +708,8 @@ createPictureShapeTemplate() {
         this.$(go.TextBlock,
           {
             editable:true,
-            isMultiline: true
+            isMultiline: true,
+            textAlign: "center"
           },
           {row:1,column:0},
           new go.Binding("text").makeTwoWay(),
@@ -840,7 +835,8 @@ createNonVIRAzureResourceTemplate() {
           this.$(go.TextBlock,
             {
               editable:true,
-              isMultiline: true
+              isMultiline: true,
+              textAlign: "center"
             },
             {row:1,column:0},
             new go.Binding("text").makeTwoWay(),
@@ -890,7 +886,8 @@ createShapeTemplate() {
       this.$(go.TextBlock,
         { 
           editable: true,
-          isMultiline: true 
+          isMultiline: true,
+          textAlign: "center"
         },
         new go.Binding("text").makeTwoWay(),
         new go.Binding("stroke", "textStroke").makeTwoWay(),
@@ -1005,23 +1002,6 @@ initLinkTemplate(linkTemplateMap) {
               new go.Binding("strokeWidth").makeTwoWay(),
               new go.Binding("stroke").makeTwoWay(),
             ),
-            // this.$(go.Shape,  // the link path shape
-            //   { isPanelMain: true, stroke: "gray", strokeWidth: 2 },
-            //   new go.Binding("stroke", "isSelected", function(sel) { return sel ? "dodgerblue" : "gray"; }).ofObject()),
-            // this.$(go.Shape,  // the arrowhead
-            //   { toArrow: "standard", strokeWidth: 0, fill: "gray" }),
-            // this.$(go.Panel, "Auto",  // the link label, normally not visible
-            //   { visible: false, name: "LABEL", segmentIndex: 2, segmentFraction: 0.5 },
-            // this.$(go.Shape, "RoundedRectangle",  // the label shape
-            //     { fill: "#F8F8F8", strokeWidth: 0 }),
-            // this.$(go.TextBlock, "Yes",  // the label
-            //     {
-            //       textAlign: "center",
-            //       font: "10pt helvetica, arial, sans-serif",
-            //       stroke: "#333333",
-            //       editable: true
-            //     },
-            //     new go.Binding("text").makeTwoWay()),
           //)
           this.$(go.Shape,
             new go.Binding("fromArrow", "fromArrow")),
@@ -1076,13 +1056,13 @@ initLinkTemplate(linkTemplateMap) {
     var orthogonalLink =
         this.$(go.Link,  // the whole link panel
           {
-            routing: go.Link.AvoidsNodes,
+            routing: go.Link.Orthogonal,
             curve: go.Link.JumpOver,
             corner: 5, toShortLength: 4,
             relinkableFrom: true,
             relinkableTo: true,
             reshapable: true,
-            resegmentable: true,
+            resegmentable: false,
             selectionChanged: function(p) {
               p.layerName = (p.isSelected ? "Foreground" : '');
             },
@@ -1411,14 +1391,10 @@ createVNetTemplate() {
           new go.Binding('visible', 'natgwVisible').makeTwoWay(),
           new go.Binding('natgwazcontext').makeTwoWay()
         ),
-        this.makePort("TL", go.Spot.TopLeft, go.Spot.BottomRight, go.Spot.Top, true, true),
-        this.makePort("B", go.Spot.BottomLeft, go.Spot.TopRight, go.Spot.Top, true, true),
-        this.makePort("L", go.Spot.TopRight, go.Spot.BottomLeft, go.Spot.Top, true, true),
-        this.makePort("R", go.Spot.BottomRight, go.Spot.TopRight, go.Spot.Top, true, true),
-        this.makePort("T", go.Spot.Top, go.Spot.Bottom, go.Spot.Top, true, true),
-        this.makePort("B", go.Spot.Bottom, go.Spot.Top, go.Spot.Top, true, true),
-        this.makePort("L", go.Spot.Left, go.Spot.Right, go.Spot.Top, true, true),
-        this.makePort("R", go.Spot.Right, go.Spot.Left, go.Spot.Top, true, true)
+        this.makePort("T", go.Spot.Top,  go.Spot.TopSide, true, true),
+        this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true),
+        this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
+        this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true)
   );
 
   return groupTemplate;
@@ -1476,6 +1452,7 @@ createSubnetTemplate() {
       new go.Binding("stroke", "textStroke").makeTwoWay(),
       new go.Binding("font").makeTwoWay()),
       this.$(go.Picture, {
+        name: "NSG",
         stretch: go.GraphObject.Fill,
         desiredSize: new go.Size(24,24),
         alignment: new go.Spot(0, 0, 6, -15),
@@ -1492,6 +1469,7 @@ createSubnetTemplate() {
         new go.Binding('nsgazcontext').makeTwoWay()
       ),
       this.$(go.Picture, {
+        name: "UDR",
         stretch: go.GraphObject.Fill,
         desiredSize: new go.Size(25,25),
         alignment: new go.Spot(0, 0, 31, -15),
@@ -1507,14 +1485,10 @@ createSubnetTemplate() {
         new go.Binding('visible', 'udrVisible').makeTwoWay(),
         new go.Binding('udrazcontext').makeTwoWay()
       ),
-      this.makePort("TL", go.Spot.TopLeft, go.Spot.BottomRight, go.Spot.Top, true, true),
-        this.makePort("B", go.Spot.BottomLeft, go.Spot.TopRight, go.Spot.Top, true, true),
-        this.makePort("L", go.Spot.TopRight, go.Spot.BottomLeft, go.Spot.Top, true, true),
-        this.makePort("R", go.Spot.BottomRight, go.Spot.TopRight, go.Spot.Top, true, true),
-        this.makePort("T", go.Spot.Top, go.Spot.Bottom, go.Spot.Top, true, true),
-        this.makePort("B", go.Spot.Bottom, go.Spot.Top, go.Spot.Top, true, true),
-        this.makePort("L", go.Spot.Left, go.Spot.Right, go.Spot.Top, true, true),
-        this.makePort("R", go.Spot.Right, go.Spot.Left, go.Spot.Top, true, true)
+      this.makePort("T", go.Spot.Top,  go.Spot.TopSide, true, true),
+      this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true),
+      this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
+      this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true)
     );
 
 return subnetTemplate;
@@ -1522,18 +1496,25 @@ return subnetTemplate;
 
 getSubnetsCidrsAzContextOfVNet(vnetGroup) {
   if(!Utils.isAzContextExist(vnetGroup))
-      throw 'getSubnetsCidrsAzContextOfVNet - vnetGroup azcontext missing';
+    return {
+        VNetAddressSpace: vnetGroup.data.azcontext.ProvisionContext.AddressSpace,
+        SubnetsCidrs: []
+    };
 
     var result = {
         VNetAddressSpace: vnetGroup.data.azcontext.ProvisionContext.AddressSpace,
         SubnetsCidrs: []
     };
 
-    vnetGroup.memberParts.each((p) => {
-      if(!Utils.isAzContextExist(p))
-        throw 'getSubnetsCidrsAzContextOfVNet - subnet azcontext missing';
+    var ite = vnetGroup.memberParts;
 
-        var subnetAzContext = p.data.azcontext;
+    while(ite.next()) {
+      var nodeInVNet = ite.value;
+
+      if(!Utils.isSubnet(nodeInVNet))
+        continue;
+
+        var subnetAzContext = nodeInVNet.data.azcontext;
 
         result.SubnetsCidrs.push({
           subnetName: subnetAzContext.ProvisionContext.Name,
@@ -1544,7 +1525,7 @@ getSubnetsCidrsAzContextOfVNet(vnetGroup) {
             ? new IPCIDR(subnetAzContext.ProvisionContext.AddressSpace).end()
             : ''
         });
-    });
+    }
 
     return result;
 }
@@ -1615,7 +1596,8 @@ createVIRAzureResourceTemplate() {
           this.$(go.TextBlock,
             {
               editable:true,
-              isMultiline: true
+              isMultiline: true,
+              textAlign: "center"
             },
             {row:1,column:0},
             new go.Binding("text").makeTwoWay(),
@@ -1623,10 +1605,6 @@ createVIRAzureResourceTemplate() {
             new go.Binding("stroke").makeTwoWay()
             ),
           ),
-          this.makePort("TL", go.Spot.TopLeft, go.Spot.Top, true, true),
-          this.makePort("BL", go.Spot.BottomLeft, go.Spot.Top, true, true),
-          this.makePort("TR", go.Spot.TopRight, go.Spot.Top, true, true),
-          this.makePort("BR", go.Spot.BottomRight,  go.Spot.Top, true, true),
           this.makePort("T", go.Spot.Top,  go.Spot.TopSide, true, true),
           this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true),
           this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
@@ -1976,7 +1954,7 @@ createVIROntoSubnet(dropContext) {
           image = require('../../assets/azure_icons/Networking Service Color/Load Balancers.png');
           
           var nlb = new NLB();
-          nlb.IsInternalNLB = true;
+          nlb.ProvisionContext.IsInternalNLB = true;
           azcontext = nlb
           break;
         case ResourceType.APIM():
@@ -2245,6 +2223,10 @@ saveDiagramToBrowser = () => {
 }
 
 loadDraftDiagramFromBrowser = () => {
+  if(!this.isdraftDiagramExistInBrowser()) {
+    Toast.show('primary', 3000, 'You do not have diagram saved in browser');
+    return;
+  }
  var jsonStr = LocalStorage.get(LocalStorage.KeyNames.TempLocalDiagram);
  var loadedModel = go.Model.fromJson(jsonStr);
 
@@ -2252,10 +2234,26 @@ loadDraftDiagramFromBrowser = () => {
  this.diagram.model = loadedModel;
 }
 
+deleteDraftDiagramFromBrowser = () => {
+  if(!this.isdraftDiagramExistInBrowser()) {
+    Toast.show('primary', 3000, 'You do not have diagram saved in browser');
+    return;
+  }
+  LocalStorage.remove(LocalStorage.KeyNames.TempLocalDiagram);
+  this.setState({ isOpen: false });
+}
+
+isdraftDiagramExistInBrowser() {
+  if(LocalStorage.get(LocalStorage.KeyNames.TempLocalDiagram) === null)
+      return false;
+  else
+      return true;
+}
+
 PromptSaveBeforeCloseBrowser() {
   var thisComp = this;
   window.addEventListener('beforeunload', (event) => {
-    if(Utils.isCanvasEmpty()) return;
+    if(Utils.isCanvasEmpty(this.diagram)) return;
     if(thisComp.state.unsavedChanges){
       event.returnValue = 'You have unsaved changes';
     }
@@ -2545,8 +2543,28 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
       case 'Client Machine':
         this.createPictureShape
-          ({source: require('../../assets/azure_icons/_Flat Symbols/CnE_Enterprise/Laptop computer.png'),
-            label: 'client', x: dropContext.x, y: dropContext.y});
+          ({source: require('../../assets/azure_icons/shape-computer.png'), //_Flat Symbols/CnE_Enterprise/Laptop computer.png'),
+            label: 'laptop', x: dropContext.x, y: dropContext.y});
+        break;
+      case 'TV':
+        this.createPictureShape
+          ({source: require('../../assets/azure_icons/shape-tv.png'), //_Flat Symbols/CnE_Enterprise/Laptop computer.png'),
+            label: 'tv', x: dropContext.x, y: dropContext.y});
+        break;
+      case 'Kiosk':
+        this.createPictureShape
+          ({source: require('../../assets/azure_icons/shape-kiosk.png'), //_Flat Symbols/CnE_Enterprise/Laptop computer.png'),
+            label: 'kiosk', x: dropContext.x, y: dropContext.y});
+        break;
+      case 'Tablet':
+        this.createPictureShape
+          ({source: require('../../assets/azure_icons/shape-tablet.png'), //_Flat Symbols/CnE_Enterprise/Laptop computer.png'),
+            label: 'tablet', x: dropContext.x, y: dropContext.y});
+        break;
+      case 'Switch':
+        this.createPictureShape
+          ({source: require('../../assets/azure_icons/shape-switch.png'), //_Flat Symbols/CnE_Enterprise/Laptop computer.png'),
+            label: 'switch', x: dropContext.x, y: dropContext.y});
         break;
       case 'ADFS':
         this.createPictureShape
@@ -2603,7 +2621,13 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         ({source: require('../../assets/azure_icons/shape-firewall.png'),
           label: 'firewall', x: dropContext.x, y: dropContext.y});
       break;
+
       //misc
+      case 'CLI':
+        this.createPictureShape
+        ({source: require('../../assets/azure_icons/software/software-cli.png'),
+          label: 'cli', x: dropContext.x, y: dropContext.y});
+      break;
       case 'Helm':
         this.createPictureShape
         ({source: require('../../assets/azure_icons/software/helm.png'),
@@ -2782,9 +2806,13 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       case 'Azure Resource Group (shape)':
         this.createPictureShape
         ({source: require('../../assets/azure_icons/software/software-resourcegroup.png'),
-          label: '', x: dropContext.x, y: dropContext.y});
+          label: 'resource group', x: dropContext.x, y: dropContext.y});
       break;
-  
+      case 'Azure':
+        this.createPictureShape
+        ({source: require('../../assets/azure_icons/software/software-azure.png'),
+          label: 'Azure', x: dropContext.x, y: dropContext.y});
+      break;
       case ResourceType.AppService():
         this.createNonVIRAzureResource({
           source: require('../../assets/azure_icons/Web Service Color/App Services.png'),
@@ -2966,6 +2994,13 @@ setBadgeVisibilityOnUnsaveChanges = () => {
           y: dropContext.y
         });
         break;
+      case ResourceType.DNS():
+          this.createNonVIRAzureResource({
+            source: require('../../assets/azure_icons/Networking Service Color/azure-dns.png'),
+            label: 'dns zone', x: dropContext.x, y: dropContext.y,
+            azcontext: new DNS()
+          });
+          break;
       case ResourceType.DNSPrivateZone():
         this.createNonVIRAzureResource({
           source: require('../../assets/azure_icons/Networking Service Color/DNS Private Zones.png'),
@@ -3726,6 +3761,11 @@ setBadgeVisibilityOnUnsaveChanges = () => {
            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
+      case ResourceType.DNS():
+          this.dnszonePropPanel.current.show(userObject, function(savedUserObject){
+             onContextSaveCallback(Utils.deepClone(savedUserObject));
+          });
+      break;
       default:
         break;
     }
@@ -3956,35 +3996,13 @@ setBadgeVisibilityOnUnsaveChanges = () => {
   // }
 
 
-  importJsonDiagram = (anonymousDiagramContext) => {
+  importJsonDiagram = (diagramContext) => {
 
-    if(anonymousDiagramContext == undefined ||
-       anonymousDiagramContext.DiagramXml == undefined)
+    if(diagramContext == undefined ||
+      diagramContext.DiagramXml == undefined)
       return;
 
-      // window['mxImage'] = mxImage;   
-      // window['mxCellOverlay'] = mxCellOverlay;  
-      // window['mxCell'] = mxCell;
-      // window['mxCellPath'] = mxCellPath;
-      // window['mxGeometry'] = mxGeometry;
-      // window['mxCodec'] = mxCodec;
-      // window['mxPoint'] = mxPoint;
-      // window['mxEditor'] = mxEditor;
-      // window['mxGeometry'] = mxGeometry;
-      // window['mxDefaultKeyHandler'] = mxDefaultKeyHandler;
-      // window['mxDefaultPopupMenu'] = mxDefaultPopupMenu;
-      // window['mxGraph'] = mxGraph;
-      // window['mxStylesheet'] = mxStylesheet;
-      // window['mxDefaultToolbar'] = mxDefaultToolbar;
-      // window['mxGraphModel'] = mxGraphModel;
-      // window['mxGraphSelectionModel'] = mxGraphSelectionModel;
-      // window['mxGraphModel'] = mxGraphModel;
-      // window['mxChildChange'] = mxChildChange;
-      // window['mxChildChangeCodec'] = mxChildChangeCodec;
-      // window['mxCellCodec'] = mxCellCodec;
-      // window['mxUtils'] = mxUtils;
-
-      var model = go.Model.fromJson(anonymousDiagramContext.DiagramXml);
+      var model = go.Model.fromJson(diagramContext.DiagramXml);
 
       this.diagram.clear();
       this.diagram.model = model;
@@ -3992,57 +4010,6 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       //reset unsave changes state on new diagram import
       this.setState({unsavedChanges: false}, () => {
         this.setBadgeVisibilityOnUnsaveChanges()});
-      
-      //codec.decode(doc.documentElement, this.graph.getModel());
-
-      // //re-add cell overlays
-      // var cells =
-      //   this.graph.getChildVertices(this.graph.getDefaultParent());
-      
-      //   if(cells != undefined)
-      //   {
-      //       cells.map(cell => {
-              
-      //         var result = Utils.TryParseUserObject(cell.value);
-
-      //         if(result.isUserObject &&
-      //            JSON.parse(cell.value).GraphModel.ResourceType == 'vnet')
-      //         {
-      //           this.graph.removeCellOverlays(cell);
-
-      //           var vnetIconOverlay = new mxCellOverlay(
-      //             new mxImage(window.location.origin + require('../../assets/azure_icons/Networking Service Color/Virtual Network (Classic).svg'),25, 25),
-      //             null,  mxConstants.ALIGN_RIGHT, mxConstants.ALIGN_TOP
-      //           );
-
-      //           this.graph.addCellOverlay(cell, vnetIconOverlay);
-
-      //           var childSubnets =
-      //              this.graph.getChildVertices(cell);
-                
-      //           if(childSubnets != null)
-      //           {
-      //             childSubnets.map(subnet => {
-      //               this.graph.removeCellOverlays(subnet);
-
-      //               // var nsgOverlay = new mxCellOverlay(
-      //               //   new mxImage(require('../../assets/azure_icons/Networking Service Color/Network Security Groups (Classic).svg'),20, 20),
-      //               //   null,  mxConstants.ALIGN_LEFT, mxConstants.ALIGN_TOP
-      //               // );
-            
-      //               var subnetLogoOverlay = new mxCellOverlay(
-      //                 new mxImage(require('../../assets/azure_icons/Networking Service Color/Subnet.svg'),15, 15),
-      //                 'Subnet',  mxConstants.ALIGN_Right, mxConstants.ALIGN_TOP
-      //               );
-    
-      //               //this.graph.addCellOverlay(subnet, nsgOverlay);
-      //               this.graph.addCellOverlay(subnet, subnetLogoOverlay);
-
-      //             })
-      //           }
-      //         }
-      //       });
-      //   }
   }
 
    loadQuickstartDiagram(category, name) {
@@ -4059,7 +4026,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
   }
 
   shareDiagram(){
-    if(Utils.isCanvasEmpty())
+    if(Utils.isCanvasEmpty(this.diagram))
       {
         Toaster.create({
           position: Position.TOP,
@@ -4174,7 +4141,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
   }
 
   exportWorkbenchFormat() {
-    if(Utils.isCanvasEmpty())
+    if(Utils.isCanvasEmpty(this.diagram))
     {
       Toast.show('primary', 2000, Messages.NoCellOnGraph());
       return;
@@ -4192,7 +4159,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
   }
 
   saveDiagramToWorkspace(collectionName, diagramName) {
-    if(Utils.isCanvasEmpty())
+    if(Utils.isCanvasEmpty(this.diagram))
     {
       Toaster.create({
         position: Position.TOP,
@@ -4235,7 +4202,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
 
 
   exportAsSvg(){
-    if(Utils.isCanvasEmpty())
+    if(Utils.isCanvasEmpty(this.diagram))
     {
       Toaster.create({
         position: Position.TOP,
@@ -4259,7 +4226,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
   }
 
   exportAsPng() {
-    if(Utils.isCanvasEmpty())
+    if(Utils.isCanvasEmpty(this.diagram))
     {
       Toaster.create({
         position: Position.TOP,
@@ -4270,7 +4237,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
     }
 
     var blob = this.diagram.makeImageData
-      ({ background: "white", returnType: "blob", callback: callback });
+      ({ scale: 2, returnType: "blob", callback: callback });
 
     function callback(blob) {
       var link = document.createElement("a");
@@ -4294,7 +4261,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
 
   exportDiagramAsPDF(){
 
-    if(Utils.isCanvasEmpty())
+    if(Utils.isCanvasEmpty(this.diagram))
     {
       Toaster.create({
         position: Position.TOP,
@@ -4304,14 +4271,18 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       return;
     }
 
-    var svg = this.diagram.makeSvg({ scale: 1, background: "white" });
+    // var svg = this.diagram.makeSvg({ scale: 2, background: "white" });
 
-    var svgXmlString = new XMLSerializer().serializeToString(svg);
+    // var svgXmlString = new XMLSerializer().serializeToString(svg);
     
-    var svgXmlBase64 = window.btoa(svgXmlString);
+    // var svgXmlBase64 = window.btoa(svgXmlString);
 
-    var thisComp = this;
-    this.diagramService.exportDiagramAsPNG(svgXmlBase64,
+    var base64Image = this.diagram.makeImageData({ scale: 1.0,
+      background: "white",
+      maxSize: new go.Size(Infinity, Infinity)});
+    //background: "white", returnType: "blob", callback: callback });
+
+    this.diagramService.exportDiagramAsPNG(base64Image,
       function onSuccess(pdfByteArray)
       {
         const url = window.URL.createObjectURL(new Blob([pdfByteArray]));
@@ -4337,15 +4308,13 @@ setBadgeVisibilityOnUnsaveChanges = () => {
 
   deployDiagramToAzure = (subscription) => {
 
-      var cells = this.graph.getChildVertices(this.graph.getDefaultParent());
-
-      if(Utils.IsNullOrUndefine(cells))
+      if(Utils.isCanvasEmpty(this.diagram))
       {
         Toast.show(Intent.WARNING, 2000, Messages.NoCellOnGraph());
         return;
       }
 
-      var contexts = this.provisionHelper.ExtractProvisionContexts(this.graph);
+      var contexts = this.provisionHelper.ExtractProvisionContexts(this.diagram);
 
       if(Utils.IsNullOrUndefine(contexts))
       {
@@ -4355,10 +4324,10 @@ setBadgeVisibilityOnUnsaveChanges = () => {
 
       this.provisionService.provisionDiagram(subscription.SubscriptionId, contexts,
         function onSuccess() {
-          //Toast.show("success", 2000, 'Diagram successfully deployed');
+          Toast.show("success", 2000, 'Diagram successfully deployed');
         },
         function onFailure(error) {
-          //Toast.show("danger", 6000, error);
+          Toast.show("danger", 6000, error);
         }
       );
   }

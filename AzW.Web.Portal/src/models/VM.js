@@ -11,7 +11,7 @@ export default class VM
         this.ProvisionContext = {
             ResourceType: ResourceType.VM(),
             
-            Name: '',
+            Name: 'vm-',
             ResourceGroupName: '',
             Location: '',
 
@@ -21,7 +21,7 @@ export default class VM
             VNetName: '',
             SubnetName: '',
 
-            AdminUsername: 'admin',
+            AdminUsername: 'AzureUser',
             AdminPassword: '',
             
             VMPublisher: '',

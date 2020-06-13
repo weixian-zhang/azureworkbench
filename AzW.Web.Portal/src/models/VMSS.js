@@ -10,21 +10,26 @@ export default class VMSS
 
         this.ProvisionContext = {
             ResourceType: ResourceType.VMSS(),
-            Deployable: true,
-            HighCost: false,
-            
-            Name: '',
+            Name: 'vmss-',
+            ResourceGroupName: '',
             Location: '',
-            Tags: [],
 
-            PublicIP: false,
-            RootUsername: '',
-            RootPassword: '',
-            VNetAddress: '',
+            HasPublicIP: false,
+            PublicIPName: '',
+            
+            VNetName: '',
             SubnetName: '',
+
+            AdminUsername: 'AzureUser',
+            AdminPassword: '',
+            
             VMPublisher: '',
             VMOffer: '',
-            VMSKU: ''
+            VMSKU: '',
+            VMVersion: '',
+
+            SizeName: 'STANDARD_DS2_V2',
+            IsLinux: false
         };
         this.CalculatorContext = {
             IsFree: false,
