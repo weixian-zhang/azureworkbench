@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Cosmos from '../../../models/Cosmos';
-import { FormGroup, Drawer, Intent, Button, Switch } from "@blueprintjs/core";
+import { MenuItem, Drawer, Button } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -9,6 +9,7 @@ import AppBar from '@material-ui/core/AppBar';
 import SelectLocation from '../SelectLocation';
 import SelectResourceGroup from '../SelectResourceGroup';
 import Utils from '../Helpers/Utils';
+import {Select } from "@blueprintjs/select";
 
 export default class CosmosPropPanel extends Component {
   constructor(props) {
@@ -17,7 +18,8 @@ export default class CosmosPropPanel extends Component {
       this.state ={
         isOpen: false,
         userObject: new Cosmos(),
-
+        selectedCosmosdbType: 'SQL',
+        cosmosdbType: ['Cassandra','Gremlin','SQL','Mongo'],
         saveCallback: function () {},
       }
   }
@@ -105,6 +107,35 @@ export default class CosmosPropPanel extends Component {
                       this.setState({userObject:uo});
                     }
                   }/>
+                </Grid>
+              </Grid>
+              <Grid container item direction="row" xs="12"  justify="flex-start" alignItems="center">
+                <Grid item sm={4}>
+                    <label>CosmosDB Type</label>
+                </Grid>
+                <Grid item>
+                  <Select
+                    closeOnSelect={true}
+                    filterable={false}
+                    items={this.state.cosmosdbType}
+                    itemRenderer={
+                      (cosmosdbType, { handleClick, modifiers }) => {
+                        return (<MenuItem
+                          text={cosmosdbType}
+                          onClick={
+                            (e) => {
+                              this.setState({selectedCosmosdbType:cosmosdbType});
+                              var uo = this.state.userObject;
+                              uo.ProvisionContext.CosmosDBType = cosmosdbType;
+                              this.setState({userObject:uo});
+                            }
+                          } />);
+                      }
+                    }>
+                    <Button text={this.state.selectedCosmosdbType == '' ? 'CosmosDB Type' : Utils.limitTextLength(this.state.selectedCosmosdbType,15)}
+                        alignText='left'
+                        rightIcon="double-caret-vertical" style={{width: '170px', maxWidth: '170px'}}/>
+                  </Select>
                 </Grid>
               </Grid>
           </Grid>

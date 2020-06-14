@@ -24,6 +24,7 @@ using Microsoft.Azure.Management.Storage.Fluent;
 using Microsoft.Azure.Management.OperationalInsights;
 using Microsoft.Azure.Management.OperationalInsights.Models;
 using Microsoft.Azure.Management.Compute.Fluent;
+using Microsoft.Azure.Management.CosmosDB.Fluent.Models;
 
 namespace AzW.Infrastructure.AzureServices
 {
@@ -96,6 +97,10 @@ namespace AzW.Infrastructure.AzureServices
                             case ResourceType.LogAnalytics:
                                 LogAnalytics law = jObj.ToObject<LogAnalytics>();
                                 await CreateLAWAsync(law);
+                            break;
+                            case ResourceType.CosmosDB:
+                                CosmosDB cosmos = jObj.ToObject<CosmosDB>();
+                                await CreateCosmosAsync(cosmos);
                             break;
                             
                         }
@@ -713,6 +718,32 @@ namespace AzW.Infrastructure.AzureServices
                 await omsClient.Workspaces.CreateOrUpdateAsync
                     (law.ResourceGroupName, law.Name,new Workspace(law.Location));
             }
+        }
+
+        private async Task CreateCosmosAsync(CosmosDB cosmos)
+        {
+           var rgDef = AzClient
+                .WithSubscription(_subscriptionId)
+                .CosmosDBAccounts.Define(cosmos.Name)
+                .WithRegion(cosmos.Location)
+                .WithExistingResourceGroup(cosmos.ResourceGroupName);
+
+            Microsoft.Azure.Management.CosmosDB.Fluent.CosmosDBAccount.Definition.IWithConsistencyPolicy
+                consistencyPolicyDef = null;
+            
+            if(cosmos.CosmosDBType == CosmosDBType.Cassandra.ToString())
+                consistencyPolicyDef = rgDef.WithDataModelCassandra();
+            else if(cosmos.CosmosDBType == CosmosDBType.Gremlin.ToString())
+                consistencyPolicyDef = rgDef.WithDataModelGremlin();
+            else if(cosmos.CosmosDBType == CosmosDBType.Mongo.ToString())
+                consistencyPolicyDef =  rgDef.WithDataModelMongoDB();// rgDef.WithKind(DatabaseAccountKind.MongoDB);
+            else if(cosmos.CosmosDBType == CosmosDBType.SQL.ToString())
+                consistencyPolicyDef =  rgDef.WithDataModelSql();//rgDef.WithKind(DatabaseAccountKind.GlobalDocumentDB);
+            
+            await consistencyPolicyDef
+                .WithSessionConsistency()
+                .WithDefaultWriteReplication()
+                .CreateAsync();      
         }
 
         private async Task CreateStorageAccountAsync(Model.StorageAccount storage)

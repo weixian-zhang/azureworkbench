@@ -1021,8 +1021,8 @@ export default class ResourcePalette extends Component {
             {
               Name: 'cosmos mongo cassandra graph documentdb',
               Tooltip: 'CosmosDB',
-              Image: require('../../assets/azure_icons/Databases Service Color/Azure Cosmos DB.png'),
-              Provisionable: false,
+              Image: require('../../assets/azure_icons/Databases Service Color/azure-cosmos-db.png'),
+              Provisionable: true,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.CosmosDB()

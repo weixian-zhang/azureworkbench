@@ -2977,7 +2977,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
       case ResourceType.CosmosDB():
           this.createNonVIRAzureResource({
-          source:require('../../assets/azure_icons/Databases Service Color/Azure Cosmos DB.png'),
+          source:require('../../assets/azure_icons/Databases Service Color/azure-cosmos-db.png'),
           label: 'cosmos db', x: dropContext.x, y: dropContext.y,
           azcontext: new Cosmos()
         });

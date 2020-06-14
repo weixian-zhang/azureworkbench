@@ -347,6 +347,10 @@ export default class Utils
         return 'data:image/png;base64,' + base64Image;
     }
 
+    static svgDataUrl(base64Image) {
+        return 'data:image/svg+xml;base64,' + base64Image;
+    }
+
     static isCidr(cidr) {
         if(Utils.IsNullOrUndefine(cidr))
             return false;

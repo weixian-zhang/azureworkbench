@@ -10,12 +10,10 @@ export default class Cosmos
 
         this.ProvisionContext = {
             ResourceType: ResourceType.CosmosDB(),
-            Deployable: true,
-            HighCost: false,
-            
-            Name: '',
+            Name: 'cosmosdb-app',
             Location: '',
-            Tags: []
+            ResourceGroupName: '',
+            CosmosDBType: 'SQL'
         };
         this.CalculatorContext = {
             IsFree: false,

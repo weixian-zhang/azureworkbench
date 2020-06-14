@@ -15,6 +15,7 @@
     <PackageReference Include="Microsoft.Azure.Management.ResourceManager.Fluent" Version="1.33.0"/>
     <PackageReference Include="Microsoft.Azure.Management.Network.Fluent" Version="1.33.0"/>
     <PackageReference Include="Microsoft.Azure.Management.AppService.Fluent" Version="1.33.0"/>
+    <PackageReference Include="Microsoft.Azure.Management.CosmosDB.Fluent" Version="1.33.0"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AzW.Secret\AzW.Secret.csproj"/>
