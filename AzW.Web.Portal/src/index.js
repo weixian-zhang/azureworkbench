@@ -17,7 +17,7 @@ import { Intent, Spinner } from "@blueprintjs/core";
 import axios from 'axios';
 
 //https://blog.logrocket.com/how-to-make-http-requests-like-a-pro-with-axios/
-axios.defaults.baseURL = Config.BaseAPIUrl();
+axios.defaults.baseURL = Config.BaseAPIUrl() //process.env.REACT_APP_BaseAPIUrl;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 axios.interceptors.request.use(request => {
     console.log(request);

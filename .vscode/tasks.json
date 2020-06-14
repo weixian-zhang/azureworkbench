@@ -118,10 +118,27 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/AzW.Web.Portal",
-                "env": {
-                    "env": "dev"
-                }
+                "cwd": "${workspaceFolder}/AzW.Web.Portal"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Publish Portal - Beta",
+            "command": "REACT_APP_ENV=beta npm run build",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/AzW.Web.Portal"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Publish Portal - Prod",
+            "command": "REACT_APP_ENV=prod npm run build",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/AzW.Web.Portal"
             },
             "problemMatcher": []
         },

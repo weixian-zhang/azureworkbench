@@ -4,13 +4,13 @@ export default class Config
     }
 
     static BaseAPIUrl() {
-        return  'http://localhost:8089';
+        return  'https://api.azureworkbench.com';
         //'http://localhost:8089';
         //'https://beta-api.azureworkbench.com'
         //'https://api.azureworkbench.com'
      }
      static PortalUrl() {
-         return 'http://localhost:8090';
+         return 'https://www.azureworkbench.com';
          //'http://localhost:8090';
          //https://beta.azureworkbench.com
          //'https://www.azureworkbench.com';

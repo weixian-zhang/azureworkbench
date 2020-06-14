@@ -15,6 +15,7 @@ using Microsoft.Azure.Management.Compute.Fluent.VirtualMachine.Definition;
 using System;
 using Microsoft.Azure.Management.Network.Fluent.Models;
 using Microsoft.Azure.Management.AppService.Fluent;
+using Microsoft.Azure.Management.AppService.Fluent.Models;
 using System.Reflection;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Core.ResourceActions;
 using Microsoft.Azure.Management.Network.Fluent.NetworkSecurityRule.Definition;
@@ -85,6 +86,10 @@ namespace AzW.Infrastructure.AzureServices
                             case ResourceType.AppService:
                                 WebApp webapp = jObj.ToObject<WebApp>();
                                 await CreateAppService(webapp);
+                            break;
+                            case ResourceType.ASE:
+                                ASE ase = jObj.ToObject<ASE>();
+                                await CreateAppServiceEnvironment(ase);
                             break;
                             case ResourceType.StorageAccount:
                                 Model.StorageAccount blob = jObj.ToObject<Model.StorageAccount>();
@@ -604,22 +609,6 @@ namespace AzW.Infrastructure.AzureServices
                 .WithSize(sku)
                 .CreateAsync();
 
-            // }
-            // else
-            // {
-            //     await routingRuleDef
-            //         .FromPublicFrontend()
-            //         .FromFrontendHttpPort(appgw.FrontendPort)
-            //         .ToBackendHttpPort(appgw.BackendPort)
-            //         .ToBackend(appgw.BackendPoolName)
-            //         .Attach()
-            //         .WithExistingPublicIPAddress(standardPip)
-            //         .WithExistingSubnet(subnet)
-            //         .WithInstanceCount(appgw.NumberofInstances)
-            //         .WithTier(tier)
-            //         .WithSize(sku)
-            //         .CreateAsync();
-            // }
         }
 
         private async Task CreateAzFirewallAsync(Firewall firewall)
@@ -665,8 +654,6 @@ namespace AzW.Infrastructure.AzureServices
             
             RuntimeStack runtimeStack = (RuntimeStack) runtime.GetValue(null);
 
-        //    AzClient.WithSubscription("").WebApps.Define("").WithRegion("").WithExistingResourceGroup("").WithNewWindowsPlan(PricingTier)
-
             var pricingTierDef = AzClient.WithSubscription(_subscriptionId)
                 .AppServices
                 .AppServicePlans
@@ -707,6 +694,11 @@ namespace AzW.Infrastructure.AzureServices
                     .WithNewWindowsPlan(appServicePlan)
                     .WithWebAppAlwaysOn(true)
                     .CreateAsync();
+        }
+
+        private async Task CreateAppServiceEnvironment(ASE ase)
+        {
+            
         }
 
         private async Task  CreateLAWAsync(LogAnalytics law)
