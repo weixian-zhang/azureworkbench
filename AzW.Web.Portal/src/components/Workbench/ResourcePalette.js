@@ -24,8 +24,6 @@ export default class ResourcePalette extends Component {
  
   constructor(props) {
     super(props);
-
-    this.graphManager = this.props.mxgraphManager;
     
     this.state = {
       graphContainer: null,

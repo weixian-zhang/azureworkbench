@@ -66,36 +66,7 @@ inline {
   margin: 0px;
 }
 
-/* mxGraph css overrides */
-/* popupMenuHandler */
-div.mxPopupMenu {
-  -webkit-box-shadow: 3px 3px 6px #C0C0C0;
-  -moz-box-shadow: 3px 3px 6px #C0C0C0;
-  box-shadow: 3px 3px 6px #C0C0C0;
-  background: white;
-  position: absolute;
-  border: 3px solid #e7e7e7;
-  padding: 3px;
-}
-div.mxCellEditor {
 
-  background: white;
-  position: absolute;
-  border: 3px solid #e7e7e7;
-  padding: 3px;
-}
-div.mxRubberband {
-  background: grey;
-  position: absolute;
-  border: 1px solid #e7e7e7;
-  padding: 1px;
-}
-/*vnet & subnet corner radius/roundness */
-/* rect  {
-  rx: 11px;
-  ry: 11px;
-} */
-/*mxGraph Overrides end*/
 
 /*workbench layout: header, diagramEditor and resourcepalette*/
 .workbenchgrid-container{

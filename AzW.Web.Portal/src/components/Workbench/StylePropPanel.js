@@ -3,7 +3,6 @@ import { NumericInput, Switch , Drawer, Button } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
 import { CirclePicker } from 'react-color';
 import Grid from '@material-ui/core/Grid';
-import { mxConstants } from "mxgraph-js";
 import Utils from './Helpers/Utils';
 import Typography from '@material-ui/core/Typography';
 import GoNodeType from './Helpers/GoNodeType';
@@ -12,8 +11,6 @@ export default class StylePropPanel extends Component {
   constructor(props) {
       
       super(props);
-
-      this.MxGraphManager = this.props.MxGraphManager;
 
       this.state = {
         node: null,
@@ -53,68 +50,8 @@ export default class StylePropPanel extends Component {
   initialState() {
     var originState = {
       isOpen: false,
-        cell: null,
-        verticalAlign: {
-          key: mxConstants.STYLE_VERTICAL_ALIGN,
-          value: 'middle'
-        },
-        align: {
-          key: mxConstants.STYLE_ALIGN,
-          value: 'center'
-        },
-        verticalLabelPosition: {
-          key: mxConstants.STYLE_VERTICAL_LABEL_POSITION,
-          value: 'none'
-        },
-        strokeColor: {
-          key: mxConstants.STYLE_STROKECOLOR,
-          value: 'none'
-        },
-        arrowStrokeWidth: {
-          key: mxConstants.STYLE_STROKEWIDTH,
-          value: 0
-        },
-        arrowDashed: {
-          key: mxConstants.STYLE_DASHED,
-          value: '0'
-        },
-        arrowStartShow:{
-          key: mxConstants.STYLE_STARTARROW,
-          value: 'ARROW_CLASSIC'
-        },
-        arrowEndShow:{
-          key: mxConstants.STYLE_ENDARROW,
-          value: 'ARROW_CLASSIC'
-        },
-        fontColor:{
-          key: mxConstants.STYLE_FONTCOLOR,
-          value: 'black'
-        },
-        fontSize:{
-          key: mxConstants.STYLE_FONTSIZE,
-          value: 'none'
-        },
-        shapeStrokeColor: {
-          key: mxConstants.STYLE_STROKECOLOR,
-          value: 'none'
-        },
-        shapeFillColor: {
-          key: mxConstants.STYLE_FILLCOLOR,
-          value: 'none'
-        },
-        shapeBorderDash:{
-          key: mxConstants.STYLE_DASHED,
-          value: 'none'
-        },
-        shapeRounded: {
-          key: mxConstants.STYLE_ROUNDED,
-          value: '0'
-        },
-        saveCallback: null
-
-        
-      
-    }
+      saveCallback: null
+    };
     return originState;
   }
 

@@ -15,8 +15,6 @@ import GoNodeType from './Helpers/GoNodeType';
 import ShortUniqueId from 'short-unique-id';
 import Messages from "./Helpers/Messages";
 import Utils from "./Helpers/Utils";
-import MxGraphManager from './Helpers/MxGraphManager';
-import {mxChildChangeCodec,mxCellCodec, mxChildChange, mxGraphSelectionModel, mxCellPath, mxDefaultToolbar, mxDefaultPopupMenu, mxDefaultKeyHandler, mxStylesheet, mxGraphModel, mxClipboard, mxCodec, mxPoint, mxGeometry, mxCellOverlay, mxImage, mxKeyHandler, mxConstants, mxEvent, mxUtils,mxPopupMenuHandler, mxDragSource, mxUndoManager, mxCell, mxEditor, mxGraph} from "mxgraph-js";
 import Subnet from "../../models/Subnet";
 import LoadAnonyDiagramContext from "../../models/LoadAnonyDiagramContext";
 import DiagramService from '../../services/DiagramService';
@@ -25,7 +23,6 @@ import queryString from 'query-string';
 import AzureValidator from './Helpers/AzureValidator';
 import LocalStorage from '../../services/LocalStorage';
 import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramContext";
-import mxClientOverrides from './Helpers/mxClientOverrides';
 
 //models
 import DNS from "../../models/DNS";
@@ -297,7 +294,7 @@ import AzureIcons from './Helpers/AzureIcons';
         <PrivateEndpointPropPanel ref={this.privateendpointPropPanel} />
         <AzStoragePropPanel ref={this.azstoragePropPanel} />
         <OverlayPreviewDiagram ref={this.previewOverlay} />
-        <StylePropPanel ref={this.stylePanel} MxGraphManager={this.graphManager} />
+        <StylePropPanel ref={this.stylePanel}  />
         <OverlaySaveToWorkspace ref={this.overlaySaveToWorkspace} DiagramEditor={this} />
         <MySpace ref={this.workspace} DiagramEditor={this} Index={this.Index} />
         <NSGPropPanel ref={this.nsgPropPanel} DiagramEditor={this} />
@@ -3775,231 +3772,6 @@ setBadgeVisibilityOnUnsaveChanges = () => {
     }
   }
 
-  
-
-
-  // //callbacks from Ref components
-  // fromVMPropPanelSaveModel(vmModel) {
-  //     var vmCell = this.graph.getModel().getCell(vmModel.GraphModel.Id);
-  //     vmCell.value.ProvisionContext = vmModel.ProvisionContext; 
-  // }
-
-  // groupCells(){
-  //   //http://jgraph.github.io/mxgraph/docs/js-api/files/view/mxGraph-js.html#mxGraph.groupCells
-
-  //   if (this.graph.getSelectionCount() == 1)
-	// 	{
-	// 		this.graph.setCellStyles('container', '1');
-	// 	}
-	// 	else
-	// 	{
-	// 		this.graph.setSelectionCell(this.mxClientOverrides.groupCells(null, 0));
-	// 	}
-  // }
-
-  // unGroupCells(){
-  //   var selectedCell = this.graph.getSelectionCell();
-    
-  //   if(selectedCell != null)
-  //   {
-  //     //presebt subnet being ungroup out of VNet
-  //     var result = Utils.TryParseUserObject(selectedCell.value);
-  //     if(result.isUserObject && result.userObject.GraphModel.ResourceType == ResourceType.Subnet())
-  //     {
-  //       Toaster.create({
-  //         position: Position.TOP,
-  //         autoFocus: false,
-  //         canEscapeKeyClear: true
-  //       }).show({intent: Intent.WARNING, timeout: 2000, message: Messages.SubnetUngroupVNetNotAllowed()});
-  //       return;
-  //     }
-  //     else{
-  //      this.graph.ungroupCells();
-  //     }
-  //   }
-  // }
-
-  // rerenderAllAnimatedTrafficFlow() {
-  //   var allVerticies = this.graph.getChildVertices(this.graph.getDefaultParent());
-
-    
-  //   cell.edges.map(edge => {
-  //     var result = Utils.TryParseUserObject(edge.value);
-  //     if(result.isUserObject) {
-  //       //re-render animated traffic flow
-  //       this.animateTrafficFlow(edge, result.userObject);
-  //     }
-  //   });
-
-  // }
-
-  // animateTrafficFlow = (edge, flag) => {
-
-  //   var result = Utils.TryParseUserObject(edge.value);
-  //   if(!result.isUserObject)
-  //     return;
-      
-  //   var edgeModel = result.userObject;
-
-  //   //turn off animation
-  //   if(flag!= null && flag == 'off')
-  //   {
-  //     edgeModel.GraphModel.IsAnimatedTrafficFlowOn = false;
-  //     edgeModel.GraphModel.IsLeftToRight = false;
-  //     this.animateTrafficFlowInternalOff(edge);
-  //   }
-  //   //user turn on animation manually
-  //   else if(flag!= null && flag == 'l2r'){
-  //     edgeModel.GraphModel.IsAnimatedTrafficFlowOn = true;
-  //     edgeModel.GraphModel.IsLeftToRight = true;
-  //     this.animateTrafficFlowInternalRender(edge, edgeModel);
-  //   }
-  //   //user turn on animation manually
-  //   else if(flag!= null && flag == 'r2l'){
-  //     edgeModel.GraphModel.IsAnimatedTrafficFlowOn = true;
-  //     edgeModel.GraphModel.IsLeftToRight = false;
-  //     this.animateTrafficFlowInternalRender(edge, edgeModel);
-  //   }
-  //   //executed from importJsonDiagram() logic for loadFromDraft, Import .azwb or Load from Shared Link
-  //   else {
-  //     this.animateTrafficFlowInternalRender(edge, edgeModel);
-  //   }
-
-  //   edge.setValue(JSON.stringify(edgeModel));
-  //   this.graph.clearSelection();
-  // }
-
-
-  // animateTrafficFlowInternalRender(edge, edgeModel) {
-
-  //   if(!edgeModel.GraphModel.IsAnimatedTrafficFlowOn)
-  //     return;
-  //   if(edge.source == null && edge.target == null) //must be connected both ends
-  //     return;
-
-  //   var state = this.graph.view.getState(edge, true);
-  //   var edgeStyle = this.graphManager.convertStyleStringToObject(edge.style);
-  //   var strokeWidth = edgeStyle['strokeWidth'];
-
-  //   state.shape.node.getElementsByTagName('path')[0].removeAttribute('visibility');
-  //   state.shape.node.getElementsByTagName('path')[0].setAttribute('stroke-width', strokeWidth);
-  //   state.shape.node.getElementsByTagName('path')[0].setAttribute('stroke', 'white');
-  //   if(edgeModel.GraphModel.IsLeftToRight) {
-  //     state.shape.node.getElementsByTagName('path')[1]
-  //       .setAttribute('class', 'animateTrafficFlowLeft2Right');
-  //   }
-  //   else
-  //     state.shape.node.getElementsByTagName('path')[1]
-  //       .setAttribute('class', 'animateTrafficFlowRight2Left');
-  // }
-
-  // animateTrafficFlowInternalOff(edge) {
-  //     var state = this.graph.view.getState(edge, true);
-
-  //     //state.shape.node.getElementsByTagName('path')[0].removeAttribute('visibility');
-  //     //state.shape.node.getElementsByTagName('path')[0].setAttribute('stroke-width', strokeWidth);
-  //     //state.shape.node.getElementsByTagName('path')[0].setAttribute('stroke', edgeColor);
-  //     state.shape.node.getElementsByTagName('path')[1].removeAttribute('class');
-  // }
-
-
-  // copyToClipboard =() => {
-  //   var cells = this.graph.getSelectionCells();
-  //     if(cells == null)
-  //     return;
-
-  //     var result = this.graph.getExportableCells(cells);
-    
-  //     mxClipboard.parents = new Object();
-    
-  //     for (var i = 0; i < result.length; i++)
-  //     {
-  //       mxClipboard.parents[i] = this.graph.model.getParent(cells[i]);
-  //     }
-    
-  //     mxClipboard.insertCount = 1;
-  //     mxClipboard.setCells(this.graph.cloneCells(result));
-    
-  //     return result;
-  // }
-
-  // pasteFromClipboard = () => {
-  //   if (!mxClipboard.isEmpty())
-  //     {
-  //       var cells = this.graph.getImportableCells(mxClipboard.getCells());
-  //       var delta = mxClipboard.insertCount * mxClipboard.STEPSIZE;
-  //       var parent = this.graph.getDefaultParent();
-    
-  //       this.graph.model.beginUpdate();
-  //       try
-  //       {
-  //         for (var i = 0; i < cells.length; i++)
-  //         {
-  //           if(this.azureValidator.isVM(cells[i]))
-  //           {
-  //               var selectedCell = this.graph.getSelectionCell();
-
-  //               if(!this.azureValidator.isSubnet(selectedCell))
-  //               {
-  //                   Toaster.create({
-  //                     position: Position.TOP,
-  //                     autoFocus: false,
-  //                     canEscapeKeyClear: true
-  //                   }).show({intent: Intent.WARNING, timeout: 2000, message: Messages.VMInSubnet()});
-  //                   return;
-  //               }
-  //               else{
-  //                 mxClipboard.parents[i] = selectedCell;
-  //               }
-  //           }
-            
-  //           if(this.azureValidator.isAppGateway(cells[i]) &&
-  //              !this.azureValidator.isResourceinDedicatedSubnet(mxClipboard.parents[i]))
-  //           {
-  //               Toaster.create({
-  //                 position: Position.TOP,
-  //                 autoFocus: false,
-  //                 canEscapeKeyClear: true
-  //               }).show({intent: Intent.DANGER, timeout: 2000, message: Messages.AppGatewayNotInSubnetError()});
-  //               return;
-  //           }
-
-  //           var tmp = (mxClipboard.parents != null && this.graph.model.contains(mxClipboard.parents[i])) ?
-  //               mxClipboard.parents[i] : parent;
-  //           cells[i] = this.graph.importCells([cells[i]], delta, delta, tmp)[0];
-            
-  //         }
-  //       }
-  //       finally
-  //       {
-  //         this.graph.model.endUpdate();
-  //       }
-    
-  //       // Increments the counter and selects the inserted cells
-  //       mxClipboard.insertCount++;
-  //       this.graph.setSelectionCells(cells);
-  //     }
-  // }
-
-    
-
-  // createVertexFromBrowserClipboard(clipboardResult) {
-
-  //   this.graphManager.graph.getModel().beginUpdate();
-  //     var style = 'fontColor=black;fontSize=12;editable=1;verticalLabelPosition=bottom;shape=image;image=';
-      
-  //     if(clipboardResult.imageFormat == 'png')
-  //       style += 'data:image/png,' + clipboardResult.imageBase64;
-
-  //     this.graph.insertVertex
-  //     (this.graph.getDefaultParent(), '', '',
-  //     MouseEvent.clientX, MouseEvent.clientY, 800, 900, //native javascript MouseEvent 
-  //     style);
-  //     //data:image/svg+xml,
-  //     this.graphManager.graph.getModel().endUpdate();
-  // }
-
-
   importJsonDiagram = (diagramContext) => {
 
     if(diagramContext == undefined ||
@@ -4335,15 +4107,6 @@ setBadgeVisibilityOnUnsaveChanges = () => {
 
   showOverlaySavetoWorkspace = () => {
     this.overlaySaveToWorkspace.current.show();
-  }
-
-  showPreviewDiagramOverlay = () => {
-    mxUtils.show(this.graph, null);
-  }
-
-  clearGraph() {
-    this.graph.removeCells(this.graph.getChildCells(this.graph.getDefaultParent(), true, true),false)
-    this.graph.getModel().clear();
   }
 
   closeShareDiagramPopup = () => this.setState({ showShareDiagramPopup: false, useTallContent: false });

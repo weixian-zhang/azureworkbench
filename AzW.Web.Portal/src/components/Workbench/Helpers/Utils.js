@@ -1,5 +1,4 @@
 import ResourceType from '../../../models/ResourceType';
-import { mxCell } from 'mxgraph-js';
 import SubnetsCidrs from '../../../models/services/SubnetsCidrs';
 import ShortUniqueId from 'short-unique-id';
 
@@ -62,26 +61,6 @@ export default class Utils
         else
             return false;
     }
-
-    static TryParseUserObject(str) {
-        
-        try {
-            if(str == null || str == "")
-              return {isUserObject: false, userObject: null};
-            
-            var usrObj = null;
-
-            if(str instanceof mxCell)
-                usrObj = JSON.parse(str.value)
-            else if((typeof str) == "string")
-                usrObj = JSON.parse(str);
-
-            return {isUserObject: true, userObject: usrObj};
-        } 
-        catch (e) {
-            return {isUserObject: false, userObject: null};
-        }
-    };
 
     static isVIRinDedicatedSubnet(subnetNode) {
         

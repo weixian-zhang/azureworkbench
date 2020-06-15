@@ -42,8 +42,6 @@ export default class Workbench extends Component {
         <div className="workbenchgrid-container">
           <ResourcePalette DiagramEditor={this.diagramEditor} addResourceToDiagramEditor={this.addResourceToDiagramEditor}/>
           <DiagramEditor ref={this.diagramEditor} queryString={this.state.queryString} />
-          {/* { renderResourcePalette ? <ResourcePalette mxgraphManager={this.graphManager}  addResourceToDiagramEditor={this.addResourceToDiagramEditor} /> : '' } */}
-          {/* <DiagramEditor ref={this.diagramEditor} Index={this.Index} queryString={this.state.queryString}  mxgraphManagerReadyCallback={this.mxgraphManagerReadyCallback} Workbench={this} /> */}
         </div>
     );
   }
@@ -99,15 +97,6 @@ export default class Workbench extends Component {
     return this.diagramEditor.current;
   }
 
-  mxgraphManagerReadyCallback = (mxgraphManager) => {
-      this.graphManager = mxgraphManager;
-
-      this.setState({
-        renderResourcePalette: true
-      })
-  }
-
-  //called at ActionBar Share button
   shareDiagram() {
     this.diagramEditor.current.shareDiagram();
   }
