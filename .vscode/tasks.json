@@ -101,7 +101,7 @@
         },
         {
             "label": "Run Portal",
-            "command": "npm run start",
+            "command": "set \"REACT_APP_ENV=local\" && npm start",
             "type": "shell",
             "args": [],
             "options": {
@@ -113,18 +113,8 @@
             "problemMatcher": []
         },
         {
-            "label": "Publish Portal - Local Build Folder",
-            "command": "npm run build",
-            "type": "shell",
-            "args": [],
-            "options": {
-                "cwd": "${workspaceFolder}/AzW.Web.Portal"
-            },
-            "problemMatcher": []
-        },
-        {
             "label": "Publish Portal - Beta",
-            "command": "REACT_APP_ENV=beta npm run build",
+            "command": "set \"REACT_APP_ENV=beta\" && npm run build",
             "type": "shell",
             "args": [],
             "options": {
@@ -134,7 +124,7 @@
         },
         {
             "label": "Publish Portal - Prod",
-            "command": "REACT_APP_ENV=prod npm run build",
+            "command": "set \"REACT_APP_ENV=prod\" && npm run build",
             "type": "shell",
             "args": [],
             "options": {

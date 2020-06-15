@@ -4,16 +4,24 @@ export default class Config
     }
 
     static BaseAPIUrl() {
-        return  'http://localhost:8089';
-        //http://localhost:8089;
-        //https://beta-api.azureworkbench.com
-        //'https://api.azureworkbench.com'
+        if(process.env.REACT_APP_ENV == 'local')
+            return  'http://localhost:8089';
+        else if(process.env.REACT_APP_ENV == 'beta')
+            return 'https://beta-api.azureworkbench.com';
+        else if(process.env.REACT_APP_ENV == 'prod')
+            return 'https://api.azureworkbench.com';
+        else
+            return  'http://localhost:8089';
      }
      static PortalUrl() {
-         return 'http://localhost:8090';
-         //'http://localhost:8090';
-         //https://beta.azureworkbench.com
-         //'https://www.azureworkbench.com';
+        if(process.env.REACT_APP_ENV == 'local')
+            return  'http://localhost:3000';
+        else if(process.env.REACT_APP_ENV == 'beta')
+            return 'https://beta.azureworkbench.com';
+        else if(process.env.REACT_APP_ENV == 'prod')
+            return 'https://www.azureworkbench.com';
+        else
+            return 'http://localhost:3000';
      }
     static AADClientId() {return '16afdc21-ffd3-4cf8-aeae-63bebf9e327e'; }
     static Authority() {return 'https://login.microsoftonline.com/common'; }
