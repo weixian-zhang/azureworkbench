@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import Function from '../../../models/Function';
-import { FormGroup, Drawer, Intent, Button, Switch } from "@blueprintjs/core";
+import {  Drawer, MenuItem, Button, Switch } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
 import Grid from "@material-ui/core/Grid";
+import {Select } from "@blueprintjs/select";
 import SelectLocation from '../SelectLocation';
 import SelectResourceGroup from '../SelectResourceGroup';
 import Utils from '../Helpers/Utils';
@@ -11,15 +12,18 @@ export default class NatGatewayPropPanel extends Component {
   constructor(props) {
       super(props);
 
-      this.state ={
-        isOpen: false,
-        userObject: new Function(),
-
-        saveCallback: function () {},
-      }
+      this.state = this.initialState();
   }
 
-  componentDidMount () {
+  initialState() {
+    return {
+      isOpen: false,
+        userObject: new Function(),
+        pricingTier: ['FreeF1','BasicB1','BasicB2','BasicB3',
+        'StandardS1','StandardS2','StandardS3','PremiumP1','PremiumP1v2',
+        'PremiumP2','PremiumP2v2','PremiumP3','PremiumP3v2'],
+        saveCallback: function () {},
+    }
   }
 
   render = () => {
@@ -104,17 +108,62 @@ export default class NatGatewayPropPanel extends Component {
                   }/>
                 </Grid>
               </Grid>
+              <Grid container item direction="row" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
+                <Grid item>
+                  <Switch checked={this.state.userObject.ProvisionContext.IsConsumptionPlan} label="Is Consumption Plan"
+                    onChange={(e) => {
+                        var uo = this.state.userObject;
+                        uo.ProvisionContext.IsConsumptionPlan = e.target.checked
+                        this.setState({userObject:uo});
+                    }} />
+                </Grid>
+              </Grid>
+              {
+              (!this.state.userObject.ProvisionContext.IsConsumptionPlan)
+              ? <Grid container item direction="row" xs="12"  justify="flex-start"
+              alignItems="center">
+                <Grid item sm={4}>
+                    <label>Tier</label>
+                </Grid>
+                <Grid item>
+                  <Select
+                    closeOnSelect={true}
+                    filterable={false}
+                    items={this.state.pricingTier}
+                    itemRenderer={
+                      (tier, { handleClick, modifiers }) => {
+                        return (<MenuItem
+                          text={tier}
+                          onClick={
+                            (e) => {
+                              this.setState({selectedPricingTier:tier});
+                              var uo = this.state.userObject;
+                              uo.ProvisionContext.PricingTier = tier;//e.target.value
+                              this.setState({userObject:uo});
+                            }
+                          } />);
+                      }
+                      
+                    }>
+                    <Button text={this.state.userObject.ProvisionContext.PricingTier == '' ? 'Pricing Tier' : Utils.limitTextLength(this.state.userObject.ProvisionContext.PricingTier,15)}
+                        alignText='left'
+                        rightIcon="double-caret-vertical" style={{width: '170px', maxWidth: '170px'}}/>
+                  </Select>
+                </Grid>
+            </Grid>
+              : ''
+              }
+              <Grid container item direction="row" xs="12"  justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
+                  <Grid item sm={3}>
+                    <Switch checked={this.state.userObject.ProvisionContext.IsLinux} label="Is Linux"
+                      onChange={(e) => {
+                          var uo = this.state.userObject;
+                          uo.ProvisionContext.IsLinux = e.target.checked
+                          this.setState({userObject:uo});
+                      }} />
+                  </Grid>
+                </Grid>
           </Grid>
-      </div>
-    );
-  }
-
-  renderCalculatorTab() {
-    return (
-      <div
-      className = "propPanelTabContent"
-      hidden={this.state.value !== 'calculator'}>
-        Calculator Properties, coming soon...
       </div>
     );
   }
@@ -143,7 +192,7 @@ export default class NatGatewayPropPanel extends Component {
   }
   drawerClose = () => {
     this.state.saveCallback(this.state.userObject);
-      this.setState({ isOpen: false});
+      this.setState(this.initialState());
   }
 
   handleChange = (event, newVal) => {

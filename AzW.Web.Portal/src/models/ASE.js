@@ -13,6 +13,9 @@ export default class ASE
             Name: '',
             Location: '',
             ResourceGroupName: '',
+            VNetName: '',
+            SubnetName: '',
+            IsInternalASE: true
         };
         this.CalculatorContext = {
             IsFree: false,

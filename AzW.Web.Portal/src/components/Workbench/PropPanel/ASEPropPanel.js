@@ -91,7 +91,7 @@ export default class ASEPropPanel extends Component {
                   }/>
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
                 <Grid item sm={4}>
                     <label>Location</label>
                 </Grid>
@@ -105,6 +105,16 @@ export default class ASEPropPanel extends Component {
                       this.setState({userObject:uo});
                     }
                   }/>
+                </Grid>
+              </Grid>
+              <Grid container item direction="row" justify="flex-start" alignItems="center">
+                <Grid item>
+                  <Switch checked={this.state.userObject.ProvisionContext.IsInternalASE} label="Is Internal Load Balancer ASE"
+                    onChange={(e) => {
+                        var uo = this.state.userObject;
+                        uo.ProvisionContext.IsInternalASE = e.target.checked
+                        this.setState({userObject:uo});
+                    }} />
                 </Grid>
               </Grid>
           </Grid>

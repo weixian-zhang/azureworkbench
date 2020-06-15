@@ -202,6 +202,16 @@ export default class Utils
             return false;
     }
 
+    static isASE(node) {
+        if(!Utils.isAzContextExist(node))
+            return false;
+        
+        if(Utils.getAzContextResourceType(node) == ResourceType.ASE())
+            return true;
+        else
+            return false;
+    }
+
     static ProContext(node) {
         if(!Utils.isAzContextExist(node))
             return null;

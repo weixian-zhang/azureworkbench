@@ -10,12 +10,12 @@ export default class Function
 
         this.ProvisionContext = {
             ResourceType: ResourceType.Function(),
-            Deployable: true,
-            HighCost: false,
-            
-            Name: '',
+            Name: 'func-web',
             Location: '',
-            Tags: []
+            ResourceGroupName: '',
+            IsConsumptionPlan: true,
+            IsLinux: false,
+            PricingTier: ''
         };
         this.CalculatorContext = {
             IsFree: false,

@@ -267,6 +267,7 @@ export default class Header extends Component {
  deleteDiagramFromrBrowser = () => {
   var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
   diagramEditor.deleteDraftDiagramFromBrowser();
+  this.setState({isDeleteConfirmationDialogOpen: false});
 }
 
  exportDiagramAsPDF = () => {

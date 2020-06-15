@@ -26,14 +26,21 @@ using Microsoft.Azure.Management.OperationalInsights;
 using Microsoft.Azure.Management.OperationalInsights.Models;
 using Microsoft.Azure.Management.Compute.Fluent;
 using Microsoft.Azure.Management.CosmosDB.Fluent.Models;
+using System.IO;
+using System.Dynamic;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Models;
 
 namespace AzW.Infrastructure.AzureServices
 {
     public class ProvisionService : BaseService, IProvisionService
     {
-        public ProvisionService(string subscriptionId, WorkbenchSecret secret) : base(secret)
+        private string _contentRootPath;
+
+        public ProvisionService
+            (string subscriptionId, WorkbenchSecret secret) : base(secret)
         {
             _subscriptionId = subscriptionId;
+            //_contentRootPath = contentRootPath;
         }
 
         public async Task<ProvisionResult> ProvisionAsync(dynamic[] provisionContexts)
@@ -91,6 +98,10 @@ namespace AzW.Infrastructure.AzureServices
                                 ASE ase = jObj.ToObject<ASE>();
                                 await CreateAppServiceEnvironment(ase);
                             break;
+                            case ResourceType.Function:
+                                Function func = jObj.ToObject<Function>();
+                                await CreateFunction(func);
+                            break;
                             case ResourceType.StorageAccount:
                                 Model.StorageAccount blob = jObj.ToObject<Model.StorageAccount>();
                                 await CreateStorageAccountAsync(blob);
@@ -122,56 +133,6 @@ namespace AzW.Infrastructure.AzureServices
 
             return provisionResult;
         }
-
-        // private IEnumerable<dynamic> SortoutNSGNonNSGContexts
-        //     (dynamic[] provisionContexts, out IEnumerable<dynamic> otherContexts)
-        // {
-        //     var nsgCons = new List<dynamic>();
-        //     var nonNsgCons = new List<dynamic>();
-
-        //     foreach(dynamic context in provisionContexts)
-        //     {
-        //         JObject jObj = JObject.Parse(context.ToString());
-        //         string resourceType = jObj["ResourceType"].ToString();
-
-        //         if(resourceType == ResourceType.NSG)
-        //             nsgCons.Add(context);
-        //         else
-        //             nonNsgCons.Add(context);
-        //     }
-
-        //     otherContexts = nonNsgCons;
-
-        //     return nsgCons;
-        // }
-
-        // private IEnumerable<dynamic> SortEssentialContextsInProvisionOrder(dynamic[] nonNsgContexts)
-        // {
-        //     var mustDeployFirstContexts = new List<dynamic>();
-        //     var canDeploySubsequentContexts  = new List<dynamic>();
-
-        //     foreach(dynamic context in nonNsgContexts)
-        //     {
-        //         JObject jObj = JObject.Parse(context.ToString());
-        //         string resourceType = jObj["ResourceType"].ToString();
-
-        //         if(resourceType == ResourceType.VNet)
-        //             mustDeployFirstContexts.Add(context);
-        //         else if(resourceType == ResourceType.VM)
-        //             mustDeployFirstContexts.Add(context);
-        //     }
-
-        //     foreach(dynamic context in nonNsgContexts)
-        //     {
-        //         JObject jObj = JObject.Parse(context.ToString());
-        //         string resourceType = jObj["ResourceType"].ToString();
-
-        //         if(resourceType != ResourceType.VNet)
-        //             canDeploySubsequentContexts.Add(context);
-        //         else if(resourceType != ResourceType.VM)
-        //             canDeploySubsequentContexts.Add(context);
-        //     }
-        // }
 
         private async Task CreateVNetAsync(VNet vnet)
         {                 
@@ -698,7 +659,86 @@ namespace AzW.Infrastructure.AzureServices
 
         private async Task CreateAppServiceEnvironment(ASE ase)
         {
+            string aseArmJsonPath =
+                Path.Combine(Path.Combine(AppContext.BaseDirectory, "armtemplate"), "ase-azuredeploy.json");
+            string armJson = File.ReadAllText(aseArmJsonPath);
             
+            string aseArmParamPath =
+                Path.Combine(Path.Combine(AppContext.BaseDirectory, "armtemplate"), "ase-azuredeploy.parameters.json");
+            string armParamJsonRaw = File.ReadAllText(aseArmParamPath);
+
+            var jobj = JObject.Parse(armParamJsonRaw);
+            jobj["aseName"]["value"] = ase.Name;
+            jobj["aseLocation"]["value"] = ase.Location;
+            jobj["existingVirtualNetworkName"]["value"] = ase.VNetName;
+            jobj["existingVirtualNetworkResourceGroup"]["value"] = ase.ResourceGroupName;
+            jobj["subnetName"]["value"] = ase.SubnetName;
+
+            if(ase.IsInternalASE)
+                jobj["internalLoadBalancingMode"]["value"] = 3;
+            else
+                jobj["internalLoadBalancingMode"]["value"] = 0;
+
+            string paramJson = jobj.ToString(Newtonsoft.Json.Formatting.None);
+
+            await AzClient.WithSubscription(_subscriptionId)
+                .Deployments.Define("ase-deployment")
+                .WithExistingResourceGroup(ase.ResourceGroupName)
+                .WithTemplate(armJson)
+                .WithParameters(paramJson)
+                .WithMode(DeploymentMode.Incremental)
+                .CreateAsync();
+        }
+
+        private async Task CreateFunction(Function func)
+        {
+            if(func.IsConsumptionPlan)
+            {
+                await AzClient.WithSubscription(_subscriptionId)
+                    .AppServices
+                    .FunctionApps
+                    .Define(func.Name)
+                    .WithRegion(func.Location)
+                    .WithExistingResourceGroup(func.ResourceGroupName)
+                    .WithWebAppAlwaysOn(true)
+                    .CreateAsync();
+            }
+            else
+            //app service plan
+            {
+                FieldInfo tier =
+                    typeof(PricingTier).GetFields().FirstOrDefault(x => x.Name == func.PricingTier);
+           
+                PricingTier pricingTier = (PricingTier) tier.GetValue(null);
+
+                var osDef = AzClient.WithSubscription(_subscriptionId)
+                .AppServices
+                .AppServicePlans
+                .Define(func.Name)
+                .WithRegion(func.Location)
+                .WithExistingResourceGroup(func.ResourceGroupName)
+                .WithPricingTier(pricingTier);
+
+                IAppServicePlan asp = null;
+
+                if(func.IsLinux)
+                    asp = await osDef.WithOperatingSystem(Microsoft.Azure.Management.AppService.Fluent.OperatingSystem.Linux)
+                    .CreateAsync();
+                else
+                    asp = await osDef.WithOperatingSystem(Microsoft.Azure.Management.AppService.Fluent.OperatingSystem.Windows)
+                    .CreateAsync();
+                
+                
+                await AzClient.WithSubscription(_subscriptionId)
+                .AppServices
+                .FunctionApps
+                .Define(func.Name)
+                .WithExistingAppServicePlan(asp)
+                .WithExistingResourceGroup(func.ResourceGroupName)
+                .CreateAsync();
+            }
+        
+                
         }
 
         private async Task  CreateLAWAsync(LogAnalytics law)

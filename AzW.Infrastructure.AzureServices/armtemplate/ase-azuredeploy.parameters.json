@@ -1,0 +1,20 @@
+{
+    "aseName": {
+        "value": "GEN-UNIQUE"
+    },
+    "aseLocation": {
+        "value": "South Central US"
+    },
+    "existingVirtualNetworkName": {
+        "value": "GET-PREREQ-virtualNetwork"
+    },
+    "existingVirtualNetworkResourceGroup": {
+        "value": "GET-PREREQ-rgName"
+    },
+    "subnetName": {
+        "value": "GET-PREREQ-subnet"
+    },
+    "internalLoadBalancingMode": {
+        "value": 3
+    }
+}

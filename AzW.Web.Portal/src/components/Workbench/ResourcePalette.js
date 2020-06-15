@@ -644,7 +644,7 @@ export default class ResourcePalette extends Component {
               Name: 'app service environment',
               Tooltip: 'App Service Environment',
               Image: require('../../assets/azure_icons/Web Service Color/App Service Environments.png'),
-              Provisionable: false,
+              Provisionable: true,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.ASE()
@@ -653,7 +653,7 @@ export default class ResourcePalette extends Component {
               Name: 'azure function',
               Tooltip: 'Function',
               Image: require('../../assets/azure_icons/Web Service Color/Function Apps.png'),
-              Provisionable: false,
+              Provisionable: true,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.Function()

@@ -21,4 +21,10 @@
     <ProjectReference Include="..\AzW.Secret\AzW.Secret.csproj"/>
     <ProjectReference Include="..\AzW.Model\AzW.Model.csproj"/>
   </ItemGroup>
+    
+  <ItemGroup>
+    <Content Include="armtemplate\*.*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>  
+  </ItemGroup>
 </Project>

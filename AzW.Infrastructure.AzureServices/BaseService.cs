@@ -4,6 +4,7 @@ using AzW.Secret;
 using Microsoft.Azure.Management.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
 using Microsoft.Identity.Client;
 using static Microsoft.Azure.Management.Fluent.Azure;
 
@@ -22,10 +23,17 @@ namespace AzW.Infrastructure.AzureServices
                 (sdkCred, null, "common", AzureEnvironment.AzureGlobalCloud);
 
             _azClient = Azure.Configure().Authenticate(AzureCreds);
+
+            _restClient = RestClient.Configure()
+            .WithEnvironment(AzureEnvironment.AzureGlobalCloud)
+            .WithCredentials(AzureCreds)
+            .Build();
         }
 
         protected AzureCredentials AzureCreds;
         protected WorkbenchSecret Secret;
+        private RestClient _restClient;
+        public RestClient RestClient {get {return _restClient;}}
 
         private IAuthenticated _azClient { get; set; }
         public IAuthenticated AzClient { get {return _azClient;} }

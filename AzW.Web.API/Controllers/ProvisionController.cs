@@ -8,6 +8,7 @@ using AzW.Secret;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
@@ -18,14 +19,15 @@ namespace AzW.Web.API
     [Route("api")]
     public class ProvisionController : BaseController
     {
-        public ProvisionController(WorkbenchSecret secret)
+        public ProvisionController(WorkbenchSecret secret) //, IWebHostEnvironment env)
         {
+            //_hostenv = env;
             _secret = secret;
         }
 
         [HttpPost("deploy")]
         public async Task<ProvisionResult> Provision([FromBody] ProvisionParameters parameters)
-        {
+        {            
             string accessToken = GetUserIdentity().AccessToken;
             _secret.AccessToken = accessToken;
             _secret.UserUPN = GetUserIdentity().Email;
@@ -36,6 +38,7 @@ namespace AzW.Web.API
             return await provisionSvc.ProvisionAsync(parameters.ProvisionContexts);
         }
 
+        private IWebHostEnvironment _hostenv;
         private WorkbenchSecret _secret;
     }
 }

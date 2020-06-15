@@ -42,6 +42,9 @@ export default class ProvisionHelper
 
                 if(this.getFirewallContexts(node, provisionContexts))
                     continue;
+                
+                if(this.getASEContexts(node, provisionContexts))
+                    continue;
 
                 if(this.getAllNonVIRContexts(node, provisionContexts))
                     continue;
@@ -296,6 +299,23 @@ export default class ProvisionHelper
             azfwProContext.SubnetName = this.getResourceSubnetName(azfw);
 
             provisionContexts.push(azfwProContext);
+
+            return true;
+        }
+    }
+
+    getASEContexts= (node, provisionContexts) => {
+        if(Utils.isASE(node))
+        {
+            var ase = node;
+
+            var aseProContext = Utils.ProContext(ase);
+
+            aseProContext.VNetName = this.getResourceVNetName(ase);
+
+            aseProContext.SubnetName = this.getResourceSubnetName(ase);
+
+            provisionContexts.push(aseProContext);
 
             return true;
         }
