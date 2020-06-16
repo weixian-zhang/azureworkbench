@@ -53,7 +53,7 @@ export default class ResourcePalette extends Component {
     var paletteRscs = [
       {
          resourceGroup: {
-           groupName: 'Shapes (Non-Azure)',
+           groupName: 'Shapes',
            groupExpanded: false,
            groupSearchVisible: true,
            resources: [
@@ -161,7 +161,7 @@ export default class ResourcePalette extends Component {
       },
       {
        resourceGroup: {
-         groupName: 'Devices (Non-Azure)',
+         groupName: 'Device / User',
          groupExpanded: false,
          groupSearchVisible: true,
          resources: [
@@ -203,10 +203,17 @@ export default class ResourcePalette extends Component {
            {
                Name: 'ADFS active directory federation service',
                Tooltip: 'ADFS',
-               Image: require('../../assets/azure_icons/_Flat Symbols/CnE_Enterprise/AD FS.png'),
+               Image: require('../../assets/azure_icons/ADFS.png'),
                IsPng: false,
                IsVisible:true,
            },
+           {
+            Name: 'adfs proxy active directory federation service',
+            Tooltip: 'ADFS Proxy',
+            Image: require('../../assets/azure_icons/ADFS Proxy.png'),
+            IsPng: false,
+            IsVisible:true,
+        },
            {
                 Name: 'andriod driod',
                 Tooltip: 'Andriod',
@@ -329,7 +336,7 @@ export default class ResourcePalette extends Component {
       },
       {
         resourceGroup: {
-          groupName: 'Misc (Non-Azure)',
+          groupName: 'Software',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
@@ -340,14 +347,6 @@ export default class ResourcePalette extends Component {
                 IsPng: false,
                 IsVisible:true,
                 ref: this.shapehelm
-            },
-            {
-              Name: 'azure devops',
-              Tooltip: 'Azure DevOps',
-              Image: require('../../assets/azure_icons/software/software-azuredevops.png'),
-              IsPng: false,
-              IsVisible:true,
-              ref: this.shapeazuredevops
             },
             {
               Name: 'c# csharp',
@@ -605,24 +604,153 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/azure_icons/software/software-cli.png'),
               IsPng: false,
               IsVisible:true
-            },
+            }
+          ]
+        }
+      },
+      {
+        resourceGroup: {
+          groupName: 'Azure (non-deployable)',
+          groupExpanded: false,
+          groupSearchVisible: true,
+          resources: [
             {
               Name: 'resource group',
-              Tooltip: 'Azure Resource Group (shape)',
-              Image: require('../../assets/azure_icons/software/software-resourcegroup.png'),
+              Tooltip: 'Azure Resource Group',
+              Image: require('../../assets/azure_icons/azure non-deployable/software-resourcegroup.png'),
               IsPng: false,
               IsVisible:true
             },
             {
               Name: 'azure',
               Tooltip: 'Azure',
-              Image: require('../../assets/azure_icons/software/software-azure.png'),
+              Image: require('../../assets/azure_icons/azure non-deployable/software-azure.png'),
               IsPng: false,
               IsVisible:true
             },
+            {
+              Name: 'activity log',
+              Tooltip: 'Activity Log',
+              Image: require('../../assets/azure_icons/azure non-deployable/Activity Log.png'),
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'azure devops',
+              Tooltip: 'Azure DevOps',
+              Image: require('../../assets/azure_icons/azure non-deployable/Azure DevOps.png'),
+              IsPng: false,
+              IsVisible:true,
+              ref: this.shapeazuredevops
+            },
+            {
+              Name: 'azure artifact',
+              Tooltip: 'Azure Artifact',
+              Image: require('../../assets/azure_icons/azure non-deployable/Azure Artifact.png'),
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'azure board',
+              Tooltip: 'Azure Board',
+              Image: require('../../assets/azure_icons/azure non-deployable/Azure Board.png'),
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'azure repo',
+              Tooltip: 'Azure Repo',
+              Image: require('../../assets/azure_icons/azure non-deployable/Azure Repo.png'),
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'azure test plan',
+              Tooltip: 'Azure Test Plan',
+              Image: require('../../assets/azure_icons/azure non-deployable/Azure Test Plan.png'),
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'blueprint',
+              Tooltip: 'Azure Blueprint',
+              Image: require('../../assets/azure_icons/azure non-deployable/Azure Blueprint.png'),
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'stack',
+              Tooltip: 'Azure Stack',
+              Image: require('../../assets/azure_icons/azure non-deployable/Azure Stack.png'),
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'cost billing',
+              Tooltip: 'Azure Cost Management',
+              Image: require('../../assets/azure_icons/azure non-deployable/Cost Management And Billing.png'),
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'disk encryption',
+              Tooltip: 'Disk Encryption',
+              Image: require('../../assets/azure_icons/azure non-deployable/Disk Encryption Set.png'),
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'disk encryption',
+              Tooltip: 'Premium Disk',
+              Image: require('../../assets/azure_icons/azure non-deployable/Managed Disk Premium SSD.png'),
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'disk snapshot',
+              Tooltip: 'Disk Snapshot',
+              Image: require('../../assets/azure_icons/azure non-deployable/Managed Disk Snapshot.png'),
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'management group mg',
+              Tooltip: 'Management Group',
+              Image: require('../../assets/azure_icons/azure non-deployable/Management Group.png'),
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'reservation reserved instance',
+              Tooltip: 'Reservations',
+              Image: require('../../assets/azure_icons/azure non-deployable/Reservation.png'),
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'subscription',
+              Tooltip: 'Subscription',
+              Image: require('../../assets/azure_icons/azure non-deployable/Subscription.png'),
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'arm template',
+              Tooltip: 'ARM Template',
+              Image: require('../../assets/azure_icons/azure non-deployable/Template.png'),
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'monitor workbook',
+              Tooltip: 'Workbook (Monitor)',
+              Image: require('../../assets/azure_icons/azure non-deployable/Workbook.png'),
+              IsPng: false,
+              IsVisible:true
+            }
           ]
         }
-       },
+     },
       {
         resourceGroup: {
           groupName: 'Web',
@@ -1235,7 +1363,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'relays',
               Tooltip: 'Azure Relays',
-              Image: require('../../assets/azure_icons/Integration Service Color/Azure Service Bus Relays.png'),
+              Image: require('../../assets/azure_icons/Integration Service Color/Relay.png'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1278,6 +1406,15 @@ export default class ResourcePalette extends Component {
               resourceType: ResourceType.EventGridSubscription()
             },
             {
+              Name: 'event grid domain',
+              Tooltip: 'Event Grid Domain',
+              Image: require('../../assets/azure_icons/Integration Service Color/Event Grid Domain.png'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.EventGridDomain()
+            },
+            {
               Name: 'stream analytics',
               Tooltip: 'Stream Analytics',
               Image: require('../../assets/azure_icons/Integration Service Color/Stream-Analytics.png'),
@@ -1289,7 +1426,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'event hub',
               Tooltip: 'Event Hub',
-              Image: require('../../assets/azure_icons/Integration Service Color/event hub.png'),
+              Image: require('../../assets/azure_icons/Integration Service Color/Event Hub.png'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,

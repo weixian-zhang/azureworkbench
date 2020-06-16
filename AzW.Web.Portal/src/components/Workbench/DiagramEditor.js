@@ -59,6 +59,8 @@ import LogicApp from "../../models/LogicApp";
 import IntegratedServiceEnvironment from "../../models/IntegratedServiceEnvironment";
 import EventGridTopic from "../../models/EventGridTopic";
 import EventGridSubscription from "../../models/EventGridSubscription";
+import EventGridDomain from "../../models/EventGridDomain";
+
 import StreamAnalytics from "../../models/StreamAnalytics";
 import EventHub from "../../models/EventHub";
 import AzureFirewall from "../../models/AzureFirewall";
@@ -117,6 +119,8 @@ import ElasticJobAgent from "../../models/ElasticJobAgent";
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
 
 //property panels
+
+import EventGridDomainPropPanel from './PropPanel/EventGridDomainPropPanel';
 import ElasticJobAgentPropPanel from './PropPanel/ElasticJobAgentPropPanel';
 import AADDomainServicePropPanel from './PropPanel/AADDomainServicePropPanel';
 import AzureArcPropPanel from './PropPanel/AzureArcPropPanel';
@@ -285,6 +289,7 @@ import AzureIcons from './Helpers/AzureIcons';
 
         <NatGatewayPropPanel ref={this.natgwPropPanel} />
         <AzureArcPropPanel ref={this.arcPropPanel} />
+        <EventGridDomainPropPanel ref={this.egdomainPropPanel} />
         <ElasticJobAgentPropPanel ref={this.elasticjobagentPropPanel} />
         <AADDomainServicePropPanel ref={this.aaddomainservicePropPanel} />
         <SecurityCenterPropPanel  ref={this.ascPropPanel} />
@@ -397,6 +402,7 @@ import AzureIcons from './Helpers/AzureIcons';
     this.databoxPropPanel = React.createRef();
     this.natgwPropPanel = React.createRef();
     this.ascPropPanel = React.createRef();
+    this.egdomainPropPanel = React.createRef();
     this.elasticjobagentPropPanel = React.createRef();
     this.aaddomainservicePropPanel = React.createRef();
     this.arcPropPanel = React.createRef();
@@ -1897,7 +1903,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'aad domain service';
           nodeKey = Utils.uniqueId('databricks');
-          image = require('../../assets/azure_icons/Identity Service Color/azuread-domainservice.png');
+          image = Utils.pngDataUrl(AzureIcons.AADDomainService());
           azcontext = new AzureADDomainService();
         break;
         case ResourceType.Kubernetes():
@@ -2569,9 +2575,14 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
       case 'ADFS':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/_Flat Symbols/CnE_Enterprise/AD FS.png'),
+        ({source: Utils.pngDataUrl(AzureIcons.ADFS()),
           label: 'adfs', x: dropContext.x, y: dropContext.y});
         break;
+      case 'ADFS Proxy':
+          this.createPictureShape
+          ({source: Utils.pngDataUrl(AzureIcons.ADFSProxy()),
+            label: 'adfs proxy', x: dropContext.x, y: dropContext.y});
+          break;
       case 'Andriod':
         this.createPictureShape
         ({source:  Utils.pngDataUrl(AzureIcons.Andriod()),//require('../../assets/azure_icons/shape-andriod.png'),
@@ -3175,11 +3186,18 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
       case ResourceType.EventGridSubscription():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Integration Service Color/Event Grid Subscriptions.png'),
+          source: Utils.pngDataUrl(AzureIcons.EventGridSubscription()),
           label: 'event grid subscription', x: dropContext.x, y: dropContext.y,
           azcontext: new EventGridSubscription()
         });
         break;
+      case ResourceType.EventGridDomain():
+          this.createNonVIRAzureResource({
+            source: Utils.pngDataUrl(AzureIcons.EventGridDomain()),
+            label: 'event grid domain', x: dropContext.x, y: dropContext.y,
+            azcontext: new EventGridDomain()
+          });
+          break;
       case ResourceType.StreamAnalytics():
         this.createNonVIRAzureResource({
           source: require('../../assets/azure_icons/Integration Service Color/Stream-Analytics.png'),
@@ -3189,7 +3207,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
       case ResourceType.EventHub():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Integration Service Color/event hub.png'),
+          source: require('../../assets/azure_icons/Integration Service Color/Event Hub.png'),
           label: 'event hub', x: dropContext.x, y: dropContext.y,
           azcontext: new EventHub()
         });
@@ -3203,7 +3221,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
       case ResourceType.Relay():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Integration Service Color/Azure Service Bus Relays.png'),
+          source: require('../../assets/azure_icons/Integration Service Color/Relay.png'),
           label: 'relay', x: dropContext.x, y: dropContext.y,
           azcontext: new Relay()
         });
@@ -3504,6 +3522,11 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
       case ResourceType.EventGridTopic():
         this.egtopicPropPanel.current.show(userObject, function(savedUserObject){
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+      case ResourceType.EventGridDomain():
+        this.egdomainPropPanel.current.show(userObject, function(savedUserObject){
             onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;

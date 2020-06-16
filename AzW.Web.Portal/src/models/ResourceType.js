@@ -77,6 +77,7 @@ export default class ResourceType
     static ISE() {return 'ise'; }
     static EventGridTopic() {return 'egtopic'; }
     static EventGridSubscription() {return 'egsubscription'; }
+    static EventGridDomain() {return 'egdomain'; }
     static EventHub() {return 'eventhub'; }
     static StreamAnalytics() {return 'streamanalytics'; }
     static SendGrid() {return 'sendgrid'; }
