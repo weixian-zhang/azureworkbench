@@ -702,15 +702,15 @@ export default class ResourcePalette extends Component {
               IsVisible:true
             },
             {
-              Name: 'disk encryption',
-              Tooltip: 'Premium Disk',
+              Name: 'premium disk ssd',
+              Tooltip: 'Premium Disk SSD',
               Image: require('../../assets/azure_icons/azure non-deployable/Managed Disk Premium SSD.png'),
               IsPng: false,
               IsVisible:true
             },
             {
-              Name: 'disk snapshot',
-              Tooltip: 'Disk Snapshot',
+              Name: 'managed disk snapshot',
+              Tooltip: 'Managed Disk Snapshot',
               Image: require('../../assets/azure_icons/azure non-deployable/Managed Disk Snapshot.png'),
               IsPng: false,
               IsVisible:true
@@ -731,7 +731,7 @@ export default class ResourcePalette extends Component {
             },
             {
               Name: 'subscription',
-              Tooltip: 'Subscription',
+              Tooltip: 'Azure Subscription',
               Image: require('../../assets/azure_icons/azure non-deployable/Subscription.png'),
               IsPng: false,
               IsVisible:true

@@ -1565,7 +1565,7 @@ createSubnetTemplate() {
         desiredSize: new go.Size(25,25),
         alignment: new go.Spot(0, 0, 61, -15),
         isActionable: true,
-        source: require('../../assets/azure_icons/Networking Service Color/Service Endpoint.png'),
+        source: Utils.pngDataUrl(AzureIcons.ServiceEndpoint()),
         doubleClick: function(e, picture) {
           var azcontext = picture.svcendazcontext;
           thisComp.determineResourcePropertyPanelToShow
@@ -2745,7 +2745,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       case 'Azure DevOps':
         this.createPictureShape
         ({source: Utils.pngDataUrl(AzureIcons.ShapeAzureDevOps()),
-          label: '', x: dropContext.x, y: dropContext.y});
+          label: 'Azure DevOps', x: dropContext.x, y: dropContext.y});
       break;
       case 'C#':
         this.createPictureShape
@@ -2912,7 +2912,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         ({source: Utils.pngDataUrl(AzureIcons.ShapeJenkins()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
-      case 'Azure Resource Group (shape)':
+      case 'Azure Resource Group':
         this.createPictureShape
         ({source: Utils.pngDataUrl(AzureIcons.ShapeResourceGroup()),
           label: 'resource group', x: dropContext.x, y: dropContext.y});
@@ -2922,6 +2922,97 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         ({source: Utils.pngDataUrl(AzureIcons.ShapeAzure()),
           label: 'Azure', x: dropContext.x, y: dropContext.y});
       break;
+      case 'Activity Log':
+        this.createPictureShape
+        ({source: require('../../assets/azure_icons/azure non-deployable/Activity Log.png'),
+          label: 'Activity Log', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Azure Artifact':
+        this.createPictureShape
+        ({source: require('../../assets/azure_icons/azure non-deployable/Azure Artifact.png'),
+          label: 'Azure Artifact', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Azure Board':
+        this.createPictureShape
+        ({source: Utils.pngDataUrl(AzureIcons.AzureBoardShape()),
+          label: 'Azure Board', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Azure Repo':
+        this.createPictureShape
+        ({source: Utils.pngDataUrl(AzureIcons.AzureRepoShape()),
+          label: 'Azure Repo', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Azure Test Plan':
+        this.createPictureShape
+        ({source: Utils.pngDataUrl(AzureIcons.AzureTestPlanShape()),
+          label: 'Azure Test Plan', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Azure Blueprint':
+        this.createPictureShape
+        ({source: require('../../assets/azure_icons/azure non-deployable/Azure Blueprint.png'),
+          label: 'Azure Blueprint', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Azure Stack':
+        this.createPictureShape
+        ({source: Utils.pngDataUrl(AzureIcons.AzureStack()),
+          label: 'Azure Stack', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Azure Cost Management':
+        this.createPictureShape
+        ({source:Utils.pngDataUrl(AzureIcons.CostManagement()),
+          label: 'Azure Cost Management', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Disk Encryption':
+        this.createPictureShape
+        ({source: Utils.pngDataUrl(AzureIcons.DiskEncryptionShape()),
+          label: 'Disk Encryption', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Premium Disk SSD':
+        this.createPictureShape
+        ({source:Utils.pngDataUrl(AzureIcons.PremiumDiskShape()),
+          label: 'Premium Disk SSD', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Managed Disk Snapshot':
+        this.createPictureShape
+        ({source: Utils.pngDataUrl(AzureIcons.ManagedDisSnapshotShape()),
+          label: 'Managed Disk Snapshot', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Management Group':
+        this.createPictureShape
+        ({source: Utils.pngDataUrl(AzureIcons.ManagementGroupShape()),
+          label: 'Management Group', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Reservations':
+        this.createPictureShape
+        ({source: require('../../assets/azure_icons/azure non-deployable/Reservation.png'),
+          label: 'Reservations', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Azure Subscription':
+        this.createPictureShape
+        ({source: require('../../assets/azure_icons/azure non-deployable/Subscription.png'),
+          label: 'Azure Subscription', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'ARM Template':
+        this.createPictureShape
+        ({source: require('../../assets/azure_icons/azure non-deployable/Template.png'),
+          label: 'ARM Template', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Workbook (Monitor)':
+        this.createPictureShape
+        ({source: require('../../assets/azure_icons/azure non-deployable/Workbook.png'),
+          label: 'Workbook', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Private Link':
+        this.createPictureShape
+        ({source: Utils.pngDataUrl(AzureIcons.PrivateLinkShape()),
+          label: 'Private Link', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Import/Export Job':
+        this.createPictureShape
+        ({source:Utils.pngDataUrl(AzureIcons.ImportExportJobShape()),
+          label: 'Import/Export Job', x: dropContext.x, y: dropContext.y});
+      break;
+
       case ResourceType.AppService():
         this.createNonVIRAzureResource({
           source: require('../../assets/azure_icons/Web Service Color/App Services.png'),
