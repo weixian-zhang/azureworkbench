@@ -1,5 +1,6 @@
 export default class ResourceType
 {
+    static ServiceEndpoint() {return 'serviceendpoint'; }
     static WindowsVM() {return 'vmWindows'; }
     static LinuxVM() {return 'vmLinux'; }
     static VM() {return 'vm'; }

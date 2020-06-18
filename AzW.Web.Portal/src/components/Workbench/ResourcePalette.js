@@ -12,13 +12,14 @@ import AppBar from '@material-ui/core/AppBar';
 import Utils from './Helpers/Utils';
 import Container from '@material-ui/core/Container';
 
+import 'react-tippy/dist/tippy.css'
+import { Tooltip} from 'react-tippy';
+
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
 
-
 import ResourceType from '../../models/ResourceType';
-import Tippy from '@tippy.js/react';
-import 'tippy.js/dist/tippy.css';
+
 
 export default class ResourcePalette extends Component {
  
@@ -476,6 +477,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'kubernetes microservice',
               Tooltip: 'Kubernetes (shape)',
+              azInfo: ['Private Link supported as Private Cluster'],
               Image: require('../../assets/azure_icons/software/software-kubernetes.png'),
               IsPng: false,
               IsVisible:true,
@@ -747,6 +749,21 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/azure_icons/azure non-deployable/Workbook.png'),
               IsPng: false,
               IsVisible:true
+            },
+            {
+              Name: 'private link',
+              Tooltip: 'Private Link',
+              azInfo:['Private Endpoint deployable soon...'],
+              Image: require('../../assets/azure_icons/azure non-deployable/Private Link.png'),
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'import export job',
+              Tooltip: 'Import/Export Job',
+              Image: require('../../assets/azure_icons/azure non-deployable/Import Export Job.png'),
+              IsPng: false,
+              IsVisible:true
             }
           ]
         }
@@ -760,6 +777,7 @@ export default class ResourcePalette extends Component {
             {
                 Name: 'app service',
                 Tooltip: 'App Service',
+                azInfo: ['Private Link supported','Service Endpoint supported'],
                 Image: require('../../assets/azure_icons/Web Service Color/App Services.png'),
                 Provisionable: true,
                 IsPng: false,
@@ -787,6 +805,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'azure search',
               Tooltip: 'Azure Search',
+              azInfo: ['Private Link supported'],
               Image: require('../../assets/azure_icons/Web Service Color/Azure Search.png'),
               Provisionable: false,
               IsPng: false,
@@ -823,6 +842,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'app configuration',
               Tooltip: 'App Configuration',
+              azInfo: ['Private Link supported'],
               Image: require('../../assets/azure_icons/Web Service Color/App Configuration.png'),
               Provisionable: false,
               IsPng: false,
@@ -1057,21 +1077,13 @@ export default class ResourcePalette extends Component {
             {
                 Name: 'blob table queue file storage',
                 Tooltip: 'Azure Storage Account',
+                azInfo: ['Private Link supported','Service Endpoint supported'],
                 Image: require('../../assets/azure_icons/Storage Service Color/Blob Storage.png'),
                 Provisionable: true,
                 IsPng: false,
                 IsVisible:true,
                 resourceType: ResourceType.StorageAccount()
             },
-            // {
-            //   Name: 'files file',
-            //   Tooltip: 'Azure File',
-            //   Image: require('../../assets/azure_icons/azure-storage-files.png'),
-            //   Provisionable: true,
-            //   IsPng: false,
-            //   IsVisible:true,
-            //   ref: this.azfileIcon
-            // },
             {
               Name: 'file sync',
               Tooltip: 'Azure File Sync',
@@ -1111,6 +1123,7 @@ export default class ResourcePalette extends Component {
             {
                 Name: 'postgresql',
                 Tooltip: 'Azure Database for PostgreSQL',
+                azInfo: ['Private Link supported','Service Endpoint supported'],
                 Image: require('../../assets/azure_icons/Databases Service Color/Azure Database for PostgreSQL servers.png'),
                 Provisionable: false,
                 IsPng: false,
@@ -1120,6 +1133,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'maria',
               Tooltip: 'Azure Database for MariaDB',
+              azInfo: ['Private Link supported','Service Endpoint supported'],
               Image: require('../../assets/azure_icons/Databases Service Color/Azure Database for MariaDB servers.png'),
               Provisionable: false,
               IsPng: false,
@@ -1129,6 +1143,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'sql tsql',
               Tooltip: 'Azure SQL',
+              azInfo: ['Private Link supported','Service Endpoint supported'],
               Image: require('../../assets/azure_icons/Databases Service Color/SQL Databases.png'),
               Provisionable: false,
               IsPng: false,
@@ -1147,6 +1162,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'cosmos mongo cassandra graph documentdb',
               Tooltip: 'CosmosDB',
+              azInfo: ['Private Link supported','Service Endpoint supported'],
               Image: require('../../assets/azure_icons/Databases Service Color/azure-cosmos-db.png'),
               Provisionable: true,
               IsPng: false,
@@ -1156,6 +1172,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'mysql',
               Tooltip: 'Azure Database for MySQL',
+              azInfo: ['Private Link supported','Service Endpoint supported'],
               Image: require('../../assets/azure_icons/Databases Service Color/Azure Database for MySQL servers.png'),
               Provisionable: false,
               IsPng: false,
@@ -1201,6 +1218,7 @@ export default class ResourcePalette extends Component {
             {
                 Name: 'synapse analytics',
                 Tooltip: 'Synapse Analytics',
+                azInfo: ['Private Link supported','Service Endpoint supported'],
                 Image: require('../../assets/azure_icons/Databases Service Color/synapseanalytics.png'),
                 Provisionable: false,
                 IsPng: false,
@@ -1291,6 +1309,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'machine learning service workspace',
               Tooltip: 'Machine Learning Service Workspaces',
+              azInfo: ['Private Link supported'],
               Image: require('../../assets/azure_icons/AI and ML Service Color/Machine Learning Service Workspaces.png'),
               Provisionable: false,
               IsPng: false,
@@ -1318,6 +1337,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'container registry',
               Tooltip: 'Container Registry',
+              azInfo: ['Private Link supported'],
               Image: require('../../assets/azure_icons/Container Service Color/Container Registries.png'),
               Provisionable: false,
               IsPng: false,
@@ -1354,6 +1374,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'service bus asb',
               Tooltip: 'Azure Service Bus',
+              azInfo: ['Private Link supported','Service Endpoint supported'],
               Image: require('../../assets/azure_icons/Integration Service Color/Azure Service Bus.png'),
               Provisionable: false,
               IsPng: false,
@@ -1363,6 +1384,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'relays',
               Tooltip: 'Azure Relays',
+              azInfo: ['Private Link supported'],
               Image: require('../../assets/azure_icons/Integration Service Color/Relay.png'),
               Provisionable: false,
               IsPng: false,
@@ -1390,6 +1412,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'event grid topic',
               Tooltip: 'Event Grid Topic',
+              azInfo: ['Private Link supported'],
               Image: require('../../assets/azure_icons/Integration Service Color/Event Grid Topics.png'),
               Provisionable: false,
               IsPng: false,
@@ -1399,6 +1422,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'event grid subscription',
               Tooltip: 'Event Grid Subscription',
+              azInfo: ['Private Link supported'],
               Image: require('../../assets/azure_icons/Integration Service Color/Event Grid Subscriptions.png'),
               Provisionable: false,
               IsPng: false,
@@ -1408,6 +1432,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'event grid domain',
               Tooltip: 'Event Grid Domain',
+              azInfo: ['Private Link supported'],
               Image: require('../../assets/azure_icons/Integration Service Color/Event Grid Domain.png'),
               Provisionable: false,
               IsPng: false,
@@ -1426,6 +1451,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'event hub',
               Tooltip: 'Event Hub',
+              azInfo: ['Private Link supported','Service Endpoint supported'],
               Image: require('../../assets/azure_icons/Integration Service Color/Event Hub.png'),
               Provisionable: false,
               IsPng: false,
@@ -1471,6 +1497,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'key vault akv',
               Tooltip: 'Key Vault',
+              azInfo: ['Private Link supported','Service Endpoint supported'],
               Image: require('../../assets/azure_icons/Security Service Color/Key Vaults.png'),
               Provisionable: false,
               IsPng: false,
@@ -1516,6 +1543,7 @@ export default class ResourcePalette extends Component {
             {
                 Name: 'site recovery backup dr',
                 Tooltip: 'Site Recovery (Backup/DR)',
+                azInfo: ['Private Link supported'],
                 Image: require('../../assets/azure_icons/Management and Governance Service Color/SiteRecovery.png'),
                 Provisionable: false,
                 IsPng: false,
@@ -1597,6 +1625,7 @@ export default class ResourcePalette extends Component {
             {
                 Name: 'iot hub',
                 Tooltip: 'IoT Hub',
+                azInfo: ['Private Link supported'],
                 Image: require('../../assets/azure_icons/Internet of Things Service Color/Azure IoT Hub.png'),
                 Provisionable: false,
                 IsPng: false,
@@ -1684,15 +1713,32 @@ export default class ResourcePalette extends Component {
                             return (
                               <div style={{display: r.IsVisible ? 'block' : 'none'}}>
                                 <div class="tile-item" data-shape={(r.resourceType != undefined) ? r.resourceType : r.Tooltip}>
-                                  <Tippy content={r.Tooltip} followCursor={true} placement="bottom">
+                                <Tooltip
+                                position="bottom"
+                                html={(
+                                  <div>
+                                    <strong>{r.Tooltip}</strong>
                                     {
-                                      (r.Provisionable != undefined && r.Provisionable == true)
-                                      ? <Badge color="secondary" variant="dot">
-                                          <img src={r.Image} width="30" height="30" />
-                                        </Badge>
-                                      : <img src={r.Image} width="30" height="30" />
+                                      (r.azInfo == undefined)
+                                      ? ''
+                                      : <div style={{textAlign:'left'}}>
+                                        {
+                                          r.azInfo.map(i => {
+                                            return <div style={{fontSize:9}}>{i}</div>
+                                          })
+                                        }
+                                        </div>
                                     }
-                                  </Tippy>
+                                  </div>
+                                )}>
+                                  {
+                                    (r.Provisionable != undefined && r.Provisionable == true)
+                                        ? <Badge color="secondary" variant="dot">
+                                            <img src={r.Image} width="30" height="30" />
+                                          </Badge>
+                                        : <img src={r.Image} width="30" height="30" />
+                                  }
+                              </Tooltip>
                                 </div>
                               </div>
                             )

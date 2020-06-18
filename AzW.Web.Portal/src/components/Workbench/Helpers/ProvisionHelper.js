@@ -160,8 +160,14 @@ export default class ProvisionHelper
 
                         var subnetProContext = Utils.ProContext(subNode);
 
+                        //get NSG name for subnet
                         var nsgName = this.getNSGNameForSubnet(subNode);
                         subnetProContext.NSGName = nsgName;
+
+                        //get service endpoints
+                        var svcEndpointNames =
+                            this.getServiceEndpointsResourceNameForSubnet(subNode);
+                        subnetProContext.ServiceEndpointTargetServices = svcEndpointNames;
 
                         subnetProContexts.push(subnetProContext);
                     }
@@ -399,6 +405,25 @@ export default class ProvisionHelper
             return nsgPart.nsgazcontext.ProvisionContext.Name;
         else
             return "";
+    }
+
+    getServiceEndpointsResourceNameForSubnet(subnetNode)
+    {
+        var part = subnetNode.findObject("SVCEndpoint");
+
+        if(part.visible == true) {
+            var svcEndpoints = [];
+
+            for(var svcend of
+                part.svcendazcontext.ProvisionContext.ServiceEndpointTargetServices) {
+
+                if(svcend.isSelected)
+                    svcEndpoints.push(svcend.resourceName); 
+            }
+            return svcEndpoints;
+        }
+        else
+            return [];
     }
 
     getSubnetNodes(vnetNode) {

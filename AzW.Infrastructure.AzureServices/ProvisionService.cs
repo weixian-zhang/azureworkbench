@@ -135,7 +135,10 @@ namespace AzW.Infrastructure.AzureServices
         }
 
         private async Task CreateVNetAsync(VNet vnet)
-        {                 
+        {             
+            //service endpoint
+            //https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-service-endpoints-overview
+                
            var withCreateSubnet = AzClient.WithSubscription(_subscriptionId)
                 .Networks.Define(vnet.Name)
                 .WithRegion(vnet.Location)
@@ -162,7 +165,20 @@ namespace AzW.Infrastructure.AzureServices
             }
 
             INetwork virtualnetwork = await withCreateSubnet.CreateAsync();
-    
+
+            //update subnets with service endpoints
+            foreach(var createdSubnet in vnet.Subnets)
+            {
+                foreach(var svcendpoint in createdSubnet.ServiceEndpointTargetServices)
+                {
+                    await virtualnetwork.Update()
+                    .UpdateSubnet(createdSubnet.Name)
+                    .WithAccessFromService(ServiceEndpointType.Parse(svcendpoint))
+                    .Parent()
+                    .ApplyAsync();
+                }
+            }
+            
             //add to global list for resource reference
             _vnets.Add(virtualnetwork.Name, virtualnetwork);
         }

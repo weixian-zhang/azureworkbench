@@ -61,6 +61,7 @@ import EventGridTopic from "../../models/EventGridTopic";
 import EventGridSubscription from "../../models/EventGridSubscription";
 import EventGridDomain from "../../models/EventGridDomain";
 
+import ServiceEndpoint from "../../models/ServiceEndpoint";
 import StreamAnalytics from "../../models/StreamAnalytics";
 import EventHub from "../../models/EventHub";
 import AzureFirewall from "../../models/AzureFirewall";
@@ -119,7 +120,7 @@ import ElasticJobAgent from "../../models/ElasticJobAgent";
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
 
 //property panels
-
+import ServiceEndpointPropPanel from './PropPanel/ServiceEndpointPropPanel';
 import EventGridDomainPropPanel from './PropPanel/EventGridDomainPropPanel';
 import ElasticJobAgentPropPanel from './PropPanel/ElasticJobAgentPropPanel';
 import AADDomainServicePropPanel from './PropPanel/AADDomainServicePropPanel';
@@ -289,6 +290,7 @@ import AzureIcons from './Helpers/AzureIcons';
 
         <NatGatewayPropPanel ref={this.natgwPropPanel} />
         <AzureArcPropPanel ref={this.arcPropPanel} />
+        <ServiceEndpointPropPanel ref={this.svcendpointPropPanel} />
         <EventGridDomainPropPanel ref={this.egdomainPropPanel} />
         <ElasticJobAgentPropPanel ref={this.elasticjobagentPropPanel} />
         <AADDomainServicePropPanel ref={this.aaddomainservicePropPanel} />
@@ -402,6 +404,7 @@ import AzureIcons from './Helpers/AzureIcons';
     this.databoxPropPanel = React.createRef();
     this.natgwPropPanel = React.createRef();
     this.ascPropPanel = React.createRef();
+    this.svcendpointPropPanel= React.createRef();
     this.egdomainPropPanel = React.createRef();
     this.elasticjobagentPropPanel = React.createRef();
     this.aaddomainservicePropPanel = React.createRef();
@@ -644,6 +647,7 @@ createTextTemplate() {
           contextMenu: this.initContextMenu()
         },
         new go.Binding("nodetype"),
+        new go.Binding("zOrder").makeTwoWay(),
         new go.Binding("width").makeTwoWay(),
         new go.Binding("height").makeTwoWay(),
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
@@ -656,6 +660,7 @@ createTextTemplate() {
             stroke: 'black',
             textAlign: "center"
           },
+          new go.Binding('textAlign').makeTwoWay(),
           new go.Binding('stroke', 'stroke').makeTwoWay(),
           new go.Binding('font', 'font').makeTwoWay(),
           new go.Binding("text").makeTwoWay()
@@ -678,7 +683,7 @@ createPictureShapeTemplate() {
       locationSpot: go.Spot.Center
     },
     new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-    // new go.Binding("zOrder").makeTwoWay(),
+    new go.Binding("zOrder").makeTwoWay(),
     { 
       selectable: true,
       resizable: true, 
@@ -844,6 +849,7 @@ createNonVIRAzureResourceTemplate() {
               textAlign: "center"
             },
             {row:1,column:0},
+            new go.Binding("textAlign").makeTwoWay(),
             new go.Binding("text").makeTwoWay(),
             new go.Binding("font").makeTwoWay(),
             new go.Binding("stroke").makeTwoWay()
@@ -884,6 +890,7 @@ createShapeTemplate() {
           desiredSize: new go.Size(100, 100)
         },
         new go.Binding("figure", "figure"),
+        new go.Binding("angle").makeTwoWay(),
         new go.Binding("strokeDashArray", "strokeDashArray").makeTwoWay(),
         new go.Binding("fill").makeTwoWay(),
         new go.Binding("stroke").makeTwoWay()
@@ -1034,6 +1041,7 @@ initLinkTemplate(linkTemplateMap) {
             curve: go.Link.Bezier,
           },
           new go.Binding("points").makeTwoWay(),
+          new go.Binding("zOrder").makeTwoWay(),
           this.$(go.Shape,  // the highlight shape, normally transparent
             { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" },
             new go.Binding("stroke").makeTwoWay(),
@@ -1075,6 +1083,7 @@ initLinkTemplate(linkTemplateMap) {
             contextMenu: this.initContextMenu()
           },
           new go.Binding("points").makeTwoWay(),
+          new go.Binding("zOrder").makeTwoWay(),
           this.$(go.Shape,  // the highlight shape, normally transparent
             { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" },
             new go.Binding("stroke").makeTwoWay(),
@@ -1232,6 +1241,23 @@ initContextMenu() {
           ),
         
         this.$("ContextMenuButton",
+          this.$(go.TextBlock, "Add/Remove Service Endpoint"),
+              { 
+                click: function(e, obj) {
+                  if(Utils.isUDR(obj.part)) {
+                      if(obj.part.data.svcendVisible == false)
+                        thisComp.diagram.model.setDataProperty(obj.part.data, 'svcendVisible', true);
+                      else
+                        thisComp.diagram.model.setDataProperty(obj.part.data, 'svcendVisible', false);
+                  }
+                } 
+              },
+              new go.Binding("visible", "", function(o) {
+                  return Utils.isSubnet(o.diagram.selection.first());
+              }).ofObject()
+          ),
+        
+        this.$("ContextMenuButton",
           this.$(go.TextBlock, "Add/Remove NAT Gateway"),
               { 
                 click: function(e, obj) {
@@ -1287,20 +1313,59 @@ initContextMenu() {
                     }).ofObject()),
 
         this.$("ContextMenuButton",
+          this.$(go.TextBlock, "Bring to Front"),
+              { 
+                click: function(e, obj) 
+                { 
+                   var selectedNodes =  e.diagram.selection;
+                   var it = selectedNodes.iterator;
+                   while(it.next()){
+                     var node = it.value;
+                     e.diagram.commit(function(d) {
+                     var data = node.data;
+                      d.model.set(data, "zOrder", data.zOrder + 20);
+                    }, 'increase zOrder');
+                   }
+                }
+              },
+              new go.Binding("visible", "", 
+              function(o) {
+                  if(o.diagram.selection.count == 0)
+                      return false;
+                  else
+                      return true;
+              }).ofObject()),
+        
+          this.$("ContextMenuButton",
+              this.$(go.TextBlock, "Send to Back"),
+                  { 
+                    click: function(e, obj) 
+                    { 
+                       var selectedNodes =  e.diagram.selection;
+                       var it = selectedNodes.iterator;
+                       while(it.next()){
+                         var node = it.value;
+                         e.diagram.commit(function(d) {
+                         var data = node.data;
+                          d.model.set(data, "zOrder", data.zOrder - 20);
+                        }, 'decrease zOrder');
+                       }
+                    }
+                  },
+                  new go.Binding("visible", "", 
+                  function(o) {
+                      if(o.diagram.selection.count == 0)
+                          return false;
+                      else
+                          return true;
+                  }).ofObject()),
+
+        this.$("ContextMenuButton",
           this.$(go.TextBlock, "Zoom to Fit"),
               { 
                 click: function(e, obj) 
                 { 
                   e.diagram.commandHandler.zoomToFit();
-
-                  // var nodes = e.diagram.selection;
-                  // var it = nodes.iterator;
-                  // while (it.next()) {
-                  //     if(isNaN(it.value.zOrder))
-                  //         it.value.zOrder = 10;
-                  //     else 
-                  //         it.value.zOrder += 10;
-                  // }
                 }
               }),
 
@@ -1347,6 +1412,7 @@ createVNetTemplate() {
     }
   },
   new go.Binding("azcontext"),
+  new go.Binding("zOrder").makeTwoWay(),
   new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
   this.$(go.Shape, "RoundedRectangle",  // the rectangular shape around the members
       {
@@ -1437,6 +1503,7 @@ createSubnetTemplate() {
       }
     },
     new go.Binding("azcontext", "azcontext"),
+    new go.Binding("zOrder").makeTwoWay(),
     new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
     this.$(go.Shape,
       {
@@ -1479,7 +1546,7 @@ createSubnetTemplate() {
         name: "UDR",
         stretch: go.GraphObject.Fill,
         desiredSize: new go.Size(25,25),
-        alignment: new go.Spot(0, 0, 31, -15),
+        alignment: new go.Spot(0, 0, 31, -17),
         source: require('../../assets/azure_icons/Networking Service Color/Route Tables.png'),
         doubleClick: function(e, picture) {
           var azcontext = picture.udrazcontext;
@@ -1491,6 +1558,24 @@ createSubnetTemplate() {
       },
         new go.Binding('visible', 'udrVisible').makeTwoWay(),
         new go.Binding('udrazcontext').makeTwoWay()
+      ),
+      this.$(go.Picture, {
+        name: "SVCEndpoint",
+        stretch: go.GraphObject.Fill,
+        desiredSize: new go.Size(25,25),
+        alignment: new go.Spot(0, 0, 61, -15),
+        isActionable: true,
+        source: require('../../assets/azure_icons/Networking Service Color/Service Endpoint.png'),
+        doubleClick: function(e, picture) {
+          var azcontext = picture.svcendazcontext;
+          thisComp.determineResourcePropertyPanelToShow
+            (azcontext, function onContextSaveCallback(savedContext){
+              picture.azcontext = savedContext;
+            });
+        }
+      },
+        new go.Binding('visible', 'svcendVisible').makeTwoWay(),
+        new go.Binding('svcendazcontext').makeTwoWay()
       ),
       this.makePort("T", go.Spot.Top,  go.Spot.TopSide, true, true),
       this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true),
@@ -1582,6 +1667,7 @@ createVIRAzureResourceTemplate() {
         dragComputation: this.makeSubnetVIRStayInGroup
       },
       new go.Binding("azcontext", "azcontext"),
+      new go.Binding("zOrder").makeTwoWay(),
       new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
       this.$(go.Panel, "Vertical",
           //new go.Binding("desiredSize", "size", go.Size.parse), //follows panel resize below
@@ -1633,6 +1719,8 @@ createShape(dropContext) {
       text: label,
       fill: 'white',
       stroke: 'black',
+      angle: dropContext.angle != undefined ? dropContext.angle : 0,
+      zOrder: 0,
       textStroke: 'black',
       font: '14px Segoe UI',
       strokeDashArray: null,
@@ -1685,9 +1773,11 @@ createSubnet(vnetKey, subnetNodekey = '') {
       azcontext: new Subnet(),
       nsgazcontext: new NSG(),
       udrazcontext: new RouteTable(),
+      svcendazcontext: new ServiceEndpoint(),
 
       nsgVisible: false,
       udrVisible: false,
+      svcendVisible: false,
 
       text: subnetKey, 
 
@@ -2006,6 +2096,7 @@ createVIROntoSubnet(dropContext) {
         source: image, 
         loc: go.Point.stringify(virLoc),
         size: go.Size.stringify(new go.Size(40,40)),
+        zOrder: 0,
         font: '14px Segoe UI',
         stroke: 'black',
         nodetype: GoNodeType.ImageShape(),
@@ -2026,7 +2117,7 @@ createPictureShape(dropContext) {
       stroke: 'black',
       nodetype: GoNodeType.ImageShape(),
       size: go.Size.stringify(new go.Size(50,50)),
-      zOrder: NaN,
+      zOrder: 0,
       loc: go.Point.stringify(canvasPoint), category: 'picshape'});
 }
 
@@ -2041,6 +2132,7 @@ createNonVIRAzureResource(dropContext) {
       azcontext: dropContext.azcontext,
       source: image, 
       size: go.Size.stringify(new go.Size(50,50)),
+      zOrder: 0,
       font: '14px Segoe UI',
       stroke: 'black',
       nodetype: GoNodeType.ImageShape(),
@@ -2055,9 +2147,11 @@ createText(dropContext) {
   this.diagram.model.addNodeData
     ({
       key: shapeKey, 
-      font:'14px Segoe UI', 
+      font:'17px Segoe UI', 
       text: 'text',
       stroke: 'black', 
+      textAlign: 'center',
+      zOrder: 0,
       loc: go.Point.stringify(canvasPoint),
        nodetype:GoNodeType.Text(), category: 'text'});
 }
@@ -2080,6 +2174,7 @@ createLink(dropContext) {
         toArrow: 'Standard',
         stroke: 'black',
         strokeWidth: 1.5,
+        zOrder: 0,
         strokeDashArray: null,
         nodetype: GoNodeType.Link(),
         category: 'straight'
@@ -2093,6 +2188,7 @@ createLink(dropContext) {
         toArrow: 'Standard',
         stroke: 'black',
         strokeWidth: 1.5,
+        zOrder: 0,
         strokeDashArray: null,
         nodetype: GoNodeType.Link(),
         category: 'bezier'
@@ -2107,6 +2203,7 @@ createLink(dropContext) {
         toArrow: 'Standard',
         stroke: 'black',
         strokeWidth: 1.5,
+        zOrder: 0,
         strokeDashArray: null,
         nodetype: GoNodeType.Link(),
         category: 'ortho'
@@ -2489,31 +2586,31 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         this.createLink({routing: go.Link.Bezier , x: dropContext.x, y: dropContext.y});
       break;
       case 'Double Ended Arrow': //'straightarrow':
-        this.createShape({figure: 'DoubleEndArrow', label: '', x: dropContext.x, y: dropContext.y});
+        this.createShape({figure: 'DoubleEndArrow', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
       break;
       case 'Cylinder':
-        this.createShape({figure: 'Cylinder1', label: '', x: dropContext.x, y: dropContext.y});
+        this.createShape({figure: 'Cylinder1', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'Hexagon':
-        this.createShape({figure: 'Hexagon', label: '', x: dropContext.x, y: dropContext.y});
+        this.createShape({figure: 'Hexagon', label: '', angle: 90, x: dropContext.x, y: dropContext.y});
         break;
       case 'Nonagon':
-        this.createShape({figure: 'Nonagon', label: '', x: dropContext.x, y: dropContext.y});
+        this.createShape({figure: 'Nonagon', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'Text':
         this.createText({label: 'text', x: dropContext.x, y: dropContext.y});
         break;
       case 'Rectangle':
-        this.createShape({figure: 'Rectangle', label: '', x: dropContext.x, y: dropContext.y});
+        this.createShape({figure: 'Rectangle', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'Rectangle Rounded':
-        this.createShape({figure: 'RoundedRectangle', label: '', x: dropContext.x, y: dropContext.y});
+        this.createShape({figure: 'RoundedRectangle', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'Triangle':
-        this.createShape({figure: 'TriangleUp', label: '', x: dropContext.x, y: dropContext.y});
+        this.createShape({figure: 'TriangleUp', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'Circle':
-        this.createShape({figure: 'Circle', label: '', x: dropContext.x, y: dropContext.y});
+        this.createShape({figure: 'Circle', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'User':
         this.createPictureShape
@@ -3347,6 +3444,11 @@ setBadgeVisibilityOnUnsaveChanges = () => {
 
     switch (userObject.GraphModel.ResourceType) {
       
+    case ResourceType.ServiceEndpoint():
+        this.svcendpointPropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
     case ResourceType.AADDomainService():
       this.aaddomainservicePropPanel.current.show(userObject, function(savedUserObject){
          onContextSaveCallback(Utils.deepClone(savedUserObject));

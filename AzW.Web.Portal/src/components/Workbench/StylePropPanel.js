@@ -84,6 +84,25 @@ export default class StylePropPanel extends Component {
             spacing={1} style={{marginTop: '15px', width: '100%'}}>
           <Grid container item direction="row" spacing="1" justify="flex-start" alignItems="center" style={{marginTop:'8px'}}>
             <Grid item>
+              <Typography variant="body2">Text Alignment</Typography>
+            </Grid>
+          </Grid>
+          <Grid container item direction="row" spacing="1" justify="center" alignItems="center" style={{marginTop:'8px'}}>
+            <Button icon="arrow-left" onClick={ () => {
+              this.diagram.model.setDataProperty(this.state.node.data, 'textAlign', 'left');
+              }
+            }/>
+            <Button icon="arrows-horizontal" onClick={ () => {
+              this.diagram.model.setDataProperty(this.state.node.data, 'textAlign', 'center');
+              }
+            }/>
+            <Button icon="arrow-right" onClick={ () => {
+              this.diagram.model.setDataProperty(this.state.node.data, 'textAlign', 'right');
+              }
+            }/>
+          </Grid>
+          <Grid container item direction="row" spacing="1" justify="flex-start" alignItems="center" style={{marginTop:'8px'}}>
+            <Grid item>
               <Typography variant="body2">Font Color</Typography>
             </Grid>
           </Grid>

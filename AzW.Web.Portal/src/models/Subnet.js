@@ -16,7 +16,8 @@ export default class Subnet
 
             Name: 'subnet-web',
             AddressSpace: '',
-            NSGName: ''
+            NSGName: '',
+            ServiceEndpointTargetServices:[]
         };
         this.CalculatorContext = {
             IsFree: true,
