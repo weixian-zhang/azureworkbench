@@ -95,7 +95,15 @@ export default class ResourceType
     static LogAnalytics() {return 'loganalytics'; }
     static Automation() {return 'automation'; }
     static Arc() {return 'arc'; }
-
+    static Blockchain() {return 'blockchain';}
+    static MediaService() {return 'mediaservice';}
+    static AzureMigrate() {return 'azmigrate';}
+    static SpringCloud() {return 'springcloud';}
+    static DataCatalog() {return 'datacatalog';}
+    static DataShare() {return 'datashare';}
+    static ManagedIdentity() {return 'managedidentity';}
+    static MeshApplication() {return 'meshapplication';}
+    static VirtualWAN() {return 'virtualwan';}
     static AAD() {return 'aad'; }
     static AADB2C() {return 'aadb2c'; }
     static AADDomainService() {return 'aaddomainservice'; }

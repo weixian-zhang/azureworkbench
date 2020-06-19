@@ -10,6 +10,8 @@ import Badge from '@material-ui/core/Badge';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AppBar from '@material-ui/core/AppBar';
 import Utils from './Helpers/Utils';
+import AzureIcons from './Helpers/AzureIcons';
+
 import Container from '@material-ui/core/Container';
 
 import 'react-tippy/dist/tippy.css'
@@ -764,6 +766,15 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/azure_icons/azure non-deployable/Import Export Job.png'),
               IsPng: false,
               IsVisible:true
+            },
+            {
+              Name: 'network watcher',
+              Tooltip: 'Network Watcher',
+              Image: require('../../assets/azure_icons/Networking Service Color/NetworkWatcher.png'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.NetworkWatcher()
             }
           ]
         }
@@ -848,6 +859,24 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.AppConfig()
+            },
+            {
+              Name: 'media service video stream content',
+              Tooltip: 'Azure Media Service',
+              Image: Utils.pngDataUrl(AzureIcons.MediaService()),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.MediaService()
+            },
+            {
+              Name: 'spring cloud microservice',
+              Tooltip: 'Azure Spring Cloud',
+              Image: Utils.pngDataUrl(AzureIcons.SpringCloud()),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.SpringCloud()
             },
           ]
         }
@@ -1057,13 +1086,13 @@ export default class ResourcePalette extends Component {
               resourceType: ResourceType.PrivateEndpoint()
             },
             {
-              Name: 'network watcher',
-              Tooltip: 'Network Watcher',
-              Image: require('../../assets/azure_icons/Networking Service Color/Network Watcher.png'),
+              Name: 'virtual wan',
+              Tooltip: 'Virtual WAN',
+              Image: Utils.pngDataUrl(AzureIcons.VirtualWAN()),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              resourceType: ResourceType.NetworkWatcher()
+              resourceType: ResourceType.VirtualWAN()
             }
           ]
         }
@@ -1269,6 +1298,24 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.DataExplorer()
+            },
+            {
+              Name: 'data catalog',
+              Tooltip: 'Data Catalog',
+              Image: Utils.pngDataUrl(AzureIcons.DataCatalog()),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.DataCatalog()
+            },
+            {
+              Name: 'data share datashare',
+              Tooltip: 'Data Share',
+              Image: Utils.pngDataUrl(AzureIcons.DataShare()),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.DataShare()
             }
           ]
         }
@@ -1353,6 +1400,15 @@ export default class ResourcePalette extends Component {
               IsVisible:true,
               resourceType: ResourceType.Kubernetes()
             },
+            {
+              Name: 'mesh service fabric',
+              Tooltip: 'Mesh Application',
+              Image: Utils.pngDataUrl(AzureIcons.MeshApplication()),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.MeshApplication()
+            }
           ]
         }
        },
@@ -1452,7 +1508,7 @@ export default class ResourcePalette extends Component {
               Name: 'event hub',
               Tooltip: 'Event Hub',
               azInfo: ['Private Link supported','Service Endpoint supported'],
-              Image: require('../../assets/azure_icons/Integration Service Color/Event Hub.png'),
+              Image: require('../../assets/azure_icons/Integration Service Color/event hub.png'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1541,6 +1597,15 @@ export default class ResourcePalette extends Component {
           groupSearchVisible: true,
           resources: [
             {
+              Name: 'migrate',
+              Tooltip: 'Azure Migrate',
+              Image: require('../../assets/azure_icons/Management and Governance Service Color/Azure Migrate.png'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.RecoveryServiceVault()
+            },
+            {
                 Name: 'site recovery backup dr',
                 Tooltip: 'Site Recovery (Backup/DR)',
                 azInfo: ['Private Link supported'],
@@ -1612,6 +1677,15 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.AADDomainService()
+            },
+            {
+              Name: 'managed identity',
+              Tooltip: 'Managed Identity',
+              Image: Utils.pngDataUrl(AzureIcons.ManagedIdentity()),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.ManagedIdentity()
             }
           ]
         }
@@ -1659,6 +1733,24 @@ export default class ResourcePalette extends Component {
               IsVisible:true,
               resourceType: ResourceType.TimeSeriesInsights()
             },
+          ]
+        }
+       },
+       {
+        resourceGroup: {
+          groupName: 'Blockchain',
+          groupExpanded: false,
+          groupSearchVisible: true,
+          resources: [
+            {
+                Name: 'blockchain block',
+                Tooltip: 'Azure Blockchain Service',
+                Image: Utils.pngDataUrl(AzureIcons.Blockchain()),
+                Provisionable: false,
+                IsPng: false,
+                IsVisible:true,
+                resourceType: ResourceType.Blockchain()
+            }
           ]
         }
        },

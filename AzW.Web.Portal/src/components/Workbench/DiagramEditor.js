@@ -25,6 +25,14 @@ import LocalStorage from '../../services/LocalStorage';
 import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramContext";
 
 //models
+import MediaService from "../../models/MediaService";
+import SpringCloud from "../../models/SpringCloud";
+import DataCatalog from "../../models/DataCatalog";
+import DataShare from "../../models/DataShare";
+import ManagedIdentity from "../../models/ManagedIdentity";
+import MeshApplication from "../../models/MeshApplication";
+import VirtualWAN from "../../models/VirtualWAN";
+import Blockchain from "../../models/Blockchain";
 import DNS from "../../models/DNS";
 import AADDomainService from "../../models/AADDomainService";
 import SendGrid from "../../models/SendGrid";
@@ -120,6 +128,14 @@ import ElasticJobAgent from "../../models/ElasticJobAgent";
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
 
 //property panels
+import BlockchainPropPanel from './PropPanel/BlockchainPropPanel';
+import MediaServicePropPanel from './PropPanel/MediaServicePropPanel';
+import SpringCloudPropPanel from './PropPanel/SpringCloudPropPanel';
+import DataCatalogPropPanel from './PropPanel/DataCatalogPropPanel';
+import DataSharePropPanel from './PropPanel/DataSharePropPanel';
+import ManagedIdentityPropPanel from './PropPanel/ManagedIdentityPropPanel';
+import MeshApplicationPropPanel from './PropPanel/MeshApplicationPropPanel';
+import VirtualWANPropPanel from './PropPanel/VirtualWANPropPanel';
 import ServiceEndpointPropPanel from './PropPanel/ServiceEndpointPropPanel';
 import EventGridDomainPropPanel from './PropPanel/EventGridDomainPropPanel';
 import ElasticJobAgentPropPanel from './PropPanel/ElasticJobAgentPropPanel';
@@ -280,6 +296,14 @@ import AzureIcons from './Helpers/AzureIcons';
     return (
       <div id="diagramEditor" className="diagramEditor">
 
+        <BlockchainPropPanel ref={this.blockchainPropPanel} />
+        <MediaServicePropPanel ref={this.mediaservicePropPanel} />
+        <SpringCloudPropPanel ref={this.springcloudPropPanel} />
+        <DataCatalogPropPanel ref={this.datacatalogPropPanel} />
+        <DataSharePropPanel ref={this.datasharePropPanel} />
+        <ManagedIdentityPropPanel ref={this.managedidentityPropPanel} />
+        <MeshApplicationPropPanel ref={this.meshappPropPanel} />
+        <VirtualWANPropPanel ref={this.virtualwanPropPanel} />
         <EventHubPropPanel ref={this.eventhubPropPanel} />
         <AzureBatchPropPanel ref={this.batchPropPanel} />
         <DedicatedHostPropPanel ref={this.dedicatedhostPropPanel} />
@@ -287,7 +311,6 @@ import AzureIcons from './Helpers/AzureIcons';
         <BotsServicePropPanel ref={this.botsPropPanel} />
         <GenomicsPropPanel ref={this.genomicsPropPanel} />
         <MLServiceWorkspacePropPanel ref={this.mlsvcworkspacePropPanel} /> 
-
         <NatGatewayPropPanel ref={this.natgwPropPanel} />
         <AzureArcPropPanel ref={this.arcPropPanel} />
         <ServiceEndpointPropPanel ref={this.svcendpointPropPanel} />
@@ -394,6 +417,16 @@ import AzureIcons from './Helpers/AzureIcons';
   }
 
   initRef() {
+
+    this.blockchainPropPanel = React.createRef();
+    this.mediaservicePropPanel = React.createRef();
+    this.springcloudPropPanel = React.createRef();
+    this.datacatalogPropPanel = React.createRef();
+    this.datasharePropPanel = React.createRef();
+    this.managedidentityPropPanel = React.createRef();
+    this.meshappPropPanel = React.createRef();
+    this.virtualwanPropPanel = React.createRef();
+
     this.eventhubPropPanel = React.createRef();
     this.batchPropPanel = React.createRef();
     this.dedicatedhostPropPanel = React.createRef();
@@ -883,6 +916,7 @@ createShapeTemplate() {
       },
       new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
       new go.Binding("zOrder").makeTwoWay(),
+      new go.Binding("angle").makeTwoWay(),
       this.$(go.Shape,
         {
           name: 'SHAPE',
@@ -890,7 +924,6 @@ createShapeTemplate() {
           desiredSize: new go.Size(100, 100)
         },
         new go.Binding("figure", "figure"),
-        new go.Binding("angle").makeTwoWay(),
         new go.Binding("strokeDashArray", "strokeDashArray").makeTwoWay(),
         new go.Binding("fill").makeTwoWay(),
         new go.Binding("stroke").makeTwoWay()
@@ -905,14 +938,6 @@ createShapeTemplate() {
         new go.Binding("stroke", "textStroke").makeTwoWay(),
         new go.Binding("font").makeTwoWay()),
 
-        // this.makePort("T", go.Spot.Top,  go.Spot.TopSide, true, true),
-        //   this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true),
-        //   this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
-        //   this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true)
-        // this.makeShapePort("TL", go.Spot.TopLeft, go.Spot.TopLeft, go.Spot.TopLeft , true, true),
-        // this.makeShapePort("BL", go.Spot.BottomLeft, go.Spot.BottomLeft, go.Spot.BottomLeft, true, true),
-        // this.makeShapePort("TR", go.Spot.TopRight, go.Spot.TopRight, go.Spot.TopRight, true, true),
-        // this.makeShapePort("BR", go.Spot.BottomRight, go.Spot.BottomRight, go.Spot.BottomRight, true, true),
         this.makeShapePort("T", go.Spot.Top, go.Spot.Top, go.Spot.TopSide, true, true),
         this.makeShapePort("B", go.Spot.Bottom, go.Spot.Bottom, go.Spot.BottomSide, true, true),
         this.makeShapePort("L", go.Spot.Left, go.Spot.Left, go.Spot.LeftSide, true, true),
@@ -1091,20 +1116,6 @@ initLinkTemplate(linkTemplateMap) {
             new go.Binding("strokeWidth").makeTwoWay(),
             new go.Binding("stroke").makeTwoWay(),
           ),
-          // this.$(go.Shape,  // the link path shape
-          //   { isPanelMain: true, stroke: "gray", strokeWidth: 2 },
-          //   new go.Binding("stroke", "isSelected", function(sel) { return sel ? "dodgerblue" : "gray"; }).ofObject()),
-          // this.$(go.Shape,  // the arrowhead
-          //   { toArrow: "standard", strokeWidth: 0, fill: "gray" }),
-          // this.$(go.Panel, "Auto",  // the link label, normally not visible
-          //   { visible: false, name: "LABEL", segmentIndex: 2, segmentFraction: 0.5 },
-          //   new go.Binding("strokeWidth").makeTwoWay(),
-          //   new go.Binding("stroke").makeTwoWay(),
-          //   this.$(go.Shape,
-          //         new go.Binding("fromArrow", "fromArrow")),
-          //   this.$(go.Shape,
-          //           new go.Binding("toArrow", "toArrow"))
-          // )
           this.$(go.Shape,
                 new go.Binding("fromArrow", "fromArrow")),
           this.$(go.Shape,
@@ -2612,6 +2623,9 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       case 'Circle':
         this.createShape({figure: 'Circle', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
+      case '3D Cube':
+          this.createShape({figure: 'Cube2', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
+        break;
       case 'User':
         this.createPictureShape
         ({source: require('../../assets/azure_icons/shape-user.png'),
@@ -2621,9 +2635,6 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         this.createPictureShape
         ({source: Utils.pngDataUrl(AzureIcons.UserBlue()), //require('../../assets/azure_icons/shape-userblue.png'),
           label: 'user', x: dropContext.x, y: dropContext.y});
-        break;
-      case '3D Cube':
-        this.createShape({figure: 'Cube2', label: '', x: dropContext.x, y: dropContext.y});
         break;
       case 'User Group':
         this.createPictureShape
@@ -3013,6 +3024,62 @@ setBadgeVisibilityOnUnsaveChanges = () => {
           label: 'Import/Export Job', x: dropContext.x, y: dropContext.y});
       break;
 
+      case ResourceType.MediaService():
+        this.createNonVIRAzureResource({
+          source: Utils.pngDataUrl(AzureIcons.MediaService()),
+          label: 'media service', x: dropContext.x, y: dropContext.y,
+          azcontext: new MediaService()
+        });
+      break;
+      case ResourceType.SpringCloud():
+        this.createNonVIRAzureResource({
+          source: Utils.pngDataUrl(AzureIcons.SpringCloud()),
+          label: 'azure spring cloud', x: dropContext.x, y: dropContext.y,
+          azcontext: new SpringCloud()
+        });
+      break;
+      case ResourceType.DataCatalog():
+        this.createNonVIRAzureResource({
+          source: Utils.pngDataUrl(AzureIcons.DataCatalog()),
+          label: 'data catalog', x: dropContext.x, y: dropContext.y,
+          azcontext: new DataCatalog()
+        });
+      break;
+      case ResourceType.DataShare():
+        this.createNonVIRAzureResource({
+          source: Utils.pngDataUrl(AzureIcons.DataShare()),
+          label: 'data share', x: dropContext.x, y: dropContext.y,
+          azcontext: new DataShare()
+        });
+      break;
+      case ResourceType.ManagedIdentity():
+        this.createNonVIRAzureResource({
+          source: Utils.pngDataUrl(AzureIcons.ManagedIdentity()),
+          label: 'user assigned managed identity', x: dropContext.x, y: dropContext.y,
+          azcontext: new ManagedIdentity()
+        });
+      break;
+      case ResourceType.MeshApplication():
+        this.createNonVIRAzureResource({
+          source: Utils.pngDataUrl(AzureIcons.MeshApplication()),
+          label: 'mesh app', x: dropContext.x, y: dropContext.y,
+          azcontext: new MeshApplication()
+        });
+      break;
+      case ResourceType.VirtualWAN():
+        this.createNonVIRAzureResource({
+          source: Utils.pngDataUrl(AzureIcons.VirtualWAN()),
+          label: 'virtual wan', x: dropContext.x, y: dropContext.y,
+          azcontext: new VirtualWAN()
+        });
+      break;
+      case ResourceType.Blockchain():
+        this.createNonVIRAzureResource({
+          source: Utils.pngDataUrl(AzureIcons.Blockchain()),
+          label: 'blockchain service', x: dropContext.x, y: dropContext.y,
+          azcontext: new Blockchain()
+        });
+      break;
       case ResourceType.AppService():
         this.createNonVIRAzureResource({
           source: require('../../assets/azure_icons/Web Service Color/App Services.png'),
@@ -3102,7 +3169,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
       case ResourceType.NetworkWatcher():
           this.createNonVIRAzureResource({
-            source: require('../../assets/azure_icons/Networking Service Color/Network Watcher.png'),
+            source: Utils.pngDataUrl(AzureIcons.NetworkWatcherShape()),
             label: 'network watcher', x: dropContext.x, y: dropContext.y,
             azcontext: new NetworkWatcher()
           });
@@ -3395,7 +3462,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         break;
       case ResourceType.EventHub():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Integration Service Color/Event Hub.png'),
+          source: require('../../assets/azure_icons/Integration Service Color/event hub.png'),
           label: 'event hub', x: dropContext.x, y: dropContext.y,
           azcontext: new EventHub()
         });
@@ -3534,7 +3601,47 @@ setBadgeVisibilityOnUnsaveChanges = () => {
     let thisComp = this;
 
     switch (userObject.GraphModel.ResourceType) {
-      
+
+    case ResourceType.Blockchain():
+        this.blockchainPropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+    break;
+    case ResourceType.MediaService():
+      this.mediaservicePropPanel.current.show(userObject, function(savedUserObject){
+         onContextSaveCallback(Utils.deepClone(savedUserObject));
+      });
+    break;
+    case ResourceType.SpringCloud():
+      this.springcloudPropPanel.current.show(userObject, function(savedUserObject){
+         onContextSaveCallback(Utils.deepClone(savedUserObject));
+      });
+    break;
+    case ResourceType.DataCatalog():
+      this.datacatalogPropPanel.current.show(userObject, function(savedUserObject){
+         onContextSaveCallback(Utils.deepClone(savedUserObject));
+      });
+    break;
+    case ResourceType.DataShare():
+      this.datasharePropPanel.current.show(userObject, function(savedUserObject){
+         onContextSaveCallback(Utils.deepClone(savedUserObject));
+      });
+    break;
+    case ResourceType.ManagedIdentity():
+      this.managedidentityPropPanel.current.show(userObject, function(savedUserObject){
+         onContextSaveCallback(Utils.deepClone(savedUserObject));
+      });
+    break;
+    case ResourceType.MeshApplication():
+      this.meshappPropPanel.current.show(userObject, function(savedUserObject){
+         onContextSaveCallback(Utils.deepClone(savedUserObject));
+      });
+    break;
+    case ResourceType.VirtualWAN():
+      this.virtualwanPropPanel.current.show(userObject, function(savedUserObject){
+         onContextSaveCallback(Utils.deepClone(savedUserObject));
+      });
+    break;
     case ResourceType.ServiceEndpoint():
         this.svcendpointPropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
