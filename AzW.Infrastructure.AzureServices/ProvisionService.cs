@@ -1,4 +1,5 @@
 using AzW.Model;
+using Microsoft.Azure.Management.Monitor.Fluent;
 using Microsoft.Azure.Management.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
@@ -29,6 +30,12 @@ using Microsoft.Azure.Management.CosmosDB.Fluent.Models;
 using System.IO;
 using System.Dynamic;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Models;
+using Microsoft.Azure.Management.ApplicationInsights.Management;
+using Microsoft.Azure.Management.ApplicationInsights.Management.Models;
+using Microsoft.Azure.Management.RecoveryServices;
+using Microsoft.Azure.Management.RecoveryServices.Backup;
+using Microsoft.Azure.Management.RecoveryServices.Models;
+using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
 
 namespace AzW.Infrastructure.AzureServices
 {
@@ -114,9 +121,17 @@ namespace AzW.Infrastructure.AzureServices
                                 LogAnalytics law = jObj.ToObject<LogAnalytics>();
                                 await CreateLAWAsync(law);
                             break;
+                            case ResourceType.AppInsights:
+                                AppInsights appinsights = jObj.ToObject<AppInsights>();
+                                await CreateAppInsightsAsync(appinsights);
+                            break;
                             case ResourceType.CosmosDB:
                                 CosmosDB cosmos = jObj.ToObject<CosmosDB>();
                                 await CreateCosmosAsync(cosmos);
+                            break;
+                            case ResourceType.RecoveryServiceVault:
+                                RecoveryServiceVault rsv = jObj.ToObject<RecoveryServiceVault>();
+                                await CreateRecoveryServiceVault(rsv);
                             break;
                             
                         }
@@ -366,7 +381,10 @@ namespace AzW.Infrastructure.AzureServices
                 .GetByResourceGroup(vm.ResourceGroupName, vm.Name);
             
             if(existingVM != null)
+            {
+                _vms.Add(existingVM.Name, existingVM);
                 return;
+            }
 
             INetwork vnet = GetVNetByName(vm.VNetName);
             
@@ -768,6 +786,94 @@ namespace AzW.Infrastructure.AzureServices
             }
         }
 
+        private async Task CreateRecoveryServiceVault(RecoveryServiceVault vault)
+        {
+            var vmsToBackup = new List<string>();
+
+            //to handle scenario on VM selected for backup, but was deleted
+            foreach(var vm in vault.VMNamesToBackup)
+            {
+                if(GetVMByName(vm) != null)
+                    vmsToBackup.Add(vm);
+            }
+
+            string backupPolicyName = "DailyBackupPolicy";
+
+            string asrArmJsonPath =
+                Path.Combine(Path.Combine(AppContext.BaseDirectory, "armtemplate"),
+                "rscandpolicy-azuredeploy.json");
+            string asrJson = File.ReadAllText(asrArmJsonPath);
+            
+            string asrArmParamPath =
+                Path.Combine(Path.Combine(AppContext.BaseDirectory, "armtemplate"),
+                "rscandpolicy-azuredeploy.parameters.json");
+            string asraramJsonRaw = File.ReadAllText(asrArmParamPath);
+
+            var jobj = JObject.Parse(asraramJsonRaw);
+            jobj["vaultName"]["value"] = vault.Name;
+            jobj["policyName"]["value"] = backupPolicyName;
+
+            string paramJson = jobj.ToString(Newtonsoft.Json.Formatting.None);
+
+            await AzClient.WithSubscription(_subscriptionId)
+                .Deployments.Define("asr-deployment")
+                .WithExistingResourceGroup(vault.ResourceGroupName)
+                .WithTemplate(asrJson)
+                .WithParameters(paramJson)
+                .WithMode(DeploymentMode.Incremental)
+                .CreateAsync();
+
+            string enableVMBackupArmJsonPath =
+                Path.Combine(Path.Combine(AppContext.BaseDirectory, "armtemplate"),
+                "enablevmvackup-azuredeploy.json");
+            string enableVMBackupJson = File.ReadAllText(enableVMBackupArmJsonPath);
+
+            if(vmsToBackup.Count == 0)
+                return;
+            
+            string enableVMBackupArmParamPath =
+                Path.Combine(Path.Combine(AppContext.BaseDirectory, "armtemplate"),
+                "enablevmvackup-azuredeploy.parameters.json");
+            string enableVMBackuparamJsonRaw = File.ReadAllText(enableVMBackupArmParamPath);
+
+            var enableVMBackupJobj = JObject.Parse(enableVMBackuparamJsonRaw);
+            enableVMBackupJobj["existingVirtualMachinesResourceGroup"]["value"] = vault.ResourceGroupName;
+            enableVMBackupJobj["existingRecoveryServicesVault"]["value"] = vault.Name;
+            enableVMBackupJobj["existingVirtualMachines"]["value"] = new JArray(vmsToBackup.ToArray());
+            enableVMBackupJobj["existingBackupPolicy"]["value"] = backupPolicyName;
+
+            string enableVMBackupParamJson =
+                enableVMBackupJobj.ToString(Newtonsoft.Json.Formatting.None);
+
+            await AzClient.WithSubscription(_subscriptionId)
+                .Deployments.Define("asr-enablevmbackup-deployment")
+                .WithExistingResourceGroup(vault.ResourceGroupName)
+                .WithTemplate(enableVMBackupJson)
+                .WithParameters(enableVMBackupParamJson)
+                .WithMode(DeploymentMode.Incremental)
+                .CreateAsync();
+            
+
+        }
+
+        private async Task CreateAppInsightsAsync(AppInsights appinsights)
+        {
+           using(var appInsightsClient = new ApplicationInsightsManagementClient(AzureCreds))
+            {
+                appInsightsClient.SubscriptionId = _subscriptionId;
+
+                await appInsightsClient.Components.CreateOrUpdateAsync(
+                    appinsights.ResourceGroupName, appinsights.Name,
+                    new ApplicationInsightsComponent()
+                    {
+                        Location = appinsights.Location,
+                        Kind = "web",
+                        ApplicationType = "web"
+                    }
+                );
+            }           
+        }
+
         private async Task CreateCosmosAsync(CosmosDB cosmos)
         {
            var rgDef = AzClient
@@ -816,6 +922,12 @@ namespace AzW.Infrastructure.AzureServices
         }
 
         //helpers
+
+        private IVirtualMachine GetVMByName(string name)
+        {
+            return _vms.FirstOrDefault(x => x.Key == name).Value;
+        }
+
         private IEnumerable<IVirtualMachine> GetLBVMs(string[] vmNames)
         {
             var vmsToLB = new List<IVirtualMachine>();

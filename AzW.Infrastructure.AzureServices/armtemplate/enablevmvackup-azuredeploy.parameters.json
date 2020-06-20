@@ -1,0 +1,14 @@
+{
+    "existingVirtualMachinesResourceGroup": {
+        "value": "VMRG"
+      },
+      "existingVirtualMachines": {
+        "value": []
+      },
+      "existingRecoveryServicesVault": {
+        "value": "RecoveryServicesVault"
+      },
+      "existingBackupPolicy": {
+        "value": "DefaultPolicy"
+      }
+}

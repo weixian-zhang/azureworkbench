@@ -25,17 +25,17 @@ export default class OverlayTutorial extends Component {
                     </Typography>
                     <Tabs value={this.state.value} onChange={this.handleTabChange} style={{marginBottom:'6px'}}>
                         <Tab label="Drawing a Diagram" value="drawing" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'drawing' ? "bold" : "" }}/>
-                        <Tab label="Diagram In General" value="diagram" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'diagram' ? "bold" : "" }}/>
-                        <Tab label="Deploy to Azure" value="provision" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'provision' ? "bold" : "" }}/>
+                        <Tab label="Workbench Features" value="diagram" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'diagram' ? "bold" : "" }}/>
+                        <Tab label="Deploy Diagram to Azure" value="provision" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'provision' ? "bold" : "" }}/>
                     </Tabs>
                     <div hidden={this.state.value !== 'drawing'} style={{overflow: 'auto'}}>
                         <Typography variant="h6" align="left" color="primary" gutterBottom>
                             Resource Palette
                         </Typography>
                         <Typography variant="body1" align="left" gutterBottom>
-                            The Resource Palette contains Connectors, Shapes, Picture Shapes and Azure Nodes that you can drag onto canvas to start drawing a diagram.
-                            "Non-Azure" nodes do not represent an Azure resource and therefore are not deployable to Azure.
-                            For "Azure" nodes that are deployable to Azure, it is marked with a red badge. I strive to make all Azure nodes deployable in near future. 
+                            The Resource Palette contains Connectors, Shapes, Picture Shapes and <strong>Azure Nodes</strong> that you can drag onto canvas to start drawing a diagram.
+                            Non-Azure nodes do not represent an Azure resource and therefore are not deployable to your Azure subscription.
+                            Azure nodes  are deployable to Azure and is marked with a red badge. More Azure nodes are made deployable weekly. 
                         </Typography>
                         <Typography variant="h6" align="left" color="primary" gutterBottom>
                             Draw a link from Node
@@ -114,7 +114,7 @@ export default class OverlayTutorial extends Component {
                     </div>
                     <div hidden={this.state.value !== 'diagram'} style={{overflow: 'auto'}}>
                         <Typography variant="h6" align="left" color="primary" gutterBottom>
-                            Save Diagram as PDF
+                            Export Diagram as PDF
                         </Typography>
                         <Typography variant="body2" align="left" gutterBottom>
                             There are 2 ways to save diagram as PDF
@@ -124,7 +124,8 @@ export default class OverlayTutorial extends Component {
                                 </li>
                                 <li>
                                     Use Browser PDF feature.
-                                    First "Export diagram as SVG", then open "diagram.svg" in browser and leverage browser's Save-PDF by initiating a Browser Print.
+                                    First "Export diagram as SVG", then open "diagram.svg" in browser and trigger a Print,
+                                    choose "Save-PDF" and click Save.
                                 </li>
                             </ul>
                         </Typography>
@@ -136,42 +137,63 @@ export default class OverlayTutorial extends Component {
                             *Note: Image file cannot be larger than 400Kb.
                         </Typography>
                         <Typography variant="h6" align="left" color="primary" gutterBottom>
-                            Generate Share Link
+                            Share Diagram
                         </Typography>
                         <Typography variant="body1" align="left">
-                            Without login, you can still generate a link to share your diagram with ypur friends
+                            You can generate a link to share your diagram with your friends without login.
+                        </Typography>
+                        <Typography variant="body1" align="left">
+                            Even if you don't plan to deploy diagrams to your subscription, you can still fill
+                            up Azure Properties of each Azure node and share diagram to your friends.
+                            The Azure properties you filled will be shared as well.
                         </Typography>
                         <Typography variant="h6" align="left" color="primary">
                             Save to browser
                         </Typography>
                         <Typography variant="body1" align="left" >
                             By performing Control+S diagram can be saved to Browser localstorage.
-                            You can only save 1 copy, subsequent saving of diagram overrides the previous copy.
+                            You can only save 1 copy, subsequent saving overrides the previous copy.
                         </Typography>
                         <Typography variant="h6" align="left" color="primary" >
                         My Space
                         </Typography>
                         <Typography variant="body1" align="left" >
                             By logging in using your Azure AD work account,
-                            You can catogorize and save your diagrams to Azure Workbench and load your saved diagrams anytime.
+                            You can catogorize and save your diagrams to Workbench and load your saved diagrams anytime.
                         </Typography>
                     </div>
                     <div hidden={this.state.value !== 'provision'} style={{overflowY: 'auto'}}>
                         <Typography variant="h6" align="left" color="primary" >
-                            Deploy Resources
+                            Deployable Resources
                         </Typography>
                         <Typography variant="body1" align="left" gutterBottom>
                             In Resource Palette, any node marked with a <Badge color="secondary" variant="dot">red-dotted badge</Badge>, 
                             these node can be deployed to your Azure subscription
                         </Typography>
                         <Typography variant="h6" align="left" color="primary" >
+                            Load Balancer & Application Gateway
+                        </Typography>
+                        <Typography variant="body1" align="left" gutterBottom>
+                            *Any link that is connected between 1 or more VMs to a Load Balancer and/or App Gateway,
+                            these link-connected VMs will be added into the Backend Pools of Load Balancer and App Gateway.
+                        </Typography>
+                        <div>
+                            <img src = {require("../../assets/azure_icons/tutorial-vmbackendpool.svg")} width="400px" height="200px" />
+                        </div>
+                        <Typography variant="h6" align="left" color="primary" >
+                            Recovery Service Vault
+                        </Typography>
+                        <Typography variant="body1" align="left" gutterBottom>
+                            At Recovery Service Vault Azure property panel, you can select VMs in diagrams to enable backup.
+                        </Typography>
+                        <Typography variant="h6" align="left" color="primary" >
                             How to deploy?
                         </Typography>
                         <Typography variant="body1" align="left" >
                             <ul>
-                                <li>For each deployable node, double-click to open the Property panel</li>
-                                <li>Switch to 'Provision' tab and fill in all Azure properties</li>
-                                <li>At Toolbar, click on Azure menu, select Subscription and click Deploy</li>
+                                <li>For each deployable node, double-click to open Azure Property Panel</li>
+                                <li>Make sure to fill in all Azure properties, no fields are optional.</li>
+                                <li>At header Toolbar, click on Azure menuitem, select Subscription and click Deploy</li>
                             </ul>
                             <Typography variant="body1" align="left" >*Note: NSG is deployable</Typography>
                         </Typography>

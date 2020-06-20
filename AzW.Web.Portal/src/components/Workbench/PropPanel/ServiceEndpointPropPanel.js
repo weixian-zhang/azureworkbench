@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import ServiceEndpoint from '../../../models/ServiceEndpoint';
 import { Drawer, MenuItem, Button, Alignment } from "@blueprintjs/core";
-import { ItemRenderer, MultiSelect, Select } from "@blueprintjs/select";
+import { Select } from "@blueprintjs/select";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
 import Grid from "@material-ui/core/Grid";
 import Typography from '@material-ui/core/Typography';

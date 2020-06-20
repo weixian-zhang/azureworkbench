@@ -95,7 +95,7 @@ export default class Header extends Component {
                      <MenuDivider />
                       <Badge color="secondary" badgeContent='unsave changes' invisible={this.global.saveBadgeInvisible}>
                         <MenuItem  text="Save to Browser" onClick={this.saveToLocal} />
-                        <MenuItem  text="Save to Workspace" onClick={this.savetoWorkspace} />
+                        <MenuItem  text="Save to My Space" onClick={this.savetoWorkspace} />
                       </Badge>
                      <MenuDivider />
                      <MenuItem  text="Load Draft from Browser" onClick={this.loadDiagramFromrBrowser} />

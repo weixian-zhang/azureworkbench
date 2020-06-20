@@ -3776,7 +3776,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         });
         break;
       case ResourceType.RecoveryServiceVault():
-        this.recoveryservicevaultPropPanel.current.show(userObject, function(savedUserObject){
+        this.recoveryservicevaultPropPanel.current.show(this.diagram, userObject, function(savedUserObject){
             onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;

@@ -10,12 +10,11 @@ export default class RecoveryServiceVault
 
         this.ProvisionContext = {
             ResourceType: ResourceType.RecoveryServiceVault(),
-            Deployable: true,
-            HighCost: false,
-            
             Name: '',
             Location: '',
-            Tags: [],
+            ResourceGroupName: '',
+            VMNamesToBackup: []
+
         };
         this.CalculatorContext = {
             IsFree: false,

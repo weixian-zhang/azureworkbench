@@ -1,14 +1,13 @@
 import React, { Component } from "react";
 import RecoveryServiceVault from '../../../models/RecoveryServiceVault';
-import { FormGroup, Drawer, Intent, Button, Switch } from "@blueprintjs/core";
+import { MenuItem, Drawer, Intent, Button, Switch } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import Grid from "@material-ui/core/Grid";
-import AppBar from '@material-ui/core/AppBar';
 import SelectLocation from '../SelectLocation';
 import SelectResourceGroup from '../SelectResourceGroup';
 import Utils from '../Helpers/Utils';
+import { Select } from "@blueprintjs/select";
+import Typography from '@material-ui/core/Typography';
 
 export default class RecoveryServiceVaultPropPanel extends Component {
   constructor(props) {
@@ -17,12 +16,9 @@ export default class RecoveryServiceVaultPropPanel extends Component {
       this.state ={
         isOpen: false,
         userObject: new RecoveryServiceVault(),
-
+        vmContexts: [],
         saveCallback: function () {},
       }
-  }
-
-  componentDidMount () {
   }
 
   render = () => {
@@ -107,39 +103,136 @@ export default class RecoveryServiceVaultPropPanel extends Component {
                   }/>
                 </Grid>
               </Grid>
+              <Grid container item direction="row" xs="12" spacing="1" 
+               justify="flex-start" alignItems="center" style={{marginTop:'8px'}}>
+                <Grid item sm={4}>
+                    <strong>Backup VMs</strong>
+                </Grid>
+              </Grid>
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+                <Grid item sm={4}>
+                    <label>Select VMs on canvas</label>
+                </Grid>
+                <Grid item>
+                    <Select
+                      items={this.state.vmContexts}
+                      itemRenderer={ (vm) => {
+                        return (
+                          <MenuItem
+                              icon={vm.isSelected ? "tick" : "blank"}
+                              text={vm.vmName}
+                              shouldDismissPopover={false} 
+                              onClick={() => {
+                                this.onVMSelect(vm)
+                              }}/>
+                        );
+                      }}
+                      escape
+                      noResults={<MenuItem disabled={true} text="No VM on canvas" />}
+                      closeOnSelect={true}
+                      fill={false}
+                      filterable= {false}
+                      popoverProps={true}>
+                      <Button text='VM on canvas'
+                          alignText='left'
+                          rightIcon="double-caret-vertical" />
+                    </Select>
+                </Grid>
+              </Grid>
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+                {
+                  <div>
+                    {
+                      this.state.vmContexts.map(vm => {
+                          if(vm.isSelected)
+                            return <Typography variant="body1">{vm.vmName}</Typography>
+                          else
+                            return ''
+                      })
+                    }
+                  </div>
+                }
+              </Grid>
           </Grid>
       </div>
     );
   }
 
-  renderCalculatorTab() {
-    return (
-      <div
-      className = "propPanelTabContent"
-      hidden={this.state.value !== 'calculator'}>
-        Calculator Properties, coming soon...
-      </div>
-    );
+  getVMsOnCanvas() {
+      var vms = Utils.getVMProContextsOnCanvas(this.diagram);
+      var vmsForSelect= [];
+
+      var preVMs = this.state.userObject.ProvisionContext.VMNamesToBackup;
+
+      for(var v of vms) {
+        
+        var selected = false;
+        var prev = preVMs.find(x => x == v.Name);
+
+        if(prev != null)
+          v.isSelected = true;
+        else
+          v.isSelected = false;
+
+        vmsForSelect.push({
+            vmName: v.Name == '' ? 'VM need not set' : v.Name,
+            isSelected: v.isSelected      
+
+        });
+      }
+
+      this.setState({vmContexts: vmsForSelect}); 
   }
 
-  show = (userObject, saveCallback) => {
+  //reset values VMNamesToBackup in ProvisionContext
+  onVMSelect(vm) {
+    
+      var vms = this.state.vmContexts;
+
+       for(var v of vms) {
+          if(vm.vmName == v.vmName) {
+            if(v.isSelected)
+            v.isSelected = false;
+            else
+              v.isSelected = true;
+          }
+       }
+
+       var azcontext = this.state.userObject;
+       var temp = [];
+       for(var v of vms) {
+         if(v.isSelected)
+          temp.push(v.vmName);
+       }
+
+       azcontext.ProvisionContext.VMNamesToBackup = temp;
+
+       this.setState({
+         vmContexts: vms, //for display
+         userObject: azcontext //for deployment
+       });
+  }
+
+  show = (diagram, userObject, saveCallback) => {
+    this.diagram = diagram;
+    this.getVMsOnCanvas();
     this.setState({ isOpen: true, userObject: userObject, saveCallback: saveCallback });
   }
 
-  onDiagramIconNameChange = (e) => {
-    var propName = e.target.getAttribute('prop');
-    var userObj = this.state.userObject;
-    var value = e.target.value;
-    switch (propName) {
-      case 'DisplayName':
-        userObj.GraphModel.DisplayName = value;
-        break;
+  // onDiagramIconNameChange = (e) => {
+  //   var propName = e.target.getAttribute('prop');
+  //   var userObj = this.state.userObject;
+  //   var value = e.target.value;
+  //   switch (propName) {
+  //     case 'DisplayName':
+  //       userObj.GraphModel.DisplayName = value;
+  //       break;
     
-      default:
-        break;
-    }
-    this.setState({userObject: userObj});
-  }
+  //     default:
+  //       break;
+  //   }
+  //   this.setState({userObject: userObj});
+  // }
 
   saveForm = () => {
       this.drawerClose();

@@ -1607,10 +1607,10 @@ export default class ResourcePalette extends Component {
             },
             {
                 Name: 'site recovery backup dr',
-                Tooltip: 'Site Recovery (Backup/DR)',
-                azInfo: ['Private Link supported'],
+                Tooltip: 'Site Recovery',
+                azInfo: ['-Purpose: Backup & DR','-Private Link supported'],
                 Image: require('../../assets/azure_icons/Management and Governance Service Color/SiteRecovery.png'),
-                Provisionable: false,
+                Provisionable: true,
                 IsPng: false,
                 IsVisible:true,
                 resourceType: ResourceType.RecoveryServiceVault()
@@ -1619,14 +1619,14 @@ export default class ResourcePalette extends Component {
               Name: 'app insights apm',
               Tooltip: 'Application Insights',
               Image: require('../../assets/azure_icons/Management and Governance Service Color/AppInsights.png'),
-              Provisionable: false,
+              Provisionable: true,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.AppInsights()
             },
             {
               Name: 'log analytics monitor',
-              Tooltip: 'Log Analytics (AzMonitor)',
+              Tooltip: 'Log Analytics',
               Image: require('../../assets/azure_icons/Management and Governance Service Color/Log Analytics Workspaces.png'),
               Provisionable: false,
               IsPng: false,

@@ -1,6 +1,7 @@
 import ResourceType from '../../../models/ResourceType';
 import SubnetsCidrs from '../../../models/services/SubnetsCidrs';
 import ShortUniqueId from 'short-unique-id';
+import * as go from 'gojs';
 
 export default class Utils
 {
@@ -312,6 +313,31 @@ export default class Utils
         }
 
         return addrCount;
+    }
+
+    static getVMProContextsOnCanvas(diagram) {
+
+        if(diagram == undefined)
+            return;
+        if(Utils.isCanvasEmpty())
+            return;
+
+        var allNodes = diagram.nodes;
+
+        var vms = [];
+        while (allNodes.next()) {
+            
+            var node = allNodes.value; 
+
+            if(node instanceof go.Link)
+                continue;
+
+            if(Utils.IsVM(node)) {
+                var proContext = node.data.azcontext.ProvisionContext;
+                vms.push(proContext);
+            }
+        }
+        return vms;
     }
 
     static getCidrPrefix(cidr) {
