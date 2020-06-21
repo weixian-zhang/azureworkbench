@@ -680,6 +680,7 @@ createTextTemplate() {
           contextMenu: this.initContextMenu()
         },
         new go.Binding("nodetype"),
+        new go.Binding("angle").makeTwoWay(),
         new go.Binding("zOrder").makeTwoWay(),
         new go.Binding("width").makeTwoWay(),
         new go.Binding("height").makeTwoWay(),
@@ -926,7 +927,8 @@ createShapeTemplate() {
         new go.Binding("figure", "figure"),
         new go.Binding("strokeDashArray", "strokeDashArray").makeTwoWay(),
         new go.Binding("fill").makeTwoWay(),
-        new go.Binding("stroke").makeTwoWay()
+        new go.Binding("stroke").makeTwoWay(),
+        new go.Binding("desiredSize").makeTwoWay(),
       ),
       this.$(go.TextBlock,
         { 
