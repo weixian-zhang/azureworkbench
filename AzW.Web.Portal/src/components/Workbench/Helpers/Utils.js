@@ -254,6 +254,16 @@ export default class Utils
             return false;
     }
 
+    static isASC(part) {
+        if(!Utils.isAzContextExist(part))
+            return false;
+        
+        if(part.data.azcontext.ProvisionContext.ResourceType == ResourceType.SecurityCenter())
+            return true;
+        else
+            return false;
+    }
+
     static IsNullOrUndefine(obj) {
 
         if(typeof obj === 'undefined' || obj == null)

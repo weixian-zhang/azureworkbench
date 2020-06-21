@@ -788,7 +788,7 @@ export default class ResourcePalette extends Component {
             {
                 Name: 'app service',
                 Tooltip: 'App Service',
-                azInfo: ['Private Link supported','Service Endpoint supported'],
+                azInfo: ['Private Link supported','Service Endpoint supported','deployable'],
                 Image: require('../../assets/azure_icons/Web Service Color/App Services.png'),
                 Provisionable: true,
                 IsPng: false,
@@ -798,6 +798,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'app service environment',
               Tooltip: 'App Service Environment',
+              azInfo: ['deployable'],
               Image: require('../../assets/azure_icons/Web Service Color/App Service Environments.png'),
               Provisionable: true,
               IsPng: false,
@@ -807,6 +808,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'azure function',
               Tooltip: 'Function',
+              azInfo: ['deployable'],
               Image: require('../../assets/azure_icons/Web Service Color/Function Apps.png'),
               Provisionable: true,
               IsPng: false,
@@ -890,6 +892,7 @@ export default class ResourcePalette extends Component {
             {
                 Name: 'windows vm',
                 Tooltip: 'Windows VM',
+                azInfo: ['deployable'],
                 Image: require('../../assets/azure_icons/ComputeServiceColor/VM/VM-windows.png'),
                 Provisionable: true,
                 IsPng: false,
@@ -899,6 +902,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'linux vm',
               Tooltip: 'Linux VM',
+              azInfo: ['deployable'],
               Image: require('../../assets/azure_icons/ComputeServiceColor/VM/VM-Linux.png'),
               Provisionable: true,
               IsPng: false,
@@ -962,6 +966,7 @@ export default class ResourcePalette extends Component {
             {
                 Name: 'virtual network vnet',
                 Tooltip: 'Virtual Network',
+                azInfo: ['deployable'],
                 Image: require('../../assets/azure_icons/Networking Service Color/Virtual Networks.png'),
                 Provisionable: true,
                 IsPng: false,
@@ -971,6 +976,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'load balancer nlb slb alb route',
               Tooltip: 'Load Balancer',
+              azInfo: ['deployable'],
               Image: require('../../assets/azure_icons/Networking Service Color/Load Balancers.png'),
               Provisionable: true,
               IsPng: false,
@@ -980,6 +986,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'application gatway appgw waf route',
               Tooltip: 'Application Gateway',
+              azInfo: ['deployable'],
               Image: require('../../assets/azure_icons/Networking Service Color/Application Gateway.png'),
               Provisionable: true,
               IsPng: false,
@@ -1106,7 +1113,7 @@ export default class ResourcePalette extends Component {
             {
                 Name: 'blob table queue file storage',
                 Tooltip: 'Azure Storage Account',
-                azInfo: ['Private Link supported','Service Endpoint supported'],
+                azInfo: ['Private Link supported','Service Endpoint supported', 'deployable'],
                 Image: require('../../assets/azure_icons/Storage Service Color/Blob Storage.png'),
                 Provisionable: true,
                 IsPng: false,
@@ -1191,7 +1198,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'cosmos mongo cassandra graph documentdb',
               Tooltip: 'CosmosDB',
-              azInfo: ['Private Link supported','Service Endpoint supported'],
+              azInfo: ['Private Link supported','Service Endpoint supported','deployable'],
               Image: require('../../assets/azure_icons/Databases Service Color/azure-cosmos-db.png'),
               Provisionable: true,
               IsPng: false,
@@ -1535,6 +1542,7 @@ export default class ResourcePalette extends Component {
             {
                 Name: 'firewall azfw',
                 Tooltip: 'Azure Firewall',
+                azInfo: ['deployable'],
                 Image: require('../../assets/azure_icons/Security Service Color/Azure Firewall.png'),
                 Provisionable: true,
                 IsPng: false,
@@ -1563,8 +1571,9 @@ export default class ResourcePalette extends Component {
             {
               Name: 'security center asc',
               Tooltip: 'Security Center',
+              azInfo: ['deployable'],
               Image: require('../../assets/azure_icons/Security Service Color/Security Center.png'),
-              Provisionable: false,
+              Provisionable: true,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.SecurityCenter()
@@ -1608,7 +1617,7 @@ export default class ResourcePalette extends Component {
             {
                 Name: 'site recovery backup dr',
                 Tooltip: 'Site Recovery',
-                azInfo: ['-Purpose: Backup & DR','-Private Link supported'],
+                azInfo: ['-Purpose: Backup & DR','-Private Link supported','deployable'],
                 Image: require('../../assets/azure_icons/Management and Governance Service Color/SiteRecovery.png'),
                 Provisionable: true,
                 IsPng: false,
@@ -1618,6 +1627,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'app insights apm',
               Tooltip: 'Application Insights',
+              azInfo: ['deployable'],
               Image: require('../../assets/azure_icons/Management and Governance Service Color/AppInsights.png'),
               Provisionable: true,
               IsPng: false,
@@ -1816,7 +1826,7 @@ export default class ResourcePalette extends Component {
                                       : <div style={{textAlign:'left'}}>
                                         {
                                           r.azInfo.map(i => {
-                                            return <div style={{fontSize:9}}>{i}</div>
+                                            return <div style={{fontSize:10}}>{i}</div>
                                           })
                                         }
                                         </div>

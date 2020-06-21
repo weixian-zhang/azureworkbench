@@ -36,6 +36,7 @@ using Microsoft.Azure.Management.RecoveryServices;
 using Microsoft.Azure.Management.RecoveryServices.Backup;
 using Microsoft.Azure.Management.RecoveryServices.Models;
 using Microsoft.Azure.Management.RecoveryServices.Backup.Models;
+using Microsoft.Azure.Management.Security;
 
 namespace AzW.Infrastructure.AzureServices
 {
@@ -133,7 +134,10 @@ namespace AzW.Infrastructure.AzureServices
                                 RecoveryServiceVault rsv = jObj.ToObject<RecoveryServiceVault>();
                                 await CreateRecoveryServiceVault(rsv);
                             break;
-                            
+                            case ResourceType.SecurityCenter:
+                                //RecoveryServiceVault rsv = jObj.ToObject<RecoveryServiceVault>();
+                                await CreateSecurityCenterStandard();
+                            break;
                         }
                     }
                 }              
@@ -854,6 +858,26 @@ namespace AzW.Infrastructure.AzureServices
                 .CreateAsync();
             
 
+        }
+
+
+        private async Task CreateSecurityCenterStandard()
+        {
+            using(var asc = new SecurityCenterClient(AzureCreds))
+            {
+               asc.SubscriptionId = _subscriptionId;
+
+               await asc.AutoProvisioningSettings.CreateAsync("default", "On");
+
+               await asc.Pricings.UpdateAsync("VirtualMachines", "Standard");
+               await asc.Pricings.UpdateAsync("SqlServers", "Standard");
+               await asc.Pricings.UpdateAsync("AppServices", "Standard");
+               await asc.Pricings.UpdateAsync("StorageAccounts", "Standard");
+               await asc.Pricings.UpdateAsync("SqlServerVirtualMachines", "Standard");
+               await asc.Pricings.UpdateAsync("KubernetesService", "Standard");
+               await asc.Pricings.UpdateAsync("ContainerRegistry", "Standard");
+               await asc.Pricings.UpdateAsync("KeyVaults", "Standard");
+            }
         }
 
         private async Task CreateAppInsightsAsync(AppInsights appinsights)

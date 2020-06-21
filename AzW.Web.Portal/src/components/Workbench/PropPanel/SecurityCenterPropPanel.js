@@ -57,51 +57,16 @@ export default class SecurityCenterPropPanel extends Component {
               direction="row"
               justify="center"
               alignItems="center"
-              spacing={1} style={{marginTop: '15px', width: '100%'}}>
+              spacing={1} style={{width: '100%'}}>
+
               <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
-                <Grid item sm={4}>
-                    <label>Name</label>
-                </Grid>
                 <Grid item>
-                  <input id="icon-display-name" type="text" class="bp3-input .modifier"
-                    value={this.state.userObject.ProvisionContext.Name} 
+                  <Switch checked={this.state.userObject.ProvisionContext.IsStandardTier} label="Is Standard Tier"
                     onChange={(e) => {
-                      var uo = this.state.userObject;
-                      uo.ProvisionContext.Name = e.target.value
-                      this.setState({userObject:uo});
+                        var uo = this.state.userObject;
+                        uo.ProvisionContext.IsStandardTier = e.target.checked
+                        this.setState({userObject:uo});
                     }} />
-                </Grid>
-              </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
-                <Grid item sm={4}>
-                    <label>Resource Group</label>
-                </Grid>
-                <Grid item>
-                  <SelectResourceGroup
-                   SelectedResourceGroup={this.state.userObject.ProvisionContext.ResourceGroupName}
-                   onValueChange={
-                    (rg) => {
-                      var uo = this.state.userObject;
-                      uo.ProvisionContext.ResourceGroupName = rg
-                      this.setState({userObject:uo});
-                    }
-                  }/>
-                </Grid>
-              </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
-                <Grid item sm={4}>
-                    <label>Location</label>
-                </Grid>
-                <Grid item>
-                  <SelectLocation
-                  SelectedLocation={this.state.userObject.ProvisionContext.Location}
-                  onValueChange={
-                    (location) => {
-                      var uo = this.state.userObject;
-                      uo.ProvisionContext.Location = location
-                      this.setState({userObject:uo});
-                    }
-                  }/>
                 </Grid>
               </Grid>
           </Grid>

@@ -45,6 +45,9 @@ export default class ProvisionHelper
                 
                 if(this.getASEContexts(node, provisionContexts))
                     continue;
+                
+                if(this.getASCContext(node, provisionContexts))
+                    continue;
 
                 if(this.getAllNonVIRContexts(node, provisionContexts))
                     continue;
@@ -323,6 +326,20 @@ export default class ProvisionHelper
 
             provisionContexts.push(aseProContext);
 
+            return true;
+        }
+    }
+
+    getASCContext = (node, provisionContexts) => {
+        if(Utils.isASC(node))
+        {
+            var asc = node;
+
+            var ascContext = Utils.ProContext(asc);
+
+            if(ascContext.IsStandardTier)
+                provisionContexts.push(ascContext);
+            
             return true;
         }
     }
