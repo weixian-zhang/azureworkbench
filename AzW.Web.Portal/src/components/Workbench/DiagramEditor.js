@@ -235,7 +235,10 @@ import GojsManager from "./Helpers/GojsManager";
 import Function from "../../models/Function";
 import IPCIDR  from 'ip-cidr';
 import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
+import './GojsExtensions/TextEditor';
+
 import AzureIcons from './Helpers/AzureIcons';
+import { Typography } from "@material-ui/core";
 
  export default class DiagramEditor extends Component {
  
@@ -252,6 +255,7 @@ import AzureIcons from './Helpers/AzureIcons';
         shareLink: '',
         shareLinkInputbox: null,
         isLoading: false,
+        isLoadedFromAutoSaveRecoveryPoint: false,
 
         unsavedChanges: false,
 
@@ -290,7 +294,12 @@ import AzureIcons from './Helpers/AzureIcons';
     this.initRef();
 
     this.loadSharedDiagram();
-  }
+
+    this.loadAutoSavedRecoveryPoint();
+
+    this.startTimerAutosave();
+
+ }
 
   render() {
     return (
@@ -394,6 +403,7 @@ import AzureIcons from './Helpers/AzureIcons';
         <AppGwPropPanel ref={this.appgwPropPanel} />
         <DNSPrivateZonePropPanel ref={this.dnsPrivateZonePropPanel} />
         <DNSZonePropPanel ref={this.dnszonePropPanel} />
+        {/* share link copy */}
         <Overlay isOpen={this.state.showShareDiagramPopup} onClose={this.closeShareDiagramPopup} >
           <div style={{width: '400px',height:'100px'}} className={[Classes.CARD, Classes.ELEVATION_4, "login-overlay"]}>
           <InputGroup
@@ -408,6 +418,21 @@ import AzureIcons from './Helpers/AzureIcons';
             <Button style={{marginTop: '10px', float: 'right'}} className="bp3-button bp3-intent-primary" onClick={this.copySharedLink}>Copy</Button>
           </div>
         </Overlay>
+         {/* prompt recover autosave */}
+        {/* <Overlay isOpen={this.state.showRecoverFromAutosave} onClose={() => {
+          this.setState({showRecoverFromAutosave: false});
+        }}>
+          <div style={{width: '400px',height:'100px'}} className={[Classes.CARD, Classes.ELEVATION_4, "login-overlay"]}>
+          <Typography variant="body1">
+            Workbench has helped you saved your diagram, do you want to recover it?
+          </Typography>
+            <Button style={{marginTop: '10px', float: 'right'}} className="bp3-button bp3-intent-primary" onClick={this.loadAutoSavedRecoveryPoint}>Yes</Button>
+            <Button style={{marginTop: '10px', float: 'right'}} className="bp3-button bp3-intent-primary" onClick={() => {
+              this.setState({showRecoverFromAutosave:false});
+            }}>Cancel</Button>
+            <Button style={{marginTop: '10px', float: 'right'}} className="bp3-button bp3-intent-primary" onClick={this.clearAutosavedDiagram}>No, clear Recovery Point</Button>
+          </div>
+        </Overlay> */}
       </div>
     );
   }
@@ -532,8 +557,6 @@ import AzureIcons from './Helpers/AzureIcons';
           "undoManager.isEnabled": true,
           'animationManager.isEnabled': false,  // turn off automatic animation
 
-          //"linkReshapingTool": new OrthogonalLinkReshapingTool(),
-
           autoScrollRegion: new go.Margin(2, 2, 2, 2),
           allowHorizontalScroll: true,
           allowVerticalScroll : true,
@@ -577,6 +600,7 @@ import AzureIcons from './Helpers/AzureIcons';
           "linkingTool.archetypeLinkData": { 
             fromArrow: '',
             toArrow: 'Standard',
+            adjusting: go.Link.Stretch,
             stroke: 'black',
             strokeWidth: 1.5,
             strokeDashArray: null,
@@ -585,6 +609,8 @@ import AzureIcons from './Helpers/AzureIcons';
           }
       });
     this.diagram.layout.isInitial = false;
+
+    this.diagram.toolManager.textEditingTool.defaultTextEditor = window.TextEditor;
 
     this.diagram.scrollMode = go.Diagram.InfiniteScroll;
 
@@ -614,12 +640,6 @@ initDiagramBehaviors() {
 
   this.generalContextmenu = this.initContextMenu();
   this.diagram.contextMenu = this.generalContextmenu;
-}
-
-initCrossBrowserDiagramCopyPaste() {
-  require(["./GojsExtensions/LocalStorageCommandHandler"], function(app) {
-    app.init();
-  });
 }
 
 initPanningwithRightMouseClick() {
@@ -910,6 +930,8 @@ createShapeTemplate() {
         resizeObjectName: "SHAPE",
         selectionObjectName: "SHAPE",
         rotatable: true,
+        fromSpot: go.Spot.AllSides, toSpot: go.Spot.AllSides,
+        fromLinkable: true, toLinkable: true,
         selectionChanged: function(p) {
           p.layerName = (p.isSelected ? "Foreground" : '');
         },
@@ -1160,6 +1182,15 @@ initDiagramModifiedEvent() {
   this.diagram.addDiagramListener("Modified",
     function(e) {
 
+      //loaded from recovery point remove change flag
+      if(thisComp.state.isLoadedFromAutoSaveRecoveryPoint) {
+        thisComp.setState({isLoadedFromAutoSaveRecoveryPoint: false});
+        thisComp.setState({unsavedChanges: false}, () => {
+          thisComp.setBadgeVisibilityOnUnsaveChanges()});
+        return
+      }
+
+      //nothing on canvas remove change flag
       if(e.diagram.nodes.count == 0) {
         thisComp.setState({unsavedChanges: false}, () => {
           thisComp.setBadgeVisibilityOnUnsaveChanges()});
@@ -2161,7 +2192,7 @@ createText(dropContext) {
     ({
       key: shapeKey, 
       font:'17px Segoe UI', 
-      text: 'text',
+      text: label != '' ? label : 'text',
       stroke: 'black', 
       textAlign: 'center',
       zOrder: 0,
@@ -2329,7 +2360,9 @@ saveDiagramToBrowser = () => {
   this.diagram.isModified = false;
 
   this.setState({unsavedChanges: false}, () => {
-    this.setBadgeVisibilityOnUnsaveChanges()});
+    this.setBadgeVisibilityOnUnsaveChanges();
+    this.clearAutosavedDiagram(); //since user has saved diagram, clear workbench autosave
+  });
 
   Toaster.create({
     position: Position.TOP,
@@ -2380,38 +2413,44 @@ PromptSaveBeforeCloseBrowser() {
 //create vertex from browser clipboard image
 async pasteImageFromBrowserClipboard() {
 
-  var thisComp = this;
+      var thisComp = this;
 
-  window.addEventListener("paste", function(e){
+      window.addEventListener("paste", function(e) {
 
-      // Handle the event
-      thisComp.retrieveImageFromClipboardAsBase64(e, function(imageDataBase64){
+        //to handle paste into existing TextBlock, let the paste event flow and not intercept it
+        if(e.target instanceof HTMLTextAreaElement)
+            return true;
 
-        // If there's an image, open it in the browser as a new window :)
-          if(imageDataBase64){
+        thisComp.retrieveImageFromClipboardAsBase64(e, function(imageDataBase64){
 
-            var cursorPt = thisComp.diagram.lastInput.viewPoint;
+            if(imageDataBase64 == 'IsNewTextBlock')
+                return;
 
-            thisComp.createPictureShape
-            ({source: imageDataBase64,
-              label: 'picture', x: cursorPt.x, y: cursorPt.y});
-          }
+          // If there's an image, open it in the browser as a new window :)
+            if(imageDataBase64){
+
+              var cursorPt = thisComp.diagram.lastInput.viewPoint;
+
+              thisComp.createPictureShape
+              ({source: imageDataBase64,
+                label: 'picture', x: cursorPt.x, y: cursorPt.y});
+            }
+        });
+
+        //if there is item in clipboard, and clipboard item is copy image from websites
+        //and item is not Vertx
+        if(e.clipboardData.items.length != 0) {
+          var tempElement = document.createElement("input");
+          tempElement.style.cssText = "width:0!important;padding:0!important;border:0!important;margin:0!important;outline:none!important;boxShadow:none!important;";
+          document.body.appendChild(tempElement);
+          tempElement.value = ' ' // Empty string won't work!
+          tempElement.select();
+          document.execCommand("copy");
+          document.body.removeChild(tempElement);
+        }
       });
-      
-      //if there is item in clipboard, and clipboard item is copy image from websites
-      //and item is not Vertx
-      if(e.clipboardData.items.length != 0) {
-        var tempElement = document.createElement("input");
-        tempElement.style.cssText = "width:0!important;padding:0!important;border:0!important;margin:0!important;outline:none!important;boxShadow:none!important;";
-        document.body.appendChild(tempElement);
-        tempElement.value = ' ' // Empty string won't work!
-        tempElement.select();
-        document.execCommand("copy");
-        document.body.removeChild(tempElement);
-      }
-
-  }, false);
 }
+ 
 
 retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
   if(pasteEvent.clipboardData == false){
@@ -2431,7 +2470,22 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
   var thisComp = this;
 
   for (var i = 0; i < items.length; i++) {
-      // Skip content if not image
+
+    //handle text paste
+    if (items[i].type.indexOf("text/plain") != -1) {
+        
+        items[i].getAsString((str) => {
+        var text = str;
+
+        var cursorPt = this.diagram.lastInput.viewPoint;
+        this.createText({label: text, x: cursorPt.x, y: cursorPt.y});
+        
+        callback('IsNewTextBlock'); //is text, can skip image paste
+        return;
+      });
+    }
+
+      //handle image paste
       if (items[i].type.indexOf("image") == -1) continue;
       // Retrieve image on clipboard as blob
       var blob = items[i].getAsFile();
@@ -2476,14 +2530,6 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
   }
 }
 
-// getImageFormatFromBrowserClipboard(imageUrl) {
-//   var getSlashIndex = imageUrl.indexOf('/') + 1
-//   var getSemiColonIndex = imageUrl.indexOf(';')
-//   var imageFormat = imageUrl.slice(getSlashIndex, getSemiColonIndex);
-//   return imageFormat;
-// }
-
-
 setBadgeVisibilityOnUnsaveChanges = () => {
       if(this.state.unsavedChanges)
           this.setGlobal({saveBadgeInvisible: false});
@@ -2491,86 +2537,99 @@ setBadgeVisibilityOnUnsaveChanges = () => {
           this.setGlobal({saveBadgeInvisible: true});
   }
 
+  loadAutoSavedRecoveryPoint() {
+    if(LocalStorage.isExist(LocalStorage.KeyNames.AutoSave)) {
+
+        this.getAutoSavedRecoveryPoint();
+
+        this.setState({isLoadedFromAutoSaveRecoveryPoint: true});
+
+        this.setState({unsavedChanges: false}, () => {
+          this.setBadgeVisibilityOnUnsaveChanges();
+          this.clearAutosavedDiagram();
+        });
+        
+        Toast.show('primary',  6500, 'Workbench has recovered your unsaved diagram, save it now to browser or My Space');
+    }
+  }
+
+  getAutoSavedRecoveryPoint = () => {
+    try{
+      if(LocalStorage.isExist(LocalStorage.KeyNames.AutoSave)) {
+        var jsonStr = LocalStorage.get(LocalStorage.KeyNames.AutoSave);
+        var loadedModel = go.Model.fromJson(jsonStr);
+       
+        this.diagram.clear();
+        this.diagram.model = loadedModel;
+      }
+    }
+    catch
+    {
+      LocalStorage.set(LocalStorage.KeyNames.AutoSave, null);
+    }
+  }
+
+  //timer auto-save every 5 secs
+  startTimerAutosave() {
+    var thisComp = this;
+    window.setInterval(() => {
+      if(!this.state.unsavedChanges)
+          return;
+      
+          var diagramJson = this.diagram.model.toJson();
+
+          LocalStorage.set
+            (LocalStorage.KeyNames.AutoSave, diagramJson);
+        
+    }, 5000);
+  }
+
+  clearAutosavedDiagram() {
+      if(LocalStorage.isExist(LocalStorage.KeyNames.AutoSave)) {
+        LocalStorage.set(LocalStorage.KeyNames.AutoSave, null);
+      }
+  }
+
   onDropPNGAZWBFileHandler = (evt) => {
 
-    var thisComp = this;
+      var thisComp = this;
 
-    evt.stopPropagation();
-    evt.preventDefault();
+      evt.stopPropagation();
+      evt.preventDefault();
 
-    // Gets drop location point for vertex
-    // var pt = mxUtils.convertPoint
-    //   (thisComp.graphManager.container, mxEvent.getClientX(evt), mxEvent.getClientY(evt));
-    // var tr = thisComp.graph.view.translate;
-    // var scale = thisComp.graph.view.scale;
-    // var x = pt.x / scale - tr.x;
-    // var y = pt.y / scale - tr.y;
-    
-    // Converts local images to data urls
-    var filesArray = evt.originalEvent.dataTransfer.files;
+      // Converts local images to data urls
+      var filesArray = evt.originalEvent.dataTransfer.files;
 
-    Array.from(filesArray).forEach( file => {
-      if(file.name.endsWith('.azwb')) {
-        thisComp.importWorkbenchFormat(file);
-      }
-      else if(file.name.endsWith('.png') || file.name.endsWith('.svg')) { //insert image as Vertex
-
-        if(thisComp.checkFileLargerThanLimit(file.size, 400)) {
-            Toast.show('warning',  3500, 'PNG file size cannot be over 400Kb, try compressing it.')
-            return;
+      Array.from(filesArray).forEach( file => {
+        if(file.name.endsWith('.azwb')) {
+          thisComp.importWorkbenchFormat(file);
         }
+        else if(file.name.endsWith('.png') || file.name.endsWith('.svg')) { //insert image as Vertex
 
-        var fileReader = new FileReader();
-        fileReader.readAsDataURL(file);
-        fileReader.onload = function() {
+          if(thisComp.checkFileLargerThanLimit(file.size, 400)) {
+              Toast.show('warning',  3500, 'PNG file size cannot be over 400Kb, try compressing it.')
+              return;
+          }
 
-        var dataUrl = fileReader.result;
-        
-        var cursor = thisComp.diagram.lastInput.viewPoint;
+          var fileReader = new FileReader();
+          fileReader.readAsDataURL(file);
+          fileReader.onload = function() {
 
-        thisComp.createPictureShape
-          ({source: dataUrl,
-            label: 'picture', x: cursor.x, y: cursor.y});
+          var dataUrl = fileReader.result;
+          
+          var cursor = thisComp.diagram.lastInput.viewPoint;
 
-          // if(!Utils.IsNullOrUndefine(dataUrl)) {
-          //   var commaSplittedDataUrl = dataUrl.split(','); 
-
-          //   if(commaSplittedDataUrl.length != 2)
-          //     return;
-
-          //   var base64only = commaSplittedDataUrl[1];
-
-          //   var cell = thisComp.graph.insertVertex
-          //   (thisComp.graph.getDefaultParent(), null, '', x, y, 80, 80,
-          //   "fontColor=black;fontSize=12;verticalLabelPosition=bottom;verticalAlign=top;editable=1;verticalLabelPosition=bottom;shape=image;image=data:image/png," +
-          //   base64only);
-          //   cell.collapsed = false;
-          // }
-        };
-        fileReader.onerror = function(error) {
-          Toast.show('warning', 3000, error);
-        };
-      }
-      else
-        Toast.show('warning', '3500', 'Workbench currently supports importing PNG and .azwb file types')
-  });
-
-    // mxEvent.addListener(this.graphManager.container, 'dragover', function(evt)
-    // {      
-    //   if (thisComp.graph.isEnabled())
-    //   {
-    //     evt.stopPropagation();
-    //     evt.preventDefault();
-    //   }
-    // });
-
-    // mxEvent.addListener(this.graphManager.container, 'drop', function(evt)
-    // {
-    //   if (thisComp.graph.isEnabled())
-    //   {
-        
-    //   }
-    // });
+          thisComp.createPictureShape
+            ({source: dataUrl,
+              label: 'picture', x: cursor.x, y: cursor.y});
+          };
+          fileReader.onerror = function(error) {
+            Toast.show('warning', 3000, error);
+          };
+        }
+        else
+          Toast.show('warning', '3500', 'Workbench currently supports importing PNG and .azwb file types')
+    });
   }
 
   checkFileLargerThanLimit(fileSize, limitInKb) {
@@ -4282,7 +4341,9 @@ setBadgeVisibilityOnUnsaveChanges = () => {
     this.diagramService.saveDiagramToWorkspace(diagramContext,
       function onSuccess() {
         thisComp.setState({unsavedChanges: false}, () => {
-          thisComp.setBadgeVisibilityOnUnsaveChanges()});
+          thisComp.setBadgeVisibilityOnUnsaveChanges();
+          thisComp.clearAutosavedDiagram();
+        });
 
         Toaster.create({
           position: Position.TOP,

@@ -3,7 +3,6 @@ import React, { Component } from "react";
 
 import ResourcePalette from "./ResourcePalette";
 import DiagramEditor from "./DiagramEditor";
-import AuthService from "../../services/AuthService";
 
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
@@ -19,17 +18,8 @@ export default class Workbench extends Component {
       renderResourcePalette: false,
       queryString: this.props.queryString
     }
-    
-    // this.Index = this.props.Index;
-
-    // this.graphContainer = null;
-    // this.dropContext = null;
 
     this.diagramEditor = React.createRef();
-
-    this.authService = new AuthService();
-
-    
   }
 
   componentDidMount() {
@@ -62,27 +52,12 @@ export default class Workbench extends Component {
     });
     
     $("#diagramEditor").on("drop", function(event) {
-      if(event.target.className == '') { //icons in resourcepalette classname is 'diagrameditor ui-draggable'
+      if(event.target.className == '') {
           event.preventDefault();  
           event.stopPropagation();
           thisComp.diagramEditor.current.onDropPNGAZWBFileHandler(event);
       }
     });
-    // var editor = document.getElementById("diagramEditor");
-    // editor.addEventListener("dragenter", function(evt) {
-    //   // Here you could also set effects on the Diagram,
-    //   // such as changing the background color to indicate an acceptable drop zone
-
-    //   // Requirement in some browsers, such as Internet Explorer
-    //   evt.preventDefault();
-    // }, false);
-    // editor.addEventListener('drop', function(evt){
-    //   // prevent default action
-    //   // (open as link for some elements in some browsers)
-    //   evt.preventDefault();
-
-    //   this.diagramEditor.current.onDropPNGAZWBFileHandler(evt);
-    // },false);
   }
 
   addResourceToDiagramEditor = (dropContext) => {

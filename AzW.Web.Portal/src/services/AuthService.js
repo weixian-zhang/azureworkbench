@@ -35,7 +35,9 @@ export default class AuthService
           });
     }
 
-    login = (loginResponseCallback) => {
+    login = (callback) => {
+
+        var thisComp = this;
 
         const loginRequest = {
             scopes: [Config.Scope()]
@@ -44,12 +46,27 @@ export default class AuthService
         this.msalApp.loginPopup(loginRequest)
         .then(response => 
         {
-            var tokenRequest = {
-              scopes: [Config.Scope()],
-              prompt: 'consent'
-            };
+            var userProfile = thisComp.aquireAccessTokenSilent(callback)
+        })
+        .catch(error => 
+        {
+          console.log(error);
+            // handle error
+        });
+    }
 
-            this.msalApp.acquireTokenSilent(tokenRequest)
+    refreshAccessToken(callback) {
+        this.aquireAccessTokenSilent(callback);
+    }
+
+    aquireAccessTokenSilent(callback) {
+
+      var tokenRequest = {
+        scopes: [Config.Scope()],
+        prompt: 'consent'
+      };
+      
+      this.msalApp.acquireTokenSilent(tokenRequest)
             .then(response => 
             {
               var userProfile = new UserProfile();
@@ -62,7 +79,8 @@ export default class AuthService
 
               SessionStorage.set(SessionStorage.KeyNames.UserProfile, JSON.stringify(userProfile));
 
-              loginResponseCallback(userProfile);
+              if(callback != undefined)
+              return callback(userProfile);
             })
             .catch(error => {
                 // could also check if err instance of InteractionRequiredAuthError if you can import the class.
@@ -77,12 +95,6 @@ export default class AuthService
                         });
                 }
             });
-        })
-        .catch(error => 
-        {
-          console.log(error);
-            // handle error
-        });
     }
 
     getUserProfile(){

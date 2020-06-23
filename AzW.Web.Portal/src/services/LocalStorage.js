@@ -9,11 +9,20 @@ export default class LocalStorage
       return localStorage.getItem(key);
     }
 
+    static isExist(key) {
+       var item = localStorage.getItem(key);
+       if(item == 'null')
+            return false;
+        else
+            return true;
+    }
+
     static remove(key) {
         localStorage.removeItem(key);
     }
 
     static KeyNames = {
-        TempLocalDiagram: '__temp-anonymousdiagram__'
+        TempLocalDiagram: '__temp-anonymousdiagram__',
+        AutoSave: '__azwb-temp-autosave__'
     }
 }

@@ -184,7 +184,7 @@ export default class Header extends Component {
                      {this.state.isLogin == false ? <MenuItem labelElement={<Icon icon="log-in" />} text="Login" onClick={this.login} /> : '' }
                      <MenuItem  text="About Azure Workbench" onClick={this.showAboutOverlay} />
                    </Menu>
-               } position={Position.BOTTOM}>
+               } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.CLICK}>
 
                 <IconButton color="inherit">
                   {
@@ -221,9 +221,18 @@ export default class Header extends Component {
 
   login = () => {
     var thisComp = this;
-    this.authService.login(function (userProfile){
-      thisComp.setState({isLogin: true, userProfile:  userProfile});
-      thisComp.props.ActionBar.current.getSubscriptions();
+    this.authService.login(
+      function (userProfile) {
+
+        window.setTimeout(function() { 
+          thisComp.authService.refreshAccessToken(function(userProfile) {
+            console.log('token refreshed: ' + userProfile);
+          });
+        }, 
+        60000 * 45); //45mins
+
+        thisComp.setState({isLogin: true, userProfile:  userProfile});
+        thisComp.props.ActionBar.current.getSubscriptions();
     });
    
   }

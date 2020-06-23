@@ -8,3 +8,5 @@
 */obj
 **/.toolstarget
 node_module
+#npm build
+build
