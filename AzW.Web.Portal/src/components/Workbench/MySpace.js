@@ -9,15 +9,13 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import Badge from '@material-ui/core/Badge';
 import { Typography } from "@material-ui/core";
 import moment from 'moment';
 
 import Messages from './Helpers/Messages';
 import DiagramService from '../../services/DiagramService';
 import AuthService from '../../services/AuthService';
-import LocalStorage from '../../services/LocalStorage';
-import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
+import Toast from './Helpers/Toast';
 
 export default class MySpace extends Component {
     constructor(props) {
@@ -176,23 +174,6 @@ export default class MySpace extends Component {
         this.handleThisSpaceDialogClose();
         this.setState({ isOpen: false});
       }
-
-      // isLocalDraftDiagramExist() {
-      //   if(LocalStorage.get(LocalStorage.KeyNames.TempLocalDiagram) === null)
-      //       return false;
-      //   else
-      //       return true;
-      // }
-
-      // loadDraftDiagramFromBrowser = () => {
-      //     this.setState({ isOpen: false});
-      //     this.props.DiagramEditor.loadDraftDiagramFromBrowser();
-      // }
-
-      // deleteDraftDiagramFromBrowser = () => {
-      //   LocalStorage.remove(LocalStorage.KeyNames.TempLocalDiagram);
-      //   this.setState({ isOpen: false });
-      // }
       
       getCollectionFromWorkspace = () => {
         if(!this.authService.isUserLogin())
@@ -268,25 +249,17 @@ export default class MySpace extends Component {
                 if(diagramXml == null || diagramContext == '')
                   return;
 
-                var diagramContext = new AnonymousDiagramContext();
-                diagramContext.DiagramXml = diagramXml;
-                thisComp.props.DiagramEditor.importJsonDiagram(diagramContext);
+                // var diagramContext = new AnonymousDiagramContext();
+                // diagramContext.DiagramXml = diagramXml;
+                thisComp.props.DiagramEditor.importJsonDiagram(diagramXml);
                 thisComp.setState({isOpen: false});
 
-                Toaster.create({
-                  position: Position.TOP,
-                  autoFocus: false,
-                  canEscapeKeyClear: true
-                }).show({intent: Intent.SUCCESS, timeout: 2000, message: 'Diagram loaded'});
+                Toast.show('success', 2000, 'Diagram loaded')
                 
                 return;
               },
               function onError(err){
-                Toaster.create({
-                  position: Position.TOP,
-                  autoFocus: false,
-                  canEscapeKeyClear: true
-                }).show({intent: Intent.DANGER, timeout: 2000, message: Messages.LoadDiagramFromWorkspaceError()});
+                Toast.show('danger', 3000, Messages.LoadDiagramFromWorkspaceError());
                 return;
               }
             );

@@ -50,6 +50,9 @@ export default class OverlayTutorial extends Component {
                             Copy & Paste
                         </Typography>
                         <Typography variant="body1" align="left" gutterBottom>
+                            If you have multiple browser tabs opened loaded with Workbench and wish to copy/paste nodes between tabs, Workbench supports this.
+                        </Typography>
+                        <Typography variant="body1" align="left" gutterBottom>
                             You can copy any image from other websites and do <b>"Ctrl V"</b> to paste on Canvas, in cases when you can't find an Icon that suits your need
                         </Typography>
                         <img src={require("../../assets/azure_icons/tutorial-copyimageotherwebsite.png")} width="500px" height="250px" /> 

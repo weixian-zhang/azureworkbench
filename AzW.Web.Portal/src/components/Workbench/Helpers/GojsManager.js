@@ -90,6 +90,11 @@ export default class GojsManager
 
           var itemClipboard = this.diagram.commandHandler.copiedVIRAndSubnets;
 
+          if(itemClipboard == undefined) {
+            go.CommandHandler.prototype.pasteSelection.call(this.diagram.commandHandler);
+            return;
+          }
+
           if(itemClipboard.length == 0) {
             go.CommandHandler.prototype.pasteSelection.call(this.diagram.commandHandler);
             return;
@@ -142,13 +147,6 @@ export default class GojsManager
               //paste all non VIRs and Subnets normally
               go.CommandHandler.prototype.pasteSelection.call(this.diagram.commandHandler);
             }
-
-            // for (var i = 0; i < itemClipboard.count; i++) {
-            //   var panel = itemClipboard[i];
-            //   var itemdata = panel.data;
-            //   var fields = pasteTarget.data.fields;
-            //   this.diagram.model.addArrayItem(fields, itemdata);  // add the copied panel's data to the selected node's fields
-            // }
 
             this.diagram.commitTransaction("paste items");
 

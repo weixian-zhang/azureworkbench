@@ -230,6 +230,7 @@ import ComputeService from "../../services/ComputeService";
 import QuickstartDiagramContext from '../../models/services/QuickstartDiagramContext';
 import ProvisionHelper from './Helpers/ProvisionHelper';
 import Toast from './Helpers/Toast';
+import LocalStorageCommandHandler from './GojsExtensions/LocalStorageCommandHandler';
 
 import GojsManager from "./Helpers/GojsManager";
 import Function from "../../models/Function";
@@ -255,7 +256,7 @@ import { Typography } from "@material-ui/core";
         shareLink: '',
         shareLinkInputbox: null,
         isLoading: false,
-        isLoadedFromAutoSaveRecoveryPoint: false,
+        isDiagramLoadedFromStorage: false,
 
         unsavedChanges: false,
 
@@ -294,8 +295,6 @@ import { Typography } from "@material-ui/core";
     this.initRef();
 
     this.loadSharedDiagram();
-
-    this.loadAutoSavedRecoveryPoint();
 
     this.startTimerAutosave();
 
@@ -418,21 +417,6 @@ import { Typography } from "@material-ui/core";
             <Button style={{marginTop: '10px', float: 'right'}} className="bp3-button bp3-intent-primary" onClick={this.copySharedLink}>Copy</Button>
           </div>
         </Overlay>
-         {/* prompt recover autosave */}
-        {/* <Overlay isOpen={this.state.showRecoverFromAutosave} onClose={() => {
-          this.setState({showRecoverFromAutosave: false});
-        }}>
-          <div style={{width: '400px',height:'100px'}} className={[Classes.CARD, Classes.ELEVATION_4, "login-overlay"]}>
-          <Typography variant="body1">
-            Workbench has helped you saved your diagram, do you want to recover it?
-          </Typography>
-            <Button style={{marginTop: '10px', float: 'right'}} className="bp3-button bp3-intent-primary" onClick={this.loadAutoSavedRecoveryPoint}>Yes</Button>
-            <Button style={{marginTop: '10px', float: 'right'}} className="bp3-button bp3-intent-primary" onClick={() => {
-              this.setState({showRecoverFromAutosave:false});
-            }}>Cancel</Button>
-            <Button style={{marginTop: '10px', float: 'right'}} className="bp3-button bp3-intent-primary" onClick={this.clearAutosavedDiagram}>No, clear Recovery Point</Button>
-          </div>
-        </Overlay> */}
       </div>
     );
   }
@@ -570,6 +554,9 @@ import { Typography } from "@material-ui/core";
           // allow Ctrl-G to call groupSelection
           "commandHandler.archetypeGroupData": { text: "Group", isGroup: true, color: "blue" },
           
+          commandHandler: new LocalStorageCommandHandler(),  //for cross browser tab copy/paste
+          "ClipboardPasted": function(e) { e.diagram.commandHandler.copyToClipboard(null); },
+
           isReadOnly: false,
           allowZoom: true,
           allowSelect: true,
@@ -930,8 +917,6 @@ createShapeTemplate() {
         resizeObjectName: "SHAPE",
         selectionObjectName: "SHAPE",
         rotatable: true,
-        fromSpot: go.Spot.AllSides, toSpot: go.Spot.AllSides,
-        fromLinkable: true, toLinkable: true,
         selectionChanged: function(p) {
           p.layerName = (p.isSelected ? "Foreground" : '');
         },
@@ -1176,36 +1161,28 @@ createGroupTemplate() {
 
     return groupTemplate;
 }
-
-initDiagramModifiedEvent() {
+//loadFromSourceCallback can be undefined on purpose
+initDiagramModifiedEvent(isLoadFromSource) {
   var thisComp = this;
-  this.diagram.addDiagramListener("Modified",
-    function(e) {
 
-      //loaded from recovery point remove change flag
-      if(thisComp.state.isLoadedFromAutoSaveRecoveryPoint) {
-        thisComp.setState({isLoadedFromAutoSaveRecoveryPoint: false});
-        thisComp.setState({unsavedChanges: false}, () => {
-          thisComp.setBadgeVisibilityOnUnsaveChanges()});
-        return
-      }
+  //on graphobject change
+  // this.diagram.addDiagramListener("Modified",
+  //   function(e) {
 
-      //nothing on canvas remove change flag
-      if(e.diagram.nodes.count == 0) {
-        thisComp.setState({unsavedChanges: false}, () => {
-          thisComp.setBadgeVisibilityOnUnsaveChanges()});
-        return
-      }
+  //     //nothing on canvas remove change flag
+  //     if(e.diagram.nodes.count == 0) {
+  //       thisComp.setDiagramModifiedFalse();
+  //       return;
+  //     }
       
-      if(thisComp.diagram.isModified) {
-        if(thisComp.state.unsavedChanges)
-          return;
+  //     if(thisComp.diagram.isModified) {
+  //       if(thisComp.state.unsavedChanges)
+  //         return;
+  //        thisComp.setDiagramModifiedTrue();
+  //     }
+  //   });
 
-        thisComp.setState({unsavedChanges: true}, () => {
-          thisComp.setBadgeVisibilityOnUnsaveChanges()});
-      }
-    });
-
+    //on model change
     this.diagram.addModelChangedListener(
     function(e) {
 
@@ -1219,17 +1196,21 @@ initDiagramModifiedEvent() {
 
       if(e.isTransactionFinished) {
           if(thisComp.diagram.nodes.count == 0) {
-            thisComp.setState({unsavedChanges: false}, () => {
-              thisComp.setBadgeVisibilityOnUnsaveChanges()});
+            thisComp.setDiagramModifiedFalse();
+            return;
           }
-          else {
-            if(thisComp.state.unsavedChanges)
+
+          if(isLoadFromSource) {
+            isLoadFromSource = false;
+            thisComp.setDiagramModifiedFalse();
+            return;
+          }
+          
+          if(thisComp.state.unsavedChanges)
               return;
 
-            thisComp.setState({unsavedChanges: true}, () => {
-              thisComp.setBadgeVisibilityOnUnsaveChanges()});
-          }
-            
+          //none of the above criteria, set modify true
+          thisComp.setDiagramModifiedTrue();
       }
     });
 }
@@ -2354,15 +2335,12 @@ saveDiagramToBrowser = () => {
   }
 
   var diagramJson = this.diagram.model.toJson();
+
   LocalStorage.set
     (LocalStorage.KeyNames.TempLocalDiagram, diagramJson);
   
-  this.diagram.isModified = false;
-
-  this.setState({unsavedChanges: false}, () => {
-    this.setBadgeVisibilityOnUnsaveChanges();
-    this.clearAutosavedDiagram(); //since user has saved diagram, clear workbench autosave
-  });
+  this.setDiagramModifiedFalse();
+  this.clearAutosaveDiagram();
 
   Toaster.create({
     position: Position.TOP,
@@ -2377,11 +2355,10 @@ loadDraftDiagramFromBrowser = () => {
     Toast.show('primary', 3000, 'You do not have diagram saved in browser');
     return;
   }
- var jsonStr = LocalStorage.get(LocalStorage.KeyNames.TempLocalDiagram);
- var loadedModel = go.Model.fromJson(jsonStr);
 
- this.diagram.clear();
- this.diagram.model = loadedModel;
+ var jsonStr = LocalStorage.get(LocalStorage.KeyNames.TempLocalDiagram);
+ 
+ this.importJsonDiagram(jsonStr);
 }
 
 deleteDraftDiagramFromBrowser = () => {
@@ -2530,64 +2507,55 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
   }
 }
 
-setBadgeVisibilityOnUnsaveChanges = () => {
-      if(this.state.unsavedChanges)
-          this.setGlobal({saveBadgeInvisible: false});
-      else
-          this.setGlobal({saveBadgeInvisible: true});
-  }
-
   loadAutoSavedRecoveryPoint() {
     if(LocalStorage.isExist(LocalStorage.KeyNames.AutoSave)) {
 
-        this.getAutoSavedRecoveryPoint();
+        this.loadAutoSavedRecoveryPointDiagram();
 
-        this.setState({isLoadedFromAutoSaveRecoveryPoint: true});
-
-        this.setState({unsavedChanges: false}, () => {
-          this.setBadgeVisibilityOnUnsaveChanges();
-          this.clearAutosavedDiagram();
-        });
+        this.setDiagramModifiedFalse();
+        this.clearAutosaveDiagram();
         
         Toast.show('primary',  6500, 'Workbench has recovered your unsaved diagram, save it now to browser or My Space');
     }
+    else
+    Toast.show('primary',  5000, 'No recovery point found. (Recovery point gets deleted once saved or loaded)');
   }
 
-  getAutoSavedRecoveryPoint = () => {
+  loadAutoSavedRecoveryPointDiagram = () => {
     try{
       if(LocalStorage.isExist(LocalStorage.KeyNames.AutoSave)) {
         var jsonStr = LocalStorage.get(LocalStorage.KeyNames.AutoSave);
-        var loadedModel = go.Model.fromJson(jsonStr);
-       
-        this.diagram.clear();
-        this.diagram.model = loadedModel;
+      
+        this.importJsonDiagram(jsonStr);
+
       }
     }
     catch
     {
-      LocalStorage.set(LocalStorage.KeyNames.AutoSave, null);
+      LocalStorage.remove(LocalStorage.KeyNames.AutoSave);
     }
+  }
+
+  clearAutosaveDiagram() {
+    LocalStorage.remove(LocalStorage.KeyNames.AutoSave);
   }
 
   //timer auto-save every 5 secs
   startTimerAutosave() {
     var thisComp = this;
     window.setInterval(() => {
-      if(!this.state.unsavedChanges)
+        if(this.diagram.nodes.count == 0) //)
+          return;
+
+        if(!this.state.unsavedChanges)
           return;
       
-          var diagramJson = this.diagram.model.toJson();
+        var diagramJson = this.diagram.model.toJson();
 
-          LocalStorage.set
-            (LocalStorage.KeyNames.AutoSave, diagramJson);
+        LocalStorage.set
+          (LocalStorage.KeyNames.AutoSave, diagramJson);
         
     }, 5000);
-  }
-
-  clearAutosavedDiagram() {
-      if(LocalStorage.isExist(LocalStorage.KeyNames.AutoSave)) {
-        LocalStorage.set(LocalStorage.KeyNames.AutoSave, null);
-      }
   }
 
   onDropPNGAZWBFileHandler = (evt) => {
@@ -4156,20 +4124,23 @@ setBadgeVisibilityOnUnsaveChanges = () => {
     }
   }
 
-  importJsonDiagram = (diagramContext) => {
+  importJsonDiagram = (diagramJson) => {
 
-    if(diagramContext == undefined ||
-      diagramContext.DiagramXml == undefined)
+    if(diagramJson == null || diagramJson == '')
       return;
 
-      var model = go.Model.fromJson(diagramContext.DiagramXml);
+      var model = go.Model.fromJson(diagramJson);
+
+      this.diagram.removeModelChangedListener();
+
+      this.diagram.startTransaction('loaddiagramfrombrowser');
 
       this.diagram.clear();
       this.diagram.model = model;
 
-      //reset unsave changes state on new diagram import
-      this.setState({unsavedChanges: false}, () => {
-        this.setBadgeVisibilityOnUnsaveChanges()});
+      this.diagram.commitTransaction('loaddiagramfrombrowser');
+
+      this.initDiagramModifiedEvent(true);
   }
 
    loadQuickstartDiagram(category, name) {
@@ -4177,7 +4148,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
       this.diagService.loadQuickstartDiagram
         (category, name,
           function onSuccess(qsDiagContext) {
-            thisComp.importJsonDiagram(qsDiagContext);
+            thisComp.importJsonDiagram(qsDiagContext.DiagramXml);
           },
           function onFailure(error) {
             Toast.show("danger", 2000, error.message);
@@ -4231,12 +4202,12 @@ setBadgeVisibilityOnUnsaveChanges = () => {
 
     this.diagramService.loadAnonymousDiagram(parsedQS.id)
       .then(function (response) {
-          var adc = new AnonymousDiagramContext();
-          adc.UID = response.data.UID;
-          adc.DiagramName = response.data.DiagramName;
-          adc.DiagramXml = response.data.DiagramXml;
-          adc.SharedLink = response.data.SharedLink;
-          thisComp.importJsonDiagram(adc);
+          // var adc = new AnonymousDiagramContext();
+          // adc.UID = response.data.UID;
+          // adc.DiagramName = response.data.DiagramName;
+          // adc.DiagramXml = response.data.DiagramXml;
+          // adc.SharedLink = response.data.SharedLink;
+          thisComp.importJsonDiagram(response.data.DiagramXml);
 
           Toaster.create({
             position: Position.TOP,
@@ -4273,14 +4244,14 @@ setBadgeVisibilityOnUnsaveChanges = () => {
     return;
   }
 
-  // getDiagramAsXml(){
-  //   var encoder = new mxCodec();
-
-  //   var node = encoder.encode(this.graph.getModel());
-
-  //   var diagramInXml = mxUtils.getXml(node, true);
-  //   return diagramInXml;
-  // }
+  removeDiagramChangeListeners() {
+    this.diagram.removeModelChangedListener((evt) => {
+      var a = 'a';
+    });
+    this.diagram.removeDiagramListener("Modified", (evt) => {
+      var a = 'a';
+    });
+  }
 
   importWorkbenchFormat(azwbFile) {
 
@@ -4290,9 +4261,7 @@ setBadgeVisibilityOnUnsaveChanges = () => {
     reader.readAsText(azwbFile);
     reader.onload = function() {
       const jsonDiagram = reader.result;
-      var diagContext = new AnonymousDiagramContext();
-      diagContext.DiagramXml = jsonDiagram;
-      thisComp.importJsonDiagram(diagContext);
+      thisComp.importJsonDiagram(jsonDiagram);
     };
   
     reader.onerror = function() {
@@ -4340,24 +4309,16 @@ setBadgeVisibilityOnUnsaveChanges = () => {
 
     this.diagramService.saveDiagramToWorkspace(diagramContext,
       function onSuccess() {
-        thisComp.setState({unsavedChanges: false}, () => {
-          thisComp.setBadgeVisibilityOnUnsaveChanges();
-          thisComp.clearAutosavedDiagram();
-        });
 
-        Toaster.create({
-          position: Position.TOP,
-          autoFocus: false,
-          canEscapeKeyClear: true
-        }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.SavedSuccessfully()});
+        thisComp.setDiagramModifiedFalse();
+        thisComp.clearAutosaveDiagram();
+
+        Toast.show('success', 2000, Messages.SavedSuccessfully());
+
         return;
       },
       function onError(error) {
-        Toaster.create({
-          position: Position.TOP,
-          autoFocus: false,
-          canEscapeKeyClear: true
-        }).show({intent: Intent.DANGER, timeout: 2000, message: error});
+        Toast.show('danger', 2000, error);
         return;
       });
   }
@@ -4482,9 +4443,26 @@ setBadgeVisibilityOnUnsaveChanges = () => {
         }
       );
   }
+
+  // setBadgeVisibilityOnUnsaveChanges = (toShow) => {
+  //    this.setGlobal({showSaveBadge: toShow});
+  // }
+
   
-  showLoading(toShow){
-    this.setState({isLoading: toShow});
+  setDiagramModifiedFalse(){
+    this.setState({ 
+      unsavedChanges: false
+   });
+
+    this.setGlobal({showSaveBadge: false});
+  }
+
+  setDiagramModifiedTrue() {
+    this.setState({ 
+      unsavedChanges: true
+   });
+
+    this.setGlobal({showSaveBadge: true});
   }
 
   showWorkspace () {

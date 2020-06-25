@@ -33,7 +33,7 @@ export default class Header extends Component {
     this.authService = new AuthService();
     this.diagService = new DiagramService();
 
-    this.setGlobal({saveBadgeInvisible:true});
+    this.setGlobal({showSaveBadge:false});
 
     this.state = {
         isLogin: this.authService.isUserLogin(),
@@ -81,25 +81,21 @@ export default class Header extends Component {
               Azure Workbench
             </Typography>
             <section style={this.style.rightToolbar}>
-              <Tippy content={(this.global.currentSubscription == null) ? 'No Subscription Selected' : 'Selected subscription: ' + this.global.currentSubscription.Name} followCursor={true} placement="bottom">
-                <IconButton color="inherit" aria-label="Edit" onClick={this.showProvisionOverlay}> 
-                    <Icon icon="delta"  />  
-                </IconButton>
-              </Tippy>
 
-              {/* //file */}
               <Popover content=
                { 
                    <Menu className={Classes.ELEVATION_1}>
                      <MenuItem  text="Share" onClick={this.shareDiagram} />
                      <MenuDivider />
-                      <Badge color="secondary" badgeContent='unsave changes' invisible={this.global.saveBadgeInvisible}>
+                      <Badge color="secondary" badgeContent='unsave changes' invisible={(!this.global.showSaveBadge) ? true : false}>
                         <MenuItem  text="Save to Browser" onClick={this.saveToLocal} />
                         <MenuItem  text="Save to My Space" onClick={this.savetoWorkspace} />
                       </Badge>
                      <MenuDivider />
                      <MenuItem  text="Load Draft from Browser" onClick={this.loadDiagramFromrBrowser} />
                      <MenuItem  text="Delete Draft from Browser" onClick={this.openDeleteConfirmDialog} />
+                     <MenuDivider />
+                     <MenuItem  text="Load Auto-Saved Recovery Point" onClick={this.loadAutoSaveRecoveryPoint} />
                      <MenuDivider />
                      <MenuItem  text="Import Workbench file(.azwb)" onClick={this.importWorkbenchFormat} />
                      <MenuDivider />
@@ -110,7 +106,7 @@ export default class Header extends Component {
                    </Menu>
                } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.HOVER}>
                 <IconButton color="inherit" aria-label="Edit">
-                  <Badge color="secondary" variant="dot" overlap='circle' invisible={this.global.saveBadgeInvisible}>
+                  <Badge color="secondary" variant="dot" overlap='circle' invisible={(!this.global.showSaveBadge) ? true : false}>
                     <FolderIcon  />
                   </Badge>
                 </IconButton>
@@ -171,6 +167,12 @@ export default class Header extends Component {
                   <QuickStart  />
                 </IconButton>
               </Popover>
+
+              <Tippy content={(this.global.currentSubscription == null) ? 'No Subscription Selected' : 'Selected subscription: ' + this.global.currentSubscription.Name} followCursor={true} placement="bottom">
+                <IconButton color="inherit" aria-label="Edit" onClick={this.showProvisionOverlay}> 
+                    <Icon icon="delta"  />  
+                </IconButton>
+              </Tippy>
 
               <IconButton color="inherit" aria-label="Edit" onClick={this.showTutorial}>
                 <Tippy content="Tutorial" followCursor={true} placement="bottom">
@@ -251,6 +253,11 @@ export default class Header extends Component {
   this.setState({
     isDeleteConfirmationDialogOpen: true
   });
+}
+
+loadAutoSaveRecoveryPoint = () => {
+  var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
+  diagramEditor.loadAutoSavedRecoveryPoint();
 }
 
  shareDiagram = () => {

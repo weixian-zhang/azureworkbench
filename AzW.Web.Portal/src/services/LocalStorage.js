@@ -11,7 +11,7 @@ export default class LocalStorage
 
     static isExist(key) {
        var item = localStorage.getItem(key);
-       if(item == 'null')
+       if(item == null)
             return false;
         else
             return true;

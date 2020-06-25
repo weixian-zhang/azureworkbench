@@ -42,7 +42,7 @@ export default class OverlayProvision extends Component {
             <Overlay isOpen={this.state.isOpen} onClose={this.handleClose}>
                 <Card className='provision-overlay-box' interactive={false} elevation={Elevation.ONE}>
                     <Typography variant="button" style={{fontSize:16,textAlign:'left'}}>
-                        Azure Tool Rack
+                        Deploy Diagram to Azure
                     </Typography>
                     <Grid
                         container
