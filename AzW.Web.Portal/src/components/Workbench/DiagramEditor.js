@@ -227,19 +227,15 @@ import DedicatedHostPropPanel from "./PropPanel/DedicatedHostPropPanel";
 import OverlayPreviewDiagram from "./OverlayPreviewDiagram";
 import ARMService from "../../services/ARMService";
 import ComputeService from "../../services/ComputeService";
-import QuickstartDiagramContext from '../../models/services/QuickstartDiagramContext';
 import ProvisionHelper from './Helpers/ProvisionHelper';
 import Toast from './Helpers/Toast';
-import LocalStorageCommandHandler from './GojsExtensions/LocalStorageCommandHandler';
 
 import GojsManager from "./Helpers/GojsManager";
 import Function from "../../models/Function";
 import IPCIDR  from 'ip-cidr';
 import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
 import './GojsExtensions/TextEditor';
-
 import AzureIcons from './Helpers/AzureIcons';
-import { Typography } from "@material-ui/core";
 
  export default class DiagramEditor extends Component {
  
@@ -554,7 +550,6 @@ import { Typography } from "@material-ui/core";
           // allow Ctrl-G to call groupSelection
           "commandHandler.archetypeGroupData": { text: "Group", isGroup: true, color: "blue" },
           
-          commandHandler: new LocalStorageCommandHandler(),  //for cross browser tab copy/paste
           "ClipboardPasted": function(e) { e.diagram.commandHandler.copyToClipboard(null); },
 
           isReadOnly: false,
