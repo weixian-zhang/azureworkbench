@@ -234,6 +234,7 @@ import GojsManager from "./Helpers/GojsManager";
 import Function from "../../models/Function";
 import IPCIDR  from 'ip-cidr';
 import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
+import  ResizeRotateMultipleTool from "./GojsExtensions/ResizeMultipleTool";
 import './GojsExtensions/TextEditor';
 import AzureIcons from './Helpers/AzureIcons';
 
@@ -596,6 +597,8 @@ import AzureIcons from './Helpers/AzureIcons';
 
     this.diagram.scrollMode = go.Diagram.InfiniteScroll;
 
+    // this tool operates independently of any existing ResizingTool or RotatingTool
+    this.diagram.toolManager.mouseDownTools.add(new ResizeRotateMultipleTool());
 
     this.initDiagramBehaviors();
 
@@ -1136,22 +1139,27 @@ createGroupTemplate() {
     var groupTemplate =
       this.$(go.Group, "Auto",
       {
-        selectionObjectName: "PANEL",  // selection handle goes around shape, not label
+        selectionObjectName: "GROUPBORDER",  // selection handle goes around shape, not label
+        resizeObjectName: "GROUPBORDER",
         ungroupable: true,  // enable Ctrl-Shift-G to ungroup a selected Group
         contextMenu: this.initContextMenu()
       },
-        this.$(go.Panel, "Auto",
-        { name: "PANEL" },
-        this.$(go.Shape, "Rectangle",  // the rectangular shape around the members
+      new go.Binding("location", "loc", go.Point.parse),
+      this.$(go.Shape, "Rectangle",  // the rectangular shape around the members
           {
+            name: "GROUPBORDER",
             fill: "transparent", stroke: "transparent", strokeWidth: 0,
-            portId: "", cursor: "pointer",  // the Shape is the port, not the whole Node
-            // allow all kinds of links from and to this port
+            portId: "", cursor: "pointer",
             fromLinkable: false, fromLinkableSelfNode: false, fromLinkableDuplicates: false,
             toLinkable: false, toLinkableSelfNode: false, toLinkableDuplicates: false
           }),
-        this.$(go.Placeholder, { margin: 10, background: "transparent" })  // represents where the members are
-      )
+          new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+          this.$(go.Panel, "Auto",
+            {
+              stretch: go.GraphObject.Fill
+            },
+            this.$(go.Placeholder, { margin: 10, background: "transparent" })
+          )
     );
 
     return groupTemplate;
