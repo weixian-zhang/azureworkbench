@@ -2678,13 +2678,13 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
           this.createShape({figure: 'Arrow', label: 'arrow', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'ThinX':
-          this.createShape({figure: 'ThinX', label: 'x', angle: 0, x: dropContext.x, y: dropContext.y});
+          this.createShape({figure: '', label: 'x', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'Lightning':
-          this.createShape({figure: 'Lightning', label: 'lightning', angle: 0, x: dropContext.x, y: dropContext.y});
+          this.createShape({figure: '', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'Chevron':
-          this.createShape({figure: 'Chevron', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
+          this.createShape({figure: '', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'Pyramid':
           this.createShape({figure: 'Pyramid1', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
@@ -2693,13 +2693,13 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
           this.createShape({figure: 'Decision', label: 'decision', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'Component':
-          this.createShape({figure: 'Component', label: 'component', angle: 0, x: dropContext.x, y: dropContext.y});
+          this.createShape({figure: 'Component', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'Package':
-          this.createShape({figure: 'Package', label: 'package', angle: 0, x: dropContext.x, y: dropContext.y});
+          this.createShape({figure: 'Package', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'Location':
-          this.createShape({figure: 'Location', label: 'location', angle: 0, x: dropContext.x, y: dropContext.y});
+          this.createShape({figure: 'Location', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'User':
         this.createPictureShape
