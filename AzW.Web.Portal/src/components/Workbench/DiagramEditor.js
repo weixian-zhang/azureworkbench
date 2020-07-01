@@ -1200,6 +1200,7 @@ initDiagramModifiedEvent(isLoadFromSource) {
       if(e.isTransactionFinished) {
           if(thisComp.diagram.nodes.count == 0) {
             thisComp.setDiagramModifiedFalse();
+            thisComp.notifyStatusBarLoadSource('none');
             return;
           }
 
@@ -2344,6 +2345,7 @@ saveDiagramToBrowser = () => {
   
   this.setDiagramModifiedFalse();
   this.clearAutosaveDiagram();
+  this.notifyStatusBarLoadSource('browser');
 
   Toaster.create({
     position: Position.TOP,
@@ -2362,6 +2364,8 @@ loadDraftDiagramFromBrowser = () => {
  var jsonStr = LocalStorage.get(LocalStorage.KeyNames.TempLocalDiagram);
  
  this.importJsonDiagram(jsonStr);
+
+  this.notifyStatusBarLoadSource('browser');
 }
 
 deleteDraftDiagramFromBrowser = () => {
@@ -2388,6 +2392,18 @@ PromptSaveBeforeCloseBrowser() {
       event.returnValue = 'You have unsaved changes';
     }
   });
+}
+
+notifyStatusBarLoadSource(source, collection, diagramName) {
+    var diagramSrc = this.global.diagramSource;
+    diagramSrc.source = source;
+
+    if(source == 'myspace') {
+      diagramSrc.collection = collection;
+      diagramSrc.diagramName = diagramName;
+    }
+
+    this.setGlobal(diagramSrc);
 }
 
 //create vertex from browser clipboard image
@@ -2530,7 +2546,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         var jsonStr = LocalStorage.get(LocalStorage.KeyNames.AutoSave);
       
         this.importJsonDiagram(jsonStr);
-
+        this.notifyStatusBarLoadSource('none')
       }
     }
     catch
@@ -2657,6 +2673,33 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         break;
       case '3D Cube':
           this.createShape({figure: 'Cube2', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
+        break;
+      case 'Arrow':
+          this.createShape({figure: 'Arrow', label: 'arrow', angle: 0, x: dropContext.x, y: dropContext.y});
+        break;
+      case 'ThinX':
+          this.createShape({figure: 'ThinX', label: 'x', angle: 0, x: dropContext.x, y: dropContext.y});
+        break;
+      case 'Lightning':
+          this.createShape({figure: 'Lightning', label: 'lightning', angle: 0, x: dropContext.x, y: dropContext.y});
+        break;
+      case 'Chevron':
+          this.createShape({figure: 'Chevron', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
+        break;
+      case 'Pyramid':
+          this.createShape({figure: 'Pyramid1', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
+        break;
+      case 'Decision':
+          this.createShape({figure: 'Decision', label: 'decision', angle: 0, x: dropContext.x, y: dropContext.y});
+        break;
+      case 'Component':
+          this.createShape({figure: 'Component', label: 'component', angle: 0, x: dropContext.x, y: dropContext.y});
+        break;
+      case 'Package':
+          this.createShape({figure: 'Package', label: 'package', angle: 0, x: dropContext.x, y: dropContext.y});
+        break;
+      case 'Location':
+          this.createShape({figure: 'Location', label: 'location', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'User':
         this.createPictureShape
@@ -4152,6 +4195,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         (category, name,
           function onSuccess(qsDiagContext) {
             thisComp.importJsonDiagram(qsDiagContext.DiagramXml);
+            thisComp.notifyStatusBarLoadSource('none');
           },
           function onFailure(error) {
             Toast.show("danger", 2000, error.message);
@@ -4205,12 +4249,9 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
 
     this.diagramService.loadAnonymousDiagram(parsedQS.id)
       .then(function (response) {
-          // var adc = new AnonymousDiagramContext();
-          // adc.UID = response.data.UID;
-          // adc.DiagramName = response.data.DiagramName;
-          // adc.DiagramXml = response.data.DiagramXml;
-          // adc.SharedLink = response.data.SharedLink;
+
           thisComp.importJsonDiagram(response.data.DiagramXml);
+          thisComp.notifyStatusBarLoadSource('none');
 
           Toaster.create({
             position: Position.TOP,
@@ -4315,6 +4356,8 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
 
         thisComp.setDiagramModifiedFalse();
         thisComp.clearAutosaveDiagram();
+        thisComp.notifyStatusBarLoadSource
+          ('myspace', diagramContext.CollectionName, diagramContext.DiagramName);
 
         Toast.show('success', 2000, Messages.SavedSuccessfully());
 

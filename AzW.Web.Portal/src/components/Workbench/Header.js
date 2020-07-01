@@ -74,7 +74,7 @@ export default class Header extends Component {
         <OverlayTutorial ref={this.overlayTutorial}  />
         <OverlayAbout ref={this.overlayAbout} />
         <OverlayProvision ref={this.overlayProvision} OnOverlayProvisionClose={this.onOverlayProvisionClose}/>
-        <AppBar position="static" style={{ background: '#2E3B55' }}>
+        <AppBar position="static" style={{height:'38px',padding:0, background: '#2E3B55' }}>
           <Toolbar variant='dense'>
             <Typography color="inherit">
               <img src ={require('../../assets/azure_icons/azworkbench-logo.png')} alt="" style={{width : 25, height : 25, marginRight: 3}} />

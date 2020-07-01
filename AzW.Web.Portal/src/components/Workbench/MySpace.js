@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from "reactn";
 import {Tooltip ,Dialog, Card,Elevation, Alignment, Button,Label, MenuItem, H4, Toaster, Intent, Overlay, Position} from "@blueprintjs/core";
 import {Select } from "@blueprintjs/select";
 import { makeStyles } from '@material-ui/core/styles';
@@ -153,6 +153,18 @@ export default class MySpace extends Component {
         );
       }
 
+    notifyStatusBarLoadSource(source, collection, diagramName) {
+        var diagramSrc = this.global.diagramSource;
+        diagramSrc.source = source;
+    
+        if(source == 'myspace') {
+          diagramSrc.collection = collection;
+          diagramSrc.diagramName = diagramName;
+        }
+    
+        this.setGlobal(diagramSrc);
+    }
+
       promptCurrentDiagramToThisSpace(collection, diagramName) {
           this.setState({
             saveThisSpaceDialogOpen: true,
@@ -249,10 +261,10 @@ export default class MySpace extends Component {
                 if(diagramXml == null || diagramContext == '')
                   return;
 
-                // var diagramContext = new AnonymousDiagramContext();
-                // diagramContext.DiagramXml = diagramXml;
                 thisComp.props.DiagramEditor.importJsonDiagram(diagramXml);
                 thisComp.setState({isOpen: false});
+                thisComp.notifyStatusBarLoadSource
+                  ('myspace', diagramContext.collectionName, diagramContext.diagramName);
 
                 Toast.show('success', 2000, 'Diagram loaded')
                 

@@ -158,6 +158,69 @@ export default class ResourcePalette extends Component {
               IsPng: true,
               IsVisible:true,
               ref: this.threedbox
+            },
+            {
+              Name: 'arrow',
+              Tooltip: 'Arrow',
+              Image:require('../../assets/azure_icons/shape-arrow.png'),
+              IsPng: true,
+              IsVisible:true,
+            },
+            {
+              Name: 'x cross',
+              Tooltip: 'ThinX',
+              Image:require('../../assets/azure_icons/shape-thinx.png'),
+              IsPng: true,
+              IsVisible:true,
+            },
+            {
+              Name: 'lightning light',
+              Tooltip: 'Lightning',
+              Image:require('../../assets/azure_icons/shape-lightning.png'),
+              IsPng: true,
+              IsVisible:true,
+            },
+            {
+              Name: 'chevron arrow',
+              Tooltip: 'Chevron',
+              Image:require('../../assets/azure_icons/shape-chevron.png'),
+              IsPng: true,
+              IsVisible:true,
+            },
+            {
+              Name: 'pyramid',
+              Tooltip: 'Pyramid',
+              Image:require('../../assets/azure_icons/shape-pyramid.png'),
+              IsPng: true,
+              IsVisible:true,
+            },
+            {
+              Name: 'decision',
+              Tooltip: 'Decision',
+              Image:require('../../assets/azure_icons/shape-decision.png'),
+              IsPng: true,
+              IsVisible:true,
+            },
+            {
+              Name: 'component',
+              Tooltip: 'Component',
+              Image:require('../../assets/azure_icons/shape-component.png'),
+              IsPng: true,
+              IsVisible:true,
+            },
+            {
+              Name: 'package',
+              Tooltip: 'Package',
+              Image:require('../../assets/azure_icons/shape-package.png'),
+              IsPng: true,
+              IsVisible:true,
+            },
+            {
+              Name: 'location pin',
+              Tooltip: 'Location',
+              Image:require('../../assets/azure_icons/shape-location.png'),
+              IsPng: true,
+              IsVisible:true,
             }
            ]
          }
@@ -947,7 +1010,7 @@ export default class ResourcePalette extends Component {
             },
             {
               Name: 'shared image gallery sig',
-              Tooltip: 'DevTest Labs',
+              Tooltip: 'Shared Image Gallery',
               Image: require('../../assets/azure_icons/ComputeServiceColor/Shared Image Galleries.png'),
               Provisionable: false,
               IsPng: false,
