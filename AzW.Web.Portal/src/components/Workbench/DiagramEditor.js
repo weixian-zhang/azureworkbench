@@ -2675,16 +2675,16 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
           this.createShape({figure: 'Cube2', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'Arrow':
-          this.createShape({figure: 'Arrow', label: 'arrow', angle: 0, x: dropContext.x, y: dropContext.y});
+          this.createShape({figure: 'Arrow', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'ThinX':
-          this.createShape({figure: '', label: 'x', angle: 0, x: dropContext.x, y: dropContext.y});
+          this.createShape({figure: 'ThinX', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'Lightning':
-          this.createShape({figure: '', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
+          this.createShape({figure: 'Lightning', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'Chevron':
-          this.createShape({figure: '', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
+          this.createShape({figure: 'Chevron', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'Pyramid':
           this.createShape({figure: 'Pyramid1', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
