@@ -3,6 +3,7 @@ namespace AzW.Model
  {
      public static class ResourceType
      {
+            public const string PrivateEndpoint = "privateendpoint";
         	public const string WindowsVM = "vmWindows";
             public const string LinuxVM = "vmLinux";
             public const string VM = "vm";

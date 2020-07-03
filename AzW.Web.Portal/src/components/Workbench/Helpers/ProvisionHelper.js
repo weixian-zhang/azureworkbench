@@ -31,6 +31,9 @@ export default class ProvisionHelper
                 if(this.getVMContexts(node, provisionContexts))
                     continue;
 
+                if(this.getVMSSContexts(node, provisionContexts))
+                    continue;
+
                 if(this.getInternalNLBContexts(node, provisionContexts))
                     continue;
 
@@ -44,6 +47,9 @@ export default class ProvisionHelper
                     continue;
                 
                 if(this.getASEContexts(node, provisionContexts))
+                    continue;
+                
+                if(this.getLAWContexts(node, provisionContexts))
                     continue;
                 
                 if(this.getASCContext(node, provisionContexts))
@@ -122,6 +128,27 @@ export default class ProvisionHelper
 
                     if(pc.ResourceType == ResourceType.WindowsVM() ||
                         pc.ResourceType == ResourceType.LinuxVM()) {
+
+                        sortedContexts.push(pc);
+
+                        var index = proContexts.findIndex
+                            (p => p.Name == pc.Name && p.ResourceType == pc.ResourceType);
+
+                        proContexts.splice(index, 1);
+
+                        continue;
+                    }
+                }
+            }
+        }
+
+        //law
+        if(proContexts.find(p => p.ResourceType == ResourceType.LogAnalytics()) != null){
+
+            while(proContexts.find(p => p.ResourceType == ResourceType.LogAnalytics()) != null) {
+                for(var pc of proContexts) {
+
+                    if(pc.ResourceType == ResourceType.LogAnalytics()) {
 
                         sortedContexts.push(pc);
 
@@ -261,6 +288,23 @@ export default class ProvisionHelper
             return true;
         }
     }
+
+    getVMSSContexts = (node, provisionContexts) => {
+        if(Utils.IsVMSS(node))
+        {
+            var vmss = node;
+
+            var vmssProContext = Utils.ProContext(vmss);
+
+            vmssProContext.VNetName = this.getResourceVNetName(vmss);
+
+            vmssProContext.SubnetName = this.getResourceSubnetName(vmss);
+
+            provisionContexts.push(vmssProContext);
+
+            return true;
+        }
+    }
     
     getNSGs = (node, provisionContexts) => {
 
@@ -330,6 +374,19 @@ export default class ProvisionHelper
         }
     }
 
+    getLAWContexts= (node, provisionContexts) => {
+        if(Utils.isLAW(node))
+        {
+            var ase = node;
+
+            var aseProContext = Utils.ProContext(ase);
+
+            provisionContexts.push(aseProContext);
+
+            return true;
+        }
+    }
+
     getASCContext = (node, provisionContexts) => {
         if(Utils.isASC(node))
         {
@@ -337,10 +394,33 @@ export default class ProvisionHelper
 
             var ascContext = Utils.ProContext(asc);
 
-            if(ascContext.IsStandardTier)
+            if(ascContext.IsStandardTier) {
+                ascContext.LogAnalyticsWorkspaceName = this.getLAWNameConnectedToASC(asc);
                 provisionContexts.push(ascContext);
+            }
             
             return true;
+        }
+    }
+
+    //for ASC to LAW
+    getLAWNameConnectedToASC(ascNode) {
+        var links = ascNode.findLinksOutOf();
+
+        while (links.next()) {
+
+            var link = links.value;
+            
+            var toNode = link.toNode;
+            var fromNode  = link.fromNode ; //could be from instead of to
+
+            if(toNode != null && Utils.isLAW(toNode)) {
+                return toNode.data.azcontext.ProvisionContext.Name;
+            }
+            
+            if(fromNode != null && Utils.isLAW(fromNode)) {
+                return fromNode.data.azcontext.ProvisionContext.Name;
+            }
         }
     }
 
@@ -374,7 +454,7 @@ export default class ProvisionHelper
 
     getAllNonVIRContexts = (node, provisionContexts) => {
 
-        if(!Utils.isPartVIR(node))
+        if(!Utils.isPartVIR(node) && !Utils.isLAW(node))
         {
             var proContext = Utils.ProContext(node);
             provisionContexts.push(proContext);

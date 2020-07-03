@@ -10,7 +10,8 @@ export default class SecurityCenter
 
         this.ProvisionContext = {
             ResourceType: ResourceType.SecurityCenter(),
-            IsStandardTier: false
+            IsStandardTier: false,
+            LogAnalyticsWorkspaceName: ''
         };
         this.CalculatorContext = {
             IsFree: false,

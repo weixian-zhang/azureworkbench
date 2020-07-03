@@ -13,7 +13,7 @@ export default class VMSS
             Name: 'vmss-',
             ResourceGroupName: '',
             Location: '',
-
+            Instances: 2,
             HasPublicIP: false,
             PublicIPName: '',
             

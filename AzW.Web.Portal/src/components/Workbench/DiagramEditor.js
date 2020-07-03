@@ -1427,12 +1427,15 @@ createVNetTemplate() {
     ungroupable: false,
     contextMenu: this. initContextMenu(),
     doubleClick: function(e, vnet) {
-    
-        var result =  thisComp.getSubnetsCidrsAzContextOfVNet(vnet);
-        
-        var azcontext = vnet.data.azcontext;
-        
-        azcontext.GraphModel.SubnetsAndCidrs = result.SubnetsCidrs;
+      e.handled = true;
+      e.event.preventDefault();
+      e.event.stopPropagation();
+
+      var result =  thisComp.getSubnetsCidrsAzContextOfVNet(vnet);
+      
+      var azcontext = vnet.data.azcontext;
+      
+      azcontext.GraphModel.SubnetsAndCidrs = result.SubnetsCidrs;
 
       thisComp.determineResourcePropertyPanelToShow
         (azcontext, function onContextSaveCallback(savedContext){
@@ -1478,11 +1481,16 @@ createVNetTemplate() {
           source: require('../../assets/azure_icons/Networking Service Color/Virtual Networks.png')
         }),
         this.$(go.Picture, {
+          name: "NATGW",
           stretch: go.GraphObject.Fill,
           desiredSize: new go.Size(30,30),
           alignment: new go.Spot(1, 0, -40, -12),
           source: require('../../assets/azure_icons/Networking Service Color/nat-gateway.png'),
           doubleClick: function(e, shape) {
+            e.handled = true;
+            e.event.preventDefault();
+            e.event.stopPropagation();
+
             var azcontext = shape.natgwazcontext;
             thisComp.determineResourcePropertyPanelToShow
               (azcontext, function onContextSaveCallback(savedContext){
@@ -1515,6 +1523,10 @@ createSubnetTemplate() {
       contextMenu: this.initContextMenu(),
       dragComputation: this.makeSubnetVIRStayInGroup,
       doubleClick: function(e, subnet) {
+
+        e.handled = true;
+        e.event.preventDefault();
+        e.event.stopPropagation();
 
         var vnet = subnet.containingGroup;
 
@@ -1560,7 +1572,12 @@ createSubnetTemplate() {
         desiredSize: new go.Size(24,24),
         alignment: new go.Spot(0, 0, 6, -15),
         source: require('../../assets/azure_icons/Networking Service Color/Network Security Groups (Classic).png'),
+        
         doubleClick: function(e, picture) {
+          e.handled = true;
+          e.event.preventDefault();
+          e.event.stopPropagation();
+
           var azcontext = picture.nsgazcontext;
           thisComp.determineResourcePropertyPanelToShow
             (azcontext, function onContextSaveCallback(savedContext){
@@ -1578,6 +1595,10 @@ createSubnetTemplate() {
         alignment: new go.Spot(0, 0, 31, -17),
         source: require('../../assets/azure_icons/Networking Service Color/Route Tables.png'),
         doubleClick: function(e, picture) {
+          e.handled = true;
+          e.event.preventDefault();
+          e.event.stopPropagation();
+
           var azcontext = picture.udrazcontext;
           thisComp.determineResourcePropertyPanelToShow
             (azcontext, function onContextSaveCallback(savedContext){
@@ -1596,6 +1617,10 @@ createSubnetTemplate() {
         isActionable: true,
         source: Utils.pngDataUrl(AzureIcons.ServiceEndpoint()),
         doubleClick: function(e, picture) {
+          e.handled = true;
+          e.event.preventDefault();
+          e.event.stopPropagation();
+
           var azcontext = picture.svcendazcontext;
           thisComp.determineResourcePropertyPanelToShow
             (azcontext, function onContextSaveCallback(savedContext){
@@ -2711,11 +2736,21 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         ({source: Utils.pngDataUrl(AzureIcons.UserBlue()), //require('../../assets/azure_icons/shape-userblue.png'),
           label: 'user', x: dropContext.x, y: dropContext.y});
         break;
-      case 'User Group':
+      case 'User Lady 1':
         this.createPictureShape
-        ({source:require('../../assets/azure_icons/shape-usergroup.png'),
+        ({source: require('../../assets/azure_icons/shape-user-lady-1.png'),
+          label: 'user', x: dropContext.x, y: dropContext.y});
+        break;
+      case 'User Group 1':
+        this.createPictureShape
+        ({source:require('../../assets/azure_icons/shape-usergroup-1.png'),
           label: 'admin group', x: dropContext.x, y: dropContext.y});
         break;
+      case 'User Group 2':
+          this.createPictureShape
+          ({source:Utils.pngDataUrl(AzureIcons.UserGroup2()),
+            label: 'admin group', x: dropContext.x, y: dropContext.y});
+          break;
       case 'User Ian':
         this.createPictureShape
         ({source: Utils.pngDataUrl(AzureIcons.UserIAN()), 

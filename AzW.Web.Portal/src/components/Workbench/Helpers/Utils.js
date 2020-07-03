@@ -224,11 +224,33 @@ export default class Utils
             return false;
     }
 
+    static IsVMSS(node) {
+        if(!Utils.isAzContextExist(node))
+        return false;
+
+        var pc = node.data.azcontext.ProvisionContext;
+    
+        if(pc.ResourceType == ResourceType.VMSS())
+            return true;
+        else
+            return false;
+    }
+
     static isNSG(part) {
         if(!Utils.isAzContextExist(part))
             return false;
         
         if(part.data.nsgazcontext.ProvisionContext.ResourceType == ResourceType.NSG())
+            return true;
+        else
+            return false;
+    }
+
+    static isLAW(part) {
+        if(!Utils.isAzContextExist(part))
+            return false;
+        
+        if(part.data.azcontext.ProvisionContext.ResourceType == ResourceType.LogAnalytics())
             return true;
         else
             return false;

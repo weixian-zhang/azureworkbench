@@ -221,6 +221,197 @@ namespace AzW.Job.CacheHydrator
                         Id = "Internet",
                         Name = "Internet"
                     });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AzureMonitor", new ServiceTag()
+                    {
+                        Id = "AzureMonitor",
+                        Name = "AzureMonitor"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "Storage", new ServiceTag()
+                    {
+                        Id = "Storage",
+                        Name = "Storage"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "GatewayManager", new ServiceTag()
+                    {
+                        Id = "GatewayManager",
+                        Name = "GatewayManager"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AppServiceManagement", new ServiceTag()
+                    {
+                        Id = "AppServiceManagement",
+                        Name = "AppServiceManagement"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AppService", new ServiceTag()
+                    {
+                        Id = "AppService",
+                        Name = "AppService"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "SqlManagement", new ServiceTag()
+                    {
+                        Id = "SqlManagement",
+                        Name = "SqlManagement"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AzureBackup", new ServiceTag()
+                    {
+                        Id = "AzureBackup",
+                        Name = "AzureBackup"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "HDInsight", new ServiceTag()
+                    {
+                        Id = "HDInsight",
+                        Name = "HDInsight"
+                    });
+                    
+                    
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AzureKeyVault", new ServiceTag()
+                    {
+                        Id = "AzureKeyVault",
+                        Name = "AzureKeyVault"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "ApiManagement", new ServiceTag()
+                    {
+                        Id = "ApiManagement",
+                        Name = "ApiManagement"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "GuestAndHybridManagement", new ServiceTag()
+                    {
+                        Id = "GuestAndHybridManagement",
+                        Name = "GuestAndHybridManagement"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AzureIoTHub", new ServiceTag()
+                    {
+                        Id = "AzureIoTHub",
+                        Name = "AzureIoTHub"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AzureEventGrid", new ServiceTag()
+                    {
+                        Id = "AzureEventGrid",
+                        Name = "AzureEventGrid"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AzureSignalR", new ServiceTag()
+                    {
+                        Id = "AzureSignalR",
+                        Name = "AzureSignalR"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AzureFrontDoor.Frontend", new ServiceTag()
+                    {
+                        Id = "AzureFrontDoor.Frontend",
+                        Name = "AzureFrontDoor.Frontend"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AzureFrontDoor.Backend", new ServiceTag()
+                    {
+                        Id = "AzureFrontDoor.Backend",
+                        Name = "AzureFrontDoor.Backend"
+                    });
+
+                   await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AzureFrontDoor.FirstParty", new ServiceTag()
+                    {
+                        Id = "AzureFrontDoor.FirstParty",
+                        Name = "AzureFrontDoor.FirstParty"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AzureResourceManager", new ServiceTag()
+                    {
+                        Id = "AzureResourceManager",
+                        Name = "AzureResourceManager"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AzureTrafficManager", new ServiceTag()
+                    {
+                        Id = "AzureTrafficManager",
+                        Name = "AzureTrafficManager"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "ServiceFabric", new ServiceTag()
+                    {
+                        Id = "ServiceFabric",
+                        Name = "ServiceFabric"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AzureDataLake", new ServiceTag()
+                    {
+                        Id = "AzureDataLake",
+                        Name = "AzureDataLake"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "DataFactory", new ServiceTag()
+                    {
+                        Id = "DataFactory",
+                        Name = "DataFactory"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AzureSiteRecovery", new ServiceTag()
+                    {
+                        Id = "AzureSiteRecovery",
+                        Name = "AzureSiteRecovery"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AzureCognitiveSearch", new ServiceTag()
+                    {
+                        Id = "AzureCognitiveSearch",
+                        Name = "AzureCognitiveSearch"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AppConfiguration", new ServiceTag()
+                    {
+                        Id = "AppConfiguration",
+                        Name = "AppConfiguration"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "AzurePortal", new ServiceTag()
+                    {
+                        Id = "AzurePortal",
+                        Name = "AzurePortal"
+                    });
+                    
+                    await _cache.SetServiceTagAsync
+                    ("servicetag" + " " +  "WindowsVirtualDesktop", new ServiceTag()
+                    {
+                        Id = "WindowsVirtualDesktop",
+                        Name = "WindowsVirtualDesktop"
+                    });
+                
                 }
             
                 _logger.Information("CacheHydrator-ServiceTag cache hydration completed");

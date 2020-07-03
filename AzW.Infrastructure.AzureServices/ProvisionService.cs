@@ -86,6 +86,10 @@ namespace AzW.Infrastructure.AzureServices
                                 VM linuxVM = jObj.ToObject<VM>();
                                 await CreateVMAsync(linuxVM);
                             break;
+                            case ResourceType.VMSS:
+                                VMSS vmss = jObj.ToObject<VMSS>();
+                                await CreateVMSS(vmss);
+                            break;
                             case ResourceType.NLB:
                                 NLB nlb = jObj.ToObject<NLB>();
                                 await CreateNLBAsync(nlb);
@@ -135,8 +139,8 @@ namespace AzW.Infrastructure.AzureServices
                                 await CreateRecoveryServiceVault(rsv);
                             break;
                             case ResourceType.SecurityCenter:
-                                //RecoveryServiceVault rsv = jObj.ToObject<RecoveryServiceVault>();
-                                await CreateSecurityCenterStandard();
+                                SecurityCenter asc = jObj.ToObject<SecurityCenter>();
+                                await CreateSecurityCenterStandard(asc);
                             break;
                         }
                     }
@@ -785,8 +789,10 @@ namespace AzW.Infrastructure.AzureServices
             {
                 omsClient.SubscriptionId = _subscriptionId;
 
-                await omsClient.Workspaces.CreateOrUpdateAsync
+                var createdLAW = await omsClient.Workspaces.CreateOrUpdateAsync
                     (law.ResourceGroupName, law.Name,new Workspace(law.Location));
+                
+                _laws.Add(createdLAW.Name, createdLAW);
             }
         }
 
@@ -861,13 +867,21 @@ namespace AzW.Infrastructure.AzureServices
         }
 
 
-        private async Task CreateSecurityCenterStandard()
+        private async Task CreateSecurityCenterStandard(SecurityCenter sc)
         {
             using(var asc = new SecurityCenterClient(AzureCreds))
             {
                asc.SubscriptionId = _subscriptionId;
 
+               var law = 
+                _laws.FirstOrDefault(x => x.Key == sc.LogAnalyticsWorkspaceName).Value;
+
+                
+               await asc.WorkspaceSettings.UpdateAsync
+                ("default", law.Id, $"/subscriptions/{_subscriptionId}");
+
                await asc.AutoProvisioningSettings.CreateAsync("default", "On");
+            
 
                await asc.Pricings.UpdateAsync("VirtualMachines", "Standard");
                await asc.Pricings.UpdateAsync("SqlServers", "Standard");
@@ -877,6 +891,50 @@ namespace AzW.Infrastructure.AzureServices
                await asc.Pricings.UpdateAsync("KubernetesService", "Standard");
                await asc.Pricings.UpdateAsync("ContainerRegistry", "Standard");
                await asc.Pricings.UpdateAsync("KeyVaults", "Standard");
+            }
+        }
+
+        private async Task CreateVMSS(VMSS vmss)
+        {
+            var sku = new Microsoft.Azure.Management.Compute.Fluent.Models.Sku(vmss.SizeName);
+            var vnet = GetVNetByName(vmss.VNetName);
+            var imgRef = new ImageReference()
+            {
+                Publisher = vmss.VMPublisher,
+                Offer = vmss.VMOffer,
+                Sku = vmss.VMSKU,
+                Version = vmss.VMVersion
+            };
+
+            var ilbDef = AzClient.WithSubscription(_subscriptionId)
+            .VirtualMachineScaleSets.Define(vmss.Name)
+            .WithRegion(vmss.Location)
+            .WithExistingResourceGroup(vmss.ResourceGroupName)
+            .WithSku(VirtualMachineScaleSetSkuTypes.FromSku(sku))
+            .WithExistingPrimaryNetworkSubnet(vnet, vmss.SubnetName)
+            .WithoutPrimaryInternetFacingLoadBalancer()
+            .WithoutPrimaryInternalLoadBalancer();
+
+            if(vmss.IsLinux)
+            {
+                await ilbDef.WithSpecificLinuxImageVersion(imgRef)
+                
+                .WithRootUsername(vmss.AdminUsername)
+                .WithRootPassword(vmss.AdminPassword)
+                .WithCapacity(vmss.Instances)
+                .WithComputerNamePrefix("vmss-")
+                .WithUpgradeMode(UpgradeMode.Automatic)
+                .CreateAsync();
+            }
+            else
+            {
+                await ilbDef.WithSpecificWindowsImageVersion(imgRef)
+                .WithAdminUsername(vmss.AdminUsername)
+                .WithAdminPassword(vmss.AdminPassword)
+                .WithCapacity(vmss.Instances)
+                .WithComputerNamePrefix("vmss-")
+                .WithUpgradeMode(UpgradeMode.Automatic)
+                .CreateAsync();
             }
         }
 
@@ -1005,6 +1063,7 @@ namespace AzW.Infrastructure.AzureServices
             return _nsgs.Values.FirstOrDefault(x => x.Name ==nsgName );
         }
         
+        private Dictionary<string, Workspace> _laws = new Dictionary<string, Workspace>();
         private Dictionary<string, IVirtualMachine> _vms = new Dictionary<string, IVirtualMachine>();
         private Dictionary<string, INetwork> _vnets = new Dictionary<string, INetwork>();
         private Dictionary<string, INetworkSecurityGroup> _nsgs = new Dictionary<string, INetworkSecurityGroup>();

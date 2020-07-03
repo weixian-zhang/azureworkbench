@@ -9,6 +9,7 @@ import AppBar from '@material-ui/core/AppBar';
 import SelectLocation from '../SelectLocation';
 import SelectResourceGroup from '../SelectResourceGroup';
 import Utils from '../Helpers/Utils';
+import { Typography } from "@material-ui/core";
 
 export default class SecurityCenterPropPanel extends Component {
   constructor(props) {
@@ -67,6 +68,14 @@ export default class SecurityCenterPropPanel extends Component {
                         uo.ProvisionContext.IsStandardTier = e.target.checked
                         this.setState({userObject:uo});
                     }} />
+                </Grid>
+                <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+                  <Grid item>
+                    <Typography style={{fontSize:11, color: 'blue'}}>
+                        If Security Center connects to a Log Analytics Workspace, 
+                        Workbench will set Security Center to collect data from connected Workpace instead.
+                    </Typography>
+                  </Grid>
                 </Grid>
               </Grid>
           </Grid>

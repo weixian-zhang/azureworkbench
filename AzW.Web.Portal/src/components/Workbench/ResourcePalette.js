@@ -295,34 +295,6 @@ export default class ResourcePalette extends Component {
                 IsVisible:true,
            },
           {
-            Name: 'user',
-            Tooltip: 'User',
-            Image:require('../../assets/azure_icons/shape-user.png'),
-            IsPng: true,
-            IsVisible:true,
-          },
-          {
-            Name: 'user',
-            Tooltip: 'User Blue',
-            Image:require('../../assets/azure_icons/shape-userblue.png'),
-            IsPng: true,
-            IsVisible:true,
-          },
-          {
-            Name: 'user',
-            Tooltip: 'User Group',
-            Image:require('../../assets/azure_icons/shape-usergroup.png'),
-            IsPng: true,
-            IsVisible:true,
-          },
-          {
-            Name: 'user',
-            Tooltip: 'User Ian',
-            Image:require('../../assets/azure_icons/shape-user-ian.png'),
-            IsPng: true,
-            IsVisible:true,
-          },
-          {
             Name: 'datacenter dc',
             Tooltip: 'Datacenter',
             Image:require('../../assets/azure_icons/shape-dc.png'),
@@ -396,6 +368,48 @@ export default class ResourcePalette extends Component {
             Image: require('../../assets/azure_icons/shape-firewall.png'),
             IsPng: false,
             IsVisible:true
+          },
+          {
+            Name: 'user',
+            Tooltip: 'User',
+            Image:require('../../assets/azure_icons/shape-user.png'),
+            IsPng: true,
+            IsVisible:true,
+          },
+          {
+            Name: 'user',
+            Tooltip: 'User Blue',
+            Image:require('../../assets/azure_icons/shape-userblue.png'),
+            IsPng: true,
+            IsVisible:true,
+          },
+          {
+            Name: 'user',
+            Tooltip: 'User Lady 1',
+            Image:require('../../assets/azure_icons/shape-user-lady-1.png'),
+            IsPng: true,
+            IsVisible:true,
+          },
+          {
+            Name: 'user',
+            Tooltip: 'User Ian',
+            Image:require('../../assets/azure_icons/shape-user-ian.png'),
+            IsPng: true,
+            IsVisible:true,
+          },
+          {
+            Name: 'user group',
+            Tooltip: 'User Group 1',
+            Image:require('../../assets/azure_icons/shape-usergroup-1.png'),
+            IsPng: true,
+            IsVisible:true,
+          },
+          {
+            Name: 'user group',
+            Tooltip: 'User Group 2',
+            Image:require('../../assets/azure_icons/shape-usergroup-2.png'),
+            IsPng: true,
+            IsVisible:true,
           },
          ]
        }
@@ -975,8 +989,9 @@ export default class ResourcePalette extends Component {
             {
               Name: 'vm scale sets vmss',
               Tooltip: 'VM Scale Sets',
+              azInfo: ['deployable'],
               Image: require('../../assets/azure_icons/ComputeServiceColor/VM/VM Scale Sets.png'),
-              Provisionable: false,
+              Provisionable: true,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.VMSS()
@@ -1701,7 +1716,7 @@ export default class ResourcePalette extends Component {
               Name: 'log analytics monitor',
               Tooltip: 'Log Analytics',
               Image: require('../../assets/azure_icons/Management and Governance Service Color/Log Analytics Workspaces.png'),
-              Provisionable: false,
+              Provisionable: true,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.LogAnalytics()
