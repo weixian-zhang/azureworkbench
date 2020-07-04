@@ -73,13 +73,12 @@ inline {
   display: flex;
   height: 100%;
   width: 100%;
-  overflow: auto;
+  overflow: hidden;
 }
 .sidebar {
-  /* flex: 1; */
-  min-height: 50px;
   position: relative;
-  flex-grow: 0;
+  margin-top: 1px;
+  margin-bottom: 8px;
   width: 275px;
   overflow-y: auto;
   overflow-x: hidden;

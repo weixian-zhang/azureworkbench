@@ -4,7 +4,7 @@ import ResourcePalette from "./ResourcePalette";
 import DiagramEditor from "./DiagramEditor";
 
 import AppBar from '@material-ui/core/AppBar';
-import Typography from '@material-ui/core/Typography';
+import Toolbar from '@material-ui/core/Toolbar';
 import SaveSharpIcon from '@material-ui/icons/SaveSharp';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';

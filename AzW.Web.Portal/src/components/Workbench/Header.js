@@ -11,6 +11,7 @@ import LocalMall from '@material-ui/icons/LocalMall';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import FolderIcon from '@material-ui/icons/Folder';
 import HelpIcon from '@material-ui/icons/Help';
+import MenuIcon from '@material-ui/icons/Menu';
 import QuickStart from '@material-ui/icons/FlashOn';
 import OverlayTutorial from './OverlayTutorial';
 import OverlayAbout from './OverlayAbout';
@@ -70,12 +71,19 @@ export default class Header extends Component {
 
   render() {
     return (
-      <div style={this.style.root}>
+      <div style={{width:'100%'}}>
         <OverlayTutorial ref={this.overlayTutorial}  />
         <OverlayAbout ref={this.overlayAbout} />
         <OverlayProvision ref={this.overlayProvision} OnOverlayProvisionClose={this.onOverlayProvisionClose}/>
-        <AppBar position="static" style={{height:'38px',padding:0, background: '#2E3B55' }}>
-          <Toolbar variant='dense'>
+        <AppBar position="static" style={{overflow:'hidden', height:'38px',margin:0,padding:0, background: '#2E3B55' }}>
+          <Toolbar variant='dense' disableGutters={true}>
+              <IconButton
+                color="inherit"
+                onClick={this.handleDrawerOpen}
+                edge="start"
+                style={{marginRight:3}}>
+                <MenuIcon />
+              </IconButton>
             <Typography color="inherit">
               <img src ={require('../../assets/azure_icons/azworkbench-logo.png')} alt="" style={{width : 25, height : 25, marginRight: 3}} />
               Azure Workbench
@@ -242,6 +250,13 @@ export default class Header extends Component {
   logout = () => {
     this.authService.logout();
     this.setState({isLogin: false, userProfile: null})
+  }
+
+  handleDrawerOpen = () => {
+    if(this.global.drawResourcePaletteOpen)
+      this.setGlobal({drawResourcePaletteOpen: false});
+    else
+      this.setGlobal({drawResourcePaletteOpen: true});
   }
 
   showWorkspace = () => {

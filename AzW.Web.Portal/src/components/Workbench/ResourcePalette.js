@@ -1,7 +1,5 @@
-import React, { Component } from "react";
+import React, { Component } from "reactn";
 import {InputGroup, Button} from "@blueprintjs/core";
-import { makeStyles } from '@material-ui/core/styles';
-import Toolbar from '@material-ui/core/Toolbar';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -43,6 +41,8 @@ export default class ResourcePalette extends Component {
         visibility: "hidden"
       }
     }
+
+    this.setGlobal({drawResourcePaletteOpen:false});
 
   }
   
@@ -1850,10 +1850,8 @@ export default class ResourcePalette extends Component {
   render() {
     
     return(
-        <div className="sidebar">
-          {/* <div style={{position:"sticky", top: 0}}>
-
-          </div> */}
+        <div className="sidebar"
+          style={{display: this.global.drawResourcePaletteOpen ? 'block': 'none' }}>
           <AppBar position="sticky" style={{"z-index": "10"}}>
           <InputGroup
               leftIcon="filter"
@@ -1931,6 +1929,7 @@ export default class ResourcePalette extends Component {
             }
           </Container>
         </div>
+      
     );
   };
 
