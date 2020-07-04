@@ -676,9 +676,10 @@ createTextTemplate() {
           selectable: true,
           resizable: true,
           rotatable: true,
+          zOrder: 40,
           width: 100,
           height: 30,
-          margin: 2,
+          margin: 1,
           selectionChanged: function(p) {
             p.layerName = (p.isSelected ? "Foreground" : '');
           },
@@ -1158,8 +1159,12 @@ createGroupTemplate() {
             {
               stretch: go.GraphObject.Fill
             },
-            this.$(go.Placeholder, { margin: 10, background: "transparent" })
-          )
+            this.$(go.Placeholder, { margin: 5, background: "transparent" })
+          ),
+      this.makePort("T", go.Spot.Top,  go.Spot.TopSide, true, true),
+      this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true),
+      this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
+      this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true)  
     );
 
     return groupTemplate;
@@ -2277,6 +2282,13 @@ addKeyPressShortcuts() {
   this.diagram.commandHandler.doKeyDown = function() {
     var e = thisComp.diagram.lastInput;
     var cmd = thisComp.diagram.commandHandler;
+
+    if (e.shift && e.key === "R") { //open/close resource palette shortcut
+      if(thisComp.global.drawResourcePaletteOpen)
+          thisComp.setGlobal({drawResourcePaletteOpen:false});
+      else
+          thisComp.setGlobal({drawResourcePaletteOpen:true});
+    }
 
     if (e.control && e.key === "S") {  // could also check for e.control or e.shift
       thisComp.saveDiagramToBrowser();
