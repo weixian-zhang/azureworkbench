@@ -91,12 +91,14 @@ export default class GojsManager
           var itemClipboard = this.diagram.commandHandler.copiedVIRAndSubnets;
 
           if(itemClipboard == undefined) {
-            go.CommandHandler.prototype.pasteSelection.call(this.diagram.commandHandler);
+            var cursorPt = this.diagram.commandHandler.diagram.lastInput.documentPoint;
+            go.CommandHandler.prototype.pasteSelection.call(this.diagram.commandHandler,cursorPt);
             return;
           }
 
           if(itemClipboard.length == 0) {
-            go.CommandHandler.prototype.pasteSelection.call(this.diagram.commandHandler);
+            var cursorPt = this.diagram.commandHandler.diagram.lastInput.documentPoint;
+            go.CommandHandler.prototype.pasteSelection.call(this.diagram.commandHandler, cursorPt);
             return;
           }
 
