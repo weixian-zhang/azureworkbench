@@ -562,7 +562,7 @@ import AzureIcons from './Helpers/AzureIcons';
           allowGroup: true,
           allowUngroup: true,
           allowClipboard: true,
-          
+          autoScrollRegion: 30,
           "draggingTool.dragsLink": true,
           "relinkingTool.isUnconnectedLinkValid": true,
           "linkingTool.isUnconnectedLinkValid": true,
