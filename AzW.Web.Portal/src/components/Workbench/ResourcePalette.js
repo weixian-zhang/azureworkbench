@@ -824,8 +824,16 @@ export default class ResourcePalette extends Component {
             },
             {
               Name: 'monitor workbook',
-              Tooltip: 'Workbook (Monitor)',
+              Tooltip: 'Workbook',
+              azInfo: ["Azure Monitor"],
               Image: require('../../assets/azure_icons/azure non-deployable/Workbook.png'),
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'monitor workbook',
+              Tooltip: 'Azure Monitor',
+              Image: require('../../assets/azure_icons/azure non-deployable/AzureMonitor.png'),
               IsPng: false,
               IsVisible:true
             },

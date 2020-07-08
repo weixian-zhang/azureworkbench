@@ -3130,10 +3130,15 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         ({source: require('../../assets/azure_icons/azure non-deployable/Template.png'),
           label: 'ARM Template', x: dropContext.x, y: dropContext.y});
       break;
-      case 'Workbook (Monitor)':
+      case 'Workbook':
         this.createPictureShape
         ({source: require('../../assets/azure_icons/azure non-deployable/Workbook.png'),
           label: 'Workbook', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Azure Monitor':
+        this.createPictureShape
+        ({source: Utils.pngDataUrl(AzureIcons.AzureMonitorShape()),
+          label: 'Azure Monitor', x: dropContext.x, y: dropContext.y});
       break;
       case 'Private Link':
         this.createPictureShape
