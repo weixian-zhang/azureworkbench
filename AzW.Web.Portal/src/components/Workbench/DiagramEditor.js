@@ -538,7 +538,7 @@ import AzureIcons from './Helpers/AzureIcons';
           "undoManager.isEnabled": true,
           'animationManager.isEnabled': false,  // turn off automatic animation
 
-          autoScrollRegion: new go.Margin(2, 2, 2, 2),
+          autoScrollRegion: new go.Margin(20, 20, 20, 20),
           allowHorizontalScroll: true,
           allowVerticalScroll : true,
 
