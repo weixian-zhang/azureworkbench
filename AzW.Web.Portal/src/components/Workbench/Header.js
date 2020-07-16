@@ -75,7 +75,7 @@ export default class Header extends Component {
         <OverlayTutorial ref={this.overlayTutorial}  />
         <OverlayAbout ref={this.overlayAbout} />
         <OverlayProvision ref={this.overlayProvision} OnOverlayProvisionClose={this.onOverlayProvisionClose}/>
-        <AppBar position="static" style={{overflow:'hidden', height:'38px',margin:0,padding:0, background: '#2E3B55' }}>
+        <AppBar position="static" style={{overflow:'hidden', height:'40px',margin:0,padding:0, background: '#2E3B55' }}>
           <Toolbar variant='dense' disableGutters={true}>
               <IconButton
                 color="inherit"

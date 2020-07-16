@@ -860,6 +860,14 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.NetworkWatcher()
+            },
+            {
+              Name: 'network security group nsg',
+              Tooltip: 'Network Security Group',
+              Image: require('../../assets/azure_icons/azure non-deployable/NSG.png'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
             }
           ]
         }

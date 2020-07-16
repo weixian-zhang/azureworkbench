@@ -25,6 +25,7 @@ export default class OverlayTutorial extends Component {
                     </Typography>
                     <Tabs value={this.state.value} onChange={this.handleTabChange} style={{marginBottom:'6px'}}>
                         <Tab label="Drawing a Diagram" value="drawing" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'drawing' ? "bold" : "" }}/>
+                        <Tab label="Shortcut Keys" value="shortcut" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'drawing' ? "bold" : "" }}/>
                         <Tab label="Workbench Features" value="diagram" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'diagram' ? "bold" : "" }}/>
                         <Tab label="Deploy Diagram to Azure" value="provision" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'provision' ? "bold" : "" }}/>
                     </Tabs>
@@ -114,6 +115,20 @@ export default class OverlayTutorial extends Component {
                             Workbench validates them to make sure these VIR are in subnets.
                             To add these services to Subnet, click on Subnet, then drag the service onto canvas.
                         </Typography>
+                    </div>
+                    <div hidden={this.state.value !== 'shortcut'} style={{overflow: 'auto'}}>
+                        <Typography variant="body1" align="left" gutterBottom>Ctrl+S: Save to diagram browser</Typography>
+                        <Typography variant="body1" align="left" gutterBottom>Ctrl+C / Ctrl+V: Copy/Paste</Typography>
+                        <Typography variant="body1" align="left" gutterBottom>Ctrl+G: Group</Typography>
+                        <Typography variant="body1" align="left" gutterBottom> Ctrl+Shift+G: Ungroup</Typography>
+                        <Typography variant="body1" align="left" gutterBottom>Alt+A: Open Azure Property pane for Azure resources</Typography>
+                        <Typography variant="body1" align="left" gutterBottom>Alt+S: Open Style pane</Typography>
+                        <Typography variant="body1" align="left" gutterBottom> Shift+R: Open/Close Resource Palette</Typography>
+                        <Typography variant="body1" align="left" gutterBottom> Del: Delete one or more selected nodes</Typography>
+                        <Typography variant="body1" align="left" gutterBottom> Up: Move one or more selected nodes up by 2 pixels</Typography>
+                        <Typography variant="body1" align="left" gutterBottom> Down: Move one or more selected nodes down by 2 pixels</Typography>
+                        <Typography variant="body1" align="left" gutterBottom> Left: Move one or more selected nodes left by 2 pixels</Typography>
+                        <Typography variant="body1" align="left" gutterBottom> Right: Move one or more selected nodes right by 2 pixels</Typography>
                     </div>
                     <div hidden={this.state.value !== 'diagram'} style={{overflow: 'auto'}}>
                         <Typography variant="h6" align="left" color="primary" gutterBottom>

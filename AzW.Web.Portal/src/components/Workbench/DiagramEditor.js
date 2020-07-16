@@ -1429,6 +1429,7 @@ createVNetTemplate() {
     resizeObjectName: "VNET",
     selectionObjectName: "VNET",
     locationObjectName: "VNET",
+
     ungroupable: false,
     contextMenu: this. initContextMenu(),
     doubleClick: function(e, vnet) {
@@ -1473,12 +1474,14 @@ createVNetTemplate() {
     this.$(go.TextBlock,
         { 
           editable: true,
-          isMultiline: false,
-          alignment: go.Spot.TopLeft, alignmentFocus: go.Spot.BottomLeft
+          isMultiline: false
         },
         new go.Binding("text").makeTwoWay(),
         new go.Binding("stroke", "textStroke").makeTwoWay(),
-        new go.Binding("font").makeTwoWay()),
+        new go.Binding("font").makeTwoWay(),
+        new go.Binding("alignment").makeTwoWay(),
+        new go.Binding("alignmentFocus").makeTwoWay()
+        ),
     this.$(go.Picture, {
           stretch: go.GraphObject.Fill,
           desiredSize: new go.Size(25,25),
@@ -1565,18 +1568,20 @@ createSubnetTemplate() {
     this.$(go.TextBlock,
       { 
         editable: true,
-        isMultiline: false,
-        alignment: go.Spot.TopRight, alignmentFocus:go.Spot.BottomRight
+        isMultiline: false
       },
       new go.Binding("text").makeTwoWay(),
       new go.Binding("stroke", "textStroke").makeTwoWay(),
-      new go.Binding("font").makeTwoWay()),
+      new go.Binding("font").makeTwoWay(),
+      new go.Binding("alignment").makeTwoWay(),
+      new go.Binding("alignmentFocus").makeTwoWay()
+      ),
       this.$(go.Picture, {
         name: "NSG",
         stretch: go.GraphObject.Fill,
         desiredSize: new go.Size(24,24),
         alignment: new go.Spot(0, 0, 6, -15),
-        source: require('../../assets/azure_icons/Networking Service Color/Network Security Groups (Classic).png'),
+        source: Utils.pngDataUrl(AzureIcons.NSGShape()),
         
         doubleClick: function(e, picture) {
           e.handled = true;
@@ -1804,6 +1809,8 @@ createVNet(dropContext) {
       fill: 'transparent',
       stroke: 'deepskyblue',
       textStroke: 'black',
+      alignment: go.Spot.TopLeft,
+      alignmentFocus: go.Spot.BottomLeft,
       font: '16px Segoe UI',
       strokeDashArray: null,
       nodetype: GoNodeType.Shape(),
@@ -1833,6 +1840,9 @@ createSubnet(vnetKey, subnetNodekey = '') {
       nsgazcontext: new NSG(),
       udrazcontext: new RouteTable(),
       svcendazcontext: new ServiceEndpoint(),
+
+      alignment: go.Spot.TopRight,
+      alignmentFocus: go.Spot.BottomRight,
 
       nsgVisible: false,
       udrVisible: false,
@@ -2292,6 +2302,26 @@ addKeyPressShortcuts() {
 
     if (e.control && e.key === "S") {  // could also check for e.control or e.shift
       thisComp.saveDiagramToBrowser();
+    }
+
+    if (e.alt && e.key === "S") {
+      var selectedNode = thisComp.diagram.selection.first();
+      if(selectedNode == null)
+        return;
+      thisComp.openStylePanel(selectedNode);
+    }
+
+    if (e.alt && e.key === "A") {
+      var selectedNode = thisComp.diagram.selection.first();
+      
+      if(selectedNode == null || !Utils.isAzContextExist(selectedNode))
+        return;
+
+      var azcontext = selectedNode.data.azcontext;
+          thisComp.determineResourcePropertyPanelToShow
+            (azcontext, function onContextSaveCallback(savedContext){
+              selectedNode.data.azcontext = savedContext;
+            });
     }
 
     if (e.control && e.key === "V") {  
@@ -3150,6 +3180,12 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         ({source:Utils.pngDataUrl(AzureIcons.ImportExportJobShape()),
           label: 'Import/Export Job', x: dropContext.x, y: dropContext.y});
       break;
+      case 'Network Security Group':
+        this.createPictureShape
+        ({source:Utils.pngDataUrl(AzureIcons.NSGShape()),
+          label: '', x: dropContext.x, y: dropContext.y});
+      break;
+      
 
       case ResourceType.MediaService():
         this.createNonVIRAzureResource({
@@ -3301,6 +3337,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
             azcontext: new NetworkWatcher()
           });
       break;
+      
       case ResourceType.CDN():
         this.createNonVIRAzureResource({
           source: require('../../assets/azure_icons/Networking Service Color/CDN Profiles.png'),

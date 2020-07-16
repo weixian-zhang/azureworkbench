@@ -1,7 +1,8 @@
 import React, { Component } from "react";
+import * as go from 'gojs';
 import { NumericInput, Switch , Drawer, Button } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
-import { CirclePicker } from 'react-color';
+import { CirclePicker, SwatchesPicker } from 'react-color';
 import Grid from '@material-ui/core/Grid';
 import Utils from './Helpers/Utils';
 import Typography from '@material-ui/core/Typography';
@@ -67,7 +68,11 @@ export default class StylePropPanel extends Component {
         return this.renderLinkStyleProperties();
     }
     else if(this.state.node.data.nodetype == GoNodeType.Shape()) {
-      return this.renderShapeStyleProperties();
+      if(Utils.isVNet(this.state.node) || Utils.isSubnet(this.state.node))
+          //show label positioning for VNet/Subnet
+          return this.renderShapeStyleProperties(true);
+      else
+          return this.renderShapeStyleProperties(false);
     }
     else if(this.state.node.data.nodetype == GoNodeType.ImageShape()) {
       return this.renderPictureShapeStyleProperties();
@@ -108,7 +113,13 @@ export default class StylePropPanel extends Component {
           </Grid>
           <Grid container item direction="row" spacing="1" justify="center" alignItems="center" style={{marginTop:'8px'}}>
             <Grid item>
-              <CirclePicker colors={this.state.colors} 
+              {/* <SwatchesPicker onChange={ 
+                (color) => {
+                  this.diagram.model.setDataProperty(this.state.node.data, 'stroke', color.hex);
+                }
+               } />  */}
+              <SwatchesPicker //colors={this.state.colors}
+              height= {200}
               onChangeComplete={
                 (color) => {
                   this.diagram.model.setDataProperty(this.state.node.data, 'stroke', color.hex);
@@ -211,7 +222,7 @@ export default class StylePropPanel extends Component {
           </div>
           <div>
             <h4>Stroke Color</h4>
-            <CirclePicker colors={this.state.colors} min={1} 
+            <SwatchesPicker // colors={this.state.colors} min={1} 
               onChangeComplete={
                 (color) => {
                   this.diagram.model.setDataProperty(this.state.node.data, 'stroke', color.hex);
@@ -222,7 +233,7 @@ export default class StylePropPanel extends Component {
     );
   }
 
-  renderShapeStyleProperties() {
+  renderShapeStyleProperties(isVNetSubnet) {
     return (
       <Grid
         container
@@ -252,6 +263,63 @@ export default class StylePropPanel extends Component {
              } />
           </Grid>
       </Grid>
+      {
+      (isVNetSubnet)
+      ? 
+      <div>
+        <Grid container item direction="row" spacing="1" justify="flex-start" alignItems="center" style={{marginTop:'8px'}}>
+          <Grid item>
+            <Typography variant="body2">Label Position</Typography>
+          </Grid>
+        </Grid>
+        <Grid container item direction="row" spacing="1" justify="center" alignItems="center" style={{marginTop:'8px'}}>
+              <Grid item>
+                <div>
+                  <Button icon="arrow-top-left" onClick={ () => {
+                    this.diagram.model.setDataProperty(this.state.node.data,
+                      'alignment', go.Spot.TopLeft);
+                      this.diagram.model.setDataProperty(this.state.node.data,
+                        'alignmentFocus', go.Spot.BottomLeft);
+                    }} />
+                  <Button icon="arrow-up" onClick={ () => {
+                    var textBlk = this.state.node.findObject("RESOURCELABEL")
+                    this.diagram.model.setDataProperty(this.state.node.data,
+                      'alignment', go.Spot.Top);
+                    this.diagram.model.setDataProperty(this.state.node.data,
+                        'alignmentFocus', go.Spot.Bottom);
+                    }} />
+                  <Button icon="arrow-top-right" onClick={ () => {
+                    this.diagram.model.setDataProperty(this.state.node.data,
+                      'alignment', go.Spot.TopRight);
+                    this.diagram.model.setDataProperty(this.state.node.data,
+                        'alignmentFocus', go.Spot.BottomRight);
+                    }} />
+                </div>
+                <div>
+                  <Button icon="arrow-bottom-left" onClick={ () => {
+                     this.diagram.model.setDataProperty(this.state.node.data,
+                      'alignment', go.Spot.BottomLeft);
+                      this.diagram.model.setDataProperty(this.state.node.data,
+                        'alignmentFocus', go.Spot.TopLeft);
+                    }} />
+                  <Button icon="arrow-down" onClick={ () => {
+                    this.diagram.model.setDataProperty(this.state.node.data,
+                      'alignment', go.Spot.Bottom);
+                    this.diagram.model.setDataProperty(this.state.node.data,
+                        'alignmentFocus', go.Spot.Top);
+                    }} />
+                  <Button icon="arrow-bottom-right" onClick={ () => {
+                   this.diagram.model.setDataProperty(this.state.node.data,
+                    'alignment', go.Spot.BottomRight);
+                    this.diagram.model.setDataProperty(this.state.node.data,
+                      'alignmentFocus', go.Spot.TopRight);
+                    }} />
+                </div>
+              </Grid>
+        </Grid>
+      </div>
+      : ''
+      }
       <Grid container item direction="row" spacing="1" justify="flex-start" alignItems="center" style={{marginTop:'8px'}}>
         <Grid item>
           <Typography variant="body2">Font Size</Typography>
@@ -275,25 +343,12 @@ export default class StylePropPanel extends Component {
       </Grid>
       <Grid container item direction="row" spacing="1" justify="flex-start" alignItems="center" style={{marginTop:'8px'}}>
         <Grid item>
-          <Typography variant="body2">Font Color</Typography>
-        </Grid>
-      </Grid>
-      <Grid container item direction="row" spacing="1" justify="center" alignItems="center">
-          <CirclePicker colors={this.state.colors}
-            onChangeComplete={
-              (color) => {
-                this.diagram.model.setDataProperty(this.state.node.data, 'textStroke', color.hex);
-              }
-            } />
-      </Grid>
-      <Grid container item direction="row" spacing="1" justify="flex-start" alignItems="center" style={{marginTop:'8px'}}>
-        <Grid item>
           <Typography variant="body2">Stroke Color</Typography>
         </Grid>
       </Grid>
       <Grid container item direction="row" spacing="1" justify="center" alignItems="center">
           <Grid item>
-            <CirclePicker colors={this.state.colors}
+            <SwatchesPicker //colors={this.state.colors}
             onChangeComplete={
               (color) => {
                 this.diagram.model.setDataProperty(this.state.node.data, 'stroke', color.hex);
@@ -307,12 +362,25 @@ export default class StylePropPanel extends Component {
         </Grid>
       </Grid>
       <Grid container item direction="row" spacing="1" justify="center" alignItems="center">
-        <CirclePicker colors={this.state.colors}
+        <SwatchesPicker // colors={this.state.colors}
           onChangeComplete={
             (color) => {
               this.diagram.model.setDataProperty(this.state.node.data, 'fill', color.hex);
             }
           } />
+      </Grid>
+      <Grid container item direction="row" spacing="1" justify="flex-start" alignItems="center" style={{marginTop:'8px'}}>
+        <Grid item>
+          <Typography variant="body2">Font Color</Typography>
+        </Grid>
+      </Grid>
+      <Grid container item direction="row" spacing="1" justify="center" alignItems="center">
+          <SwatchesPicker //colors={this.state.colors}
+            onChangeComplete={
+              (color) => {
+                this.diagram.model.setDataProperty(this.state.node.data, 'textStroke', color.hex);
+              }
+            } />
       </Grid>
     </Grid>
     );
@@ -353,7 +421,7 @@ export default class StylePropPanel extends Component {
           </Grid>
         </Grid>
         <Grid container item direction="row" spacing="1" justify="center" alignItems="center">
-            <CirclePicker colors={this.state.colors}
+            <SwatchesPicker //colors={this.state.colors}
               onChangeComplete={
                 (color) => {
                   this.diagram.model.setDataProperty(this.state.node.data, 'stroke', color.hex);
