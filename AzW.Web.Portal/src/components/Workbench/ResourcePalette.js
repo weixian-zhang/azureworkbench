@@ -685,6 +685,20 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/azure_icons/software/software-cli.png'),
               IsPng: false,
               IsVisible:true
+            },
+            {
+              Name: 'json file',
+              Tooltip: 'Json File',
+              Image: require('../../assets/azure_icons/software/software-jsonfile.png'),
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'api',
+              Tooltip: 'API',
+              Image: require('../../assets/azure_icons/software/software-api.png'),
+              IsPng: false,
+              IsVisible:true
             }
           ]
         }

@@ -727,45 +727,54 @@ createPictureShapeTemplate() {
     { 
       selectable: true,
       resizable: true, 
-      resizeObjectName: "PANEL",
-      selectionObjectName: "PANEL",
+      resizeObjectName: "PICTURE",
+      selectionObjectName: "PICTURE",
       selectionChanged: function(p) {
         p.layerName = (p.isSelected ? "Foreground" : '');
       },
       contextMenu: this.initContextMenu()
     },
+    this.$(go.Picture,
+      {
+        name: "PICTURE",
+        stretch: go.GraphObject.Fill
+      },
+      {row:0,column:0},
+      new go.Binding("source","source"),
+      new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)
+    ),
     // the main object is a Panel that contains a Picture
-    this.$(go.Panel, "Vertical",
-        //new go.Binding("desiredSize", "size", go.Size.parse), //follows panel resize below
-        this.$(go.Panel, "Table",
-          { 
-            name: "PANEL", 
-          },
-          //bind 2 ways to update model so that shape above can resize according
-          //to panel size
-          new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
-          this.$(go.Picture,
-            {
-              stretch: go.GraphObject.Fill,
-              width: 80,
-              height: 80
-            },
-            {row:0,column:0},
-            new go.Binding("source","source"),
-            new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)
-          )
-        ),//panel
-        this.$(go.TextBlock,
-          {
-            editable:true,
-            isMultiline: true,
-            textAlign: "center"
-          },
-          {row:1,column:0},
-          new go.Binding("text").makeTwoWay(),
-          new go.Binding("font").makeTwoWay(),
-          new go.Binding("stroke").makeTwoWay())
-        ),
+    // this.$(go.Panel, "Vertical",
+    //     //new go.Binding("desiredSize", "size", go.Size.parse), //follows panel resize below
+    //     this.$(go.Panel, "Table",
+    //       { 
+    //         name: "PANEL", 
+    //       },
+    //       //bind 2 ways to update model so that shape above can resize according
+    //       //to panel size
+    //       new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+    //       this.$(go.Picture,
+    //         {
+    //           stretch: go.GraphObject.Fill,
+    //           width: 80,
+    //           height: 80
+    //         },
+    //         {row:0,column:0},
+    //         new go.Binding("source","source"),
+    //         new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)
+    //       )
+    //     ),//panel
+    //     this.$(go.TextBlock,
+    //       {
+    //         editable:true,
+    //         isMultiline: true,
+    //         textAlign: "center"
+    //       },
+    //       {row:1,column:0},
+    //       new go.Binding("text").makeTwoWay(),
+    //       new go.Binding("font").makeTwoWay(),
+    //       new go.Binding("stroke").makeTwoWay())
+    //     ),
           this.makePort("T", go.Spot.Top,  go.Spot.TopSide, true, true),
           this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true),
           this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
@@ -2185,7 +2194,7 @@ createPictureShape(dropContext) {
       font: '14px Segoe UI',
       stroke: 'black',
       nodetype: GoNodeType.ImageShape(),
-      size: go.Size.stringify(new go.Size(50,50)),
+      size: go.Size.stringify(new go.Size(60,60)),
       zOrder: 0,
       loc: go.Point.stringify(canvasPoint), category: 'picshape'});
 }
@@ -3068,6 +3077,16 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       case 'Calico':
         this.createPictureShape
         ({source: Utils.pngDataUrl(AzureIcons.ShapeCalico()),
+          label: '', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Json File':
+        this.createPictureShape
+        ({source: Utils.pngDataUrl(AzureIcons.JsonFile()),
+          label: '', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'API':
+        this.createPictureShape
+        ({source: Utils.pngDataUrl(AzureIcons.API()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Jenkins':
