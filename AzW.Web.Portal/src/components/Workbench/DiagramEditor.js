@@ -38,7 +38,6 @@ import AADDomainService from "../../models/AADDomainService";
 import SendGrid from "../../models/SendGrid";
 import SecurityCenter from "../../models/SecurityCenter";
 import Databox from "../../models/Databox";
-import NetworkWatcher from "../../models/NetworkWatcher";
 import ASG from "../../models/ASG";
 import NIC from "../../models/NIC";
 import DedicatedHost from "../../models/DedicatedHost";
@@ -925,9 +924,9 @@ createShapeTemplate() {
         resizeObjectName: "SHAPE",
         selectionObjectName: "SHAPE",
         rotatable: true,
-        selectionChanged: function(p) {
-          p.layerName = (p.isSelected ? "Foreground" : '');
-        },
+        // selectionChanged: function(p) {
+        //   p.layerName = (p.isSelected ? "Foreground" : '');
+        // },
         contextMenu: this.initContextMenu()
       },
       new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
@@ -965,6 +964,8 @@ createShapeTemplate() {
 }
 
 makePort(name, align, spot, output, input) {
+  var diagram = this.diagram;
+
   var horizontal = align.equals(go.Spot.Top) || align.equals(go.Spot.Bottom);
   // the port is basically just a transparent rectangle that stretches along the side of the node,
   // and becomes colored when the mouse passes over it
@@ -1818,6 +1819,7 @@ createVNet(dropContext) {
       fill: 'transparent',
       stroke: 'deepskyblue',
       textStroke: 'black',
+      zOrder: 0,
       alignment: go.Spot.TopLeft,
       alignmentFocus: go.Spot.BottomLeft,
       font: '16px Segoe UI',
@@ -1856,7 +1858,7 @@ createSubnet(vnetKey, subnetNodekey = '') {
       nsgVisible: false,
       udrVisible: false,
       svcendVisible: false,
-
+      zOrder: 0,
       text: subnetKey, 
 
       group: vnet.key,
@@ -2229,7 +2231,7 @@ createText(dropContext) {
       text: label != '' ? label : 'text',
       stroke: 'black', 
       textAlign: 'center',
-      zOrder: 0,
+      zOrder: 50,
       loc: go.Point.stringify(canvasPoint),
        nodetype:GoNodeType.Text(), category: 'text'});
 }
@@ -2298,6 +2300,8 @@ addKeyPressShortcuts() {
   }, false);
 
   var thisComp = this;
+  var $ = this.$;
+
   this.diagram.commandHandler.doKeyDown = function() {
     var e = thisComp.diagram.lastInput;
     var cmd = thisComp.diagram.commandHandler;
@@ -2378,6 +2382,60 @@ addKeyPressShortcuts() {
         }
         this.diagram.commitTransaction('commandHandler.part.move');
         return;
+    }
+
+    if(e.key === "S") {
+      this.diagram.toolManager.linkingTool.temporaryLink =
+          $(go.Link,
+            {
+              relinkableFrom: true,
+              relinkableTo: true,
+              reshapable: true
+            },
+            new go.Binding("points").makeTwoWay(),
+            $(go.Shape, { toArrow: "Standard",strokeWidth: 1.5 })
+          );
+
+      this.diagram.toolManager.linkingTool.archetypeLinkData =
+      { 
+        fromArrow: '',
+        toArrow: 'Standard',
+        adjusting: go.Link.Stretch,
+        stroke: 'black',
+        strokeWidth: 1.5,
+        strokeDashArray: null,
+        nodetype: GoNodeType.Link(),
+        category: 'straight'
+      } 
+      Toast.show('primary', 3000, 'Straight connector mode');
+    }
+    if(e.key === "O") {
+      this.diagram.toolManager.linkingTool.temporaryLink =
+          $(go.Link,
+            {
+              routing: go.Link.AvoidsNodes,
+              curve: go.Link.JumpOver,
+              corner: 5, toShortLength: 4,
+              relinkableFrom: true,
+              relinkableTo: true,
+              reshapable: true
+              //resegmentable: true
+            },
+            new go.Binding("points").makeTwoWay(),
+            $(go.Shape, { strokeWidth: 1.5 })
+          );
+      this.diagram.toolManager.linkingTool.archetypeLinkData = 
+        { 
+            fromArrow: '',
+            toArrow: 'Standard',
+            adjusting: go.Link.Stretch,
+            stroke: 'black',
+            strokeWidth: 1.5,
+            strokeDashArray: null,
+            nodetype: GoNodeType.Link(),
+            category: 'ortho'
+        }
+        Toast.show('primary', 3000, 'Orthogonal connector mode');
     }
 
     // call base method with no arguments (default functionality)
@@ -3204,7 +3262,11 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         ({source:Utils.pngDataUrl(AzureIcons.NSGShape()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
-      
+      case 'Network Watcher':
+        this.createPictureShape
+        ({source:Utils.pngDataUrl(AzureIcons.NetworkWatcherShape()),
+          label: '', x: dropContext.x, y: dropContext.y});
+      break;
 
       case ResourceType.MediaService():
         this.createNonVIRAzureResource({
@@ -3349,13 +3411,6 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
           azcontext: new TrafficManager()
         });
         break;
-      case ResourceType.NetworkWatcher():
-          this.createNonVIRAzureResource({
-            source: Utils.pngDataUrl(AzureIcons.NetworkWatcherShape()),
-            label: 'network watcher', x: dropContext.x, y: dropContext.y,
-            azcontext: new NetworkWatcher()
-          });
-      break;
       
       case ResourceType.CDN():
         this.createNonVIRAzureResource({

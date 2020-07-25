@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import * as go from 'gojs';
 import { NumericInput, Switch , Drawer, Button } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
-import { CirclePicker, SwatchesPicker } from 'react-color';
+import { CompactPicker } from 'react-color';
 import Grid from '@material-ui/core/Grid';
 import Utils from './Helpers/Utils';
 import Typography from '@material-ui/core/Typography';
@@ -16,7 +16,8 @@ export default class StylePropPanel extends Component {
       this.state = {
         node: null,
         saveCallback: null,
-        colors: ["transparent","#ffffff", "#cccccc", "#ededed", "#B2B2B2", "#4C4C4C", "#000000", "#f44336", "#e91e63", "#ddd3ee", "#9c27b0", "#673ab7", "#e6f3f7", "#3f51b5", "#2196f3", "#03a9f4", "#00bcd4", "#009688", "#4caf50", "#8bc34a", "#cddc39", "#ffeb3b", "#ffc107", "#ff9800", "#ff5722", "#795548", "#607d8b"]
+        colors: ['transparent', '#4D4D4D', '#999999', '#FFFFFF', '#F44E3B', '#FE9200', '#FCDC00', '#DBDF00', '#A4DD00', '#68CCCA', '#73D8FF', '#AEA1FF', '#FDA1FF', '#333333', '#808080', '#cccccc', '#D33115', '#E27300', '#FCC400', '#B0BC00', '#68BC00', '#16A5A5', '#009CE0', '#7B64FF', '#FA28FF', '#000000', '#666666', '#B3B3B3', '#9F0500', '#C45100', '#FB9E00', '#808900', '#194D33', '#0C797D', '#0062B1', '#653294', '#AB149E']
+        // colors: ["transparent","#ffffff", "#cccccc", "#ededed", "#B2B2B2", "#4C4C4C", "#000000", "#f44336", "#e91e63", "#ddd3ee", "#9c27b0", "#673ab7", "#e6f3f7", "#3f51b5", "#2196f3", "#03a9f4", "#00bcd4", "#009688", "#4caf50", "#8bc34a", "#cddc39", "#ffeb3b", "#ffc107", "#ff9800", "#ff5722", "#795548", "#607d8b"]
       }; 
   }
 
@@ -89,6 +90,25 @@ export default class StylePropPanel extends Component {
             spacing={1} style={{marginTop: '15px', width: '100%'}}>
           <Grid container item direction="row" spacing="1" justify="flex-start" alignItems="center" style={{marginTop:'8px'}}>
             <Grid item>
+              <Typography variant="body2">Z Order (+ bring to front, - send to back)</Typography>
+            </Grid>
+          </Grid>
+          <Grid container item direction="row" spacing="1" justify="center" alignItems="center" style={{marginTop:'8px'}}>
+            <Grid item>
+              <NumericInput placeholder="Z Ordering" min={-300} max={500}
+                allowNumericCharactersOnly={true} stepSize={5}
+                value={
+                  this.state.node.data.zOrder
+                }
+                onValueChange={
+                  (numValue) => {
+                      this.diagram.model.setDataProperty(this.state.node.data, 'zOrder', numValue);
+                  }
+                } />
+            </Grid>
+          </Grid>
+          <Grid container item direction="row" spacing="1" justify="flex-start" alignItems="center" style={{marginTop:'8px'}}>
+            <Grid item>
               <Typography variant="body2">Text Alignment</Typography>
             </Grid>
           </Grid>
@@ -118,7 +138,7 @@ export default class StylePropPanel extends Component {
                   this.diagram.model.setDataProperty(this.state.node.data, 'stroke', color.hex);
                 }
                } />  */}
-              <SwatchesPicker //colors={this.state.colors}
+              <CompactPicker  colors={this.state.colors}
               height= {200}
               onChangeComplete={
                 (color) => {
@@ -222,7 +242,7 @@ export default class StylePropPanel extends Component {
           </div>
           <div>
             <h4>Stroke Color</h4>
-            <SwatchesPicker // colors={this.state.colors} min={1} 
+            <CompactPicker  colors={this.state.colors}
               onChangeComplete={
                 (color) => {
                   this.diagram.model.setDataProperty(this.state.node.data, 'stroke', color.hex);
@@ -241,7 +261,7 @@ export default class StylePropPanel extends Component {
         justify="center"
         alignItems="center"
         spacing={1} style={{marginTop: '15px', width: '100%'}}>
-      <Grid container item direction="row" justify="flex-start" alignItems="center">
+        <Grid container item direction="row" justify="flex-start" alignItems="center">
           <Grid item xs={6}>
             <Switch checked={this.state.node.data.strokeDashArray != null ? true : false} label="Border Dashed"
              onChange={
@@ -262,6 +282,25 @@ export default class StylePropPanel extends Component {
                }
              } />
           </Grid>
+      </Grid>
+      <Grid container item direction="row" spacing="1" justify="flex-start" alignItems="center" style={{marginTop:'8px'}}>
+        <Grid item>
+          <Typography variant="body2">Z Order (+ bring to front, - send to back)</Typography>
+        </Grid>
+      </Grid>
+      <Grid container item direction="row" spacing="1" justify="center" alignItems="center" style={{marginTop:'8px'}}>
+        <Grid item>
+          <NumericInput placeholder="Z Ordering" min={-300} max={500}
+            allowNumericCharactersOnly={true} stepSize={5}
+            value={
+              this.state.node.data.zOrder
+            }
+            onValueChange={
+              (numValue) => {
+                  this.diagram.model.setDataProperty(this.state.node.data, 'zOrder', numValue);
+              }
+            } />
+        </Grid>
       </Grid>
       {
       (isVNetSubnet)
@@ -326,20 +365,20 @@ export default class StylePropPanel extends Component {
         </Grid>
       </Grid>
       <Grid container item direction="row" spacing="1" justify="center" alignItems="center" style={{marginTop:'8px'}}>
-            <Grid item>
-              <NumericInput placeholder="Font size" min={3}
-                allowNumericCharactersOnly={false}
-                value={
-                  this.getFontSizeFromFont(this.state.node.data.font)
-                }
-                onValueChange={
-                  (numValue) => {
-                      var changedFont =
-                        this.getFontStringOnFontSizeChange(numValue,this.state.node.data.font );
-                      this.diagram.model.setDataProperty(this.state.node.data, 'font', changedFont);
-                  }
-                } />
-            </Grid>
+        <Grid item>
+          <NumericInput placeholder="Font size" min={3}
+            allowNumericCharactersOnly={false}
+            value={
+              this.getFontSizeFromFont(this.state.node.data.font)
+            }
+            onValueChange={
+              (numValue) => {
+                  var changedFont =
+                    this.getFontStringOnFontSizeChange(numValue,this.state.node.data.font );
+                  this.diagram.model.setDataProperty(this.state.node.data, 'font', changedFont);
+              }
+            } />
+        </Grid>
       </Grid>
       <Grid container item direction="row" spacing="1" justify="flex-start" alignItems="center" style={{marginTop:'8px'}}>
         <Grid item>
@@ -348,7 +387,7 @@ export default class StylePropPanel extends Component {
       </Grid>
       <Grid container item direction="row" spacing="1" justify="center" alignItems="center">
           <Grid item>
-            <SwatchesPicker //colors={this.state.colors}
+          <CompactPicker  colors={this.state.colors}
             onChangeComplete={
               (color) => {
                 this.diagram.model.setDataProperty(this.state.node.data, 'stroke', color.hex);
@@ -362,7 +401,7 @@ export default class StylePropPanel extends Component {
         </Grid>
       </Grid>
       <Grid container item direction="row" spacing="1" justify="center" alignItems="center">
-        <SwatchesPicker // colors={this.state.colors}
+      <CompactPicker  colors={this.state.colors}
           onChangeComplete={
             (color) => {
               this.diagram.model.setDataProperty(this.state.node.data, 'fill', color.hex);
@@ -375,7 +414,7 @@ export default class StylePropPanel extends Component {
         </Grid>
       </Grid>
       <Grid container item direction="row" spacing="1" justify="center" alignItems="center">
-          <SwatchesPicker //colors={this.state.colors}
+      <CompactPicker  colors={this.state.colors}
             onChangeComplete={
               (color) => {
                 this.diagram.model.setDataProperty(this.state.node.data, 'textStroke', color.hex);
@@ -394,10 +433,29 @@ export default class StylePropPanel extends Component {
         justify="center"
         alignItems="center"
         spacing={1} style={{marginTop: '15px', width: '100%'}}>
-            <Grid container item direction="row" spacing="1" justify="flex-start" alignItems="center" style={{marginTop:'8px'}}>
+      <Grid container item direction="row" spacing="1" justify="flex-start" alignItems="center" style={{marginTop:'8px'}}>
         <Grid item>
-          <Typography variant="body2">Font Size</Typography>
+          <Typography variant="body2">Z Order (+ bring to front, - send to back)</Typography>
         </Grid>
+      </Grid>
+      <Grid container item direction="row" spacing="1" justify="center" alignItems="center" style={{marginTop:'8px'}}>
+        <Grid item>
+          <NumericInput placeholder="Z Ordering" min={-300} max={500}
+            allowNumericCharactersOnly={true} stepSize={5}
+            value={
+              this.state.node.data.zOrder
+            }
+            onValueChange={
+              (numValue) => {
+                  this.diagram.model.setDataProperty(this.state.node.data, 'zOrder', numValue);
+              }
+            } />
+        </Grid>
+        </Grid>
+        <Grid container item direction="row" spacing="1" justify="flex-start" alignItems="center" style={{marginTop:'8px'}}>
+          <Grid item>
+            <Typography variant="body2">Font Size</Typography>
+          </Grid>
         </Grid>
         <Grid container item direction="row" spacing="1" justify="center" alignItems="center" style={{marginTop:'8px'}}>
           <Grid item>
@@ -421,7 +479,7 @@ export default class StylePropPanel extends Component {
           </Grid>
         </Grid>
         <Grid container item direction="row" spacing="1" justify="center" alignItems="center">
-            <SwatchesPicker //colors={this.state.colors}
+        <CompactPicker  colors={this.state.colors}
               onChangeComplete={
                 (color) => {
                   this.diagram.model.setDataProperty(this.state.node.data, 'stroke', color.hex);
