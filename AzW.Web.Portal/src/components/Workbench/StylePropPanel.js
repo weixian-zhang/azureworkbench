@@ -502,11 +502,21 @@ export default class StylePropPanel extends Component {
 
   show = (node, diagram) => {
 
+    this.checkZOrderNaN(node, diagram);
+
     this.setState({ 
       isOpen: true, 
       node: node}); 
     
     this.diagram = diagram;
+  }
+
+  checkZOrderNaN(node, diagram) {
+    if(node.data && isNaN(node.data.zOrder))
+    {
+        node.data.zOrder = 0;
+        diagram.model.setDataProperty(node.data, 'zOrder', 0);
+    }
   }
 
   drawerClose = () => {

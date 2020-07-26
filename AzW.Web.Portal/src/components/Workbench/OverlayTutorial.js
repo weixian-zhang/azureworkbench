@@ -117,8 +117,7 @@ export default class OverlayTutorial extends Component {
                         </Typography>
                     </div>
                     <div hidden={this.state.value !== 'shortcut'} style={{overflow: 'auto'}}>
-                        <Typography variant="body1" align="left" gutterBottom>S: Straight connector mode, drag straight connector from node ports</Typography>
-                        <Typography variant="body1" align="left" gutterBottom>O: Orthogonal connector mode, drag orthogonal/curved connector from node ports</Typography>
+                        <Typography variant="body1" align="left" gutterBottom>S: Toggle between Straight & Orthogonal connector mode. Allows you to drag straight/orthogonal connector directly from node ports</Typography>
                         <Typography variant="body1" align="left" gutterBottom>Ctrl+S: Save to diagram browser</Typography>
                         <Typography variant="body1" align="left" gutterBottom>Ctrl+C / Ctrl+V: Copy/Paste</Typography>
                         <Typography variant="body1" align="left" gutterBottom>Ctrl+G: Group</Typography>

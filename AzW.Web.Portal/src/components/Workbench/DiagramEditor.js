@@ -253,7 +253,7 @@ import AzureIcons from './Helpers/AzureIcons';
         shareLinkInputbox: null,
         isLoading: false,
         isDiagramLoadedFromStorage: false,
-
+        archetypeLinkMode: "o", //toggle between straight/ortho mode
         unsavedChanges: false,
 
         queryString: this.props.queryString,
@@ -2311,10 +2311,12 @@ addKeyPressShortcuts() {
           thisComp.setGlobal({drawResourcePaletteOpen:false});
       else
           thisComp.setGlobal({drawResourcePaletteOpen:true});
+      return;
     }
 
     if (e.control && e.key === "S") {  // could also check for e.control or e.shift
       thisComp.saveDiagramToBrowser();
+      return;
     }
 
     if (e.alt && e.key === "S") {
@@ -2322,6 +2324,7 @@ addKeyPressShortcuts() {
       if(selectedNode == null)
         return;
       thisComp.openStylePanel(selectedNode);
+      return;
     }
 
     if (e.alt && e.key === "A") {
@@ -2385,7 +2388,12 @@ addKeyPressShortcuts() {
     }
 
     if(e.key === "S") {
-      this.diagram.toolManager.linkingTool.temporaryLink =
+
+      if(thisComp.state.archetypeLinkMode == "o") { //straight link mode
+
+        thisComp.setState({archetypeLinkMode: "s"});
+
+          this.diagram.toolManager.linkingTool.temporaryLink =
           $(go.Link,
             {
               relinkableFrom: true,
@@ -2396,21 +2404,25 @@ addKeyPressShortcuts() {
             $(go.Shape, { toArrow: "Standard",strokeWidth: 1.5 })
           );
 
-      this.diagram.toolManager.linkingTool.archetypeLinkData =
-      { 
-        fromArrow: '',
-        toArrow: 'Standard',
-        adjusting: go.Link.Stretch,
-        stroke: 'black',
-        strokeWidth: 1.5,
-        strokeDashArray: null,
-        nodetype: GoNodeType.Link(),
-        category: 'straight'
-      } 
-      Toast.show('primary', 3000, 'Straight connector mode');
-    }
-    if(e.key === "O") {
-      this.diagram.toolManager.linkingTool.temporaryLink =
+          this.diagram.toolManager.linkingTool.archetypeLinkData =
+          { 
+            fromArrow: '',
+            toArrow: 'Standard',
+            adjusting: go.Link.Stretch,
+            stroke: 'black',
+            strokeWidth: 1.5,
+            strokeDashArray: null,
+            nodetype: GoNodeType.Link(),
+            category: 'straight'
+          } 
+          Toast.show('primary', 2000, 'Straight connector mode');
+          return;
+
+      }
+      else { //orthogonal link mode
+        thisComp.setState({archetypeLinkMode: "o"});
+
+        this.diagram.toolManager.linkingTool.temporaryLink =
           $(go.Link,
             {
               routing: go.Link.AvoidsNodes,
@@ -2424,18 +2436,21 @@ addKeyPressShortcuts() {
             new go.Binding("points").makeTwoWay(),
             $(go.Shape, { strokeWidth: 1.5 })
           );
-      this.diagram.toolManager.linkingTool.archetypeLinkData = 
-        { 
-            fromArrow: '',
-            toArrow: 'Standard',
-            adjusting: go.Link.Stretch,
-            stroke: 'black',
-            strokeWidth: 1.5,
-            strokeDashArray: null,
-            nodetype: GoNodeType.Link(),
-            category: 'ortho'
-        }
-        Toast.show('primary', 3000, 'Orthogonal connector mode');
+          this.diagram.toolManager.linkingTool.archetypeLinkData = 
+            { 
+                fromArrow: '',
+                toArrow: 'Standard',
+                adjusting: go.Link.Stretch,
+                stroke: 'black',
+                strokeWidth: 1.5,
+                strokeDashArray: null,
+                nodetype: GoNodeType.Link(),
+                category: 'ortho'
+            }
+            Toast.show('primary', 2000, 'Orthogonal connector mode');
+            return;
+      }
+      
     }
 
     // call base method with no arguments (default functionality)
