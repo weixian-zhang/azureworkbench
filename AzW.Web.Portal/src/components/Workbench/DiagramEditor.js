@@ -1819,7 +1819,7 @@ createVNet(dropContext) {
       fill: 'transparent',
       stroke: 'deepskyblue',
       textStroke: 'black',
-      zOrder: 0,
+      zOrder: -50,
       alignment: go.Spot.TopLeft,
       alignmentFocus: go.Spot.BottomLeft,
       font: '16px Segoe UI',
@@ -1858,7 +1858,7 @@ createSubnet(vnetKey, subnetNodekey = '') {
       nsgVisible: false,
       udrVisible: false,
       svcendVisible: false,
-      zOrder: 0,
+      zOrder: -40,
       text: subnetKey, 
 
       group: vnet.key,
