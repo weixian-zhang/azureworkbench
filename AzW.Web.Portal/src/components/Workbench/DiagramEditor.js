@@ -225,6 +225,7 @@ import DedicatedHostPropPanel from "./PropPanel/DedicatedHostPropPanel";
 
 import OverlayPreviewDiagram from "./OverlayPreviewDiagram";
 import ARMService from "../../services/ARMService";
+import AuthService from "../../services/AuthService";
 import ComputeService from "../../services/ComputeService";
 import ProvisionHelper from './Helpers/ProvisionHelper';
 import Toast from './Helpers/Toast';
@@ -262,6 +263,7 @@ import AzureIcons from './Helpers/AzureIcons';
 
     this.Index = this.props.Index; //Index component contains progress Comp
 
+    this.authsvc = new AuthService();
     this.armsvc = new ARMService();
     this.comsvc = new ComputeService();
     this.diagService = new DiagramService();
@@ -4522,6 +4524,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
 
     var diagramContext = new WorkspaceDiagramContext();
     diagramContext.CollectionName = collectionName;
+    diagramContext.EmailId = this.authsvc.getUserProfile().UserName;
     diagramContext.UID = this.shortUID.randomUUID(6);
     diagramContext.DiagramName = diagramName;
     diagramContext.DiagramXml = this.diagram.model.toJson();

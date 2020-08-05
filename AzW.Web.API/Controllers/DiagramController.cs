@@ -75,9 +75,6 @@ namespace AzW.Web.API
         [HttpPost("wrkspace/dia/save")]
         public void SaveDiagramToWorkspace([FromBody]WorkspaceDiagramContext diagramContext)
         {
-            diagramContext.EmailId = this.GetUserIdentity().Email;
-            diagramContext.DateTimeSaved = DateTime.Now;
-
             _diagramRepo.SaveDiagramToWorkspace(diagramContext);
 
         }   

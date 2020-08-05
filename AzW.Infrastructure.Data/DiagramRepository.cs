@@ -56,6 +56,7 @@ namespace AzW.Infrastructure.Data
 
                
                 var existingDiagram = coll.FindSync(x => 
+                    x.EmailId == context.EmailId &&
                     x.CollectionName == context.CollectionName &&
                     x.DiagramName == context.DiagramName
                 ).SingleOrDefault();

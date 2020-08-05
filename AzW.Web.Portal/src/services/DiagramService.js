@@ -73,6 +73,7 @@ export default class DiagramService
         axios.post('api/wrkspace/dia/save', 
         {
           UID: workspaceDiagramContext.UID,
+          EmailId: workspaceDiagramContext.EmailId,
           CollectionName: workspaceDiagramContext.CollectionName,
           DiagramName: workspaceDiagramContext.DiagramName,
           DiagramXml: workspaceDiagramContext.DiagramXml
