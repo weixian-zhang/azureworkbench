@@ -67,8 +67,18 @@
             "problemMatcher": []
         },
         {
-            "label": "Publish API Local Publish Folder",
+            "label": "Publish API",
             "command": "dotnet publish -c Release -o ./publish",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/AzW.Web.API"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean API",
+            "command": "dotnet clean",
             "type": "shell",
             "args": [],
             "options": {

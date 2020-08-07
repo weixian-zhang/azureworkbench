@@ -210,6 +210,20 @@ export default class Utils
         return JSON.parse(JSON.stringify(obj));
     }
 
+    static IsJsonString(str) {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+
+    static isObject(obj)
+    {
+        return obj !== undefined && obj !== null && obj.constructor == Object;
+    }
+
     static IsVM(node) {
         if(!Utils.isAzContextExist(node))
         return false;

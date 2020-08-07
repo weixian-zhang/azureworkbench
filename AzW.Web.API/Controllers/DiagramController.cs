@@ -33,6 +33,8 @@ namespace AzW.Web.API
             _diagramRepo = repo;
             _secret = secret;
             _logger = logger;
+
+            _logger.Information(secret.AzCosmonMongoConnectionString);
         }
 
         [HttpGet("dia/qs")]
@@ -98,9 +100,12 @@ namespace AzW.Web.API
 
         [Authorize()]
         [HttpGet("wrkspace/dia/load")]
-        public async Task<string> LoadDiagramFromWorkspace(string emailId, string collectionName, string diagramName)
+        public async Task<ContentResult> LoadDiagramFromWorkspace(string emailId, string collectionName, string diagramName)
         {
-           return  await _diagramRepo.LoadDiagramFromWorkspace(emailId, collectionName, diagramName);
+           string json =
+            await _diagramRepo.LoadDiagramFromWorkspace(emailId, collectionName, diagramName);
+           
+           return this.Content(json, "application/json");
         }
 
         [Authorize()]

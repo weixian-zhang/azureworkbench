@@ -1,19 +1,20 @@
+using System;
+using AzW.Secret;
 using Microsoft.AspNetCore.Mvc;
+using Serilog.Core;
 
 namespace AzW.Web.UI.Controllers
 {
-    [Route("api/health")]
     public class HealthController : Controller
     {
-        public HealthController()
+        public HealthController(WorkbenchSecret secret, Logger logger)
         {
         }
 
-        [HttpGet("alive")]
+        [HttpGet("healthz")]
         public string Alive()
         {
             return "alive";
         }
-
     }
 }

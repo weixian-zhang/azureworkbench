@@ -401,11 +401,13 @@ import AzureIcons from './Helpers/AzureIcons';
         <DNSPrivateZonePropPanel ref={this.dnsPrivateZonePropPanel} />
         <DNSZonePropPanel ref={this.dnszonePropPanel} />
         {/* share link copy */}
-        <Overlay isOpen={this.state.showShareDiagramPopup} onClose={this.closeShareDiagramPopup} >
-          <div style={{width: '400px',height:'100px'}} className={[Classes.CARD, Classes.ELEVATION_4, "login-overlay"]}>
+        <Overlay canEscapeKeyClose={false}
+           isOpen={this.state.showShareDiagramPopup} onClose={this.closeShareDiagramPopup} >
+          <div style={{width: '450px',height:'100px'}} className={[Classes.CARD, Classes.ELEVATION_4, "login-overlay"]}>
           <InputGroup
 
-                    disabled={true}
+                    disabled={false}
+                    fill={true}
                     value={this.state.shareLink}
                     inputRef={(input) => {
                       if(this.state.shareLinkInputbox == null)
@@ -2489,7 +2491,7 @@ saveDiagramToBrowser = () => {
     return;
   }
 
-  var diagramJson = this.diagram.model.toJson();
+  var diagramJson = this.getDiagramBase64Json(); //this.diagram.model.toJson();
 
   LocalStorage.set
     (LocalStorage.KeyNames.TempLocalDiagram, diagramJson);
@@ -2720,7 +2722,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         if(!this.state.unsavedChanges)
           return;
       
-        var diagramJson = this.diagram.model.toJson();
+        var diagramJson =  this.getDiagramBase64Json(); //this.diagram.model.toJson();
 
         LocalStorage.set
           (LocalStorage.KeyNames.AutoSave, diagramJson);
@@ -4355,7 +4357,8 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
     if(diagramJson == null || diagramJson == '')
       return;
 
-      var model = go.Model.fromJson(diagramJson);
+      var jsonFromBase64 = this.getDiagramFromBase64(diagramJson);
+      var model = go.Model.fromJson(jsonFromBase64);
 
       this.diagram.removeModelChangedListener();
 
@@ -4397,7 +4400,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
     var thisComp = this;
     var anonyDiagramContext = new AnonymousDiagramContext();
     anonyDiagramContext.DiagramName = Utils.uniqueId('diagram');
-    anonyDiagramContext.DiagramXml = this.diagram.model.toJson();
+    anonyDiagramContext.DiagramXml = this.getDiagramBase64Json(); //this.diagram.model.toJson();
     anonyDiagramContext.DateTimeSaved = new Date();
 
     this.diagramService
@@ -4407,11 +4410,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
           thisComp.setState({shareLink: shareLink, showShareDiagramPopup: true});
         },
         function(error){
-          Toaster.create({
-            position: Position.TOP,
-            autoFocus: false,
-            canEscapeKeyClear: true
-          }).show({intent: Intent.DANGER, timeout: 3000, message: error.message});
+          Toast.show('danger', 3000, error.message);
         });
   }
 
@@ -4500,7 +4499,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       return;
     }
 
-    var diagramJson = this.diagram.model.toJson();
+    var diagramJson = this.getDiagramBase64Json(); //this.diagram.model.toJson();
 
     const url = window.URL.createObjectURL(new Blob([diagramJson]));
           const link = document.createElement('a');
@@ -4522,12 +4521,18 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       return;
     }
 
+    if(!this.state.unsavedChanges)
+    {
+      Toast.show('primary', 2000, 'No change detected')
+      return;
+    }
+
     var diagramContext = new WorkspaceDiagramContext();
     diagramContext.CollectionName = collectionName;
     diagramContext.EmailId = this.authsvc.getUserProfile().UserName;
     diagramContext.UID = this.shortUID.randomUUID(6);
     diagramContext.DiagramName = diagramName;
-    diagramContext.DiagramXml = this.diagram.model.toJson();
+    diagramContext.DiagramXml = this.getDiagramBase64Json();
     diagramContext.DateTimeSaved = Date.now();
 
     var thisComp = this;
@@ -4548,6 +4553,20 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         Toast.show('danger', 2000, error);
         return;
       });
+  }
+
+  getDiagramBase64Json() {
+    var json = this.diagram.model.toJson();
+    return btoa(json);
+  }
+
+  getDiagramFromBase64(base64OrJson) {
+      if(Utils.isObject(base64OrJson))
+        return base64OrJson;
+      else if(Utils.IsJsonString(base64OrJson)) //for backward compatibility
+          return base64OrJson;
+      else
+        return atob(base64OrJson);
   }
 
 

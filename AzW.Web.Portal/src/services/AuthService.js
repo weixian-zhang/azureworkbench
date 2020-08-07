@@ -91,7 +91,7 @@ export default class AuthService
                             // response.accessToken
                         })
                         .catch(err => {
-                            // handle error
+                          console.error(err)
                         });
                 }
             });
@@ -102,6 +102,14 @@ export default class AuthService
       return JSON.parse(userJsonStr);
     }
 
+    isUserProfileExist(){
+      var user = SessionStorage.get(SessionStorage.KeyNames.UserProfile);
+      if(user == null || user == '')
+        return false;
+      else
+        return true;
+    }
+
     logout(){
         this.msalApp.logout();
         SessionStorage.remove(SessionStorage.KeyNames.UserProfile);
@@ -109,27 +117,27 @@ export default class AuthService
     }
 
     isUserLogin(){
-      if (this.msalApp.getAccount() == null || this.isSessionExpired())
-        return false;
-      else
+      if(this.isUserProfileExist())
         return true;
+      else
+        return false;
     }
 
-    isSessionExpired() {
-        var userProfile = this.getUserProfile();
+    // isSessionExpired() {
+    //     var userProfile = this.getUserProfile();
 
-        if(userProfile == null || userProfile.AccessTokenExpiresOn == null)
-          return true;
+    //     if(userProfile == null || userProfile.AccessTokenExpiresOn == null)
+    //       return true;
 
-        var accessTokenExpireOn = new Date(userProfile.AccessTokenExpiresOn);
-        var CurrentDate = new Date();
-        if(accessTokenExpireOn < CurrentDate)
-        {
-            Toast.show('warning', 3000, "Session expired, logging out... Please login again.")
-            this.logout();
-        }
-        else
-            return false;
-    } 
+    //     var accessTokenExpireOn = new Date(userProfile.AccessTokenExpiresOn);
+    //     var CurrentDate = new Date();
+    //     if(accessTokenExpireOn < CurrentDate)
+    //     {
+    //         Toast.show('warning', 3000, "Session expired, logging out... Please login again.")
+    //         this.logout();
+    //     }
+    //     else
+    //         return false;
+    // } 
     
 }

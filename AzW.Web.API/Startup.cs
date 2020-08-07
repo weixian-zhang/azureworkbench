@@ -210,7 +210,8 @@ namespace AzW.Web.API
             _secrets = new WorkbenchSecret(){
                 ClientId = Configuration.GetValue<string>("ClientId"),
                 ClientSecret = Configuration.GetValue<string>("ClientSecret"),
-                AzCosmonMongoConnectionString = Configuration.GetValue<string>("AzCosmonMongoConnectionString"),
+                AzCosmonMongoConnectionString =
+                    Configuration.GetValue<string>("AzCosmonMongoConnectionString"),
                 PortalUrl = Configuration.GetValue<string>("PortalUrl"),
                 TenantId = Configuration.GetValue<string>("TenantId"),
                 AppInsightsKey = Configuration.GetValue<string>("AppInsightsKey"),
@@ -225,9 +226,16 @@ namespace AzW.Web.API
         {
             _logger = new LoggerConfiguration()
                 .WriteTo
-                .MongoDB(CosmosDbHelper.GetDatabase(_secrets),LogEventLevel.Error, "Log-API")
+                .MongoDB(
+                    CosmosDbHelper.GetDatabase(_secrets),
+                    LogEventLevel.Debug, 
+                    collectionName: "Log-API",
+                    period: TimeSpan.Zero)
                 .WriteTo
-                .ApplicationInsights(_secrets.AppInsightsKey, new TraceTelemetryConverter())
+                .ApplicationInsights(
+                    _secrets.AppInsightsKey, 
+                    new TraceTelemetryConverter(),
+                    LogEventLevel.Debug)
                 .CreateLogger();
         }
 

@@ -3,7 +3,7 @@ export default class AnonymousDiagramContext
     constructor (){
         this.UID = '';
         this.DiagramName = '';
-        this.DiagramXml = '';
+        this.DiagramJson = '';
         this.SharedLink = '';
         this.DateTimeSaved = '';
     }

@@ -6,7 +6,7 @@ export default class WorkspaceDiagramContext
         this.CollectionName = '';
         this.UID = '';
         this.DiagramName = '';
-        this.DiagramXml = '';
+        this.DiagramJson = '';
         this.DateTimeSaved = '';
     }
 }

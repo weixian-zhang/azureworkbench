@@ -182,9 +182,11 @@ export default class Header extends Component {
                 </IconButton>
               </Tippy>
 
-              <IconButton color="inherit" aria-label="Edit" onClick={this.showTutorial}>
+              <IconButton color="inherit" aria-label="Edit">
                 <Tippy content="Tutorial" followCursor={true} placement="bottom">
-                  <HelpIcon  />
+                  <HelpIcon onClick= {() => {
+                      window.open("https://github.com/weixian-zhang/Azure-Workbench",'_blank');
+                    }} />
                 </Tippy>
               </IconButton>
                 <Popover content=
