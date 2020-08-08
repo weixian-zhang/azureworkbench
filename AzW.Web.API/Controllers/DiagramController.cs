@@ -33,8 +33,6 @@ namespace AzW.Web.API
             _diagramRepo = repo;
             _secret = secret;
             _logger = logger;
-
-            _logger.Information(secret.AzCosmonMongoConnectionString);
         }
 
         [HttpGet("dia/qs")]
