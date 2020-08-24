@@ -117,27 +117,24 @@ export default class AuthService
     }
 
     isUserLogin(){
-      if(this.isUserProfileExist())
+      if(this.isUserProfileExist()) {
+        this.checkSessionExpiredAndLogout()
         return true;
-      else
+      }
+      else {
         return false;
+      }
     }
 
-    // isSessionExpired() {
-    //     var userProfile = this.getUserProfile();
-
-    //     if(userProfile == null || userProfile.AccessTokenExpiresOn == null)
-    //       return true;
-
-    //     var accessTokenExpireOn = new Date(userProfile.AccessTokenExpiresOn);
-    //     var CurrentDate = new Date();
-    //     if(accessTokenExpireOn < CurrentDate)
-    //     {
-    //         Toast.show('warning', 3000, "Session expired, logging out... Please login again.")
-    //         this.logout();
-    //     }
-    //     else
-    //         return false;
-    // } 
+    checkSessionExpiredAndLogout() {
+      var userProfile = this.getUserProfile();
+      var accessTokenExpireOn = new Date(userProfile.AccessTokenExpiresOn);
+      var CurrentDate = new Date();
+      if(accessTokenExpireOn < CurrentDate)
+      {
+          Toast.show('warning', 3000, "Session expired, logging out... Please login again.")
+          this.logout();
+      }
+    } 
     
 }

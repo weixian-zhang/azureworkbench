@@ -6,11 +6,11 @@ namespace AzW.Infrastructure.Data
 {
     public interface IDiagramRepository
     {
-        Task SaveAnonymousDiagram(AnonyDiagramShareContext context);
+        Task<DiagramSaveResult> SaveAnonymousDiagram(AnonyDiagramShareContext context);
 
         Task<AnonyDiagramShareContext> GetSharedDiagramAsync(string diagramId);
 
-        Task SaveDiagramToWorkspace(WorkspaceDiagramContext context);
+        Task<DiagramSaveResult> SaveDiagramToWorkspace(WorkspaceDiagramContext context);
 
         Task<IEnumerable<string>> GetCollectionFromWorkspaceAsync(string emailId);
 

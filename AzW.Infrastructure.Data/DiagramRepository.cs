@@ -15,14 +15,43 @@ namespace AzW.Infrastructure.Data
             _secret =secret;
         }
         
-        public async Task SaveAnonymousDiagram(AnonyDiagramShareContext context)
+        public async Task<DiagramSaveResult> SaveAnonymousDiagram(AnonyDiagramShareContext context)
         {
-            var db = CosmosDbHelper.GetDatabase(_secret);
+            try
+            {
+                var db = CosmosDbHelper.GetDatabase(_secret);
 
-            var coll =
-                db.GetCollection<AnonyDiagramShareContext>(CollectionName.AnonyDiagram);
+                var coll =
+                    db.GetCollection<AnonyDiagramShareContext>(CollectionName.AnonyDiagram);
 
-            await coll.InsertOneAsync(context);
+                await coll.InsertOneAsync(context);
+
+                return new DiagramSaveResult() { IsSuccess = true };
+            }
+            catch(MongoWriteException mwex)
+            {
+                if(mwex.Message.ToLowerInvariant().Contains("request size is too large"))
+                    return new DiagramSaveResult()
+                    {
+                        IsSuccess = false,
+                        ErrorCode = "diagram-to-large"
+                    };
+                throw mwex;
+            }
+            catch(MongoCommandException mex)
+            {
+                if(mex.Message.ToLowerInvariant().Contains("request size is too large"))
+                    return new DiagramSaveResult()
+                    {
+                        IsSuccess = false,
+                        ErrorCode = "diagram-to-large"
+                    };
+                throw mex;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<AnonyDiagramShareContext>
@@ -46,14 +75,13 @@ namespace AzW.Infrastructure.Data
             }
         }
 
-        public async Task SaveDiagramToWorkspace(WorkspaceDiagramContext context)
+        public async Task<DiagramSaveResult> SaveDiagramToWorkspace(WorkspaceDiagramContext context)
         {
             try
             {
                 var db = CosmosDbHelper.GetDatabase(_secret);
 
                 var coll = db.GetCollection<WorkspaceDiagramContext>(CollectionName.Workspace);
-
                
                 var existingDiagram = coll.FindSync(x => 
                     x.EmailId == context.EmailId &&
@@ -71,6 +99,27 @@ namespace AzW.Infrastructure.Data
                     await coll.ReplaceOneAsync
                         (x => x.Id == existingDiagram.Id, existingDiagram);
                 }
+                return new DiagramSaveResult() { IsSuccess = true };
+            }
+            catch(MongoWriteException mwex)
+            {
+                if(mwex.Message.ToLowerInvariant().Contains("request size is too large"))
+                    return new DiagramSaveResult()
+                    {
+                        IsSuccess = false,
+                        ErrorCode = "diagram-to-large"
+                    };
+                throw mwex;
+            }
+            catch(MongoCommandException mex)
+            {
+                if(mex.Message.ToLowerInvariant().Contains("request size is too large"))
+                    return new DiagramSaveResult()
+                    {
+                        IsSuccess = false,
+                        ErrorCode = "diagram-to-large"
+                    };
+                throw mex;
             }
             catch(Exception ex)
             {
@@ -78,8 +127,7 @@ namespace AzW.Infrastructure.Data
             }
         }
 
-        public async Task<IEnumerable<WorkspaceDiagramContextResult>>
-            GetDiagramsFromWorkspace(string emailId)
+        public async Task<IEnumerable<WorkspaceDiagramContextResult>>GetDiagramsFromWorkspace(string emailId)
         {
             var db = CosmosDbHelper.GetDatabase(_secret);
 
@@ -140,8 +188,10 @@ namespace AzW.Infrastructure.Data
                 (x => x.EmailId == emailId && x.CollectionName == collectionName &
                  x.DiagramName ==  diagramName)
                 .SingleOrDefaultAsync();
+            
+            string unzippedDiagram = StringZipper.Unzip(diagramContext.DiagramXml);
 
-            return diagramContext.DiagramXml;
+            return unzippedDiagram;
         }
 
         public async Task<bool> deleteDiagramFromWorkspace

@@ -1862,7 +1862,7 @@ createSubnet(vnetKey, subnetNodekey = '') {
       nsgVisible: false,
       udrVisible: false,
       svcendVisible: false,
-      zOrder: -40,
+      zOrder: -20,
       text: subnetKey, 
 
       group: vnet.key,
@@ -2180,7 +2180,7 @@ createVIROntoSubnet(dropContext) {
         source: image, 
         loc: go.Point.stringify(virLoc),
         size: go.Size.stringify(new go.Size(40,40)),
-        zOrder: 0,
+        zOrder: 50,
         font: '14px Segoe UI',
         stroke: 'black',
         nodetype: GoNodeType.ImageShape(),
@@ -2201,7 +2201,7 @@ createPictureShape(dropContext) {
       stroke: 'black',
       nodetype: GoNodeType.ImageShape(),
       size: go.Size.stringify(new go.Size(60,60)),
-      zOrder: 0,
+      zOrder: 50,
       loc: go.Point.stringify(canvasPoint), category: 'picshape'});
 }
 
@@ -2216,7 +2216,7 @@ createNonVIRAzureResource(dropContext) {
       azcontext: dropContext.azcontext,
       source: image, 
       size: go.Size.stringify(new go.Size(50,50)),
-      zOrder: 0,
+      zOrder: 50,
       font: '14px Segoe UI',
       stroke: 'black',
       nodetype: GoNodeType.ImageShape(),
@@ -2258,7 +2258,7 @@ createLink(dropContext) {
         toArrow: 'Standard',
         stroke: 'black',
         strokeWidth: 1.5,
-        zOrder: 0,
+        zOrder: 50,
         strokeDashArray: null,
         nodetype: GoNodeType.Link(),
         category: 'straight'
@@ -2272,7 +2272,7 @@ createLink(dropContext) {
         toArrow: 'Standard',
         stroke: 'black',
         strokeWidth: 1.5,
-        zOrder: 0,
+        zOrder: 50,
         strokeDashArray: null,
         nodetype: GoNodeType.Link(),
         category: 'bezier'
@@ -2287,7 +2287,7 @@ createLink(dropContext) {
         toArrow: 'Standard',
         stroke: 'black',
         strokeWidth: 1.5,
-        zOrder: 0,
+        zOrder: 50,
         strokeDashArray: null,
         nodetype: GoNodeType.Link(),
         category: 'ortho'

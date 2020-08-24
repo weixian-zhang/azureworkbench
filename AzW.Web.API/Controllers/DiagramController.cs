@@ -46,7 +46,7 @@ namespace AzW.Web.API
         }
 
         [HttpPost("dia/anony/share")]
-        public async Task<string> GenerateDiagramLink([FromBody]AnonyDiagramShareContext context)
+        public async Task<IActionResult> GenerateDiagramLink([FromBody]AnonyDiagramShareContext context)
         {            
              string shortUUID = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
             
@@ -56,10 +56,11 @@ namespace AzW.Web.API
             context.UID = shortUUID;
             context.SharedLink = shareLink; 
             
-            await _diagramRepo.SaveAnonymousDiagram(context);
+            var result = await _diagramRepo.SaveAnonymousDiagram(context);
 
-            return shareLink;
+            result.SharedLink = shareLink;
 
+            return StatusCode(200, result);
         }
 
         [HttpGet("dia/anony/shareload")]
@@ -73,16 +74,20 @@ namespace AzW.Web.API
 
         [Authorize()]
         [HttpPost("wrkspace/dia/save")]
-        public void SaveDiagramToWorkspace([FromBody]WorkspaceDiagramContext diagramContext)
+        public async Task<IActionResult> SaveDiagramToWorkspace([FromBody]WorkspaceDiagramContext diagramContext)
         {
-            _diagramRepo.SaveDiagramToWorkspace(diagramContext);
+            string zippedDiagram = StringZipper.Zip(diagramContext.DiagramXml);
 
+            diagramContext.DiagramXml = zippedDiagram;
+
+            var result = await _diagramRepo.SaveDiagramToWorkspace(diagramContext);
+
+            return StatusCode(200, result);
         }   
 
         [Authorize()]
         [HttpGet("wrkspace/diagrams")]
-        public async Task<IEnumerable<WorkspaceDiagramContextResult>>
-            GetDiagramsFromWorkspace(string emailId)
+        public async Task<IEnumerable<WorkspaceDiagramContextResult>>GetDiagramsFromWorkspace(string emailId)
         {
             try
             {

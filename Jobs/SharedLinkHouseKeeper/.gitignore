@@ -1,0 +1,12 @@
+# Binaries, plugins, libs
+*.env
+secret.env
+*.dll
+*.dylib
+*.exe
+*.exe~
+*.so
+
+# Testing
+*.test
+*.tmp

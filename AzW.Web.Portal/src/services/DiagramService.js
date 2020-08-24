@@ -3,6 +3,7 @@ import AnonymousDiagramContext from '../models/services/AnonymousDiagramContext'
 import WorkspaceDiagramContext from '../models/services/WorkspaceDiagramContext';
 import QuickstartDiagramContext from '../models/services/QuickstartDiagramContext';
 import AuthService from './AuthService';
+import Toast from '../components/Workbench/Helpers/Toast';
 
 export default class DiagramService
 {
@@ -34,10 +35,17 @@ export default class DiagramService
         if(anonyDiagramContext == null || anonyDiagramContext.DiagramXml == null)
             return;
       
-        //axios.defaults.headers.common['Authorization'] = token.accessToken;
         axios.post('api/dia/anony/share', anonyDiagramContext)
         .then(function (response) {
-          respCallback(response.data)
+
+          if(!response.data.isSuccess && response.data.errorCode == 'diagram-to-large')
+          {
+            Toast.show('warning', 8000,
+              "Shared link can't be generated as diagram is over 2Mb, consider break up your diagram into multiple diagrams and save separately");
+            return;
+          } else {
+            respCallback(response.data.sharedLink)
+          }
         })
         .catch(function (error) {
           console.log(error);
@@ -80,13 +88,19 @@ export default class DiagramService
         }, 
         {
           headers: {
-
               'Authorization': 'Bearer ' + user.AccessToken,
               'Content-Type': 'application/json'
           }
         })
         .then(function (response) {
-          successCallback(response.data);
+
+          if(!response.data.isSuccess && response.data.errorCode == 'diagram-to-large')
+          {
+            Toast.show('warning', 8000,
+              "Diagram not saved as it is over 2Mb, consider break up your diagram into multiple diagrams and save separately");
+          } else {
+            successCallback(response.data);
+          }
         })
         .catch(function (error) {
           console.log(error);
