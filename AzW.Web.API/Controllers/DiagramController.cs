@@ -21,6 +21,8 @@ using AzW.Secret;
 using System.Text.RegularExpressions;
 using Serilog.Core;
 using Microsoft.AspNetCore.WebUtilities;
+using shortid;
+using shortid.Configuration;
 
 namespace AzW.Web.API
 {
@@ -48,13 +50,18 @@ namespace AzW.Web.API
         [HttpPost("dia/anony/share")]
         public async Task<IActionResult> GenerateDiagramLink([FromBody]AnonyDiagramShareContext context)
         {            
-             string shortUUID = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+            string shortUUID = ShortId.Generate(new GenerationOptions()
+            {
+                Length = 20,
+                UseNumbers = false,
+                UseSpecialCharacters = false
+            });
             
             string shareLink =
                 QueryHelpers.AddQueryString(_secret.PortalUrl, "id", shortUUID);
             
             context.UID = shortUUID;
-            context.SharedLink = shareLink; 
+            context.SharedLink = shareLink;
             
             var result = await _diagramRepo.SaveAnonymousDiagram(context);
 
@@ -76,10 +83,6 @@ namespace AzW.Web.API
         [HttpPost("wrkspace/dia/save")]
         public async Task<IActionResult> SaveDiagramToWorkspace([FromBody]WorkspaceDiagramContext diagramContext)
         {
-            string zippedDiagram = StringZipper.Zip(diagramContext.DiagramXml);
-
-            diagramContext.DiagramXml = zippedDiagram;
-
             var result = await _diagramRepo.SaveDiagramToWorkspace(diagramContext);
 
             return StatusCode(200, result);
@@ -113,9 +116,9 @@ namespace AzW.Web.API
 
         [Authorize()]
         [HttpDelete("wrkspace/dia/del")]
-        public async Task<bool> deleteDiagramFromWorkspace(string emailId, string collectionName, string uid)
+        public async Task<bool> deleteDiagramFromWorkspace(string emailId, string collectionName, string diagramName)
         {
-            return await _diagramRepo.deleteDiagramFromWorkspace(emailId, collectionName, uid);;
+            return await _diagramRepo.deleteDiagramFromWorkspace(emailId, collectionName, diagramName);;
         }
 
         [Authorize()]

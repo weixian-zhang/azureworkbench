@@ -197,6 +197,11 @@ namespace AzW.Web.API
         private void ConfigureDependencies(IServiceCollection services)
         {          
             services.AddSingleton<WorkbenchSecret>(sp => {return _secrets ;} );
+
+            services.AddSingleton<BlobStorageManager>(sp => {
+                return new BlobStorageManager(_secrets.AzBlobConnString);
+            });
+
             services.AddSingleton<Logger>(sp => {return _logger ;} );
             services.AddTransient<IDiagramRepository, DiagramRepository>();
             services.AddTransient<ICacheRepository>(x => {
@@ -212,6 +217,8 @@ namespace AzW.Web.API
                 ClientSecret = Configuration.GetValue<string>("ClientSecret"),
                 AzCosmonMongoConnectionString =
                     Configuration.GetValue<string>("AzCosmonMongoConnectionString"),
+                AzBlobConnString =
+                    Configuration.GetValue<string>("AzBlobConnString"),
                 PortalUrl = Configuration.GetValue<string>("PortalUrl"),
                 TenantId = Configuration.GetValue<string>("TenantId"),
                 AppInsightsKey = Configuration.GetValue<string>("AppInsightsKey"),
@@ -231,11 +238,11 @@ namespace AzW.Web.API
                     LogEventLevel.Debug, 
                     collectionName: "Log-API",
                     period: TimeSpan.Zero)
-                .WriteTo
-                .ApplicationInsights(
-                    _secrets.AppInsightsKey, 
-                    new TraceTelemetryConverter(),
-                    LogEventLevel.Debug)
+                // .WriteTo
+                // .ApplicationInsights(
+                //     _secrets.AppInsightsKey, 
+                //     new TraceTelemetryConverter(),
+                //     LogEventLevel.Debug)
                 .CreateLogger();
         }
 

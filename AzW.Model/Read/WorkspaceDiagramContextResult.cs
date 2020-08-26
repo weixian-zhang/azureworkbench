@@ -14,5 +14,6 @@ namespace AzW.Model
          public string UID { get; set; }
          public string DiagramName { get; set; }
          public DateTime DateTimeSaved { get; set; }
+         public double SizeInMB { get; set; }
      }
  }

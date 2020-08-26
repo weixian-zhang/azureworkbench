@@ -103,7 +103,8 @@ export default class MySpace extends Component {
                               <TableRow>
                                 <TableCell>Collection</TableCell>
                                 <TableCell align="right">Diagram Name</TableCell>
-                                <TableCell align="right">Date Saved</TableCell>
+                                <TableCell align="right">Last Modified</TableCell>
+                                <TableCell align="right">Size</TableCell>
                               </TableRow>
                             </TableHead>
                             <TableBody>
@@ -115,6 +116,7 @@ export default class MySpace extends Component {
                                   </TableCell>
                                   <TableCell align="right">{diagram.diagramName}</TableCell>
                                   <TableCell align="right">{new moment(diagram.dateTimeSaved).format('MMMM Do YYYY, h:mm:ss a')}</TableCell>
+                                  <TableCell align="right">{diagram.sizeInMB} MB</TableCell>
                                   <TableCell align="right">
                                     <Button icon="floppy-disk"
                                           onClick={() =>
@@ -139,7 +141,8 @@ export default class MySpace extends Component {
                     <Label>
                       Are you sure you want to delete diagram?
                     </Label>
-                    <Button text="Confirm" icon="delete" onClick={() => this.confirmDeleteDiagramInWorkspace()} />
+                    <Button text="Confirm" icon="delete" 
+                      onClick={() => this.confirmDeleteDiagramInWorkspace()} />
                     <span className="bp3-navbar-divider"></span>
                     <Button text="Cancel" onClick={() => 
                         this.setState({

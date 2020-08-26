@@ -14,5 +14,7 @@
     <PackageReference Include="StackExchange.Redis" Version="2.1.0"/>
     <PackageReference Include="StackExchange.Redis.Extensions.Newtonsoft" Version="5.5.0"/>
     <PackageReference Include="ByteSize" Version="2.0.0"/>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.5.1"/>
+    <PackageReference Include="shortid" Version="2.0.3"/>
   </ItemGroup>
 </Project>

@@ -28,7 +28,8 @@ export default class OverlaySaveToWorkspace extends Component {
                         labelInfo="(required)">
                         <InputGroup id="input-collectionname" placeholder=""
                          value = {this.state.collectionName}
-                         onChange={this.collNameOnChange}/>
+                         onChange={this.collNameOnChange}
+                         maxlength="50"/>
                     </FormGroup>
                     <FormGroup
                         label="Diagram Name"
@@ -36,7 +37,8 @@ export default class OverlaySaveToWorkspace extends Component {
                         labelInfo="(required)">
                         <InputGroup id="input-diagramname" placeholder=""
                          value={this.state.diagramName}
-                         onChange={this.diagramNameOnChange}/>
+                         onChange={this.diagramNameOnChange}
+                         maxlength="60"/>
                     </FormGroup>
                     <Button intent={Intent.PRIMARY} text="Save" icon="saved"
                      onClick={this.saveToWorkspace}/>

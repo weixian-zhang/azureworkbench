@@ -2493,19 +2493,23 @@ saveDiagramToBrowser = () => {
 
   var diagramJson = this.getDiagramBase64Json(); //this.diagram.model.toJson();
 
-  LocalStorage.set
+  var result = LocalStorage.set
     (LocalStorage.KeyNames.TempLocalDiagram, diagramJson);
-  
-  this.setDiagramModifiedFalse();
-  this.clearAutosaveDiagram();
-  this.notifyStatusBarLoadSource('browser');
+  if(result == true) {
+    this.setDiagramModifiedFalse();
+    this.clearAutosaveDiagram();
+    this.notifyStatusBarLoadSource('browser');
 
-  Toaster.create({
-    position: Position.TOP,
-    autoFocus: false,
-    canEscapeKeyClear: true
-  }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.DiagramSavedInBrowser()});
-  return;
+    Toaster.create({
+      position: Position.TOP,
+      autoFocus: false,
+      canEscapeKeyClear: true
+    }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.DiagramSavedInBrowser()});
+    return;
+ }
+ else {
+  Toast.show('warning',4000, 'Diagram is too large to save in browser storage, save in My Space instead')
+ }
 }
 
 loadDraftDiagramFromBrowser = () => {
@@ -4527,6 +4531,12 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       return;
     }
 
+    if(!this.authsvc.isUserLogin())
+    {
+      Toast.show('primary', 2500, 'You need to login before saving to MySpace')
+      return;
+    }
+
     var diagramContext = new WorkspaceDiagramContext();
     diagramContext.CollectionName = collectionName;
     diagramContext.EmailId = this.authsvc.getUserProfile().UserName;
@@ -4561,12 +4571,15 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
   }
 
   getDiagramFromBase64(base64OrJson) {
-      if(Utils.isObject(base64OrJson))
+      if(Utils.isObject(base64OrJson)) {
         return base64OrJson;
-      else if(Utils.IsJsonString(base64OrJson)) //for backward compatibility
+      }
+      else if(Utils.IsJsonString(base64OrJson)) {//for backward compatibility
           return base64OrJson;
-      else
+      }
+      else {
         return atob(base64OrJson);
+      }
   }
 
 

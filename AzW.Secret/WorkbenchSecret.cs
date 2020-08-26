@@ -4,6 +4,7 @@ namespace AzW.Secret
     {
        public string SubscriptionId { get; set; }
        public string AzCosmonMongoConnectionString { get; set; }
+       public string AzBlobConnString { get; set; }
 
         public string ClientId { get; set; }
 

@@ -72,7 +72,7 @@ export default class DiagramService
       {
         if(!this.authService.isUserLogin())
         {
-          errorCallback('User login required or session has expried')
+          errorCallback('User login required or session has expired')
           return;
         }
 
@@ -225,7 +225,7 @@ export default class DiagramService
           params: {
             emailId: diagramContext.emailId,
             collectionName: diagramContext.collectionName,
-            uid: diagramContext.uid
+            diagramName: diagramContext.diagramName
           },
           headers: {
 

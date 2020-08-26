@@ -1,8 +1,16 @@
 export default class LocalStorage
 {
     static set(key, data) {
-        localStorage.removeItem(key);
-        localStorage.setItem(key, data);
+        try{
+            localStorage.removeItem(key);
+            localStorage.setItem(key, data);
+            return true;
+        }
+        catch (e) {
+            if (e.name === 'QuotaExceededError') {
+                return false;
+            }
+        }
     }
 
     static get(key) {
