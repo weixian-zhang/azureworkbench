@@ -5,6 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "debug Go Job.SharedLinkHouseKeeper",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/Jobs/SharedLinkHouseKeeper/src/main/housekeeper.go",
+            "env": {
+                "env" : "dev"
+            }
+        },
+        {
             "name": "Debug API",
             "type": "coreclr",
             "request": "launch",

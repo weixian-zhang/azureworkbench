@@ -1,21 +1,19 @@
-package secret
+package infra
 
 import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
-	"main/logger"
 	"strconv"
 )
-
-var _logger *logger.StrucLogger
 
 type SecretStorer interface {
 	Init() (Secret)
 }
 
 type Secret struct {
-	MongoConnString string `mongoconnstring:"c"`
+	MongoConnString string `yaml:mongoconnstring`
+	BlobConnString string `yaml:blobconnstring`
 	SharedLinkRetentionDays int `yaml:sharedlinkedretentiondays`
 }
 
@@ -23,7 +21,7 @@ type SecretStore struct {
 }
 
 func (ss *SecretStore) Init() (Secret) {
-	
+
 	if env := os.Getenv("env"); env != "dev" {
 		return GetEnvSecret()
 	} else {
@@ -36,7 +34,7 @@ func GetLocalSecret() (Secret) {
 
 	yamlcon, err := ioutil.ReadFile(secretFilePath)
 	if err != nil {
-		_logger.Err(err)
+		Struclog.Err(err)
 	}
 
 	secret := Secret{}
@@ -44,7 +42,7 @@ func GetLocalSecret() (Secret) {
 	merr := yaml.Unmarshal([]byte(yamlcon), &secret)
 
 	if merr != nil {
-		_logger.Err(merr)
+		Struclog.Err(merr)
 	}
 
 	return secret;
@@ -56,7 +54,7 @@ func GetEnvSecret() (Secret) {
 	retDays, err := strconv.ParseInt(os.Getenv("sharedlinkedretentiondays"),10, 32)
 
 	if err != nil {
-		_logger.Err(err)
+		Struclog.Err(err)
 	}
 
 	return Secret{

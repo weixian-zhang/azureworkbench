@@ -1,4 +1,4 @@
-package logger
+package infra
 
 
 import (
@@ -6,8 +6,8 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var _logger *zap.Logger
-var sl = &StrucLogger{}
+var zaplog *zap.Logger
+var Struclog = &StrucLogger{}
 
 type Loggerer interface {
 	Info(msg string)
@@ -18,12 +18,12 @@ type StrucLogger struct {
 }
 
 func (sl *StrucLogger) Info(msg string) {
-	_logger.Info(msg, zap.String("app","qs"))
+	zaplog.Info(msg, zap.String("app","qs"))
 }
 
 func (sl *StrucLogger) Err(err error) {
 	if err != nil {
-		_logger.Error(err.Error(), zap.String("app","qs"))
+		zaplog.Error(err.Error(), zap.String("app","qs"))
 	}
 }
 
@@ -39,8 +39,8 @@ func Init() (*StrucLogger) {
 	if err != nil {
 		//TODO
 	}
+
+	zaplog = logger
 	
-	_logger = logger
-	
-	return sl
+	return Struclog
 }

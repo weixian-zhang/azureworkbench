@@ -3,7 +3,7 @@
     "tasks": [
         {
             "label": "build go SharedLinkHouseKeeper",
-            "command": "go build main.go",
+            "command": "go build",
             "type": "shell",
             "args": [],
             "options": {
