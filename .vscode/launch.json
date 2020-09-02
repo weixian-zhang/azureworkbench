@@ -9,7 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/Jobs/SharedLinkHouseKeeper/src/main/housekeeper.go",
+            "program": "${workspaceFolder}/Jobs/SharedLinkHouseKeeper/src/housekeeper.go",
             "env": {
                 "env" : "dev"
             }

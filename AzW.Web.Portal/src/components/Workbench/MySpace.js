@@ -115,7 +115,7 @@ export default class MySpace extends Component {
                                     {diagram.collectionName}
                                   </TableCell>
                                   <TableCell align="right">{diagram.diagramName}</TableCell>
-                                  <TableCell align="right">{new moment(diagram.dateTimeSaved).format('MMMM Do YYYY, h:mm:ss a')}</TableCell>
+                                  <TableCell align="right">{new moment(diagram.dateTimeSaved).fromNow()}</TableCell>
                                   <TableCell align="right">{diagram.sizeInMB} MB</TableCell>
                                   <TableCell align="right">
                                     <Button icon="floppy-disk"

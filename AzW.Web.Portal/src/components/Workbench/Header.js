@@ -18,8 +18,8 @@ import OverlayAbout from './OverlayAbout';
 import OverlayProvision from './OverlayProvision';
 import DiagramService from '../../services/DiagramService';
 import fileDialog from 'file-dialog'
-import Tippy from '@tippy.js/react';
-import 'tippy.js/dist/tippy.css';
+import 'react-tippy/dist/tippy.css'
+import { Tooltip} from 'react-tippy';
 import moment from 'moment';
 
 import AuthService from '../../services/AuthService';
@@ -121,9 +121,9 @@ export default class Header extends Component {
               </Popover>
               
               <IconButton color="inherit" aria-label="Edit" onClick={this.showWorkspace}>
-                <Tippy content="My Space" followCursor={true} placement="bottom">
+                <Tooltip title="My Space" position="bottom">
                   <LocalMall  />
-                </Tippy>
+                </Tooltip>
               </IconButton>
 
               {/* quickstart */}
@@ -176,18 +176,20 @@ export default class Header extends Component {
                 </IconButton>
               </Popover>
 
-              <Tippy content={(this.global.currentSubscription == null) ? 'No Subscription Selected' : 'Selected subscription: ' + this.global.currentSubscription.Name} followCursor={true} placement="bottom">
+              <Tooltip
+                title= {(this.global.currentSubscription == null) ? 'No Subscription Selected' : 'Selected subscription: ' + this.global.currentSubscription.Name}
+                placement="bottom">
                 <IconButton color="inherit" aria-label="Edit" onClick={this.showProvisionOverlay}> 
                     <Icon icon="delta"  />  
                 </IconButton>
-              </Tippy>
+              </Tooltip>
 
               <IconButton color="inherit" aria-label="Edit">
-                <Tippy content="Tutorial" followCursor={true} placement="bottom">
+                <Tooltip title="Tutorial" position="bottom">
                   <HelpIcon onClick= {() => {
                       window.open("https://github.com/weixian-zhang/Azure-Workbench",'_blank');
                     }} />
-                </Tippy>
+                </Tooltip>
               </IconButton>
                 <Popover content=
                { 
@@ -199,18 +201,19 @@ export default class Header extends Component {
                } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.CLICK}>
 
                 <IconButton color="inherit">
-                  {
+                  <Tooltip title={this.state.userProfile == null ? 'Not logged in' : 'welcome, ' + this.state.userProfile.UserName }
+                          position="bottom">
+                    <AccountCircle onClick={this.handleAcctMenu}/>
+                  </Tooltip>
+                  {/* {
                     this.state.userProfile == null ?
                       <AccountCircle onClick={this.handleAcctMenu}/>
                     :
-                      <Tippy content={
-                        this.state.userProfile == null ? 'Not logged in' :
-                        'welcome, ' + this.state.userProfile.UserName
-                      }
-                        followCursor={false} placement="bottom">
+                      <Tooltip title={this.state.userProfile == null ? 'Not logged in' : 'welcome, ' + this.state.userProfile.UserName }
+                        position="bottom">
                         <AccountCircle onClick={this.handleAcctMenu}/>
-                      </Tippy>
-                  }
+                      </Tooltip>
+                  } */}
                 </IconButton>
              </Popover>
             </section>

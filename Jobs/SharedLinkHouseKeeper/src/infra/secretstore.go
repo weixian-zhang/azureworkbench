@@ -12,9 +12,11 @@ type SecretStorer interface {
 }
 
 type Secret struct {
-	MongoConnString string `yaml:mongoconnstring`
-	BlobConnString string `yaml:blobconnstring`
-	SharedLinkRetentionDays int `yaml:sharedlinkedretentiondays`
+	MongoConnString string `yaml:"mongoconnstring"`
+	SharedLinkRetentionDays int `yaml:"sharedlinkedretentiondays"`
+	JobRunFrequencyMins int `yaml:"jobRunFrequencyMins"`
+	StorageAcctName string `yaml:"storageAcctName"`
+	StorageAcctKey string `yaml:"storageAcctKey"`
 }
 
 type SecretStore struct {
