@@ -1,57 +1,58 @@
 package main
 
 import (
-	"azwb.com/jobs/slhk/infra"
-	"time"
+	"encoding/json"
 	"sync"
-	"fmt"
-)
+	"time"
 
-var (
-	_logger infra.StrucLogger
-	_secrets infra.Secret
-	mdb infra.MongoDb
+	"azwb.com/jobs/slhk/infra"
 )
 
 func main() {
 
-	secretstore := infra.SecretStore{}
-	_secrets = secretstore.Init()
+	infra.InitD()
 
-	_logger = infra.StrucLogger{}
-	_logger.Init()
-
-	mdb.New(_secrets, _logger)
+	mongo := infra.MongoDb{}
+	blob := infra.BlobStorage{}
+	blob.Init()
 
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 
-	ticker := time.NewTicker(time.Duration(_secrets.JobRunFrequencyMins) * time.Minute)
+	s, _ := json.Marshal(infra.Secrets)
+	infra.Logger.Info(string(s))
 
-	go runScheduler(ticker, _secrets, _logger)
+	ticker := time.NewTicker(time.Duration(infra.Secrets.JobRunFrequencyMins) * time.Minute)
+
+	go runScheduler(ticker, mongo, blob)
 
 	wg.Wait()
 }
 
-func runScheduler(tick *time.Ticker, secrets infra.Secret, logger infra.StrucLogger) {
-	
-	for t := range tick.C {
-		_  = t
-		
-		logger.Info("job started")
+func runScheduler(tick *time.Ticker, mongo infra.MongoDb, blob infra.BlobStorage) {
 
-		housekeep(secrets, logger)
-	
-		logger.Info("job completed")
+	for t := range tick.C {
+		_ = t
+
+		infra.Logger.Info("job started")
+
+		housekeep(mongo, blob)
+
+		infra.Logger.Info("job completed")
 
 	}
 
 }
 
-func housekeep(secrets infra.Secret, logger infra.StrucLogger) {
-	expiredDiagrams :=  mdb.GetExpiredSharedDiagrams()
+func housekeep(mongo infra.MongoDb, blob infra.BlobStorage) {
+	expiredDiagrams := mongo.GetExpiredSharedDiagrams()
 
 	for _, v := range expiredDiagrams {
-		fmt.Println(v)
+
+		_, err := mongo.DeleteOneSharedDiagram(v.UID)
+
+		if err == nil {
+			blob.DeleteBlob(v.UID)
+		}
 	}
 }

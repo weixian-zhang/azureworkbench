@@ -1,31 +1,28 @@
 package infra
 
 import (
-	"github.com/Azure/azure-storage-blob-go/azblob"
-	"net/url"
-	"fmt"
 	"context"
+	"fmt"
+	"net/url"
+
+	"github.com/Azure/azure-storage-blob-go/azblob"
 )
 
-type BlobStorage struct {}
+type BlobStorage struct{}
 
-const ContainerName string = "shateddiagrams"
+const ContainerName string = "shareddiagrams"
+
 var _container azblob.ContainerURL
-var _secrets Secret
-var _logger StrucLogger
 
-func (bs BlobStorage) New(secrets Secret, logger StrucLogger) {
-
-	_secrets = secrets
-	_logger = logger
+func (bs *BlobStorage) Init() {
 
 	//https://github.com/Azure-Samples/storage-blobs-go-quickstart/blob/master/storage-quickstart.go
-	
-	accountName, accountKey := secrets.StorageAcctName, secrets.StorageAcctKey
+
+	accountName, accountKey := Secrets.StorageAcctName, Secrets.StorageAcctKey
 
 	credential, err := azblob.NewSharedKeyCredential(accountName, accountKey)
 
-	_logger.Err(err)
+	Logger.Err(err)
 
 	blobPipeline := azblob.NewPipeline(credential, azblob.PipelineOptions{})
 
@@ -35,13 +32,15 @@ func (bs BlobStorage) New(secrets Secret, logger StrucLogger) {
 	_container = azblob.NewContainerURL(*URL, blobPipeline)
 }
 
-func (bs BlobStorage) DeleteBlob(blobName string) (bool) {
+//DeleteBlob deletes a single blob in "shareddiagrams"
+func (bs BlobStorage) DeleteBlob(blobName string) bool {
 
 	blockBlob := _container.NewBlockBlobURL(blobName)
 
 	ctx := context.Background() // This example uses a never-expiring context
-	
-	blockBlob.Delete(ctx, azblob.DeleteSnapshotsOptionNone, azblob.BlobAccessConditions{})
+
+	_, err := blockBlob.Delete(ctx, azblob.DeleteSnapshotsOptionNone, azblob.BlobAccessConditions{})
+	Logger.Err(err)
 
 	return true
 }

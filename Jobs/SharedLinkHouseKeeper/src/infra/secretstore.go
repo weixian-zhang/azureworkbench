@@ -1,10 +1,11 @@
 package infra
 
 import (
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"strconv"
+
+	"gopkg.in/yaml.v2"
 )
 
 type SecretStorer interface {
@@ -36,7 +37,7 @@ func GetLocalSecret() (Secret) {
 
 	yamlcon, err := ioutil.ReadFile(secretFilePath)
 	if err != nil {
-		Struclog.Err(err)
+		Logger.Err(err)
 	}
 
 	secret := Secret{}
@@ -44,7 +45,7 @@ func GetLocalSecret() (Secret) {
 	merr := yaml.Unmarshal([]byte(yamlcon), &secret)
 
 	if merr != nil {
-		Struclog.Err(merr)
+		Logger.Err(merr)
 	}
 
 	return secret;
@@ -53,14 +54,16 @@ func GetLocalSecret() (Secret) {
 func GetEnvSecret() (Secret) {
 
 	connstring := os.Getenv("mongoconnstring")
-	retDays, err := strconv.ParseInt(os.Getenv("sharedlinkedretentiondays"),10, 32)
-
-	if err != nil {
-		Struclog.Err(err)
-	}
+	retDays, _ := strconv.ParseInt(os.Getenv("sharedlinkedretentiondays"),10, 32)
+	freq, _ := strconv.ParseInt(os.Getenv("jobRunFrequencyMins"),10, 32)
+	strgacct := os.Getenv("storageAcctName")
+	strgacctkey := os.Getenv("storageAcctKey")
 
 	return Secret{
 		MongoConnString: connstring,
 		SharedLinkRetentionDays: int(retDays),
+		JobRunFrequencyMins: int(freq),
+		StorageAcctName: strgacct,
+		StorageAcctKey: strgacctkey,
 	}	
 }
