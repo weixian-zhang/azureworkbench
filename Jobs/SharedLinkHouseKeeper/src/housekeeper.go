@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"sync"
 	"time"
-
+	"context"
 	"azwb.com/jobs/slhk/infra"
 )
 
@@ -19,8 +19,9 @@ func main() {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 
-	s, _ := json.Marshal(infra.Secrets)
-	infra.Logger.Info(string(s))
+
+	// s, _ := json.Marshal(infra.Secrets)
+	// infra.Logger.Info(string(s))
 
 	ticker := time.NewTicker(time.Duration(infra.Secrets.JobRunFrequencyMins) * time.Minute)
 

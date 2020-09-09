@@ -4,13 +4,13 @@ redis_mode:standalone
 os:Windows  
 arch_bits:64
 multiplexing_api:winsock_IOCP
-run_id:ca0515f12cd477bdf42a3b627212e065d5800fa8
-uptime_in_seconds:2636750
-uptime_in_days:30
+run_id:c8c3baaff7a915fff4bac54a44f9d456ced2255f
+uptime_in_seconds:49112
+uptime_in_days:0
 hz:10
 
 # Clients
-connected_clients:15
+connected_clients:3
 maxclients:256
 client_longest_output_list:0
 client_biggest_input_buf:0
@@ -19,17 +19,17 @@ client_total_sent_bytes_outstanding:0
 blocked_clients:0
 
 # Memory
-used_memory:947032
-used_memory_human:924.84K
-used_memory_rss:4448256
-used_memory_rss_human:4.24M
-used_memory_peak:3979704
-used_memory_peak_human:3.80M
-used_memory_peak_perc:23.80%
-used_memory_overhead:634754
+used_memory:1049776
+used_memory_human:1.00M
+used_memory_rss:1814528
+used_memory_rss_human:1.73M
+used_memory_peak:1296728
+used_memory_peak_human:1.24M
+used_memory_peak_perc:80.96%
+used_memory_overhead:566122
 used_memory_startup:244304
-used_memory_dataset:312278
-used_memory_dataset_perc:44.44%
+used_memory_dataset:483654
+used_memory_dataset_perc:60.05%
 used_memory_lua:37888
 maxmemory:285000000
 maxmemory_reservation:0
@@ -41,18 +41,18 @@ maxmemory_policy:volatile-lru
 mem_allocator:jemalloc-4.0.3
 
 # Stats
-total_connections_received:1309843
-total_commands_processed:1169061
+total_connections_received:16238
+total_commands_processed:19235
 instantaneous_ops_per_sec:0
 bytes_received_per_sec:0
 bytes_sent_per_sec:0
 bytes_received_per_sec_human:0B
 bytes_sent_per_sec_human:0B
 rejected_connections:0
-expired_keys:1529
+expired_keys:0
 evicted_keys:0
-keyspace_hits:75249
-keyspace_misses:1066
+keyspace_hits:243
+keyspace_misses:8
 pubsub_channels:1
 pubsub_patterns:0
 total_oom_messages:0
@@ -61,10 +61,10 @@ total_oom_messages:0
 role:master
 
 # CPU
-used_cpu_sys:123.45
-used_cpu_user:98.09
+used_cpu_sys:0.61
+used_cpu_user:0.48
 used_cpu_avg_ms_per_sec:0
-server_load:0.07
+server_load:0.04
 event_wait:0
 event_no_wait:0
 event_wait_count:8
@@ -75,4 +75,4 @@ cluster_enabled:0
 cluster_myself_name:
 
 # Keyspace
-db0:keys=1045,expires=1045,avg_ttl=1785730489
+db0:keys=2686,expires=2686,avg_ttl=2554786542
