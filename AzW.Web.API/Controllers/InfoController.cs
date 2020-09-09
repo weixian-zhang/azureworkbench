@@ -47,14 +47,6 @@ namespace AzW.Web.API
            return svctags;
         }
 
-        [HttpGet("retailprices")]
-        public async Task<IEnumerable<ServiceTag>> GetServiceTags()
-        {
-           var svctags = await _cache.GetServiceTagAsync();
-
-           return svctags;
-        }
-
         private ICacheRepository _cache;
         private WorkbenchSecret _secret;
     }
