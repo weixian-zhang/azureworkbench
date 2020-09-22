@@ -578,7 +578,6 @@ import AzureIcons from './Helpers/AzureIcons';
                   relinkableFrom: true,
                   relinkableTo: true,
                   reshapable: true
-                  //resegmentable: true
                 },
                 new go.Binding("points").makeTwoWay(),
                 this.$(go.Shape, { strokeWidth: 1.5 })
@@ -589,6 +588,7 @@ import AzureIcons from './Helpers/AzureIcons';
             adjusting: go.Link.Stretch,
             stroke: 'black',
             strokeWidth: 1.5,
+            opacity: 0,
             strokeDashArray: null,
             nodetype: GoNodeType.Link(),
             category: 'ortho'
@@ -628,6 +628,18 @@ initDiagramBehaviors() {
 
   this.generalContextmenu = this.initContextMenu();
   this.diagram.contextMenu = this.generalContextmenu;
+}
+
+triggerLinkAnimation() {
+  var thisComp = this;
+  this.animation = new go.Animation();
+  this.animation.easing = go.Animation.EaseLinear;
+      this.diagram.links.each(function(link) {
+        thisComp.animation.add(link.findObject("ANIMATE"), "strokeDashOffset", 20, 0)
+      });
+      // Run indefinitely
+  this.animation.runCount = Infinity;
+  this.animation.start();
 }
 
 initPanningwithRightMouseClick() {
@@ -1055,13 +1067,18 @@ initLinkTemplate(linkTemplateMap) {
             new go.Binding("points").makeTwoWay(),
             new go.Binding("zOrder").makeTwoWay(),
             this.$(go.Shape,  // the highlight shape, normally transparent
-              { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" },
+              { isPanelMain: true, strokeWidth: 1.5, stroke: "transparent", name: "HIGHLIGHT" },
               new go.Binding("stroke").makeTwoWay(),
               new go.Binding("strokeDashArray", "strokeDashArray").makeTwoWay(),
               new go.Binding("strokeWidth").makeTwoWay(),
               new go.Binding("stroke").makeTwoWay(),
             ),
-          //)
+            this.$(go.Shape, 
+              { isPanelMain: true, stroke: "white", name: "ANIMATE", strokeDashArray: [10, 10] 
+              },
+              new go.Binding("opacity").makeTwoWay(),
+              new go.Binding("strokeWidth").makeTwoWay()
+            ),
           this.$(go.Shape,
             new go.Binding("fromArrow", "fromArrow")),
           this.$(go.Shape,
@@ -1096,17 +1113,14 @@ initLinkTemplate(linkTemplateMap) {
             new go.Binding("strokeWidth").makeTwoWay(),
             new go.Binding("stroke").makeTwoWay(),
           ),
-          // this.$(go.Shape,  // the link path shape
-          //   { isPanelMain: true, stroke: "gray", strokeWidth: 2 },
-          //   new go.Binding("stroke", "isSelected", function(sel) { return sel ? "dodgerblue" : "gray"; }).ofObject()),
-          // this.$(go.Shape,  // the arrowhead
-          //   { toArrow: "standard", strokeWidth: 0, fill: "gray" }),
-          // this.$(go.Panel, "Auto",  // the link label, normally not visible
-          //   { visible: false, name: "LABEL", segmentIndex: 2, segmentFraction: 0.5 }
-          // ),
-
         new go.Binding("strokeWidth").makeTwoWay(),
         new go.Binding("stroke").makeTwoWay(),
+        this.$(go.Shape, 
+          { isPanelMain: true, stroke: "white", name: "ANIMATE", strokeDashArray: [10, 10] 
+          },
+          new go.Binding("opacity").makeTwoWay(),
+          new go.Binding("strokeWidth").makeTwoWay()
+        ),
         this.$(go.Shape,
               new go.Binding("fromArrow", "fromArrow")),
         this.$(go.Shape,
@@ -1137,6 +1151,12 @@ initLinkTemplate(linkTemplateMap) {
             new go.Binding("strokeDashArray", "strokeDashArray").makeTwoWay(),
             new go.Binding("strokeWidth").makeTwoWay(),
             new go.Binding("stroke").makeTwoWay(),
+          ),
+          this.$(go.Shape, 
+            { isPanelMain: true, stroke: "white", name: "ANIMATE", strokeDashArray: [10, 10] 
+            },
+            new go.Binding("opacity").makeTwoWay(),
+            new go.Binding("strokeWidth").makeTwoWay()
           ),
           this.$(go.Shape,
                 new go.Binding("fromArrow", "fromArrow")),
@@ -1430,7 +1450,30 @@ initContextMenu() {
                     function(o) {
                       return o.diagram.selection.first() != null;
                     }).ofObject()
-                )
+                ),
+          
+          this.$("ContextMenuButton",
+              this.$(go.TextBlock, "Animate"),
+                  { 
+                    click: function(e, obj) {
+                    
+                      var node =  e.diagram.selection.first();
+                      var linkAnimatePart = node.findObject("ANIMATE");
+                      if(linkAnimatePart != null) {
+                        if(linkAnimatePart.opacity == 0) {
+                          e.diagram.model.setDataProperty(node.data, 'opacity', 1);
+                        }
+                        else {
+                          e.diagram.model.setDataProperty(node.data, 'opacity', 0);
+                        }
+                        thisComp.triggerLinkAnimation();
+                      }
+                    } 
+                  },
+                  new go.Binding("visible", "", function(o) {
+                      return o.data.nodetype == "link";
+                  }).ofObject()
+              )
     );
 }
 
@@ -2261,6 +2304,7 @@ createLink(dropContext) {
         zOrder: 50,
         strokeDashArray: null,
         nodetype: GoNodeType.Link(),
+        opacity: 0,
         category: 'straight'
       }
     );
@@ -2275,6 +2319,7 @@ createLink(dropContext) {
         zOrder: 50,
         strokeDashArray: null,
         nodetype: GoNodeType.Link(),
+        opacity: 0,
         category: 'bezier'
       }
     );
@@ -2290,6 +2335,7 @@ createLink(dropContext) {
         zOrder: 50,
         strokeDashArray: null,
         nodetype: GoNodeType.Link(),
+        opacity: 0,
         category: 'ortho'
       }
     );
@@ -2328,6 +2374,25 @@ addKeyPressShortcuts() {
       if(selectedNode == null)
         return;
       thisComp.openStylePanel(selectedNode);
+      return;
+    }
+
+    if (e.alt && e.key === "X") {
+      var selectedNode = thisComp.diagram.selection.first();
+      if(selectedNode == null)
+        return;
+      
+      var linkAnimatePart = selectedNode.findObject("ANIMATE");
+      if(linkAnimatePart != null) {
+        if(linkAnimatePart.opacity == 0) {
+          e.diagram.model.setDataProperty(selectedNode.data, 'opacity', 1);
+        }
+        else {
+          e.diagram.model.setDataProperty(selectedNode.data, 'opacity', 0);
+        }
+        thisComp.triggerLinkAnimation();
+      }
+      
       return;
     }
 
@@ -2417,6 +2482,7 @@ addKeyPressShortcuts() {
             strokeWidth: 1.5,
             strokeDashArray: null,
             nodetype: GoNodeType.Link(),
+            opacity: 0,
             category: 'straight'
           } 
           Toast.show('primary', 2000, 'Straight connector mode');
@@ -2438,7 +2504,7 @@ addKeyPressShortcuts() {
               //resegmentable: true
             },
             new go.Binding("points").makeTwoWay(),
-            $(go.Shape, { strokeWidth: 1.5 })
+            $(go.Shape, { toArrow: "Standard",strokeWidth: 1.5})
           );
           this.diagram.toolManager.linkingTool.archetypeLinkData = 
             { 
@@ -2449,6 +2515,7 @@ addKeyPressShortcuts() {
                 strokeWidth: 1.5,
                 strokeDashArray: null,
                 nodetype: GoNodeType.Link(),
+                opacity: 0,
                 category: 'ortho'
             }
             Toast.show('primary', 2000, 'Orthogonal connector mode');
@@ -4374,6 +4441,8 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       this.diagram.commitTransaction('loaddiagramfrombrowser');
 
       this.initDiagramModifiedEvent(true);
+
+      this.triggerLinkAnimation()
   }
 
    loadQuickstartDiagram(category, name) {
