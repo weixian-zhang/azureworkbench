@@ -234,14 +234,20 @@ namespace AzW.Infrastructure.Data
 
         public async Task<QuickstartDiagramContext> GetQuickstartDiagramContext(string category, string name)
         {
-            var db = CosmosDbHelper.GetDatabase(_secret);
+            string diagramJson = await _blob.GetQuickstartDiagram(category, name);
 
-            var coll = db.GetCollection<QuickstartDiagramContext>(CollectionName.Quickstart);
+            return new QuickstartDiagramContext()
+            {
+                DiagramXml = diagramJson
+            };
+            // var db = CosmosDbHelper.GetDatabase(_secret);
 
-            var qsDiagram = await coll.FindSync<QuickstartDiagramContext>
-                (x => x.Category == category && x.Name == name).SingleOrDefaultAsync();
+            // var coll = db.GetCollection<QuickstartDiagramContext>(CollectionName.Quickstart);
+
+            // var qsDiagram = await coll.FindSync<QuickstartDiagramContext>
+            //     (x => x.Category == category && x.Name == name).SingleOrDefaultAsync();
             
-            return qsDiagram;
+            // return qsDiagram;
         }
 
         private WorkbenchSecret _secret;

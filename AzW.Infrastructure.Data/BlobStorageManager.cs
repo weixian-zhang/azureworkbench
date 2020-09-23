@@ -14,12 +14,14 @@ namespace AzW.Infrastructure.Data
     {
         const string DiagramContainerName = "diagrams";
         const string SharedDiagramContainerName = "shareddiagrams";
+        const string QuickstartContainerName = "quickstarts";
 
         public BlobStorageManager(string connString)
         {
             _blobClient = new BlobServiceClient(connString);
             _diagContainer = _blobClient.GetBlobContainerClient(DiagramContainerName);
             _sharedLinkContainer = _blobClient.GetBlobContainerClient(SharedDiagramContainerName);
+            _quickstartContainer = _blobClient.GetBlobContainerClient(QuickstartContainerName);
 
             CreateContainersIfNotExist().GetAwaiter().GetResult();
         }
@@ -56,6 +58,29 @@ namespace AzW.Infrastructure.Data
             string diagram = await GetDiagramFromBlobStream(bc);
 
             return diagram;
+        }
+
+        public async Task<string> GetQuickstartDiagram(string category, string name)
+        {
+            string directory = category + "/";
+            string blobName = name + ".azwb";
+            string fullBlobPath = directory + blobName;
+
+            var blobClient = _quickstartContainer.GetBlobClient(fullBlobPath);
+
+            if(! await blobClient.ExistsAsync())
+                return "";
+
+            using (var ms = new MemoryStream())
+            {
+                await blobClient.DownloadToAsync(ms);
+
+                byte[] result = ms.ToArray();
+
+                string diagramBase64 = Encoding.UTF8.GetString(result);
+
+                return diagramBase64;
+            }
         }
 
 
@@ -161,7 +186,7 @@ namespace AzW.Infrastructure.Data
         BlobServiceClient _blobClient;
         BlobContainerClient _diagContainer;
         BlobContainerClient _sharedLinkContainer;
-
+        BlobContainerClient _quickstartContainer;
 
     }
 }
