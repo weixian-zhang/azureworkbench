@@ -236,6 +236,7 @@ import IPCIDR  from 'ip-cidr';
 import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
 import  ResizeRotateMultipleTool from "./GojsExtensions/ResizeMultipleTool";
 import './GojsExtensions/TextEditor';
+import LocalStorageCommandHandler from './GojsExtensions/LocalStorageCommandHandler';
 import AzureIcons from './Helpers/AzureIcons';
 
  export default class DiagramEditor extends Component {
@@ -541,6 +542,8 @@ import AzureIcons from './Helpers/AzureIcons';
           "undoManager.isEnabled": true,
           'animationManager.isEnabled': false,  // turn off automatic animation
 
+          commandHandler: new LocalStorageCommandHandler(this),
+          
           autoScrollRegion: new go.Margin(20, 20, 20, 20),
           allowHorizontalScroll: true,
           allowVerticalScroll : true,
@@ -1074,7 +1077,7 @@ initLinkTemplate(linkTemplateMap) {
               new go.Binding("stroke").makeTwoWay(),
             ),
             this.$(go.Shape, 
-              { isPanelMain: true, stroke: "white", name: "ANIMATE", strokeDashArray: [10, 10] 
+              { isPanelMain: true, opacity: 0, stroke: "white", name: "ANIMATE", strokeDashArray: [10, 10] 
               },
               new go.Binding("opacity").makeTwoWay(),
               new go.Binding("strokeWidth").makeTwoWay()
@@ -1116,7 +1119,7 @@ initLinkTemplate(linkTemplateMap) {
         new go.Binding("strokeWidth").makeTwoWay(),
         new go.Binding("stroke").makeTwoWay(),
         this.$(go.Shape, 
-          { isPanelMain: true, stroke: "white", name: "ANIMATE", strokeDashArray: [10, 10] 
+          { isPanelMain: true, opacity: 0, stroke: "white", name: "ANIMATE", strokeDashArray: [10, 10] 
           },
           new go.Binding("opacity").makeTwoWay(),
           new go.Binding("strokeWidth").makeTwoWay()
@@ -1153,7 +1156,7 @@ initLinkTemplate(linkTemplateMap) {
             new go.Binding("stroke").makeTwoWay(),
           ),
           this.$(go.Shape, 
-            { isPanelMain: true, stroke: "white", name: "ANIMATE", strokeDashArray: [10, 10] 
+            { isPanelMain: true, opacity: 0, stroke: "white", name: "ANIMATE", strokeDashArray: [10, 10] 
             },
             new go.Binding("opacity").makeTwoWay(),
             new go.Binding("strokeWidth").makeTwoWay()

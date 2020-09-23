@@ -154,6 +154,7 @@ export default class GojsManager
 
           } else {  // otherwise just paste nodes and/or links, as usual
             go.CommandHandler.prototype.pasteSelection.call(this.diagram.commandHandler);
+            this.diagramEditor.triggerLinkAnimation();
           }
         }
       }
