@@ -19,6 +19,8 @@ RUN go build -o ./out .
 # Start fresh from a smaller image
 FROM alpine:3.9
 
+WORKDIR /app
+
 COPY --from=build_base /app/out /app/main
 
 
