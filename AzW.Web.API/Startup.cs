@@ -144,7 +144,6 @@ namespace AzW.Web.API
                             "00000003-0000-0000-c000-000000000000",//graph api
                             "4a2a5dad-0bdd-453a-84b1-b83d50878ba9", //azworkbench-portal-dev-pkce
                             "api://4a2a5dad-0bdd-453a-84b1-b83d50878ba9"
-
                         };
                         
 
