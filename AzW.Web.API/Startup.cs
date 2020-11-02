@@ -139,7 +139,7 @@ namespace AzW.Web.API
                         // The web API accepts as audiences both the Client ID (options.Audience) and api://{ClientID}.
                         options.TokenValidationParameters.ValidAudiences = new []
                         {
-                            options.Audience,
+                            options.Audience, //azworkbench-portal-dev
                             $"api://{options.Audience}",
                             "00000003-0000-0000-c000-000000000000",//graph api
                             "4a2a5dad-0bdd-453a-84b1-b83d50878ba9", //azworkbench-portal-dev-pkce
