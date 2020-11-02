@@ -20,7 +20,7 @@ export default class ARMService
 
       var thisComp = this;
 
-      if(!ServiceHelper.checkLoginStateAndNotify(this.authService))
+      if(! await this.authService.checkLoginStateAndNotify())
         return;
 
       axios.get('api/arms/loc', 
@@ -54,8 +54,8 @@ export default class ARMService
    }
 
    async createNewResourceGroup(subscriptionId, location, rgName, onSuccess, onFailure) {
-      if(!ServiceHelper.checkLoginStateAndNotify(this.authService))
-        return;
+      if(! await this.authService.checkLoginStateAndNotify())
+      return;
       
       var user = this.authService.getUserProfile();
       var thisComp = this;
@@ -83,8 +83,8 @@ export default class ARMService
 
    async getResourceGroups(subscription, onSuccess, onFailure){
 
-    if(!ServiceHelper.checkLoginStateAndNotify(this.authService))
-      return;
+    if(! await this.authService.checkLoginStateAndNotify())
+        return;
           
       var user = this.authService.getUserProfile();
       var thisComp = this;
@@ -121,7 +121,7 @@ export default class ARMService
 
     async getSubscriptions(onSuccess, onFailure){
 
-      if(!ServiceHelper.checkLoginStateAndNotify(this.authService))
+      if(! await this.authService.checkLoginStateAndNotify())
         return;
             
         var user = this.authService.getUserProfile();

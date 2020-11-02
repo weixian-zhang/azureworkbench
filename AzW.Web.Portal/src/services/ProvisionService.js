@@ -1,5 +1,7 @@
 import axios from 'axios';
 import AuthService from './AuthService';
+import ServiceHelper from './ServiceHelper';
+
 import Toast from '../components/Workbench/Helpers/Toast';
 import Messages from '../components/Workbench/Helpers/Messages';
 
@@ -11,8 +13,10 @@ export default class ProvisionService
 
     async provisionDiagram(subscriptionId, provisionContexts, onSuccess, onFailure){
         
-        if(!this.authService.isUserLogin())
+        if(!await this.authService.isUserLogin()) {
+            Toast.show("primary", 2500, "")
             return;
+        }
         
         var thisComp = this;
         Toast.show("none", 2000, "Diagram sent to server for provisioning, you can continue your work")

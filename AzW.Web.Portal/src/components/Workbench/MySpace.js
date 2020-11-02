@@ -27,18 +27,24 @@ export default class MySpace extends Component {
 
       this.state = {
         isOpen: false,
-
+        isLogin: false,
         saveThisSpaceDialogOpen: false,
         saveThisSpaceCollection: '',
         saveThisSpaceDiagramName: '',
 
-        isAuthenticated: this.authService.isUserLogin(),
         isDeleteConfirmationDialogOpen: false,
         selectedDiagramContextForDelete: null,
         collections: [],
         diagrams: [],
         filteredDiagrams: []
       }
+    }
+
+    componentDidMount() {
+      var thisComp = this;
+      this.authService.isUserLogin().then(isLogin => {
+        thisComp.setState({isLogin: isLogin})
+      });
     }
 
     componentWillMount = () => {
@@ -80,16 +86,16 @@ export default class MySpace extends Component {
                       <Typography variant='button'>My Space</Typography>
                     </H4> 
                     {
-                        (!this.authService.isUserLogin()) ? 
-                        <Label>
-                        You need to login to retrieve diagrams saved in My Space                       
+                        (!this.state.isLogin) ?
+                        <Label style={{fontSize:"17pt"}}>
+                        Login to retrieve diagrams saved in My Space                       
                         </Label> :
                         <span>
                           <Select
                                 items={this.state.collections}
                                 itemRenderer={this.renderCollection}
                                 noResults={<MenuItem disabled={true}
-                                text={this.authService.isUserLogin() ? "No collection found" : "Login required..."} />}
+                                text={this.state.isLogin ? "No collection found" : "Login required..."} />}
                                 
                                 filterable={false}>
                                 {/* children become the popover target; render value here */}
@@ -115,7 +121,7 @@ export default class MySpace extends Component {
                                     {diagram.collectionName}
                                   </TableCell>
                                   <TableCell align="right">{diagram.diagramName}</TableCell>
-                                  <TableCell align="right">{new moment(diagram.dateTimeSaved).startOf('day').fromNow()}</TableCell>
+                                  <TableCell align="right">{new moment(diagram.dateTimeSaved).fromNow()}</TableCell>
                                   <TableCell align="right">{diagram.sizeInMB} MB</TableCell>
                                   <TableCell align="right">
                                     <Button icon="floppy-disk"
@@ -191,8 +197,6 @@ export default class MySpace extends Component {
       }
       
       getCollectionFromWorkspace = () => {
-        if(!this.authService.isUserLogin())
-          return;
         
         var thisComp = this;
      
@@ -320,18 +324,21 @@ export default class MySpace extends Component {
         );
     }
 
-    refreshCollectionDiagrams = () => {
-      if(this.authService.isUserLogin())
+    refreshCollectionDiagrams = async () => {
+      if(await this.authService.isUserLogin())
         {
           this.getCollectionFromWorkspace();
           this.getDiagramsFromWorkspace();
         }
     }
 
-    show = () => {
+    show = async () => {
       this.setState({ isOpen: true});
 
-      if(this.authService.isUserLogin())
+      var isLoggedIn = await this.authService.isUserLogin();
+      this.setState({isLogin: isLoggedIn});
+
+      if(isLoggedIn)
       {
         this.getCollectionFromWorkspace();
         this.getDiagramsFromWorkspace();

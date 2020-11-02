@@ -21,6 +21,7 @@ export default class OverlayProvision extends Component {
       this.armService = new ARMService();
 
       this.state = {
+        isLogin: false,
         isOpen: false,
         loading: false,
         provisionBtnLoading: false,
@@ -59,7 +60,7 @@ export default class OverlayProvision extends Component {
                                             items={this.state.subscriptions}
                                             itemRenderer={this.renderSubscriptions}
                                             noResults={<MenuItem disabled={true}
-                                            text={this.authService.isUserLogin() ? "No Subscription" : "Login required..."} />}
+                                            text={this.state.isLogin ? "No Subscription" : "Login required..."} />}
                                             filterable={false} >
                                             
                                             <Button text={this.global.currentSubscription == null ? 'Subscription' : Utils.limitTextLength(this.global.currentSubscription.Name, 15) }
@@ -156,7 +157,7 @@ export default class OverlayProvision extends Component {
     }
 
     getSubscriptions = () => {
-        if(this.authService.isUserLogin())
+        if(this.state.isLogin)
         {
             this.setState({loading:true});
 
@@ -213,8 +214,11 @@ export default class OverlayProvision extends Component {
              );
     }
 
-    show = (header) => { 
+    show = async (header) => { 
         this.setState({ isOpen: true, header: header });
+
+        var isLoggedIn = await this.authService.isUserLogin();
+        this.setState({isLogin:isLoggedIn});
     }
     handleClose = () => { 
         this.setState({ isOpen: false });

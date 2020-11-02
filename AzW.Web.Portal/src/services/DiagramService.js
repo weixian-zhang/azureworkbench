@@ -70,11 +70,8 @@ export default class DiagramService
     async saveDiagramToWorkspace
       (workspaceDiagramContext, successCallback, errorCallback)
       {
-        if(!this.authService.isUserLogin())
-        {
-          errorCallback('User login required or session has expired')
+        if(! await this.authService.checkLoginStateAndNotify())
           return;
-        }
 
         var user = this.authService.getUserProfile();
 
@@ -113,11 +110,8 @@ export default class DiagramService
 
       async getCollectionFromWorkspace(successCallback, errorCallback)
       {
-        if(!this.authService.isUserLogin())
-        {
-          errorCallback('User login required or session has expried')
+        if(! await this.authService.checkLoginStateAndNotify())
           return;
-        }
 
         var user = this.authService.getUserProfile();
 
@@ -146,11 +140,8 @@ export default class DiagramService
     
     async getDiagramsFromWorkspace(successCallback, errorCallback)
     {
-      if(!this.authService.isUserLogin())
-      {
-        errorCallback('User login required or session has expried')
-        return;
-      }
+      if(! await this.authService.checkLoginStateAndNotify())
+          return;
 
       var user = this.authService.getUserProfile();
 
@@ -178,11 +169,8 @@ export default class DiagramService
 
     async loadDiagramFromWorkspace(diagramContext, successCallback, errorCallback)
     {
-        if(!this.authService.isUserLogin())
-        {
-          errorCallback('User login required')
-          return;
-        }
+      if(! await this.authService.checkLoginStateAndNotify())
+        return;
 
         var user = this.authService.getUserProfile();
 
@@ -212,11 +200,8 @@ export default class DiagramService
 
     async deleteDiagramFromWorkspace(diagramContext, successCallback, errorCallback)
     {
-        if(!this.authService.isUserLogin())
-        {
-          errorCallback('User login required')
-          return;
-        }
+      if(! await this.authService.checkLoginStateAndNotify())
+        return;
 
         var user = this.authService.getUserProfile();
 

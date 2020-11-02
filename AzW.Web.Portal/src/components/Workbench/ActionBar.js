@@ -51,27 +51,5 @@ export default class ActionBar extends Component {
             </nav>
         );
     };
-
-    // <div className="bp3-navbar-group bp3-align-right">
-    //                     <span>
-    //                         <Button className="bp3-button" icon="delta" onClick={this.deploy}>Deploy</Button>
-    //                         <span className="bp3-navbar-divider"></span>
-                            
-    //                         <span className="bp3-navbar-divider"></span>
-    //                         <Select
-    //                             items={this.state.subscriptions}
-    //                             itemRenderer={this.renderSubscription}
-    //                             noResults={<MenuItem disabled={true}
-    //                             text={this.authService.isUserLogin() ? "Can't find any subscriptions" : "Login first..."} />}
-    //                             onItemSelect={this.setCurrentSubscription}
-    //                             filterable={false}
-    //                         >
-    //                             {/* children become the popover target; render value here */}
-    //                             <Button text='Subscriptions' rightIcon="double-caret-vertical" />
-    //                         </Select>
-    //                     </span>
-    //                     <span>Resource Groups</span>
-    //                 </div>
-
-    
+   
 }

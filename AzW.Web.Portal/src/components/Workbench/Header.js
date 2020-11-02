@@ -37,7 +37,7 @@ export default class Header extends Component {
     this.setGlobal({showSaveBadge:false});
 
     this.state = {
-        isLogin: this.authService.isUserLogin(),
+        isLogin: false,
         userProfile: this.authService.getUserProfile(),
         isTutorialOpen: false,
         isFeedbackOpen: false,
@@ -53,6 +53,13 @@ export default class Header extends Component {
     this.overlayTutorial = React.createRef();
     this.overlayAbout = React.createRef();
     this.overlayProvision = React.createRef();
+  }
+
+  componentDidMount() {
+    var thisComp = this;
+    this.authService.isUserLogin().then(isLogin => {
+      thisComp.setState({isLogin: isLogin})
+    });
   }
 
   componentWillMount() {
@@ -201,7 +208,7 @@ export default class Header extends Component {
                } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.CLICK}>
 
                 <IconButton color="inherit">
-                  <Tooltip title={this.state.userProfile == null ? 'Not logged in' : 'welcome, ' + this.state.userProfile.UserName }
+                  <Tooltip title={this.state.userProfile == null ? 'Not logged in' : 'welcome, ' + this.state.userProfile.Name }
                           position="bottom">
                     <AccountCircle onClick={this.handleAcctMenu}/>
                   </Tooltip>
@@ -234,21 +241,26 @@ export default class Header extends Component {
     );
   }
 
-  login = () => {
+  login = async () => {
     var thisComp = this;
-    this.authService.login(
-      function (userProfile) {
 
-        window.setTimeout(function() { 
-          thisComp.authService.refreshAccessToken(function(userProfile) {
-            console.log('token refreshed: ' + userProfile);
-          });
-        }, 
-        60000 * 45); //45mins
+    var userProfile = await this.authService.login();
+    this.setState({isLogin: true, userProfile:  userProfile});
+    //this.props.ActionBar.current.getSubscriptions();
 
-        thisComp.setState({isLogin: true, userProfile:  userProfile});
-        thisComp.props.ActionBar.current.getSubscriptions();
-    });
+    // this.authService.login(
+    //   function (userProfile) {
+
+    //     // window.setTimeout(function() { 
+    //     //   thisComp.authService.refreshAccessToken(function(userProfile) {
+    //     //     console.log('token refreshed: ' + userProfile);
+    //     //   });
+    //     // }, 
+    //     // 60000 * 45); //45mins
+
+    //     thisComp.setState({isLogin: true, userProfile:  userProfile});
+    //     thisComp.props.ActionBar.current.getSubscriptions();
+    // });
    
   }
 

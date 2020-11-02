@@ -4586,7 +4586,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
           link.click();
   }
 
-  saveDiagramToWorkspace(collectionName, diagramName) {
+  async saveDiagramToWorkspace(collectionName, diagramName) {
     if(Utils.isCanvasEmpty(this.diagram))
     {
       Toaster.create({
@@ -4603,7 +4603,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       return;
     }
 
-    if(!this.authsvc.isUserLogin())
+    if(! await this.authsvc.isUserLogin())
     {
       Toast.show('primary', 2500, 'You need to login before saving to MySpace')
       return;

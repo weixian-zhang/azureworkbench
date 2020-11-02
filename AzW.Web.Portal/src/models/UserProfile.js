@@ -1,11 +1,14 @@
 export default class UserProfile
 {
     constructor (){
-        this.AccessToken = '';
+        this.Account = null;
         this.TenantId = '';
-        this.UserName = '';
         this.Name = '';
+        this.UserName = '';
         this.AccessTokenExpiresOn = '';
-        this.Environment = '';
+        this.Scopes = [];
+        this.Issuer = "";
+        this.IdToken = "";
+        this.AccessToken = '';
     }
 }

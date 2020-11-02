@@ -15,8 +15,8 @@ export default class ComputeService
 
     async getVMSizes( onSuccess, onFailure) {
 
-      if(!ServiceHelper.checkLoginStateAndNotify(this.authService))
-          return;
+      if(! await this.authService.checkLoginStateAndNotify())
+        return;
 
       var user = this.authService.getUserProfile();
 
@@ -54,8 +54,8 @@ export default class ComputeService
 
     async getServiceTags( onSuccess, onFailure) {
 
-      if(!ServiceHelper.checkLoginStateAndNotify(this.authService))
-          return;
+      if(! await this.authService.checkLoginStateAndNotify())
+        return;
 
       var user = this.authService.getUserProfile();
 
@@ -91,8 +91,8 @@ export default class ComputeService
 
     async searchVMImages(searchPattern, onSuccess, onFailure){
         
-      if(!ServiceHelper.checkLoginStateAndNotify(this.authService))
-          return;
+      if(! await this.authService.checkLoginStateAndNotify())
+        return;
 
         var user = this.authService.getUserProfile();
 
