@@ -17,12 +17,14 @@ import OverlayTutorial from './OverlayTutorial';
 import OverlayAbout from './OverlayAbout';
 import OverlayProvision from './OverlayProvision';
 import DiagramService from '../../services/DiagramService';
+import LoginState from '../../services/LoginState';
 import fileDialog from 'file-dialog'
 import 'react-tippy/dist/tippy.css'
 import { Tooltip} from 'react-tippy';
 import moment from 'moment';
 
 import AuthService from '../../services/AuthService';
+import UserProfile from "../../models/UserProfile";
 
 
 export default class Header extends Component {
@@ -38,7 +40,7 @@ export default class Header extends Component {
 
     this.state = {
         isLogin: false,
-        userProfile: this.authService.getUserProfile(),
+        userProfile: new UserProfile(),
         isTutorialOpen: false,
         isFeedbackOpen: false,
         isAboutOpen: false,
@@ -48,6 +50,13 @@ export default class Header extends Component {
         isDeleteConfirmationDialogOpen: false
     }
 
+    LoginState.initLoginStateChangeCallback((isLogin) => {
+      this.setState({isLogin: isLogin});
+      if(isLogin) {
+        this.setState({userProfile: this.authService.getUserProfile()});
+      }
+    });
+
     this.fileInput = React.createRef();
     this.acctIconRef = React.createRef();
     this.overlayTutorial = React.createRef();
@@ -56,10 +65,11 @@ export default class Header extends Component {
   }
 
   componentDidMount() {
-    var thisComp = this;
-    this.authService.isUserLogin().then(isLogin => {
-      thisComp.setState({isLogin: isLogin})
-    });
+    // var thisComp = this;
+    // this.authService.isUserLogin().then(isLogin => {
+    //   var user = thisComp.authService.getUserProfile();
+    //   thisComp.setState({isLogin: isLogin, userProfile: user})
+    // });
   }
 
   componentWillMount() {
@@ -201,26 +211,17 @@ export default class Header extends Component {
                 <Popover content=
                { 
                    <Menu className={Classes.ELEVATION_1}>
-                     {this.state.isLogin == true ? <MenuItem labelElement={<PowerSettingsNewIcon />} text="Logout" onClick={this.logout} /> : ''}
-                     {this.state.isLogin == false ? <MenuItem labelElement={<Icon icon="log-in" />} text="Login" onClick={this.login} /> : '' }
+                     {this.state.isLogin== true ? <MenuItem labelElement={<PowerSettingsNewIcon />} text="Logout" onClick={this.logout} /> : ''}
+                     {this.state.isLogin  == false ? <MenuItem labelElement={<Icon icon="log-in" />} text="Login" onClick={this.login} /> : '' }
                      <MenuItem  text="About Azure Workbench" onClick={this.showAboutOverlay} />
                    </Menu>
                } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.CLICK}>
 
                 <IconButton color="inherit">
-                  <Tooltip title={this.state.userProfile == null ? 'Not logged in' : 'welcome, ' + this.state.userProfile.UserName }
+                  <Tooltip title={this.state.isLogin == false ? 'Not logged in' : 'welcome, ' + this.state.userProfile.UserName }
                           position="bottom">
                     <AccountCircle onClick={this.handleAcctMenu}/>
                   </Tooltip>
-                  {/* {
-                    this.state.userProfile == null ?
-                      <AccountCircle onClick={this.handleAcctMenu}/>
-                    :
-                      <Tooltip title={this.state.userProfile == null ? 'Not logged in' : 'welcome, ' + this.state.userProfile.UserName }
-                        position="bottom">
-                        <AccountCircle onClick={this.handleAcctMenu}/>
-                      </Tooltip>
-                  } */}
                 </IconButton>
              </Popover>
             </section>
@@ -242,26 +243,8 @@ export default class Header extends Component {
   }
 
   login = async () => {
-    var thisComp = this;
-
     var userProfile = await this.authService.login();
     this.setState({isLogin: true, userProfile:  userProfile});
-    //this.props.ActionBar.current.getSubscriptions();
-
-    // this.authService.login(
-    //   function (userProfile) {
-
-    //     // window.setTimeout(function() { 
-    //     //   thisComp.authService.refreshAccessToken(function(userProfile) {
-    //     //     console.log('token refreshed: ' + userProfile);
-    //     //   });
-    //     // }, 
-    //     // 60000 * 45); //45mins
-
-    //     thisComp.setState({isLogin: true, userProfile:  userProfile});
-    //     thisComp.props.ActionBar.current.getSubscriptions();
-    // });
-   
   }
 
   logout = () => {
@@ -382,6 +365,10 @@ showAboutOverlay = () => {
 
 showFeedbackOverlay = () => {
   this.setState({ isFeedbackOpen: true });
+}
+
+loginStateCallback(isLogin) {
+  this.setState({ isLogin: isLogin });
 }
 
 handleTutorialClose = () => this.setState({ isTutorialOpen: false });

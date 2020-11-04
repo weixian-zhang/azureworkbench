@@ -4,9 +4,9 @@ import UserProfile from '../models/UserProfile';
 import SessionStorage from './SessionStorage';
 import LocalStorage from './LocalStorage';
 import Config from "../../src/config";
+import LoginState from "./LoginState";
 import Toast from '../components/Workbench/Helpers/Toast';
-import moment from 'moment';
-import { resolve } from "path";
+
 
 export default class AuthService 
 {
@@ -55,20 +55,17 @@ export default class AuthService
 
         var thisComp = this;
 
-        // var user = this.getUserProfile();
-
-        // if(user != null) {
-          
-        // } else {
-        //   this.tokenRequest.account = null;
-        // }
-
         this.tokenRequest.account = this.getMsalAccount();
   
         this.msalApp.acquireTokenSilent(this.tokenRequest)
           .then(tokenResponse => {
-              var user = thisComp.createUser(tokenResponse);
-              resolve(user);
+
+            var user = thisComp.createUser(tokenResponse);
+
+            LoginState.onUserLoginStateChange(true);
+
+            resolve(user);
+
           })
           .catch(error => {
   
@@ -84,9 +81,12 @@ export default class AuthService
 
                       var user = thisComp.createUser(tokenResponse);
 
+                      LoginState.onUserLoginStateChange(true);
+                      
                       resolve(user);
 
                     }).catch(error => {
+                        LoginState.onUserLoginStateChange(false);
                         console.error(error);
                     });
             } else {
@@ -136,7 +136,8 @@ export default class AuthService
         this.msalApp.logout(logoutRequest);
 
         LocalStorage.remove(SessionStorage.KeyNames.UserProfile);
-        // SessionStorage.remove(SessionStorage.KeyNames.UserProfile);
+        
+        LoginState.onUserLoginStateChange(false);
 
         this.clearCookie();
     }
@@ -147,6 +148,8 @@ export default class AuthService
         var msalAcct = this.getMsalAccount();
 
         var result = await this.msalAquireTokenSilentFromCacheIsSuccess(msalAcct);
+        
+        LoginState.onUserLoginStateChange(result);
 
         resolve(result);
       });
@@ -163,14 +166,15 @@ export default class AuthService
 
             //AAD 24hr refresh token is up, cannot extend anymore, full login required
             if(tokenResponse.extExpiresOn == null) {
-                this.logout();
                 resolve(false);
+                this.logout();
             }
 
             if(!tokenResponse.fromCache) {
               //refresh access token expiry at the same time and save to SessionStorage
               this.createUser(tokenResponse);
             }
+
             resolve(true);
         })
         .catch(error => {
