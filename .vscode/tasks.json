@@ -15,25 +15,12 @@
             "problemMatcher": []
         },
         {
-            "label": "build AzW.Application",
-            "command": "dotnet build",
-            "type": "shell",
-            "args": [],
-            "options": {
-                "cwd": "${workspaceFolder}/AzW.Application",
-                "env": {
-                    "ASPNETCORE_ENVIRONMENT": "Development"
-                }
-            },
-            "problemMatcher": []
-        },
-        {
             "label": "build AzW.Infra.Azure",
             "command": "dotnet build",
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/AzW.Infrastructure.AzureServices",
+                "cwd": "${workspaceFolder}/Portal.Services/AzW.Infrastructure.AzureServices",
                 "env": {
                     "ASPNETCORE_ENVIRONMENT": "Development"
                 }
@@ -46,7 +33,7 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/AzW.Model",
+                "cwd": "${workspaceFolder}/Portal.Services/AzW.Model",
                 "env": {
                     "ASPNETCORE_ENVIRONMENT": "Development"
                 }
@@ -59,7 +46,7 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/AzW.Secret",
+                "cwd": "${workspaceFolder}/Portal.Services/AzW.Secret",
                 "env": {
                     "ASPNETCORE_ENVIRONMENT": "Development"
                 }
@@ -72,7 +59,7 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/AzW.Web.API",
+                "cwd": "${workspaceFolder}/Portal.Services/AzW.Web.API",
                 "env": {
                     "ASPNETCORE_ENVIRONMENT": "Development"
                 }
@@ -85,7 +72,7 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/AzW.Web.API"
+                "cwd": "${workspaceFolder}/Portal.Services/AzW.Web.API"
             },
             "problemMatcher": []
         },
@@ -95,7 +82,7 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/AzW.Web.API"
+                "cwd": "${workspaceFolder}/Portal.Services/AzW.Web.API"
             },
             "problemMatcher": []
         },
@@ -115,7 +102,7 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/AzW.Infrastructure.Data",
+                "cwd": "${workspaceFolder}/Portal.Services/AzW.Infrastructure.Data",
                 "env": {
                     "env": "dev"
                 }
