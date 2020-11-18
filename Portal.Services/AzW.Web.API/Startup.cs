@@ -25,6 +25,7 @@ using System.Reflection;
 using System.IO;
 using Serilog.Events;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.ApplicationInsights.Extensibility;
 
 namespace AzW.Web.API
 {
@@ -71,7 +72,9 @@ namespace AzW.Web.API
 
             ConfigureDependencies(services);
 
+            //app insights user tracker
             services.AddApplicationInsightsTelemetry(_secrets.AppInsightsKey);
+            services.AddSingleton<ITelemetryInitializer, TelemetryUserNameEnrichment>();
         }
 
 

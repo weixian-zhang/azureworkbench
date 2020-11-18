@@ -152,9 +152,6 @@ namespace AzW.Infrastructure.Data
             var contextResult = new List<WorkspaceDiagramContextResult>();
 
             var coll = db.GetCollection<WorkspaceDiagramContext>(CollectionName.MySpace);
-            var filter =
-                Builders<WorkspaceDiagramContext>.Filter
-                    .Eq(x => x.EmailId, emailId);
             
               using (IAsyncCursor<WorkspaceDiagramContext> cursor =
                 await coll.FindAsync(x => x.EmailId == emailId))
