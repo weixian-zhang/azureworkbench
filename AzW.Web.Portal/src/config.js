@@ -27,7 +27,8 @@ export default class Config
     static Authority() {return 'https://login.microsoftonline.com/common'; }
     static Scope() {
         return [
-            "api://16afdc21-ffd3-4cf8-aeae-63bebf9e327e/azworkbench-azure-deploy",
+            "api://azworkbench-pkce/Read.Write.AzureSubscription",
+            //"api://16afdc21-ffd3-4cf8-aeae-63bebf9e327e/azworkbench-azure-deploy",
             "offline_access"];
      }
 }

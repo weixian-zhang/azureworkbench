@@ -128,7 +128,7 @@ namespace AzW.Web.API
                     //https://docs.microsoft.com/bs-latn-ba/azure/active-directory/develop/scenario-protected-web-api-app-configuration
                     options.Instance = "https://login.microsoftonline.com";
                     options.TenantId = "common";
-                    options.ClientId = "16afdc21-ffd3-4cf8-aeae-63bebf9e327e";
+                    options.ClientId = "4a2a5dad-0bdd-453a-84b1-b83d50878ba9";
                     Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
                 });
             
@@ -146,7 +146,8 @@ namespace AzW.Web.API
                             $"api://{options.Audience}",
                             "00000003-0000-0000-c000-000000000000",//graph api
                             "4a2a5dad-0bdd-453a-84b1-b83d50878ba9", //azworkbench-portal-dev-pkce
-                            "api://4a2a5dad-0bdd-453a-84b1-b83d50878ba9"
+                            "api://azworkbench-pkce"
+                            //"api://4a2a5dad-0bdd-453a-84b1-b83d50878ba9"
                         };
                         
 
