@@ -1,0 +1,27 @@
+#clear mongodb documents
+#db.getCollection('AnonyDiagram').deleteMany({"DiagramName": { $ne : "load-test-data"}})
+config:
+  target: "https://beta-api.azureworkbench.com"
+  processor: "./prep-funcs.js"
+  phases:
+    - duration: 300 #5 mins
+      arrivalRate: 10
+      name: warm up phase
+    - duration: 900  #15 mins
+      arrivalRate: 10
+      rampTo: 50
+      name: ramp up load
+    - duration: 1800 #30 mins
+      arrivalRate: 300
+      name: sustained load
+scenarios:
+  - flow:
+       - log: "New user running"
+       - function: "getSaveToMySpaceData"
+       - function: "getJwt"
+       - post:
+          url: "/api/wrkspace/dia/save"
+          headers: 
+            Content-Type: "application/json"
+            Authorization: "{{ bearerToken }}"
+          body: "{{ data }}"
