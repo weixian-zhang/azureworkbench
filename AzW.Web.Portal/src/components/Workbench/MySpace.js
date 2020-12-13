@@ -223,13 +223,13 @@ export default class MySpace extends Component {
                     <TableCell align="right">
                       <Button text="Update" icon="floppy-disk"
                             onClick={() =>
-                              this.promptCurrentDiagramToThisSpace(diagram.collectionName, diagram.diagramName)} />
+                              this.promptUpdateSharedDiagramConfirmDialog(diagram.emailId, diagram.uid)} />
                     </TableCell>
                     <TableCell align="right">
-                      <Button text="Load" icon="cloud-download" onClick={() => this.loadDiagramFromWorkspace(diagram)} /> 
+                      <Button text="Load" icon="cloud-download" onClick={() => this.loadSharedDiagram(diagram.uid)} /> 
                     </TableCell>
                     <TableCell align="left">
-                      <Button text="Delete" icon="delete" intent='danger' onClick={() => this.openDeleteConfirmDialog(diagram)} />
+                      <Button text="Delete" icon="delete" intent='danger' onClick={() => this.promptDeleteSharedDiagramConfirmDialog(diagram.emailId, diagram.uid)} />
                     </TableCell>
                   </TableRow>
               ))}
@@ -265,6 +265,39 @@ export default class MySpace extends Component {
             saveThisSpaceCollection: collection,
             saveThisSpaceDiagramName: diagramName
           });
+      }
+
+      promptUpdateSharedDiagramConfirmDialog(emailId, uid) {
+
+      }
+
+      loadSharedDiagram(uid) {
+
+        var thisComp = this;
+
+        this.diagramService.loadSharedDiagramFromMySpace(uid,
+          function onSuccess(diagramXml) {
+            if(diagramXml == '')
+              return;
+
+            thisComp.props.DiagramEditor.importJsonDiagram(diagramXml);
+            thisComp.setState({isOpen: false});
+            // thisComp.notifyStatusBarLoadSource
+            //   ('myspace', diagramContext.collectionName, diagramContext.diagramName);
+
+            Toast.show('success', 2000, 'Diagram loaded')
+            
+            return;
+          },
+          function onError(err){
+            Toast.show('danger', 3000, Messages.LoadDiagramFromWorkspaceError());
+            return;
+          }
+        );
+      }
+
+      promptDeleteSharedDiagramConfirmDialog(emailId, uid) {
+
       }
 
       handleThisSpaceDialogClose = () => {

@@ -76,6 +76,17 @@ namespace AzW.Web.API
         }
 
         [Authorize()]
+        [HttpGet("wrkspace/shareddiag/load")]
+        public async Task<ContentResult> LoadDiagramFromWorkspace(string diagramUID)
+        {
+            string json =
+                await _diagramRepo.LoadSharedDiagramFromMySpace(diagramUID);
+           
+           return this.Content(json, "application/json");
+        }
+
+
+        [Authorize()]
         [HttpGet("wrkspace/shareddiags")]
         public async Task<IEnumerable<SharedDiagramMySpaceInfo>> GetAllSharedDiagramsFromMySpace(string emailId)
         {

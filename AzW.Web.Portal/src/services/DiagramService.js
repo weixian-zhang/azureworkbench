@@ -312,4 +312,30 @@ export default class DiagramService
         errorCallback(error);
       })
     }
+
+    async loadSharedDiagramFromMySpace(uid, successCallback, errorCallback) {
+      if(! await this.authService.checkLoginStateAndNotify())
+      return;
+
+      var user = this.authService.getUserProfile();
+
+      axios.get('/api/wrkspace/shareddiag/load', 
+      {
+        params: {
+          diagramUID: uid
+        },
+        headers: {
+
+          'Authorization': 'Bearer ' + user.AccessToken,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(function (response) {
+        successCallback(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+        errorCallback(error);
+      })
+    }
 }
