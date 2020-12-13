@@ -56,6 +56,42 @@ export default class DiagramService
         });  
     }
 
+    async saveSharedDiagramInMySpace(sharedDiagramMySpaceContext, respCallback, errCallback){
+      if(sharedDiagramMySpaceContext == null || sharedDiagramMySpaceContext.DiagramXml == null)
+          return;
+
+          var user = this.authService.getUserProfile();
+
+          axios.post('/api/wrkspace/shareddiag/save', 
+          {
+            UID: sharedDiagramMySpaceContext.UID,
+            SharedLink: sharedDiagramMySpaceContext.SharedLink,
+            DiagramName: sharedDiagramMySpaceContext.DiagramName,
+            DiagramXml: sharedDiagramMySpaceContext.DiagramXml,
+            DateTimeSaved: sharedDiagramMySpaceContext.DateTimeSaved
+          }, 
+          {
+            headers: {
+                'Authorization': 'Bearer ' + user.AccessToken,
+                'Content-Type': 'application/json'
+            }
+          })
+          .then(function (response) {
+  
+            if(!response.data.isSuccess && response.data.errorCode == 'diagram-to-large')
+            {
+              Toast.show('warning', 8000,
+                "Diagram not saved as it is over 2Mb, consider break up your diagram into multiple diagrams and save separately");
+            } else {
+              respCallback(response.data);
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+            errCallback(error);
+          }); 
+  }
+
     async loadAnonymousDiagram(anonyDiagramId, responseCallback, errorCallback){
       if(anonyDiagramId == null)
         return;
@@ -250,4 +286,30 @@ export default class DiagramService
           
         });
       }
+    
+    async getSharedDiagrams(successCallback, errorCallback) {
+      if(! await this.authService.checkLoginStateAndNotify())
+      return;
+
+      var user = this.authService.getUserProfile();
+
+      axios.get('/api/wrkspace/shareddiags', 
+      {
+        params: {
+          emailId: user.UserName
+        },
+        headers: {
+
+          'Authorization': 'Bearer ' + user.AccessToken,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(function (response) {
+        successCallback(response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+        errorCallback(error);
+      })
+    }
 }

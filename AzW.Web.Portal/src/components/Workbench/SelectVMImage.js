@@ -88,7 +88,7 @@ export default class SelectVMImage extends Component {
 
     onImageSelected = (item, event) => {
 
-        var vmImg = new VMimage
+        var vmImg = new VMimage()
 
         var displayName = item.currentTarget.dataset.displayname;
         vmImg.Publisher = item.currentTarget.dataset.publisher;

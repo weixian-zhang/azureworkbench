@@ -47,6 +47,54 @@ namespace AzW.Web.API
             return diagContext;
         }
 
+        #region Shared diagram in MySpace
+
+        [Authorize()]
+        [HttpPost("wrkspace/shareddiag/save")]
+        public async Task<IActionResult> SaveSharedDiagramInMySpace
+            ([FromBody] SharedDiagramMySpaceContext context) 
+        {
+            string shortUUID = ShortId.Generate(new GenerationOptions()
+            {
+                Length = 20,
+                UseNumbers = false,
+                UseSpecialCharacters = false
+            });
+            
+            string shareLink =
+                QueryHelpers.AddQueryString(_secret.PortalUrl, "id", shortUUID);
+            
+            context.EmailId = this.GetUserIdentity().Email;
+            context.UID = shortUUID;
+            context.SharedLink = shareLink;
+
+            var result = await _diagramRepo.SaveSharedDiagramInMySpace(context);
+
+            result.SharedLink = shareLink;
+
+            return StatusCode(200, result);
+        }
+
+        [Authorize()]
+        [HttpGet("wrkspace/shareddiags")]
+        public async Task<IEnumerable<SharedDiagramMySpaceInfo>> GetAllSharedDiagramsFromMySpace(string emailId)
+        {
+            try
+            {
+                var diagrams = await _diagramRepo.GetAllSharedDiagramsFromMySpace(emailId);
+                return diagrams;
+            }
+            catch(Exception ex)
+            {
+                _logger.Error($"{ex.ToString()}");
+                throw ex;
+            }
+        }
+
+        #endregion
+
+        #region Anonymous diagram
+
         [HttpPost("dia/anony/share")]
         public async Task<IActionResult> GenerateDiagramLink([FromBody]AnonyDiagramShareContext context)
         {            
@@ -71,13 +119,15 @@ namespace AzW.Web.API
         }
 
         [HttpGet("dia/anony/shareload")]
-        public async Task<string> GetSharedDiagram([FromQuery]string anonyDiagramId)
+        public async Task<string> GetAnonymousDiagram([FromQuery]string anonyDiagramId)
         {
             var anonyDiagram =
-                await _diagramRepo.GetSharedDiagramAsync(anonyDiagramId);
+                await _diagramRepo.GetAnonymousDiagramAsync(anonyDiagramId);
             
             return JsonConvert.SerializeObject(anonyDiagram);
         }
+
+        #endregion
 
         [Authorize()]
         [HttpPost("wrkspace/dia/save")]
@@ -90,7 +140,7 @@ namespace AzW.Web.API
 
         [Authorize()]
         [HttpGet("wrkspace/diagrams")]
-        public async Task<IEnumerable<WorkspaceDiagramContextResult>>GetDiagramsFromWorkspace(string emailId)
+        public async Task<IEnumerable<WorkspaceDiagramContextResult>> GetDiagramsFromWorkspace(string emailId)
         {
             try
             {

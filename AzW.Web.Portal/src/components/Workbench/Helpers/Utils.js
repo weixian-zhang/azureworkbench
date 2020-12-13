@@ -311,6 +311,13 @@ export default class Utils
         return false;
     }
 
+    static IsEmptyString(str) {
+        if (str == "")
+            return true;
+        else
+            return false;
+    }
+
     
     static getCellCenterPoint(cell){
         var geo = cell.geometry;

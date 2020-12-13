@@ -16,13 +16,14 @@ import QuickStart from '@material-ui/icons/FlashOn';
 import OverlayTutorial from './OverlayTutorial';
 import OverlayAbout from './OverlayAbout';
 import OverlayProvision from './OverlayProvision';
+import OverlaySharedDiagramPrompt from './OverlaySharedDiagramPrompt';
 import DiagramService from '../../services/DiagramService';
 import LoginState from '../../services/LoginState';
 import fileDialog from 'file-dialog'
 import 'react-tippy/dist/tippy.css'
 import { Tooltip} from 'react-tippy';
 import moment from 'moment';
-
+import Toast from './Helpers/Toast';
 import AuthService from '../../services/AuthService';
 import UserProfile from "../../models/UserProfile";
 
@@ -62,14 +63,7 @@ export default class Header extends Component {
     this.overlayTutorial = React.createRef();
     this.overlayAbout = React.createRef();
     this.overlayProvision = React.createRef();
-  }
-
-  componentDidMount() {
-    // var thisComp = this;
-    // this.authService.isUserLogin().then(isLogin => {
-    //   var user = thisComp.authService.getUserProfile();
-    //   thisComp.setState({isLogin: isLogin, userProfile: user})
-    // });
+    this.overlaySharedDiagramPrompt = React.createRef();
   }
 
   componentWillMount() {
@@ -91,6 +85,7 @@ export default class Header extends Component {
       <div style={{width:'100%'}}>
         <OverlayTutorial ref={this.overlayTutorial}  />
         <OverlayAbout ref={this.overlayAbout} />
+        <OverlaySharedDiagramPrompt ref={this.overlaySharedDiagramPrompt} />
         <OverlayProvision ref={this.overlayProvision} OnOverlayProvisionClose={this.onOverlayProvisionClose}/>
         <AppBar position="static" style={{overflow:'hidden', height:'40px',margin:0,padding:0, background: '#2E3B55' }}>
           <Toolbar variant='dense' disableGutters={true}>
@@ -275,9 +270,25 @@ loadAutoSaveRecoveryPoint = () => {
   diagramEditor.loadAutoSavedRecoveryPoint();
 }
 
- shareDiagram = () => {
-     var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
-     diagramEditor.shareDiagram();
+ shareDiagram = async () => {
+
+      var thisComp = this;
+     if(await this.authService.isUserLogin()) {
+       var diagramName = '';
+       this.overlaySharedDiagramPrompt.current.show(function(diagramName) {
+            if (diagramName == '') {
+              Toast.show('primary', 3000, 'No diagram no, Share-Link is not generated');
+              return;
+            }
+            var diagramEditor =  thisComp.props.Workbench.current.getDiagramEditor();
+            diagramEditor.shareDiagram(diagramName);
+       });
+       
+     } else {
+        var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
+        diagramEditor.shareDiagram();
+     }
+     
  }
 
  savetoWorkspace = () => {

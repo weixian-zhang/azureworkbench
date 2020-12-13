@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,7 @@ namespace AzW.Infrastructure.Data
         const string DiagramContainerName = "diagrams";
         const string SharedDiagramContainerName = "shareddiagrams";
         const string QuickstartContainerName = "quickstarts";
+        const string MySpaceSharedDiagrams = "myspace-shareddiagrams";
 
         public BlobStorageManager(string connString)
         {
@@ -22,7 +24,9 @@ namespace AzW.Infrastructure.Data
             _diagContainer = _blobClient.GetBlobContainerClient(DiagramContainerName);
             _sharedLinkContainer = _blobClient.GetBlobContainerClient(SharedDiagramContainerName);
             _quickstartContainer = _blobClient.GetBlobContainerClient(QuickstartContainerName);
-
+            _sharedLinkContainer = _blobClient.GetBlobContainerClient(SharedDiagramContainerName);
+            _sharedDiagramMySpace = _blobClient.GetBlobContainerClient(MySpaceSharedDiagrams);
+            
             CreateContainersIfNotExist().GetAwaiter().GetResult();
         }
 
@@ -47,6 +51,52 @@ namespace AzW.Infrastructure.Data
 
             return diagramBase64;
         }
+
+        #region Shared diagram in MySpace
+
+        public async Task<string> GetSharedDiagramFromMySpace(string sharedDiagramUID)
+        {
+            string blobname = GetBlobNameForMySpaceSharedDiagram(sharedDiagramUID);
+
+            var bc = _sharedDiagramMySpace.GetBlobClient(blobname);
+
+            string diagram = await GetDiagramFromBlobStream(bc);
+
+            return diagram;
+        }
+
+        public async Task SaveSharedDiagramInMySpace
+            (string emailId, string sharelinkId, string diagram)
+        {
+            string fullBlobName =GetBlobNameForMySpaceSharedDiagram(sharelinkId);
+
+            
+            var bc = _sharedDiagramMySpace.GetBlobClient(fullBlobName);
+            
+            byte[] byteArray = Encoding.ASCII.GetBytes(diagram);
+            using(var ms = new MemoryStream(byteArray))
+            {
+                await bc.UploadAsync(ms);
+            }
+
+            var metadata = new Dictionary<string,string>();
+            metadata.Add("user", emailId);
+            bc.SetMetadata(metadata);
+        }
+
+        public async Task<bool> DeleteSharedDiagramFromMySpace(string emailId, string diagramUID)
+        {
+            string blobName = GetBlobNameForMySpaceSharedDiagram(diagramUID);
+
+            var bc = _sharedDiagramMySpace.GetBlobClient(blobName);
+
+            if(! await bc.ExistsAsync())
+                return true;
+
+            return await bc.DeleteIfExistsAsync(DeleteSnapshotsOption.None);
+        }
+
+        #endregion
 
 
         public async Task<string> GetDiagramFromMySpace(string emailId, string collection, string diagramName)
@@ -82,7 +132,6 @@ namespace AzW.Infrastructure.Data
                 return diagramBase64;
             }
         }
-
 
         public async Task SaveDiagramToMySpace
             (string diagram, string emailId, string collection, string diagramName)
@@ -162,6 +211,13 @@ namespace AzW.Infrastructure.Data
             return fullPath;
         }
 
+        private string GetBlobNameForMySpaceSharedDiagram(string sharedlinkId)
+        {
+            string blobName = sharedlinkId + ".azwb";
+
+            return blobName;
+        }
+
         private async Task CreateContainersIfNotExist()
         {
             await _diagContainer.CreateIfNotExistsAsync();
@@ -187,6 +243,8 @@ namespace AzW.Infrastructure.Data
         BlobContainerClient _diagContainer;
         BlobContainerClient _sharedLinkContainer;
         BlobContainerClient _quickstartContainer;
+
+        BlobContainerClient _sharedDiagramMySpace;
 
     }
 }

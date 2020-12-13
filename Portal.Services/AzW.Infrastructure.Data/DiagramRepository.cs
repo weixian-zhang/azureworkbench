@@ -15,7 +15,9 @@ namespace AzW.Infrastructure.Data
             _secret =secret;
             _blob = blobStorageManager;
         }
-        
+
+        #region Anonymous diagram
+
         public async Task<DiagramSaveResult> SaveAnonymousDiagram(AnonyDiagramShareContext context)
         {
             try
@@ -59,12 +61,26 @@ namespace AzW.Infrastructure.Data
             }
         }
 
-        public async Task<AnonyDiagramShareContext>GetSharedDiagramAsync(string anonyDiagramId)
+        public async Task<AnonyDiagramShareContext>
+            GetAnonymousDiagramAsync(string anonyDiagramId)
         {
             try
             {
-                 string diagram = await _blob.GetSharedLinkDiagram(anonyDiagramId);
+                string diagram = "";
+
+                var db = CosmosDbHelper.GetDatabase(_secret);
+
+                var coll =
+                    db.GetCollection<SharedDiagramMySpaceInfo>(CollectionName.MySpaceSharedDiagram);
                 
+                 var sharedDiagram =
+                        (await coll.FindAsync(x => x.UID == anonyDiagramId)).SingleOrDefault();
+                    
+                if(sharedDiagram != null)
+                    diagram = await _blob.GetSharedDiagramFromMySpace(anonyDiagramId);
+                else
+                    diagram = await _blob.GetSharedLinkDiagram(anonyDiagramId);
+                               
                 return new AnonyDiagramShareContext() {DiagramXml = diagram};
             }
             catch(Exception ex)
@@ -72,6 +88,152 @@ namespace AzW.Infrastructure.Data
                 throw ex;
             }
         }
+
+        #endregion
+
+        #region Shared diagram in MySpace
+
+        public async Task<IEnumerable<SharedDiagramMySpaceInfo>> GetSharedDiagramMySpaceInfo(string emailId)
+        {
+            var db = CosmosDbHelper.GetDatabase(_secret);
+
+            var infoList = new List<SharedDiagramMySpaceInfo>();
+
+            var coll =
+                db.GetCollection<SharedDiagramMySpaceInfo>(CollectionName.MySpaceSharedDiagram);
+        
+            using (IAsyncCursor<SharedDiagramMySpaceInfo> cursor =
+                await coll.FindAsync(x => x.EmailId == emailId))
+            {
+                while (await cursor.MoveNextAsync())
+                {
+                    IEnumerable<SharedDiagramMySpaceInfo> sharedDiagInfo = cursor.Current;
+
+                    foreach (SharedDiagramMySpaceInfo sdi in sharedDiagInfo)
+                    {
+                        infoList.Add(sdi);
+                    }
+                }
+            }
+
+            return infoList;
+        }
+
+        public async Task<string> LoadSharedDiagramFromMySpace(string diagramUID)
+        {
+            string diagram =
+                await _blob.GetSharedDiagramFromMySpace(diagramUID);
+            
+            return diagram;
+        }
+
+        public async Task<IEnumerable<SharedDiagramMySpaceInfo>> GetAllSharedDiagramsFromMySpace(string emailId)
+        {
+            var db = CosmosDbHelper.GetDatabase(_secret);
+
+            var coll = db.GetCollection<SharedDiagramMySpaceInfo>(CollectionName.MySpaceSharedDiagram);
+            var filter =
+                Builders<WorkspaceDiagramContext>.Filter.Eq(x => x.EmailId, emailId);
+            
+            var sharedDiagramsList =
+                (await coll.FindAsync(x => x.EmailId == emailId)).ToList<SharedDiagramMySpaceInfo>();
+            
+            return sharedDiagramsList;
+        }
+
+        public async Task<DiagramSaveResult> SaveSharedDiagramInMySpace(SharedDiagramMySpaceContext context)
+        {
+            try
+            {
+                var db = CosmosDbHelper.GetDatabase(_secret);
+
+                var coll =
+                    db.GetCollection<SharedDiagramMySpaceContext>(CollectionName.MySpaceSharedDiagram);
+                
+                //diagram now stores in blob storage
+                await _blob.SaveSharedDiagramInMySpace(context.EmailId, context.UID, context.DiagramXml);
+                //don't save diagramJson to Cosmos
+                context.DiagramXml = string.Empty;
+
+                await coll.InsertOneAsync(context);
+
+                return new DiagramSaveResult() { IsSuccess = true, SharedLink = context.SharedLink };
+            }
+            catch(MongoWriteException mwex)
+            {
+                if(mwex.Message.ToLowerInvariant().Contains("request size is too large"))
+                    return new DiagramSaveResult()
+                    {
+                        IsSuccess = false,
+                        ErrorCode = "diagram-to-large"
+                    };
+                throw mwex;
+            }
+            catch(MongoCommandException mex)
+            {
+                if(mex.Message.ToLowerInvariant().Contains("request size is too large"))
+                    return new DiagramSaveResult()
+                    {
+                        IsSuccess = false,
+                        ErrorCode = "diagram-to-large"
+                    };
+                throw mex;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<DiagramSaveResult> UpdateSharedDiagramInMySpace(string emailId, string diagramUID, string diagramJson)
+        {
+            var db = CosmosDbHelper.GetDatabase(_secret);
+
+            var coll =
+                db.GetCollection<SharedDiagramMySpaceContext>(CollectionName.MySpaceSharedDiagram);
+            
+            var existingSharedDiagram = coll.FindSync(x =>
+                    x.EmailId == emailId &&
+                    x.UID == diagramUID
+                ).SingleOrDefault();
+            
+            if(existingSharedDiagram == null)
+                throw new Exception("Existing shared diagram not found when performing DiagramRepository.UpdateSharedDiagramInMySpace");
+
+            await _blob.SaveSharedDiagramInMySpace(emailId, diagramUID, diagramJson);
+
+            existingSharedDiagram.DateTimeSaved = DateTime.Now;
+
+            await coll.ReplaceOneAsync
+                (x => x.Id == existingSharedDiagram.Id && x.EmailId == emailId && x.UID == diagramUID, existingSharedDiagram);
+
+            return new DiagramSaveResult() { IsSuccess = true };
+        }
+
+        public async Task<bool> DeleteSharedDiagramInMySpace(string emailId, string diagramUID)
+        {
+            var db = CosmosDbHelper.GetDatabase(_secret);
+
+            var coll = db.GetCollection<SharedDiagramMySpaceContext>(CollectionName.MySpaceSharedDiagram);
+
+            bool blobDel = await _blob.DeleteSharedDiagramFromMySpace(emailId, diagramUID);
+
+            if(blobDel)
+            {
+                var result =
+                    await coll.DeleteOneAsync<SharedDiagramMySpaceContext>(x => x.EmailId == emailId && x.UID ==  diagramUID);
+            
+                if(result.DeletedCount != 1)
+                {
+                    //log record not found, not deleted
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        #endregion
 
         public async Task<DiagramSaveResult> SaveDiagramToWorkspace(WorkspaceDiagramContext context)
         {
@@ -237,14 +399,6 @@ namespace AzW.Infrastructure.Data
             {
                 DiagramXml = diagramJson
             };
-            // var db = CosmosDbHelper.GetDatabase(_secret);
-
-            // var coll = db.GetCollection<QuickstartDiagramContext>(CollectionName.Quickstart);
-
-            // var qsDiagram = await coll.FindSync<QuickstartDiagramContext>
-            //     (x => x.Category == category && x.Name == name).SingleOrDefaultAsync();
-            
-            // return qsDiagram;
         }
 
         private WorkbenchSecret _secret;

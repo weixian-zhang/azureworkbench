@@ -880,6 +880,14 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true
+            },
+            {
+              Name: 'kusto kql',
+              Tooltip: 'Kusto',
+              Image: require('../../assets/azure_icons/azure non-deployable/Kusto.png'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
             }
           ]
         }

@@ -1,5 +1,6 @@
 public class CollectionName
 {
+    public const string MySpaceSharedDiagram = "MySpaceSharedDiagram";
     public const string AnonyDiagram = "AnonyDiagram";
     public const string Workspace = "Workspace";
     public const string MySpace = "MySpace";

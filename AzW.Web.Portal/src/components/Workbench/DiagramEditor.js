@@ -16,6 +16,7 @@ import ShortUniqueId from 'short-unique-id';
 import Messages from "./Helpers/Messages";
 import Utils from "./Helpers/Utils";
 import Subnet from "../../models/Subnet";
+import SharedDiagramMySpaceContext from "../../models/services/SharedDiagramMySpaceContext"
 import LoadAnonyDiagramContext from "../../models/LoadAnonyDiagramContext";
 import DiagramService from '../../services/DiagramService';
 import ProvisionService from '../../services/ProvisionService';
@@ -2243,7 +2244,7 @@ createPictureShape(dropContext) {
     ({key: shapeKey, 
       text: label, 
       source: image, 
-      font: '14px Segoe UI',
+      font: '17px Segoe UI',
       stroke: 'black',
       nodetype: GoNodeType.ImageShape(),
       size: go.Size.stringify(new go.Size(60,60)),
@@ -2263,7 +2264,7 @@ createNonVIRAzureResource(dropContext) {
       source: image, 
       size: go.Size.stringify(new go.Size(50,50)),
       zOrder: 50,
-      font: '14px Segoe UI',
+      font: '17px Segoe UI',
       stroke: 'black',
       nodetype: GoNodeType.ImageShape(),
       loc: go.Point.stringify(canvasPoint), category: 'outofvnetazureresource'});
@@ -2277,7 +2278,7 @@ createText(dropContext) {
   this.diagram.model.addNodeData
     ({
       key: shapeKey, 
-      font:'17px Segoe UI', 
+      font:'22px Segoe UI', 
       text: label != '' ? label : 'text',
       stroke: 'black', 
       textAlign: 'center',
@@ -3358,6 +3359,11 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       case 'Network Watcher':
         this.createPictureShape
         ({source:Utils.pngDataUrl(AzureIcons.NetworkWatcherShape()),
+          label: '', x: dropContext.x, y: dropContext.y});
+      break;
+      case 'Kusto':
+        this.createPictureShape
+        ({source:Utils.pngDataUrl(AzureIcons.Kusto()),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
 
@@ -4462,7 +4468,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         )
   }
 
-  shareDiagram(){
+  shareDiagram = async (diagramNameForSharedDiagMySpace) => {
     if(Utils.isCanvasEmpty(this.diagram))
       {
         Toaster.create({
@@ -4472,22 +4478,43 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         }).show({intent: Intent.WARNING, timeout: 3000, message: Messages.NoCellOnGraph()});
         return;
       }
-
+    
     var thisComp = this;
-    var anonyDiagramContext = new AnonymousDiagramContext();
-    anonyDiagramContext.DiagramName = Utils.uniqueId('diagram');
-    anonyDiagramContext.DiagramXml = this.getDiagramBase64Json(); //this.diagram.model.toJson();
-    anonyDiagramContext.DateTimeSaved = new Date();
 
-    this.diagramService
-      .saveAnonymousDiagram(anonyDiagramContext,
-        function (shareLink){
+    //if loggedin, save shared diagram to MySpace
+    if(await this.authsvc.isUserLogin())
+    {
+      var context = new SharedDiagramMySpaceContext();
+      context.DiagramName = diagramNameForSharedDiagMySpace;
+      context.DiagramXml = this.getDiagramBase64Json(); //this.diagram.model.toJson();
+      context.DateTimeSaved = new Date();
 
-          thisComp.setState({shareLink: shareLink, showShareDiagramPopup: true});
+      this.diagramService.saveSharedDiagramInMySpace(context,
+        function (result){
+          thisComp.setState({shareLink: result.sharedLink, showShareDiagramPopup: true});
+          Toast.show('primary', 4500, "Shared diagram is in your MySpace");
         },
         function(error){
           Toast.show('danger', 3000, error.message);
-        });
+        })
+
+      return;
+    }
+    else {
+      var anonyDiagramContext = new AnonymousDiagramContext();
+      anonyDiagramContext.DiagramName = Utils.uniqueId('diagram');
+      anonyDiagramContext.DiagramXml = this.getDiagramBase64Json(); //this.diagram.model.toJson();
+      anonyDiagramContext.DateTimeSaved = new Date();
+
+      this.diagramService
+        .saveAnonymousDiagram(anonyDiagramContext,
+          function (shareLink){
+            thisComp.setState({shareLink: shareLink, showShareDiagramPopup: true});
+          },
+          function(error){
+            Toast.show('danger', 3000, error.message);
+          });
+      }
   }
 
   loadSharedDiagram = () => {

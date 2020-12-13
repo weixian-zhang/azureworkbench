@@ -15,8 +15,8 @@
     background-color: #fff;
     border: 1px solid #000;
     text-align:center;
-    height: 680px;/*height needs to be set*/
-    width: 900px;
+    height: 700px;/*height needs to be set*/
+    width: 1100px;
     margin: auto;
     position: fixed;
     top: 0;
@@ -64,6 +64,19 @@
       bottom: 0;
       left: 0;
       }
+.sharedDiagram-MySpace-overlay-box {
+    background-color: #fff;
+    border: 1px solid #000;
+    text-align:left;
+    height: 180px;/*height needs to be set*/
+    width: 460px;
+    margin: auto;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
     .workspace-deletediagramdialog-overlay-box {
       background-color: #fff;
       border: 1px solid #000;
