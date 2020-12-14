@@ -77,7 +77,7 @@ namespace AzW.Web.API
 
         [Authorize()]
         [HttpGet("wrkspace/shareddiag/load")]
-        public async Task<ContentResult> LoadDiagramFromWorkspace(string diagramUID)
+        public async Task<ContentResult> LoadSharedDiagramFromMySpace(string diagramUID)
         {
             string json =
                 await _diagramRepo.LoadSharedDiagramFromMySpace(diagramUID);
@@ -100,6 +100,29 @@ namespace AzW.Web.API
                 _logger.Error($"{ex.ToString()}");
                 throw ex;
             }
+        }
+
+        [Authorize()]
+        [HttpPost("wrkspace/shareddiag/update")]
+        public async Task<IActionResult> UpdateSharedDiagramInMySpace
+            ([FromBody] SharedDiagramMySpaceUpdateContext context)
+        {
+           var result =
+             await _diagramRepo.UpdateSharedDiagramInMySpace(context.EmailId, context.DiagramUID, context.DiagramJson);
+            
+            return StatusCode(200, result);
+        }
+
+        [Authorize()]
+        [HttpDelete("wrkspace/shareddiag/del")]
+        public async Task<IActionResult> DeleteSharedDiagramFromMySpace(string emailId, string diagramUID)
+        {
+            bool result = await _diagramRepo.DeleteSharedDiagramInMySpace(emailId, diagramUID);
+
+            if(result == true)
+                return StatusCode(200, result);
+            else
+                return StatusCode(500, result);
         }
 
         #endregion

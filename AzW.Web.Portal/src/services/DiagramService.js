@@ -56,41 +56,6 @@ export default class DiagramService
         });  
     }
 
-    async saveSharedDiagramInMySpace(sharedDiagramMySpaceContext, respCallback, errCallback){
-      if(sharedDiagramMySpaceContext == null || sharedDiagramMySpaceContext.DiagramXml == null)
-          return;
-
-          var user = this.authService.getUserProfile();
-
-          axios.post('/api/wrkspace/shareddiag/save', 
-          {
-            UID: sharedDiagramMySpaceContext.UID,
-            SharedLink: sharedDiagramMySpaceContext.SharedLink,
-            DiagramName: sharedDiagramMySpaceContext.DiagramName,
-            DiagramXml: sharedDiagramMySpaceContext.DiagramXml,
-            DateTimeSaved: sharedDiagramMySpaceContext.DateTimeSaved
-          }, 
-          {
-            headers: {
-                'Authorization': 'Bearer ' + user.AccessToken,
-                'Content-Type': 'application/json'
-            }
-          })
-          .then(function (response) {
-  
-            if(!response.data.isSuccess && response.data.errorCode == 'diagram-to-large')
-            {
-              Toast.show('warning', 8000,
-                "Diagram not saved as it is over 2Mb, consider break up your diagram into multiple diagrams and save separately");
-            } else {
-              respCallback(response.data);
-            }
-          })
-          .catch(function (error) {
-            console.log(error);
-            errCallback(error);
-          }); 
-  }
 
     async loadAnonymousDiagram(anonyDiagramId, responseCallback, errorCallback){
       if(anonyDiagramId == null)
@@ -313,6 +278,34 @@ export default class DiagramService
       })
     }
 
+    async deleteSharedDiagram(emailId, uid, successCallback, errorCallback) {
+
+      if(! await this.authService.checkLoginStateAndNotify())
+      return;
+
+      var user = this.authService.getUserProfile();
+
+      axios.delete('/api/wrkspace/shareddiag/del', 
+      {
+        params: {
+          emailId: emailId,
+          diagramUID: uid
+        },
+        headers: {
+
+          'Authorization': 'Bearer ' + user.AccessToken,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(function (response) {
+        successCallback();
+      })
+      .catch(function (error) {
+        console.log(error);
+        errorCallback(error);
+      })
+    }
+
     async loadSharedDiagramFromMySpace(uid, successCallback, errorCallback) {
       if(! await this.authService.checkLoginStateAndNotify())
       return;
@@ -338,4 +331,72 @@ export default class DiagramService
         errorCallback(error);
       })
     }
+
+    async saveSharedDiagramInMySpace(sharedDiagramMySpaceContext, respCallback, errCallback) {
+      if(sharedDiagramMySpaceContext == null || sharedDiagramMySpaceContext.DiagramXml == null)
+          return;
+
+          var user = this.authService.getUserProfile();
+
+          axios.post('/api/wrkspace/shareddiag/save', 
+          {
+            UID: sharedDiagramMySpaceContext.UID,
+            SharedLink: sharedDiagramMySpaceContext.SharedLink,
+            DiagramName: sharedDiagramMySpaceContext.DiagramName,
+            DiagramXml: sharedDiagramMySpaceContext.DiagramXml,
+            DateTimeSaved: sharedDiagramMySpaceContext.DateTimeSaved
+          }, 
+          {
+            headers: {
+                'Authorization': 'Bearer ' + user.AccessToken,
+                'Content-Type': 'application/json'
+            }
+          })
+          .then(function (response) {
+  
+            if(!response.data.isSuccess && response.data.errorCode == 'diagram-to-large')
+            {
+              Toast.show('warning', 8000,
+                "Diagram not saved as it is over 2Mb, consider break up your diagram into multiple diagrams and save separately");
+            } else {
+              respCallback(response.data);
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+            errCallback(error);
+          }); 
+   }
+
+   async updateSharedDiagramInMySpace(emailId, uid, diagramJson, respCallback, errCallback) {
+
+        var user = this.authService.getUserProfile();
+
+        axios.post('/api/wrkspace/shareddiag/update', 
+        {
+          emailId: emailId,
+          diagramUID: uid,
+          diagramJson: diagramJson
+        }, 
+        {
+          headers: {
+              'Authorization': 'Bearer ' + user.AccessToken,
+              'Content-Type': 'application/json'
+          }
+        })
+        .then(function (response) {
+
+          if(!response.data.isSuccess && response.data.errorCode == 'diagram-to-large')
+          {
+            Toast.show('warning', 8000,
+              "Diagram not saved as it is over 2Mb, consider break up your diagram into multiple diagrams and save separately");
+          } else {
+            respCallback(response.data);
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+          errCallback(error);
+        }); 
+ }
 }

@@ -76,7 +76,7 @@ namespace AzW.Infrastructure.Data
             byte[] byteArray = Encoding.ASCII.GetBytes(diagram);
             using(var ms = new MemoryStream(byteArray))
             {
-                await bc.UploadAsync(ms);
+                await bc.UploadAsync(ms, true);
             }
 
             var metadata = new Dictionary<string,string>();
@@ -91,7 +91,7 @@ namespace AzW.Infrastructure.Data
             var bc = _sharedDiagramMySpace.GetBlobClient(blobName);
 
             if(! await bc.ExistsAsync())
-                return true;
+                return false;
 
             return await bc.DeleteIfExistsAsync(DeleteSnapshotsOption.None);
         }

@@ -82,12 +82,14 @@ export default class Workbench extends Component {
           return this.renderStatusbarLoadFromBrowser();
       else if (this.global.diagramSource.source == 'myspace')
           return this.renderStatusbarLoadFromMySpace();
+      else if (this.global.diagramSource.source == 'shareddiagram')
+          return this.renderStatusbarLoadFromSharedDiagramMySpace();
   }
 
   renderStatusbarLoadFromNoSource() {
     if(this.global.diagramSource.source == 'none' ) {
       return (
-        <span>diagram not from source</span>
+        <span></span>
       );
     }
   }
@@ -123,6 +125,16 @@ export default class Workbench extends Component {
             </Tooltip>
           </span>
         </div>
+      );
+    }
+  }
+
+  renderStatusbarLoadFromSharedDiagramMySpace() {
+    if(this.global.diagramSource.source == 'shareddiagram' ) {
+      return (
+          <div>
+            
+          </div>
       );
     }
   }

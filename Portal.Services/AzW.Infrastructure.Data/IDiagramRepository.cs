@@ -20,6 +20,8 @@ namespace AzW.Infrastructure.Data
 
         Task<DiagramSaveResult> UpdateSharedDiagramInMySpace(string emailId, string diagramUID, string diagramJson);
 
+        Task<bool> DeleteSharedDiagramInMySpace(string emailId, string diagramUID);
+
         Task<IEnumerable<string>> GetCollectionFromWorkspaceAsync(string emailId);
 
         Task<IEnumerable<WorkspaceDiagramContextResult>> GetDiagramsFromWorkspace(string emailId);

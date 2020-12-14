@@ -214,14 +214,14 @@ namespace AzW.Infrastructure.Data
         {
             var db = CosmosDbHelper.GetDatabase(_secret);
 
-            var coll = db.GetCollection<SharedDiagramMySpaceContext>(CollectionName.MySpaceSharedDiagram);
+            var coll = db.GetCollection<SharedDiagramMySpaceInfo>(CollectionName.MySpaceSharedDiagram);
 
             bool blobDel = await _blob.DeleteSharedDiagramFromMySpace(emailId, diagramUID);
 
             if(blobDel)
             {
                 var result =
-                    await coll.DeleteOneAsync<SharedDiagramMySpaceContext>(x => x.EmailId == emailId && x.UID ==  diagramUID);
+                    await coll.DeleteOneAsync<SharedDiagramMySpaceInfo>(x => x.EmailId == emailId && x.UID ==  diagramUID);
             
                 if(result.DeletedCount != 1)
                 {

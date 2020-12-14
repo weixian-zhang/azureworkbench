@@ -4492,7 +4492,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       this.diagramService.saveSharedDiagramInMySpace(context,
         function (result){
           thisComp.setState({shareLink: result.sharedLink, showShareDiagramPopup: true});
-          Toast.show('primary', 4500, "Shared diagram is in your MySpace");
+          Toast.show('primary', 4500, "Shared diagram is in MySpace");
         },
         function(error){
           Toast.show('danger', 3000, error.message);
@@ -4532,23 +4532,33 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
     this.diagramService.loadAnonymousDiagram(parsedQS.id)
       .then(function (response) {
 
+        if(response.data.DiagramXml == "")
+        {
+            Toast.show('primary', 4000, 'Shared link is either housekept or deleted by originator');
+            return
+        }
+
           thisComp.importJsonDiagram(response.data.DiagramXml);
           thisComp.notifyStatusBarLoadSource('none');
 
-          Toaster.create({
-            position: Position.TOP,
-            autoFocus: false,
-            canEscapeKeyClear: true
-          }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.ShareLinkLoadedSuccess()});
+          Toast.show('success', 2000, Messages.ShareLinkLoadedSuccess());
+
+          // Toaster.create({
+          //   position: Position.TOP,
+          //   autoFocus: false,
+          //   canEscapeKeyClear: true
+          // }).show({intent: Intent.SUCCESS, timeout: 2000, message: });
           return;
       })
       .catch(function (error) {
         console.log(error);
-        Toaster.create({
-          position: Position.TOP,
-          autoFocus: false,
-          canEscapeKeyClear: true
-        }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.ShareLinkLoadedError()});
+        Toast.show('warning', 2000, Messages.ShareLinkLoadedError());
+
+        // Toaster.create({
+        //   position: Position.TOP,
+        //   autoFocus: false,
+        //   canEscapeKeyClear: true
+        // }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.ShareLinkLoadedError()});
         return;
       });
 }
@@ -4611,6 +4621,51 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
           link.setAttribute('download', 'diagram.azwb');
           document.body.appendChild(link);
           link.click();
+  }
+
+  async updateSharedDiagramInMySpace(emailId, diagramUID) {
+      if(Utils.isCanvasEmpty(this.diagram))
+      {
+        Toaster.create({
+          position: Position.TOP,
+          autoFocus: false,
+          canEscapeKeyClear: true
+        }).show({intent: Intent.WARNING, timeout: 3000, message: Messages.NoCellOnGraph()});
+        return;
+      }
+
+      if(!this.state.unsavedChanges)
+      {
+        Toast.show('primary', 2000, 'No change detected')
+        return;
+      }
+
+      if(! await this.authsvc.isUserLogin())
+      {
+        Toast.show('primary', 2500, 'You need to login before saving to MySpace')
+        return;
+      }
+
+      var thisComp = this;
+
+      var diagramJson = this.getDiagramBase64Json();
+
+      this.diagramService.updateSharedDiagramInMySpace(emailId, diagramUID, diagramJson,
+        function onSuccess() {
+  
+          thisComp.setDiagramModifiedFalse();
+          thisComp.clearAutosaveDiagram();
+          // thisComp.notifyStatusBarLoadSource
+          //   ('share', diagramContext.CollectionName, diagramContext.DiagramName);
+  
+          Toast.show('success', 2000, Messages.SavedSuccessfully());
+  
+          return;
+        },
+        function onError(error) {
+          Toast.show('danger', 2000, error);
+          return;
+        });
   }
 
   async saveDiagramToWorkspace(collectionName, diagramName) {

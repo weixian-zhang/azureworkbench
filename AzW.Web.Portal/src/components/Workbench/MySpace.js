@@ -39,6 +39,12 @@ export default class MySpace extends Component {
         collections: [],
         diagrams: [],
 
+        isDeleteSharedDiagramDialogOpen: false,
+        selectedSharedDiagramForDelete: {},
+
+        updateSharedDiagramDialogOpen: false,
+        selectedSharedDiagramForUpdate: {},
+
         sharedDiagrams: [],
         filteredDiagrams: []
       }
@@ -61,24 +67,6 @@ export default class MySpace extends Component {
         return (
           <div>
             <Overlay isOpen={this.state.isOpen} onClose={this.handleClose}>
-
-              <Overlay isOpen={this.state.saveThisSpaceDialogOpen}  onClose={this.handleThisSpaceDialogClose}>
-                <Card className='myspace-overrideexistingrow-overlay'  elevation={Elevation.TWO}>
-                  <p>
-                      You are about to save your current diagram on canvas 
-                        which overrides this record: <b>{this.state.saveThisSpaceDiagramName}</b>
-                  </p>
-                  <p>
-                    <strong>
-                      Do you want to continue?
-                    </strong>
-                  </p>
-                  <div style={{display:'inline', width:'100%','text-align': 'right'}}>
-                    <Button text="Yes" onClick={this.saveDiagramToThisSpace} intent="success"/>
-                    <Button text="No" onClick={this.handleThisSpaceDialogClose} style={{marginLeft:'5px'}}/>
-                  </div>
-                  </Card>
-                </Overlay>
                 <Card className='workspace-overlay-box' interactive={false} elevation={Elevation.TWO}>
                     <H4 align={Alignment.LEFT}>
                       <Typography variant='button'>My Space</Typography>
@@ -101,6 +89,23 @@ export default class MySpace extends Component {
                         </span>
                     }
                 </Card>
+                <Overlay isOpen={this.state.saveThisSpaceDialogOpen}  onClose={this.handleThisSpaceDialogClose}>
+                <Card className='myspace-overrideexistingrow-overlay'  elevation={Elevation.TWO}>
+                  <p>
+                      You are about to save your current diagram on canvas 
+                        which overrides this record: <b>{this.state.saveThisSpaceDiagramName}</b>
+                  </p>
+                  <p>
+                    <strong>
+                      Do you want to continue?
+                    </strong>
+                  </p>
+                  <div style={{display:'inline', width:'100%','text-align': 'right'}}>
+                    <Button text="Yes" onClick={this.saveDiagramToThisSpace} intent="success"/>
+                    <Button text="No" onClick={this.handleThisSpaceDialogClose} style={{marginLeft:'5px'}}/>
+                  </div>
+                  </Card>
+                </Overlay>
                 <Overlay isOpen={this.state.isDeleteConfirmationDialogOpen}  onClose={this.handleDeletConfirmClose}>
                   <Card className='workspace-deletediagramdialog-overlay-box'  elevation={Elevation.TWO}>
                     <Label>
@@ -112,14 +117,48 @@ export default class MySpace extends Component {
                     <Button text="Cancel" onClick={() => 
                         this.setState({
                           isDeleteConfirmationDialogOpen: false,
-                          selectedDiagramContextForDelete: null
+                          selectedDiagramContextForDelete: {}
                           })} />
+                  </Card>
+                </Overlay>
+                {/* shared diagram */}
+                <Overlay isOpen={this.state.isDeleteSharedDiagramDialogOpen}  onClose={this.handleDeleteSharedDiagramConfirmClose}>
+                  <Card className='workspace-deletediagramdialog-overlay-box'  elevation={Elevation.TWO}>
+                    <Label>
+                      Are you sure you want to delete shared diagram?
+                    </Label>
+                    <Label>
+                      {this.state.selectedSharedDiagramForDelete.diagramName}
+                    </Label>
+                    <Button text="Confirm" icon="delete" 
+                      onClick={() => this.confirmDeleteSharedDiagramInMySpace()} />
+                    <span className="bp3-navbar-divider"></span>
+                    <Button text="Cancel" onClick={() => 
+                        this.handleDeleteSharedDiagramConfirmClose()
+                    } />
+                  </Card>
+                </Overlay>
+                <Overlay isOpen={this.state.updateSharedDiagramDialogOpen}  onClose={this.handleSharedDiagramUpdateDialogClose}>
+                <Card className='myspace-overrideexistingrow-overlay'  elevation={Elevation.TWO}>
+                  <p>
+                      You are about to update shared diagram {this.state.selectedSharedDiagramForUpdate.diagramName}
+                  </p>
+                  <p>
+                    <strong>
+                      Do you want to continue?
+                    </strong>
+                  </p>
+                  <div style={{display:'inline', width:'100%','text-align': 'right'}}>
+                    <Button text="Yes" onClick={this.confirmUpdateSharedDiagram} intent="success"/>
+                    <Button text="No" onClick={this.handleSharedDiagramUpdateDialogClose} style={{marginLeft:'5px'}}/>
+                  </div>
                   </Card>
                 </Overlay>
             </Overlay>
           </div>
         );
-      }
+    }
+    
     
     renderSavedDiagramTab() {
 
@@ -169,7 +208,7 @@ export default class MySpace extends Component {
                     <TableCell align="right">{new moment(diagram.dateTimeSaved).fromNow()}</TableCell>
                     <TableCell align="right">{diagram.sizeInMB} MB</TableCell>
                     <TableCell align="right">
-                      <Button text="Replace" icon="floppy-disk"
+                      <Button text="Update" icon="floppy-disk"
                             onClick={() =>
                               this.promptCurrentDiagramToThisSpace(diagram.collectionName, diagram.diagramName)} />
                     </TableCell>
@@ -223,13 +262,13 @@ export default class MySpace extends Component {
                     <TableCell align="right">
                       <Button text="Update" icon="floppy-disk"
                             onClick={() =>
-                              this.promptUpdateSharedDiagramConfirmDialog(diagram.emailId, diagram.uid)} />
+                              this.promptUpdateSharedDiagramConfirmDialog(diagram.emailId, diagram.uid, diagram.diagramName)} />
                     </TableCell>
                     <TableCell align="right">
-                      <Button text="Load" icon="cloud-download" onClick={() => this.loadSharedDiagram(diagram.uid)} /> 
+                      <Button text="Load" icon="cloud-download" onClick={() => this.loadSharedDiagram(diagram.uid, diagram.diagramName)} /> 
                     </TableCell>
                     <TableCell align="left">
-                      <Button text="Delete" icon="delete" intent='danger' onClick={() => this.promptDeleteSharedDiagramConfirmDialog(diagram.emailId, diagram.uid)} />
+                      <Button text="Delete" icon="delete" intent='danger' onClick={() => this.promptDeleteSharedDiagramConfirmDialog(diagram.emailId, diagram.uid, diagram.diagramName)} />
                     </TableCell>
                   </TableRow>
               ))}
@@ -255,9 +294,14 @@ export default class MySpace extends Component {
           diagramSrc.collection = collection;
           diagramSrc.diagramName = diagramName;
         }
+
+        if(source == 'shareddiagram') {
+          diagramSrc.diagramName = diagramName;
+        }
     
         this.setGlobal(diagramSrc);
     }
+    
 
       promptCurrentDiagramToThisSpace(collection, diagramName) {
           this.setState({
@@ -267,11 +311,31 @@ export default class MySpace extends Component {
           });
       }
 
-      promptUpdateSharedDiagramConfirmDialog(emailId, uid) {
+      //shared diagram funcs
 
+      promptUpdateSharedDiagramConfirmDialog(emailId, uid, diagramName) {
+        this.setState({
+          updateSharedDiagramDialogOpen: true,
+          selectedSharedDiagramForUpdate: {
+            emailId: emailId,
+            uid: uid,
+            diagramName: diagramName
+          }
+        });
       }
 
-      loadSharedDiagram(uid) {
+      confirmUpdateSharedDiagram = () => {
+        var emailId = this.state.selectedSharedDiagramForUpdate.emailId;
+        var uid = this.state.selectedSharedDiagramForUpdate.uid;
+
+        this.props.DiagramEditor.updateSharedDiagramInMySpace(emailId, uid);
+
+        this.handleSharedDiagramUpdateDialogClose();
+
+        // (this.state.saveThisSpaceCollection, this.state.saveThisSpaceDiagramName);
+      }
+
+      loadSharedDiagram(uid, diagramName) {
 
         var thisComp = this;
 
@@ -282,8 +346,9 @@ export default class MySpace extends Component {
 
             thisComp.props.DiagramEditor.importJsonDiagram(diagramXml);
             thisComp.setState({isOpen: false});
-            // thisComp.notifyStatusBarLoadSource
-            //   ('myspace', diagramContext.collectionName, diagramContext.diagramName);
+
+            thisComp.notifyStatusBarLoadSource
+                  ('shareddiagram', '', diagramName);
 
             Toast.show('success', 2000, 'Diagram loaded')
             
@@ -296,9 +361,50 @@ export default class MySpace extends Component {
         );
       }
 
-      promptDeleteSharedDiagramConfirmDialog(emailId, uid) {
-
+      promptDeleteSharedDiagramConfirmDialog = (emailId, uid, diagramName) => {
+        this.setState({
+          isDeleteSharedDiagramDialogOpen: true,
+          selectedSharedDiagramForDelete: {
+            emailId: emailId,
+            uid: uid,
+            diagramName: diagramName
+          }
+        });
       }
+
+      confirmDeleteSharedDiagramInMySpace = () => {
+          var thisComp = this;
+          var emailId = this.state.selectedSharedDiagramForDelete.emailId;
+          var diagramUID = this.state.selectedSharedDiagramForDelete.uid;
+
+          this.diagramService.deleteSharedDiagram(emailId, diagramUID,
+            function(){
+              Toast.show('success', 2000, 'Shared diagram successfully deleted');
+              thisComp.getSharedDiagrams();
+              thisComp.handleDeleteSharedDiagramConfirmClose();
+            },
+            function(error){
+              Toast.show('warning', 3000, error);
+              thisComp.handleDeleteSharedDiagramConfirmClose();
+            }
+          );
+      }
+
+      handleDeleteSharedDiagramConfirmClose = () => {
+        this.setState({
+          isDeleteSharedDiagramDialogOpen: false,
+          selectedSharedDiagramForDelete: {}
+          });
+      }
+
+      handleSharedDiagramUpdateDialogClose = () => {
+        this.setState({
+          updateSharedDiagramDialogOpen: false,
+          selectedSharedDiagramForUpdate: {}
+        });
+      }
+
+      //end shared diagram funcs
 
       handleThisSpaceDialogClose = () => {
         this.setState({
@@ -489,4 +595,4 @@ export default class MySpace extends Component {
     
     handleClose = () => this.setState({ isOpen: false });
     handleDeletConfirmClose  = () => this.setState({ isDeleteConfirmationDialogOpen: false });
-}
+  }
