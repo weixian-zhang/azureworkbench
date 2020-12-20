@@ -2,6 +2,7 @@ import React, { addCallback, Component } from "reactn";
 
 import ResourcePalette from "./ResourcePalette";
 import DiagramEditor from "./DiagramEditor";
+import StatusBarHelper from './StatusBarHelper'
 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -27,11 +28,8 @@ export default class Workbench extends Component {
       queryString: this.props.queryString
     }
 
-    this.setGlobal({diagramSource: {
-      source: 'none', //either 'myspace', 'browser' or 'none'
-      collection: '', //empty string if browser
-      diagramName: '' //empty string if browser
-    }});
+    this.statusbar = new StatusBarHelper();
+    this.statusbar.initStatusBar();
 
     //global value set this will be called
     addCallback(global => {
@@ -98,7 +96,7 @@ export default class Workbench extends Component {
     if(this.global.diagramSource.source == 'browser' ) {
       return (
         <div>
-          <span style={{marginRight:3}}>diagram loaded from browser</span>
+          <span style={{marginRight:3}}>source: Browser Storage</span>
           <span>
             <Tooltip title="Save to Browser" style={{margin:0,padding:0}}>
               <IconButton color="secondary" >
@@ -115,7 +113,7 @@ export default class Workbench extends Component {
     if(this.global.diagramSource.source == 'myspace' ) {
       return (
         <div>
-          <span style={{marginRight:3}}>diagram loaded from My Space,
+          <span style={{marginRight:3}}>source: MySpace,
           collection: {this.global.diagramSource.collection} | diagram: {this.global.diagramSource.diagramName}</span>
           <span>
             <Tooltip title="Save to My Space" style={{margin:0,padding:0}}>
@@ -133,11 +131,20 @@ export default class Workbench extends Component {
     if(this.global.diagramSource.source == 'shareddiagram' ) {
       return (
           <div>
-            
+            <span style={{marginRight:3}}>source: MySpace-Shared Diagram | 
+            name: {this.global.diagramSource.diagramName}</span>
+          <span>
+            <Tooltip title="Save to My Space" style={{margin:0,padding:0}}>
+              <IconButton color="secondary" >
+                <SaveSharpIcon style={{height:'20px', width:'20px'}} onClick={this.statusbarSaveSharedDiagramToMySpace}/>
+              </IconButton>
+            </Tooltip>
+          </span>
           </div>
       );
     }
   }
+
 
   statusbarSaveToBrowser = () => {
       this.diagramEditor.current.saveDiagramToBrowser();
@@ -147,6 +154,13 @@ export default class Workbench extends Component {
       var collection = this.global.diagramSource.collection;
       var diagramName = this.global.diagramSource.diagramName;
       this.diagramEditor.current.saveDiagramToWorkspace(collection, diagramName);
+  }
+
+  statusbarSaveSharedDiagramToMySpace = () => {
+    var emailId = this.global.diagramSource.emailId;
+    var uid = this.global.diagramSource.uid;
+
+    this.diagramEditor.current.updateSharedDiagramInMySpace(emailId, uid);
   }
 
   initDropPNGSVGAZWBFileOnCanvas() {

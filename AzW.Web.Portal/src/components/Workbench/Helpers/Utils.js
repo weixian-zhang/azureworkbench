@@ -393,6 +393,14 @@ export default class Utils
         return vms;
     }
 
+    static isObjPropChange(existing, newObj) {
+        if(JSON.stringify(existing) == JSON.stringify(newObj)) {
+            return false;
+        }
+        else
+            return true;
+    }
+
     static getCidrPrefix(cidr) {
         if(Utils.IsNullOrUndefine(cidr))
             return 0;

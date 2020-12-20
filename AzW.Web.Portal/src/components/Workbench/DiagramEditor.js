@@ -24,6 +24,7 @@ import queryString from 'query-string';
 import AzureValidator from './Helpers/AzureValidator';
 import LocalStorage from '../../services/LocalStorage';
 import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramContext";
+import StatusBarHelper from './StatusBarHelper'
 
 //models
 import MediaService from "../../models/MediaService";
@@ -269,6 +270,7 @@ import AzureIcons from './Helpers/AzureIcons';
     this.armsvc = new ARMService();
     this.comsvc = new ComputeService();
     this.diagService = new DiagramService();
+    this.statusbarHelper = new StatusBarHelper();
 
     this.diagram = null;
     this.generalContextmenu = null;
@@ -541,7 +543,7 @@ import AzureIcons from './Helpers/AzureIcons';
           initialContentAlignment: go.Spot.Center,
           initialAutoScale: go.Diagram.Uniform,
           "undoManager.isEnabled": true,
-          'animationManager.isEnabled': false,  // turn off automatic animation
+          'animationManager.isEnabled': true,  // turn off automatic animation
 
           commandHandler: new LocalStorageCommandHandler(this),
           
@@ -585,6 +587,7 @@ import AzureIcons from './Helpers/AzureIcons';
                 },
                 new go.Binding("points").makeTwoWay(),
                 this.$(go.Shape, { strokeWidth: 1.5 })
+                
               ),
           "linkingTool.archetypeLinkData": { 
             fromArrow: '',
@@ -633,6 +636,7 @@ initDiagramBehaviors() {
   this.generalContextmenu = this.initContextMenu();
   this.diagram.contextMenu = this.generalContextmenu;
 }
+
 
 triggerLinkAnimation() {
   var thisComp = this;
@@ -884,9 +888,16 @@ createNonVIRAzureResourceTemplate() {
         contextMenu: this.initContextMenu(),
         doubleClick: function(e, node) {
           var azcontext = node.data.azcontext;
+          var existingContext = Utils.deepClone(azcontext);
           thisComp.determineResourcePropertyPanelToShow
             (azcontext, function onContextSaveCallback(savedContext){
+
                 node.data.azcontext = savedContext;
+
+                if(Utils.isObjPropChange(existingContext, savedContext)) {
+                  thisComp.setDiagramModifiedTrue();
+                }
+                
             });
         }
       },
@@ -1243,7 +1254,7 @@ initDiagramModifiedEvent(isLoadFromSource) {
       if(e.isTransactionFinished) {
           if(thisComp.diagram.nodes.count == 0) {
             thisComp.setDiagramModifiedFalse();
-            thisComp.notifyStatusBarLoadSource('none');
+            thisComp.statusbarHelper.resetStatusBar(StatusBarHelper.SourceNone());
             return;
           }
 
@@ -1287,6 +1298,8 @@ initContextMenu() {
                         thisComp.diagram.model.setDataProperty(obj.part.data, 'nsgVisible', true);
                       else
                         thisComp.diagram.model.setDataProperty(obj.part.data, 'nsgVisible', false);
+                    
+                      thisComp.setDiagramModifiedTrue();
                   }
                 } 
               },
@@ -1304,6 +1317,8 @@ initContextMenu() {
                         thisComp.diagram.model.setDataProperty(obj.part.data, 'udrVisible', true);
                       else
                         thisComp.diagram.model.setDataProperty(obj.part.data, 'udrVisible', false);
+                    
+                      thisComp.setDiagramModifiedTrue();
                   }
                 } 
               },
@@ -1321,6 +1336,8 @@ initContextMenu() {
                         thisComp.diagram.model.setDataProperty(obj.part.data, 'svcendVisible', true);
                       else
                         thisComp.diagram.model.setDataProperty(obj.part.data, 'svcendVisible', false);
+                      
+                      thisComp.setDiagramModifiedTrue();
                   }
                 } 
               },
@@ -1466,9 +1483,11 @@ initContextMenu() {
                       if(linkAnimatePart != null) {
                         if(linkAnimatePart.opacity == 0) {
                           e.diagram.model.setDataProperty(node.data, 'opacity', 1);
+                          thisComp.setDiagramModifiedTrue();
                         }
                         else {
                           e.diagram.model.setDataProperty(node.data, 'opacity', 0);
+                          thisComp.setDiagramModifiedTrue();
                         }
                         thisComp.triggerLinkAnimation();
                       }
@@ -1501,12 +1520,18 @@ createVNetTemplate() {
       var result =  thisComp.getSubnetsCidrsAzContextOfVNet(vnet);
       
       var azcontext = vnet.data.azcontext;
-      
+      var existingContext = Utils.deepClone(azcontext);
       azcontext.GraphModel.SubnetsAndCidrs = result.SubnetsCidrs;
 
       thisComp.determineResourcePropertyPanelToShow
         (azcontext, function onContextSaveCallback(savedContext){
+
           vnet.azcontext = savedContext;
+
+          if(Utils.isObjPropChange(existingContext, savedContext)) {
+            thisComp.setDiagramModifiedTrue();
+          }
+
         });
     }
   },
@@ -1561,9 +1586,14 @@ createVNetTemplate() {
             e.event.stopPropagation();
 
             var azcontext = shape.natgwazcontext;
+            var existingContext = Utils.deepClone(azcontext);
             thisComp.determineResourcePropertyPanelToShow
               (azcontext, function onContextSaveCallback(savedContext){
                 shape.azcontext = savedContext;
+
+                if(Utils.isObjPropChange(existingContext, savedContext)) {
+                  thisComp.setDiagramModifiedTrue();
+                }
               });
           }
         },
@@ -1602,13 +1632,17 @@ createSubnetTemplate() {
         var result =  thisComp.getSubnetsCidrsAzContextOfVNet(vnet);
         
         var azcontext = subnet.data.azcontext;
-        
+        var existingContext = Utils.deepClone(azcontext);
+
         azcontext.GraphModel.VNetAddressSpace = result.VNetAddressSpace;
         azcontext.GraphModel.SubnetsAndCidrs = result.SubnetsCidrs;
 
         thisComp.determineResourcePropertyPanelToShow
           (azcontext, function onContextSaveCallback(savedContext){
             subnet.azcontext = savedContext;
+            if(Utils.isObjPropChange(existingContext, savedContext)) {
+              thisComp.setDiagramModifiedTrue();
+            }
           });
       }
     },
@@ -1650,9 +1684,15 @@ createSubnetTemplate() {
           e.event.stopPropagation();
 
           var azcontext = picture.nsgazcontext;
+          var existingContext = Utils.deepClone(azcontext);
+
           thisComp.determineResourcePropertyPanelToShow
             (azcontext, function onContextSaveCallback(savedContext){
                 picture.azcontext = savedContext;
+
+                if(Utils.isObjPropChange(existingContext, savedContext)) {
+                  thisComp.setDiagramModifiedTrue();
+                }
             });
         }
       },
@@ -1671,9 +1711,16 @@ createSubnetTemplate() {
           e.event.stopPropagation();
 
           var azcontext = picture.udrazcontext;
+          var existingContext = Utils.deepClone(azcontext);
+
           thisComp.determineResourcePropertyPanelToShow
             (azcontext, function onContextSaveCallback(savedContext){
               picture.azcontext = savedContext;
+
+              if(Utils.isObjPropChange(existingContext, savedContext)) {
+                thisComp.setDiagramModifiedTrue();
+              }
+
             });
         }
       },
@@ -1693,9 +1740,14 @@ createSubnetTemplate() {
           e.event.stopPropagation();
 
           var azcontext = picture.svcendazcontext;
+          var existingContext = Utils.deepClone(azcontext);
+
           thisComp.determineResourcePropertyPanelToShow
             (azcontext, function onContextSaveCallback(savedContext){
               picture.azcontext = savedContext;
+              if(Utils.isObjPropChange(existingContext, savedContext)) {
+                thisComp.setDiagramModifiedTrue();
+              }
             });
         }
       },
@@ -1783,10 +1835,17 @@ createVIRAzureResourceTemplate() {
         },
         contextMenu: this.initContextMenu(),
         doubleClick: function(e, node) {
+
           var azcontext = node.data.azcontext;
+          var existingContext = Utils.deepClone(azcontext);
+
           thisComp.determineResourcePropertyPanelToShow
             (azcontext, function onContextSaveCallback(savedContext){
                 node.data.azcontext = savedContext;
+
+                if(Utils.isObjPropChange(existingContext, savedContext)) {
+                  thisComp.setDiagramModifiedTrue();
+                }
             });
         },
         dragComputation: this.makeSubnetVIRStayInGroup
@@ -1926,6 +1985,8 @@ createSubnet(vnetKey, subnetNodekey = '') {
       nodetype: GoNodeType.Shape(),
 
       loc: go.Point.stringify(subnetLoc), category: 'subnet'});
+
+    this.setDiagramModifiedTrue();
 }
 
 createVIROntoSubnet(dropContext) {
@@ -2344,6 +2405,15 @@ createLink(dropContext) {
       }
     );
   }
+
+  var animation = new go.Animation();
+        animation.easing = go.Animation.EaseLinear;
+        this.diagram.links.each(function(link) {
+          var white = link.findObject("PIPE");
+          animation.add(white, "strokeDashOffset", 20, 0)
+        });
+        animation.runCount = Infinity;
+        animation.start();
 }
 
 addKeyPressShortcuts() {
@@ -2385,14 +2455,24 @@ addKeyPressShortcuts() {
       var selectedNode = thisComp.diagram.selection.first();
       if(selectedNode == null)
         return;
+
+        var animation = new go.Animation();
+        animation.easing = go.Animation.EaseLinear;
+        thisComp.diagram.links.each(function(link) {
+          animation.add(link.findObject("ANIMATE"), "strokeDashOffset", 20, 0)
+        });
+        animation.runCount = Infinity;
+        animation.start();
       
       var linkAnimatePart = selectedNode.findObject("ANIMATE");
       if(linkAnimatePart != null) {
         if(linkAnimatePart.opacity == 0) {
           e.diagram.model.setDataProperty(selectedNode.data, 'opacity', 1);
+          thisComp.setDiagramModifiedTrue();
         }
         else {
           e.diagram.model.setDataProperty(selectedNode.data, 'opacity', 0);
+          thisComp.setDiagramModifiedTrue();
         }
         thisComp.triggerLinkAnimation();
       }
@@ -2476,7 +2556,6 @@ addKeyPressShortcuts() {
             new go.Binding("points").makeTwoWay(),
             $(go.Shape, { toArrow: "Standard",strokeWidth: 1.5 })
           );
-
           this.diagram.toolManager.linkingTool.archetypeLinkData =
           { 
             fromArrow: '',
@@ -2569,7 +2648,8 @@ saveDiagramToBrowser = () => {
   if(result == true) {
     this.setDiagramModifiedFalse();
     this.clearAutosaveDiagram();
-    this.notifyStatusBarLoadSource('browser');
+
+    this.statusbarHelper.setShortcutFromBrowser()
 
     Toaster.create({
       position: Position.TOP,
@@ -2774,7 +2854,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         var jsonStr = LocalStorage.get(LocalStorage.KeyNames.AutoSave);
       
         this.importJsonDiagram(jsonStr);
-        this.notifyStatusBarLoadSource('none')
+        this.statusbarHelper.resetStatusBar(StatusBarHelper.SourceNone());
       }
     }
     catch
@@ -3931,6 +4011,8 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       default:
         break;
     }
+
+    this.setDiagramModifiedTrue();
   }
 
   determineResourcePropertyPanelToShow = (userObject, onContextSaveCallback) => {
@@ -4460,7 +4542,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         (category, name,
           function onSuccess(qsDiagContext) {
             thisComp.importJsonDiagram(qsDiagContext.DiagramXml);
-            thisComp.notifyStatusBarLoadSource('none');
+            thisComp.statusbarHelper.resetStatusBar(StatusBarHelper.SourceNone());
           },
           function onFailure(error) {
             Toast.show("danger", 2000, error.message);
@@ -4539,7 +4621,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         }
 
           thisComp.importJsonDiagram(response.data.DiagramXml);
-          thisComp.notifyStatusBarLoadSource('none');
+          thisComp.statusbarHelper.resetStatusBar(StatusBarHelper.SourceNone());
 
           Toast.show('success', 2000, Messages.ShareLinkLoadedSuccess());
 
@@ -4655,8 +4737,6 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
   
           thisComp.setDiagramModifiedFalse();
           thisComp.clearAutosaveDiagram();
-          // thisComp.notifyStatusBarLoadSource
-          //   ('share', diagramContext.CollectionName, diagramContext.DiagramName);
   
           Toast.show('success', 2000, Messages.SavedSuccessfully());
   
@@ -4706,8 +4786,8 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
 
         thisComp.setDiagramModifiedFalse();
         thisComp.clearAutosaveDiagram();
-        thisComp.notifyStatusBarLoadSource
-          ('myspace', diagramContext.CollectionName, diagramContext.DiagramName);
+
+        thisComp.statusbarHelper.setShortcutSavedDiagram(diagramContext.CollectionName, diagramContext.DiagramName)
 
         Toast.show('success', 2000, Messages.SavedSuccessfully());
 

@@ -18,6 +18,7 @@ import Messages from './Helpers/Messages';
 import DiagramService from '../../services/DiagramService';
 import AuthService from '../../services/AuthService';
 import Toast from './Helpers/Toast';
+import StatusBarHelper from './StatusBarHelper'
 
 export default class MySpace extends Component {
     constructor(props) {
@@ -26,6 +27,8 @@ export default class MySpace extends Component {
       this.authService = new AuthService();
 
       this.Index = this.props.Index;
+
+      this.statusbar = new StatusBarHelper();
 
       this.state = {
         isOpen: false,
@@ -243,6 +246,7 @@ export default class MySpace extends Component {
        return (
          <div style={{marginTop: '10px'}}>
            <Button text='Refresh' rightIcon="refresh" onClick={this.refreshSharedDiagrams} />
+           <p style={{textAlign: "left", color: "darkblue"}}>*Link recipients can see the changes you make</p>
            <TableContainer component={Paper}>
             <Table className={classes.table}  size="small" aria-label="a dense table">
               <TableHead>
@@ -265,7 +269,7 @@ export default class MySpace extends Component {
                               this.promptUpdateSharedDiagramConfirmDialog(diagram.emailId, diagram.uid, diagram.diagramName)} />
                     </TableCell>
                     <TableCell align="right">
-                      <Button text="Load" icon="cloud-download" onClick={() => this.loadSharedDiagram(diagram.uid, diagram.diagramName)} /> 
+                      <Button text="Load" icon="cloud-download" onClick={() => this.loadSharedDiagram(diagram.emailId, diagram.diagramName, diagram.uid)} /> 
                     </TableCell>
                     <TableCell align="left">
                       <Button text="Delete" icon="delete" intent='danger' onClick={() => this.promptDeleteSharedDiagramConfirmDialog(diagram.emailId, diagram.uid, diagram.diagramName)} />
@@ -287,21 +291,22 @@ export default class MySpace extends Component {
     }
 
     notifyStatusBarLoadSource(source, collection, diagramName) {
-        var diagramSrc = this.global.diagramSource;
-        diagramSrc.source = source;
-    
-        if(source == 'myspace') {
-          diagramSrc.collection = collection;
-          diagramSrc.diagramName = diagramName;
-        }
 
-        if(source == 'shareddiagram') {
-          diagramSrc.diagramName = diagramName;
-        }
+        this.statusbar.setShortcutSavedDiagram(collection, diagramName);
+        // var diagramSrc = this.global.diagramSource;
+        // diagramSrc.source = source;
     
-        this.setGlobal(diagramSrc);
-    }
+        // if(source == 'myspace') {
+        //   diagramSrc.collection = collection;
+        //   diagramSrc.diagramName = diagramName;
+        // }
+
+        // if(source == 'shareddiagram') {
+        //   diagramSrc.diagramName = diagramName;
+        // }
     
+        // this.setGlobal(diagramSrc);
+    }    
 
       promptCurrentDiagramToThisSpace(collection, diagramName) {
           this.setState({
@@ -331,11 +336,9 @@ export default class MySpace extends Component {
         this.props.DiagramEditor.updateSharedDiagramInMySpace(emailId, uid);
 
         this.handleSharedDiagramUpdateDialogClose();
-
-        // (this.state.saveThisSpaceCollection, this.state.saveThisSpaceDiagramName);
       }
 
-      loadSharedDiagram(uid, diagramName) {
+      loadSharedDiagram(emailId, diagramName, uid) {
 
         var thisComp = this;
 
@@ -347,8 +350,7 @@ export default class MySpace extends Component {
             thisComp.props.DiagramEditor.importJsonDiagram(diagramXml);
             thisComp.setState({isOpen: false});
 
-            thisComp.notifyStatusBarLoadSource
-                  ('shareddiagram', '', diagramName);
+            thisComp.statusbar.setShortcutSharedDiagram(emailId, diagramName, uid);
 
             Toast.show('success', 2000, 'Diagram loaded')
             
@@ -381,6 +383,7 @@ export default class MySpace extends Component {
             function(){
               Toast.show('success', 2000, 'Shared diagram successfully deleted');
               thisComp.getSharedDiagrams();
+              thisComp.statusbar.resetStatusBar(StatusBarHelper.SourceSharedDiagram());
               thisComp.handleDeleteSharedDiagramConfirmClose();
             },
             function(error){
@@ -495,8 +498,9 @@ export default class MySpace extends Component {
 
                 thisComp.props.DiagramEditor.importJsonDiagram(diagramXml);
                 thisComp.setState({isOpen: false});
-                thisComp.notifyStatusBarLoadSource
-                  ('myspace', diagramContext.collectionName, diagramContext.diagramName);
+
+                thisComp.statusbar.setShortcutSavedDiagram
+                  (diagramContext.collectionName, diagramContext.diagramName);
 
                 Toast.show('success', 2000, 'Diagram loaded')
                 
@@ -530,12 +534,13 @@ export default class MySpace extends Component {
               isDeleteConfirmationDialogOpen: false,
               selectedDiagramContextForDelete: null 
             });
+
+            thisComp.statusbar.resetStatusBar(StatusBarHelper.SourceMySpace());
+
             thisComp.refreshCollectionDiagrams();
-            Toaster.create({
-              position: Position.TOP,
-              autoFocus: false,
-              canEscapeKeyClear: true
-            }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.DeleteDiagramFromWorkspaceTrue()});
+
+            Toast.show('success', 2500, Messages.DeleteDiagramFromWorkspaceTrue());
+
             return;
           },
           function onError(err){
