@@ -25,6 +25,7 @@ export default class Config
      }
     static AADClientId() {return '4a2a5dad-0bdd-453a-84b1-b83d50878ba9';} //'16afdc21-ffd3-4cf8-aeae-63bebf9e327e'; }
     static Authority() {return 'https://login.microsoftonline.com/common'; }
+    static B2CAuthority() {return 'https://login.microsoftonline.com/common'; }
     static Scope() {
         return [
             "api://azworkbench-pkce/Read.Write.AzureSubscription",
