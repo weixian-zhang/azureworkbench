@@ -146,10 +146,9 @@ namespace AzW.Web.API
                             $"api://{options.Audience}",
                             "00000003-0000-0000-c000-000000000000",//graph api
                             "4a2a5dad-0bdd-453a-84b1-b83d50878ba9", //azworkbench-portal-dev-pkce
-                            "api://azworkbench-pkce"
-                            //"api://4a2a5dad-0bdd-453a-84b1-b83d50878ba9"
+                            "api://azworkbench-pkce", //azworkbench-portal-dev-pkce
+                            "bc98a1a6-1e4f-42fc-9021-a6c5b8540fa7" //B2C Azure Workbench app
                         };
-                        
 
                         options.SaveToken = true;
                         options.TokenValidationParameters.ValidateLifetime = true;

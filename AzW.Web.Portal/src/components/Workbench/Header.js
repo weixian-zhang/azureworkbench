@@ -48,7 +48,8 @@ export default class Header extends Component {
         quickstart: {category:'', name:''},
         acctMenuAnchor: null,
         acctMenuOpen: false,
-        isDeleteConfirmationDialogOpen: false
+        isDeleteConfirmationDialogOpen: false,
+        loginOptionPopup: false
     }
 
     LoginState.initLoginStateChangeCallback((isLogin) => {
@@ -222,6 +223,8 @@ export default class Header extends Component {
             </section>
           </Toolbar>
         </AppBar>
+
+        {/* delete browser storage */}
         <Overlay isOpen={this.state.isDeleteConfirmationDialogOpen}  onClose={this.handleDeletConfirmClose}>
           <Card className='workspace-deletediagramdialog-overlay-box'  elevation={Elevation.TWO}>
             <Label>
@@ -233,13 +236,38 @@ export default class Header extends Component {
                 this.setState({ isDeleteConfirmationDialogOpen: false})} />
           </Card>
         </Overlay>
+
+        {/* login */}
+        <Overlay isOpen={this.state.loginOptionPopup}  onClose={this.closeLoginOptionPrompt}>
+          <Card className='workspace-loginoptionprompt-overlay-box'  elevation={Elevation.TWO}>
+            <Button text="Local or Social account login" icon="delete"
+              onClick={() => {
+                this.authService.initB2CMsalApp();
+                this.authService.login();
+                this.closeLoginOptionPrompt();
+              } } />
+            <span className="bp3-navbar-divider"></span>
+            <Button text="Azure AD Work Account Login"
+              onClick={() => {
+                this.authService.initAADWorkAccountMsalApp();
+                this.authService.login();
+                this.closeLoginOptionPrompt();
+              } } />
+            <Label style={{color: "blue", marginTop: "8px"}}>
+              *Workbench can only deploy to Azure Subscriptions with consent granted Work account. 
+            </Label>
+          </Card>
+        </Overlay>
       </div>
     );
   }
 
   login = async () => {
-    var userProfile = await this.authService.login();
-    this.setState({isLogin: true, userProfile:  userProfile});
+
+    this.setState({loginOptionPopup: true});
+    
+    // var userProfile = await this.authService.login();
+    // this.setState({isLogin: true, userProfile:  userProfile});
   }
 
   logout = () => {
@@ -304,6 +332,10 @@ loadAutoSaveRecoveryPoint = () => {
  loadDiagramFromrBrowser = () => {
   var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
   diagramEditor.loadDraftDiagramFromBrowser();
+ }
+
+ closeLoginOptionPrompt(){
+    this.setState({loginOptionPopup: false});
  }
 
  deleteDiagramFromrBrowser = () => {

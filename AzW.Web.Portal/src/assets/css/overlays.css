@@ -77,19 +77,32 @@
     bottom: 0;
     left: 0;
 }
-    .workspace-deletediagramdialog-overlay-box {
-      background-color: #fff;
-      border: 1px solid #000;
-      text-align:center;
-      height: 140px;/*height needs to be set*/
-      width: 350px;
-      margin: auto;
-      position: fixed;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-    }
+.workspace-loginoptionprompt-overlay-box {
+  background-color: #fff;
+  border: 1px solid #000;
+  text-align:center;
+  height: 120px;/*height needs to be set*/
+  width: 530px;
+  margin: auto;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.workspace-deletediagramdialog-overlay-box {
+  background-color: #fff;
+  border: 1px solid #000;
+  text-align:center;
+  height: 140px;/*height needs to be set*/
+  width: 350px;
+  margin: auto;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
     .workspace-overlay-about {
       background-color: #fff;
       border: 1px solid #000;
