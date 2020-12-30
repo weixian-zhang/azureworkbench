@@ -22,6 +22,10 @@ namespace AzW.Web.API
 
         public string Email { get; set; }
 
+        public bool IsNewSignedUpUser { get; set; }
+
+        public string Organization { get; set; }
+
         public string ClientIP { get; set; }
     }
 }

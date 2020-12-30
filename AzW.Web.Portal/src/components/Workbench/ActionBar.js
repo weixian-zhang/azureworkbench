@@ -17,7 +17,7 @@ export default class ActionBar extends Component {
         resourceGroups: []
       };
 
-      this.authService = new AuthService();
+      this.authService = AuthService;
 
       this.getSubscriptions();
 

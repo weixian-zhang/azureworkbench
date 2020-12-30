@@ -10,7 +10,7 @@ import ServiceHelper from './ServiceHelper';
 export default class ComputeService
 {
     constructor(){
-        this.authService = new AuthService();
+        this.authService = AuthService;
     }
 
     async getVMSizes( onSuccess, onFailure) {

@@ -5,15 +5,15 @@ import axios from "axios";
 import AuthService from './AuthService';
 import Messages from '../components/Workbench/Helpers/Messages';
 import ServiceHelper from './ServiceHelper';
+import Toast from '../components/Workbench/Helpers/Toast';
 
 export default class ARMService
 {
     constructor(){
 
-        this.authService = new AuthService();
-        this.httpErrorMessage = "Error occured while contacting Workbench server: " +
-        "This could be expired login session, or no 'Admin Consent' from your Azure AD Global Admin. " +
-        "Try logging out and re-login or make sure Azure Workbench has admin consent authorized by Azure AD Global Admin"
+        this.authService = AuthService;
+        this.httpErrorMessage = "Error occured, likely due to no 'Admin Consent' from your Azure AD Global Admin.\n" +
+        "For deployment, ensure Workbench has admin consent authorized by Azure AD Global Admin";
     }
 
     async getRegions(onSuccess, onFailure){
@@ -45,12 +45,8 @@ export default class ARMService
         }
       })
       .catch(function (error) {
-        console.log(error);
-        onFailure(Messages.GeneralHttpError())
-      })
-      .finally(function () {
-        // always executed
-      });  
+        onFailure(thisComp.httpErrorMessage)
+      }) 
    }
 
    async createNewResourceGroup(subscriptionId, location, rgName, onSuccess, onFailure) {
@@ -76,8 +72,7 @@ export default class ARMService
           onSuccess(response.data);
         })
         .catch(function (error) {
-          console.log(error);
-          onFailure(Messages.GeneralHttpError());
+          onFailure(thisComp.httpErrorMessage);
         });
    }
 
@@ -114,8 +109,7 @@ export default class ARMService
         }
       })
       .catch(function (error) {
-        console.log(error);
-        onFailure(Messages.GeneralHttpError())
+        onFailure(thisComp.httpErrorMessage)
       }) 
   }
 
@@ -148,12 +142,9 @@ export default class ARMService
 
             onSuccess(subs);
           }
-          else
-          onFailure(response.data);
         })
         .catch(function (error) {
-          console.log(error);
-          onFailure(Messages.GeneralHttpError())
+          onFailure(thisComp.httpErrorMessage)
         })  
     }
 } 

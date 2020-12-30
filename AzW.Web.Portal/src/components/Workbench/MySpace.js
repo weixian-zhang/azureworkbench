@@ -24,7 +24,7 @@ export default class MySpace extends Component {
     constructor(props) {
       super(props);
         
-      this.authService = new AuthService();
+      this.authService = AuthService;
 
       this.Index = this.props.Index;
 

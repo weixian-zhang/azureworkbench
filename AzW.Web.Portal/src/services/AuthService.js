@@ -7,8 +7,7 @@ import Config from "../../src/config";
 import LoginState from "./LoginState";
 import Toast from '../components/Workbench/Helpers/Toast';
 
-
-export default class AuthService 
+class AuthService 
 {
     constructor()
     {
@@ -24,10 +23,16 @@ export default class AuthService
         // };
 
         this.msalApp = null;
+        this.loginRequest = null;
+        this.tokenRequest = null;
+
         this.initB2CMsalApp();
     }
 
     login = async () => {
+
+      // if(!this.isMsalInited())
+      //     return;
 
       return new Promise((resolve, reject) => {
 
@@ -175,9 +180,7 @@ export default class AuthService
     isUserLogin = async () => {
       return new Promise(async (resolve, rej) => {
 
-        var msalAcct = this.getMsalAccount();
-
-        var result = await this.msalAquireTokenSilentFromCacheIsSuccess(msalAcct);
+        var result = await this.msalAquireTokenSilentFromCacheIsSuccess();
         
         LoginState.onUserLoginStateChange(result);
 
@@ -185,7 +188,9 @@ export default class AuthService
       });
     }
 
-    async msalAquireTokenSilentFromCacheIsSuccess(account) {
+    async msalAquireTokenSilentFromCacheIsSuccess() {
+
+      var account = this.getMsalAccount();
 
       return new Promise((resolve, reject) => {
 
@@ -221,6 +226,8 @@ export default class AuthService
        * See here for more info on account retrieval: 
        * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-common/docs/Accounts.md
        */
+      // if(!this.isMsalInited())
+      //     return null;
   
       const currentAccounts = this.msalApp.getAllAccounts();
       if (currentAccounts === null) {
@@ -279,6 +286,8 @@ export default class AuthService
   initAADWorkAccountMsalApp() {
 
     this.msalApp = null;
+    this.loginRequest = null;
+    this.tokenRequest = null;
     
     // Add scopes here for ID token to be used at Microsoft identity platform endpoints.
     this.loginRequest  = {
@@ -311,6 +320,8 @@ export default class AuthService
   initB2CMsalApp() {
 
     this.msalApp = null;
+    this.loginRequest = null;
+    this.tokenRequest = null;
 
     this.loginRequest  = {
       scopes: Config.B2CScope()
@@ -341,6 +352,13 @@ export default class AuthService
     this.msalApp = new PublicClientApplication(msalB2CConfig);
   }
 
+  // isMsalInited() {
+  //   if(this.msalApp == null || this.tokenRequest == null || this.loginRequest == null)
+  //     return false;
+  //   else
+  //     return true;
+  // }
+
   clearCookie() {
     document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
   }
@@ -358,3 +376,5 @@ export default class AuthService
     // } 
     
 }
+
+export default (new AuthService);

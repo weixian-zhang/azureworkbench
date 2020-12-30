@@ -8,7 +8,7 @@ import Toast from '../components/Workbench/Helpers/Toast';
 export default class DiagramService
 {
     constructor(){
-      this.authService = new AuthService();
+      this.authService = AuthService;
     }
 
     async loadQuickstartDiagram(category, name, onSuccess, onFailure) {

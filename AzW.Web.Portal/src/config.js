@@ -30,7 +30,6 @@ export default class Config
         return [
             "openid",
             "api://azworkbench-pkce/Read.Write.AzureSubscription",
-            //"api://16afdc21-ffd3-4cf8-aeae-63bebf9e327e/azworkbench-azure-deploy",
             "offline_access"];
      }
 

@@ -17,7 +17,7 @@ export default class OverlayProvision extends Component {
     constructor(props) {
       super(props);
         
-      this.authService = new AuthService();
+      this.authService = AuthService;
       this.armService = new ARMService();
 
       this.state = {
@@ -169,8 +169,7 @@ export default class OverlayProvision extends Component {
                     thisComp.rgNameInput.current.value = '';
                 },
                 function onFailure(error) {
-                    //it could fail if Overlay is closed while retrieving
-                    //purposely removed Toast to avoid spamming error
+                    Toast.show('warning', 8000, error);
                     thisComp.setState({loading: false});
                 }
             );
@@ -209,7 +208,7 @@ export default class OverlayProvision extends Component {
                     Toast.show('success', 2000, "Resource Group created successfully");
                 },
                 function onFailure(error){
-                    Toast.show('danger', 8000, Messages.GeneralHttpError());
+                    Toast.show('warning', 8000, error);
                 }
              );
     }

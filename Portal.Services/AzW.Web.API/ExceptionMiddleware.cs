@@ -6,7 +6,7 @@ namespace AzW.Web.API
 {
        public static class ExceptionMiddlewareExtensions
     {
-        public static void ConfigureExceptionHandler(this IApplicationBuilder app, Logger logger)
+        public async static void ConfigureExceptionHandler(this IApplicationBuilder app, Logger logger)
         {
             app.UseExceptionHandler(appError =>
             {

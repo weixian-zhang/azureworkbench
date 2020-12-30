@@ -9,7 +9,7 @@ export default class OverlaySharedDiagramPrompt extends Component {
     constructor(props) {
       super(props);
         
-      this.authService = new AuthService();
+      this.authService = AuthService;
 
       this.state = {
         isOpen: false,

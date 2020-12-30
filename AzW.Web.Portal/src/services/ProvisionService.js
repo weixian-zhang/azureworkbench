@@ -8,7 +8,7 @@ import Messages from '../components/Workbench/Helpers/Messages';
 export default class ProvisionService
 {
     constructor(){
-      this.authService = new AuthService();
+      this.authService = AuthService;
     }
 
     async provisionDiagram(subscriptionId, provisionContexts, onSuccess, onFailure){

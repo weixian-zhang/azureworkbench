@@ -13,7 +13,7 @@ export default class SelectLocation extends Component {
     constructor(props) {
         super(props);
 
-        this.authService = new AuthService();
+        this.authService = AuthService;
         this.armService = new ARMService();
 
         this.state = {

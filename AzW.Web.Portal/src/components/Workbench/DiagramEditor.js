@@ -266,7 +266,7 @@ import AzureIcons from './Helpers/AzureIcons';
 
     this.Index = this.props.Index; //Index component contains progress Comp
 
-    this.authsvc = new AuthService();
+    this.authsvc = AuthService;
     this.armsvc = new ARMService();
     this.comsvc = new ComputeService();
     this.diagService = new DiagramService();

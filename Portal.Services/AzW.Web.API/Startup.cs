@@ -105,6 +105,14 @@ namespace AzW.Web.API
                 {   
                     var exceptionHandlerPathFeature = 
                         context.Features.Get<IExceptionHandlerPathFeature>();
+                    
+                    string errorMessage = exceptionHandlerPathFeature.Error.Message;
+
+                    if(errorMessage.Contains("AADSTS50013: Assertion failed signature validation"))
+                    {
+                        var errorBytes = Encoding.UTF8.GetBytes("Only consent granted Azure AD Work account can perform deployment actions");
+                        await context.Response.BodyWriter.WriteAsync(errorBytes);
+                    }
 
                     _logger.Error
                         (exceptionHandlerPathFeature.Error, exceptionHandlerPathFeature.Error.Message);
@@ -175,21 +183,8 @@ namespace AzW.Web.API
                             OnTokenValidated = context =>
                             {
                                 var jwtToken = context.SecurityToken as JwtSecurityToken;
-                                var ui = new UserIdentity();
-                                ui.AccessToken = jwtToken.RawData;
-                                ui.ValidFrom = jwtToken.ValidFrom;
-                                ui.ValidTo = jwtToken.ValidTo;
-                                foreach(var claim in jwtToken.Claims)
-                                {
-                                    if(claim.Type == "upn")
-                                        ui.Email = claim.Value;
-                                    if(claim.Type == "aud")
-                                        ui.Audience = claim.Value;
-                                    if(claim.Type == "name")
-                                        ui.Name = claim.Value;
-                                    if(claim.Type == "ipaddr")
-                                        ui.ClientIP = claim.Value;
-                                }
+                                
+                                var ui = CreateUserIdentityFromJwt(jwtToken);
 
                                 context.Principal.AddIdentity(ui);
                                 
@@ -214,6 +209,45 @@ namespace AzW.Web.API
                 return new CacheRepository
                     (_secrets.RedisConnString, _secrets.RedisHost, _secrets.RedisPassword);
             });
+        }
+
+        private UserIdentity CreateUserIdentityFromJwt(JwtSecurityToken jwtToken)
+        {
+            var ui = new UserIdentity();
+            ui.AccessToken = jwtToken.RawData;
+            ui.ValidFrom = jwtToken.ValidFrom;
+            ui.ValidTo = jwtToken.ValidTo;
+            foreach(var claim in jwtToken.Claims)
+            {
+                if(claim.Type == "upn") //aad
+                    ui.Email = claim.Value;
+
+                if (claim.Type == "emails") //b2c
+                    ui.Email = claim.Value;
+
+                if(claim.Type == "newUser") //b2c
+                    ui.IsNewSignedUpUser = Convert.ToBoolean(claim.Value);
+                
+                if(claim.Type == "extension_Organization") //b2c
+                    ui.Organization = claim.Value;
+
+                if(claim.Type == "given_name")
+                    ui.Name = claim.Value;
+
+                if(claim.Type == "family_name" && !string.IsNullOrEmpty(ui.Name))
+                    ui.Name += " " + claim.Value;
+
+                if(claim.Type == "aud")
+                    ui.Audience = claim.Value;
+
+                if(claim.Type == "name")
+                    ui.Name = claim.Value;
+
+                if(claim.Type == "ipaddr")
+                    ui.ClientIP = claim.Value;
+            }
+
+            return ui;
         }
 
         private void InitSecrets()
