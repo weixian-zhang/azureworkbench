@@ -23,14 +23,15 @@ export default class Config
         else
             return 'http://localhost:3000';
      }
-    static AADClientId() {return '4a2a5dad-0bdd-453a-84b1-b83d50878ba9';} //'16afdc21-ffd3-4cf8-aeae-63bebf9e327e'; }
-    static Authority() {return 'https://login.microsoftonline.com/common'; }
+    static AADClientId() {return '4a2a5dad-0bdd-453a-84b1-b83d50878ba9';}
+    static AADAuthority() {return 'https://login.microsoftonline.com/common'; }
     static AADKnownAuthorities() {return ["login.microsoftonline.com", "wxzoss.b2clogin.com"]; }
-    static Scope() {
+    static AADScope() {
         return [
             "openid",
-            "api://azworkbench-pkce/Read.Write.AzureSubscription",
-            "offline_access"];
+            "offline_access",
+            "api://azworkbench-pkce/Read.Write.AzureSubscription"
+        ];
      }
 
      
@@ -44,6 +45,6 @@ export default class Config
             "profile",
             "offline_access",
             "https://wxzoss.onmicrosoft.com/bc98a1a6-1e4f-42fc-9021-a6c5b8540fa7/MySpace.RW",
-            ];
+        ];
     }
 }

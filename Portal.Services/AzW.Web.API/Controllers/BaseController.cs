@@ -2,6 +2,7 @@ using AzW.Secret;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using AzW.Model;
 
 namespace AzW.Web.API
 {

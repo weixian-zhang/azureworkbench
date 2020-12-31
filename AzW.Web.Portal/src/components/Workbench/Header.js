@@ -214,7 +214,7 @@ export default class Header extends Component {
                } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.CLICK}>
 
                 <IconButton color="inherit">
-                  <Tooltip title={this.state.isLogin == false ? 'Not logged in' : 'welcome, ' + this.state.userProfile.UserName }
+                  <Tooltip title={this.state.isLogin == false ? 'Not logged in' : `welcome, ${this.state.userProfile.Name}<br /> (${this.state.userProfile.UserName})` }
                           position="bottom">
                     <AccountCircle onClick={this.handleAcctMenu}/>
                   </Tooltip>

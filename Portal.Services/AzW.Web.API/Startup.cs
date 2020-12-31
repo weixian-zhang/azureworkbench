@@ -26,6 +26,7 @@ using System.IO;
 using Serilog.Events;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.ApplicationInsights.Extensibility;
+using AzW.Model;
 
 namespace AzW.Web.API
 {
@@ -197,6 +198,7 @@ namespace AzW.Web.API
 
             services.AddSingleton<Logger>(sp => {return _logger ;} );
             services.AddTransient<IDiagramRepository, DiagramRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<ICacheRepository>(x => {
                 return new CacheRepository
                     (_secrets.RedisConnString, _secrets.RedisHost, _secrets.RedisPassword);
@@ -223,15 +225,31 @@ namespace AzW.Web.API
                 if(claim.Type == "extension_Organization") //b2c
                     ui.Organization = claim.Value;
 
-                if(claim.Type == "given_name")
+                if(claim.Type == "given_name") {
                     ui.Name = claim.Value;
+                    ui.GivenName = claim.Value;
+                }
+                    
+                if(claim.Type == "family_name") {
+                    ui.FamilyName = claim.Value;
+                }
 
                 if(claim.Type == "family_name" && !string.IsNullOrEmpty(ui.Name))
                     ui.Name += " " + claim.Value;
 
+                if(claim.Type == "idp")
+                    ui.IdentityProvider = claim.Value;
+
+
                 if(claim.Type == "aud")
                     ui.Audience = claim.Value;
 
+                if(claim.Type == "iss")
+                    ui.TokenIssuer = claim.Value;
+
+                if(claim.Type == "tfp")
+                    ui.B2CUserFlowName = claim.Value;
+                    
                 if(claim.Type == "name")
                     ui.Name = claim.Value;
 
@@ -270,11 +288,6 @@ namespace AzW.Web.API
                     LogEventLevel.Debug, 
                     collectionName: "Log-API",
                     period: TimeSpan.Zero)
-                // .WriteTo
-                // .ApplicationInsights(
-                //     _secrets.AppInsightsKey, 
-                //     new TraceTelemetryConverter(),
-                //     LogEventLevel.Debug)
                 .CreateLogger();
         }
 

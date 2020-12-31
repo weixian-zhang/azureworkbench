@@ -6,22 +6,12 @@ import LocalStorage from './LocalStorage';
 import Config from "../../src/config";
 import LoginState from "./LoginState";
 import Toast from '../components/Workbench/Helpers/Toast';
+import axios from 'axios';
 
 class AuthService 
 {
     constructor()
     {
-        // const isIE = () => {
-        //     const ua = window.navigator.userAgent;
-        //     const msie = ua.indexOf("MSIE ") > -1;
-        //     const msie11 = ua.indexOf("Trident/") > -1;
-          
-        //     // If you as a developer are testing using Edge InPrivate mode, please add "isEdge" to the if check
-        //     // const isEdge = ua.indexOf("Edge/") > -1;
-          
-        //     return msie || msie11;
-        // };
-
         this.msalApp = null;
         this.loginRequest = null;
         this.tokenRequest = null;
@@ -67,6 +57,8 @@ class AuthService
                       LoginState.onUserLoginStateChange(true);
                       
                       resolve(user);
+
+                      this.logSigninInfo();
 
                     }).catch(error => {
 
@@ -175,6 +167,8 @@ class AuthService
         LoginState.onUserLoginStateChange(false);
 
         this.clearCookie();
+
+        this.resetMsalApp();
     }
 
     isUserLogin = async () => {
@@ -199,12 +193,6 @@ class AuthService
         this.msalApp.acquireTokenSilent(this.tokenRequest)
         .then(tokenResponse => {
 
-            //AAD 24hr refresh token is up, cannot extend anymore, full login required
-            // if(tokenResponse.extExpiresOn == null) {
-            //     resolve(false);
-            //     this.logout();
-            // }
-
             if(!tokenResponse.fromCache) {
               //refresh access token expiry at the same time and save to SessionStorage
               this.createUser(tokenResponse);
@@ -220,15 +208,7 @@ class AuthService
 
     }
 
-    getMsalAccount() {
-
-      /**
-       * See here for more info on account retrieval: 
-       * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-common/docs/Accounts.md
-       */
-      // if(!this.isMsalInited())
-      //     return null;
-  
+    getMsalAccount() {  
       const currentAccounts = this.msalApp.getAllAccounts();
       if (currentAccounts === null) {
           return null;
@@ -285,18 +265,15 @@ class AuthService
 
   initAADWorkAccountMsalApp() {
 
-    this.msalApp = null;
-    this.loginRequest = null;
-    this.tokenRequest = null;
+    this.resetMsalApp();
     
     // Add scopes here for ID token to be used at Microsoft identity platform endpoints.
     this.loginRequest  = {
-      scopes: Config.Scope()//["openid", "api://eclinic/desktop/Desktop.All"]
-      //scopes: ["openid", "api://eclinic/desktop/Desktop.All"]
+      scopes: Config.AADScope()
     };
 
     this.tokenRequest  = {
-      scopes: Config.Scope(),//["api://eClinic/PatientRegistration/PC.All", "offline_access"],
+      scopes: Config.AADScope(),
       account: null,
       forceRefresh: false // Set this to "true" to skip a cached token and go to the server to get a new token
     };
@@ -304,9 +281,7 @@ class AuthService
     this.msalConfig = {
       auth: {
         clientId:  Config.AADClientId(),
-        authority: Config.Authority(),
-        //validateAuthority: false 
-        //knownAuthorities: Config.AADKnownAuthorities()
+        authority: Config.AADAuthority()
       },
       cache: {
         cacheLocation: "localStorage",//"sessionStorage", // This configures where your cache will be stored
@@ -316,12 +291,11 @@ class AuthService
 
     this.msalApp = new PublicClientApplication(this.msalConfig);
   }
+
   //B2C
   initB2CMsalApp() {
 
-    this.msalApp = null;
-    this.loginRequest = null;
-    this.tokenRequest = null;
+    this.resetMsalApp();
 
     this.loginRequest  = {
       scopes: Config.B2CScope()
@@ -352,29 +326,31 @@ class AuthService
     this.msalApp = new PublicClientApplication(msalB2CConfig);
   }
 
-  // isMsalInited() {
-  //   if(this.msalApp == null || this.tokenRequest == null || this.loginRequest == null)
-  //     return false;
-  //   else
-  //     return true;
-  // }
+  resetMsalApp() {
+    this.msalApp = null;
+    this.loginRequest = null;
+    this.tokenRequest = null;
+  }
 
   clearCookie() {
     document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
   }
 
-    // checkTokenExpireAndRefreshToken = async () => {
-    //   var userProfile = this.getUserProfile();
-    //   var accessTokenExpireOn = new Date(userProfile.AccessTokenExpiresOn);
-    //   var CurrentDate = new Date();
-    //   if(accessTokenExpireOn < CurrentDate)
-    //   {
-    //       Toast.show("primary", 2500, "Refreshing login session...");
+  logSigninInfo() {
 
-    //       await this.login(); // aquire token silent to refresh token without popup
-    //   }
-    // } 
+    var user = this.getUserProfile();
+
+    const config = {
+      headers: { Authorization: `Bearer ${user.AccessToken}` }
+    };
     
+    const bodyParameters = {};
+  
+    axios.post('api/user/signin/log',
+      bodyParameters,
+      config
+    ).then(console.log).catch(console.log);
+  }
 }
 
 export default (new AuthService);

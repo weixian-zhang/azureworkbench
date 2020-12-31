@@ -24,6 +24,7 @@ namespace AzW.Web.API
             var config = new MapperConfiguration(cfg => {
                 cfg.CreateMap<ISubscription, AzSubscription>();
                 cfg.CreateMap<IResourceGroup, AzResourceGroup>();
+                cfg.CreateMap<UserIdentity, UserSigninInfo>();
             });
 
             return config.CreateMapper();
