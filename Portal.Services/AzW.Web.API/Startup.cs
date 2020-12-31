@@ -105,14 +105,6 @@ namespace AzW.Web.API
                 {   
                     var exceptionHandlerPathFeature = 
                         context.Features.Get<IExceptionHandlerPathFeature>();
-                    
-                    string errorMessage = exceptionHandlerPathFeature.Error.Message;
-
-                    if(errorMessage.Contains("AADSTS50013: Assertion failed signature validation"))
-                    {
-                        var errorBytes = Encoding.UTF8.GetBytes("Only consent granted Azure AD Work account can perform deployment actions");
-                        await context.Response.BodyWriter.WriteAsync(errorBytes);
-                    }
 
                     _logger.Error
                         (exceptionHandlerPathFeature.Error, exceptionHandlerPathFeature.Error.Message);
