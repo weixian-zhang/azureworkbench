@@ -238,7 +238,7 @@ export default class Header extends Component {
         </Overlay>
 
         {/* login */}
-        <Overlay isOpen={this.state.loginOptionPopup}  onClose={this.closeLoginOptionPrompt}>
+        <Overlay isOpen={this.state.loginOptionPopup}  onClose={() => {this.closeLoginOptionPrompt(); }}>
           <Card className='workspace-loginoptionprompt-overlay-box'  elevation={Elevation.TWO}>
             <Button text="Local or Social Account Login and SignUp" icon="social-media"
               onClick={() => {
