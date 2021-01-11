@@ -28,6 +28,8 @@ namespace AzW.Job.CacheHydrator
 
             var secret = new WorkbenchSecret() {
                 AzCosmonMongoConnectionString = config.GetValue<string>("AzCosmonMongoConnectionString"),
+                StorageConnString = config.GetValue<string>("StorageConnString"),
+                ServiceTagFileName = config.GetValue<string>("ServiceTagFileName"),
                 RedisConnString = config.GetValue<string>("RedisConnString"),
                 RedisHost = config.GetValue<string>("RedisHost"),
                 RedisPassword = config.GetValue<string>("RedisPassword"),

@@ -17,7 +17,7 @@
                 "name": "Redis-Prod",
                 "host": "redis-azworkbench-prod.redis.cache.windows.net",
                 "accessKey": "bj9zcDSUyfV2Gw89mv2o8eqdOHAAwlgECXW4E034Gfg=",
-                "filter": "vm*",
+                "filter": "servicetag*",
                 "port": "6380"
             }
         ],

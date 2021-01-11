@@ -6,6 +6,8 @@ namespace AzW.Secret
        public string AzCosmonMongoConnectionString { get; set; }
        public string AzBlobConnString { get; set; }
 
+       public string ServiceTagFileName { get; set; }
+
         public string ClientId { get; set; }
 
         public string ClientSecret { get; set; }
@@ -21,6 +23,8 @@ namespace AzW.Secret
         public string AppInsightsKey { get; set; }
 
         public string LibwkhtmltoxPath { get; set; }
+
+        public string StorageConnString { get; set; }
 
         public string RedisConnString { get; set; }
         public string RedisHost { get; set; }

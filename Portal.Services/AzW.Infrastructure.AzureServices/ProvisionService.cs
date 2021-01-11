@@ -882,7 +882,6 @@ namespace AzW.Infrastructure.AzureServices
 
                await asc.AutoProvisioningSettings.CreateAsync("default", "On");
             
-
                await asc.Pricings.UpdateAsync("VirtualMachines", "Standard");
                await asc.Pricings.UpdateAsync("SqlServers", "Standard");
                await asc.Pricings.UpdateAsync("AppServices", "Standard");

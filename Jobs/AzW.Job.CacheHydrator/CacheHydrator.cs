@@ -15,18 +15,8 @@ using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Newtonsoft.Json;
-using Serilog;
-using Serilog.Core;
-using Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters;
-using System.Net.Http;
-using System.Net;
-using System.IO;
-using System.Text;
 using AzW.Secret;
+using Newtonsoft.Json;
 
 namespace AzW.Job.CacheHydrator
 {
@@ -39,6 +29,8 @@ namespace AzW.Job.CacheHydrator
             _cache = cache;
             _logger = logger;
 
+            _blobManager = new BlobManager(secret.StorageConnString);
+
             sdkCred =
                 new ServiceClientCredential(_secret.TenantId, _secret.ClientId, _secret.ClientSecret);
             
@@ -47,7 +39,7 @@ namespace AzW.Job.CacheHydrator
         }
 
         [FunctionName("CacheHydrator")]
-        public async Task Run([TimerTrigger("0 */10 * * * *")]TimerInfo myTimer, Microsoft.Extensions.Logging.ILogger log)
+        public async Task Run([TimerTrigger("* */10 * * * *")]TimerInfo myTimer, Microsoft.Extensions.Logging.ILogger log)
         {
             _logger.Information("CacheHydrator started");
 
@@ -68,7 +60,7 @@ namespace AzW.Job.CacheHydrator
 
                 _logger.Information("CacheHydrator-VMSize cache empty, start hydrating");
                 
-                var azure = Azure.Configure().Authenticate(azureCreds);
+                var azure = Microsoft.Azure.Management.Fluent.Azure.Configure().Authenticate(azureCreds);
 
                 var vmSizes = await azure
                         .WithSubscription(_secret.SubscriptionId)
@@ -105,31 +97,44 @@ namespace AzW.Job.CacheHydrator
                 
                 _logger.Information("CacheHydrator-ServiceTag cache empty, start hydrating");
 
-                var restClient = RestClient.Configure()
-                    .WithEnvironment(AzureEnvironment.AzureGlobalCloud)
-                    .WithCredentials(azureCreds)
-                    .Build();
+                string jsonSvcTags =
+                    await _blobManager.GetServiceTagJsonFile(_secret.ServiceTagFileName);
 
-                using (var client = new NetworkManagementClient(restClient))
+                var svcTags = JsonConvert.DeserializeObject<DCIPServiceTags>(jsonSvcTags);
+
+                foreach(var tag in svcTags.values)
                 {
-                    client.SubscriptionId = _secret.SubscriptionId;
-
-                    var nsg = new NetworkSecurityGroupInner();
-                    SecurityRuleInner ruleInner;
-        
-                    var tags = await client.ServiceTags.ListAsync("southeastasia");
-
-                    foreach(var svcTagInfo in tags.Values)
+                    string cacheKey = "servicetag" + " " +  tag.id;
+                    await _cache.SetServiceTagAsync(cacheKey, new ServiceTag()
                     {
-                        string cacheKey = "servicetag" + " " +  svcTagInfo.Id;
-                        await _cache.SetServiceTagAsync(cacheKey, new ServiceTag()
-                        {
-                            Id = svcTagInfo.Id,
-                            Name = svcTagInfo.Name
-                        });
-                    }
+                        Id = tag.id,
+                        Name = tag.name
+                    });
+                }
 
-                    //add tags not found in Azure API
+                //set additional tags not in json file
+                await _cache.SetServiceTagAsync
+                        ("servicetag" + " " +  "AzurePlatformDNS", new ServiceTag()
+                    {
+                        Id = "AzurePlatformDNS",
+                        Name = "AzurePlatformDNS"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                        ("servicetag" + " " +  "AzurePlatformIMDS", new ServiceTag()
+                    {
+                        Id = "AzurePlatformIMDS",
+                        Name = "AzurePlatformIMDS"
+                    });
+
+                    await _cache.SetServiceTagAsync
+                        ("servicetag" + " " +  "AzurePlatformLKM", new ServiceTag()
+                    {
+                        Id = "AzurePlatformLKM",
+                        Name = "AzurePlatformLKM"
+                    });
+
+                    
                     await _cache.SetServiceTagAsync
                         ("servicetag" + " " +  "ActionGroup", new ServiceTag()
                     {
@@ -411,8 +416,6 @@ namespace AzW.Job.CacheHydrator
                         Id = "WindowsVirtualDesktop",
                         Name = "WindowsVirtualDesktop"
                     });
-                
-                }
             
                 _logger.Information("CacheHydrator-ServiceTag cache hydration completed");
             }
@@ -458,7 +461,7 @@ namespace AzW.Job.CacheHydrator
 
             try
             {     
-                var _azure = Azure.Configure().Authenticate(azureCreds);
+                var _azure = Microsoft.Azure.Management.Fluent.Azure.Configure().Authenticate(azureCreds);
                         
                 publishers = _azure.WithSubscription(_secret.SubscriptionId)
                     .VirtualMachineImages.Publishers.ListByRegion(Region.AsiaSouthEast);
@@ -657,6 +660,9 @@ namespace AzW.Job.CacheHydrator
         
         ServiceClientCredential sdkCred;
         AzureCredentials azureCreds;
+
+        private BlobManager _blobManager;
+
         private WorkbenchSecret _secret;
         private ICacheRepository _cache;
         private Serilog.Core.Logger _logger;
