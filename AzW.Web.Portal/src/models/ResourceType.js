@@ -21,7 +21,10 @@ export default class ResourceType
     static AzureSearch() {return 'search'; }
     static SignalR() {return 'signalr'; }
     static AppServiceCert() {return 'appsvccert'; }
+    static AppServicePlan() {return 'appsvcplan'; }
     static AppServiceDomain() {return 'appsvcdomain'; }
+    static NotificationHub() {return 'notificationhub'; }
+
 
     static SharedImageGallery() {return 'sig'; }
     static FrontDoor() {return 'frontdoor'; }
@@ -82,14 +85,23 @@ export default class ResourceType
     static EventHub() {return 'eventhub'; }
     static StreamAnalytics() {return 'streamanalytics'; }
     static SendGrid() {return 'sendgrid'; }
+    static StaticApp() {return 'staticapp'; }
     static AppConfig() {return 'appconfig'; }
+    static AnalysisService() {return 'analysisservice'; }
     static Firewall() {return 'firewall'; }
+    static FirewallManager() {return 'firewallmanager'; }
     static Sentinel() {return 'sentinel'; }
     static KeyVault() {return 'keyvault'; }
     static SecurityCenter() {return 'asc'; }
     static DDoSStandard() {return 'ddosstandard'; }
     static Bastion() {return 'bastion'; }
-
+    
+    static StorSimpleDataManager() {return 'storsimpledatamanager'; }
+    static OnPremDataGateway() {return 'onpremdatagateway'; }
+    static PurviewAccount() {return 'purviewaccount'; }
+    static HPCCache() {return 'hpccache'; }
+    static AzureStackEdge() {return 'azstackedge'; }
+    static BackupVault() {return 'backupvault'; }
     static RecoveryServiceVault() {return 'recoveryservicevault'; }
     static AppInsights() {return 'appinsights'; }
     static LogAnalytics() {return 'loganalytics'; }

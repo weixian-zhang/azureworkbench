@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import FileSync from '../../../models/FileSync';
+import OnPremDataGateway from '../../../models/OnPremDataGateway';
 import { FormGroup, Drawer, Intent, Button, Switch } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
 import Tabs from '@material-ui/core/Tabs';
@@ -10,13 +10,13 @@ import SelectLocation from '../SelectLocation';
 import SelectResourceGroup from '../SelectResourceGroup';
 import Utils from '../Helpers/Utils';
 
-export default class AzureFileSyncPropPanel extends Component {
+export default class OnPremiseDataGatewayPropPanel extends Component {
   constructor(props) {
       super(props);
 
       this.state ={
         isOpen: false,
-        userObject: new FileSync(),
+        userObject: new OnPremDataGateway(),
 
         saveCallback: function () {},
       }
@@ -28,7 +28,7 @@ export default class AzureFileSyncPropPanel extends Component {
   render = () => {
     return (
       <Drawer
-          title="Storage Sync Service Properties"
+          title="On-Premise Data Gateway Properties"
           autoFocus= {true}
           canEscapeKeyClose= {true}
           canOutsideClickClose= {true}

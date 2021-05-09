@@ -860,13 +860,6 @@ export default class ResourcePalette extends Component {
               IsVisible:true
             },
             {
-              Name: 'import export job',
-              Tooltip: 'Import/Export Job',
-              Image: require('../../assets/azure_icons/azure non-deployable/Import Export Job.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
               Name: 'network watcher',
               Tooltip: 'Network Watcher',
               Image: require('../../assets/azure_icons/Networking Service Color/NetworkWatcher.png'),
@@ -894,7 +887,7 @@ export default class ResourcePalette extends Component {
      },
       {
         resourceGroup: {
-          groupName: 'Web',
+          groupName: 'App Services',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
@@ -902,7 +895,7 @@ export default class ResourcePalette extends Component {
                 Name: 'app service',
                 Tooltip: 'App Service',
                 azInfo: ['Private Link supported','Service Endpoint supported','deployable'],
-                Image: require('../../assets/azure_icons/Web Service Color/App Services.png'),
+                Image: require('../../assets/IconCloud/azure/appservices/10035-icon-App Services-App Services.svg'),
                 Provisionable: true,
                 IsPng: false,
                 IsVisible:true,
@@ -912,7 +905,7 @@ export default class ResourcePalette extends Component {
               Name: 'app service environment',
               Tooltip: 'App Service Environment',
               azInfo: ['deployable'],
-              Image: require('../../assets/azure_icons/Web Service Color/App Service Environments.png'),
+              Image: require('../../assets/IconCloud/azure/appservices/10047-icon-App Service Environments-App Services.svg'),
               Provisionable: true,
               IsPng: false,
               IsVisible:true,
@@ -922,7 +915,7 @@ export default class ResourcePalette extends Component {
               Name: 'azure function',
               Tooltip: 'Function',
               azInfo: ['deployable'],
-              Image: require('../../assets/azure_icons/Web Service Color/Function Apps.png'),
+              Image: require('../../assets/IconCloud/azure/appservices/10029-icon-Function Apps-IoT.svg'),
               Provisionable: true,
               IsPng: false,
               IsVisible:true,
@@ -932,7 +925,7 @@ export default class ResourcePalette extends Component {
               Name: 'azure search',
               Tooltip: 'Azure Search',
               azInfo: ['Private Link supported'],
-              Image: require('../../assets/azure_icons/Web Service Color/Azure Search.png'),
+              Image: require('../../assets/IconCloud/azure/appservices/10044-icon-Search Services-App Services.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -941,7 +934,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'azure signalr websocket',
               Tooltip: 'Azure SignalR',
-              Image: require('../../assets/azure_icons/Web Service Color/SignalR.png'),
+              Image: require('../../assets/IconCloud/azure/appservices/10052-icon-SignalR-Web.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -950,49 +943,67 @@ export default class ResourcePalette extends Component {
             {
               Name: 'app service certificate',
               Tooltip: 'App Service Certificate',
-              Image: require('../../assets/azure_icons/Web Service Color/App Service Certificates.png'),
+              Image: require('../../assets/IconCloud/azure/appservices/00049-icon-App Service Certificates-App Services.svg'), //require('../../assets/azure_icons/Web Service Color/App Service Certificates.png'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.AppServiceCert()
             },
             {
+              Name: 'app service plan',
+              Tooltip: 'App Service Plan',
+              Image: require('../../assets/IconCloud/azure/appservices/00046-icon-App Service Plans-App Services.svg'), //require('../../assets/azure_icons/Web Service Color/App Service Certificates.png'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.AppServicePlan()
+            },
+            {
               Name: 'app service domain',
               Tooltip: 'App Service Domain',
-              Image: require('../../assets/azure_icons/Web Service Color/App Service Domains.png'),
+              Image: require('../../assets/IconCloud/azure/appservices/00050-icon-App Service Domains-App Services.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.AppServiceDomain()
             },
             {
-              Name: 'app configuration',
-              Tooltip: 'App Configuration',
-              azInfo: ['Private Link supported'],
-              Image: require('../../assets/azure_icons/Web Service Color/App Configuration.png'),
+              Name: 'notification hub',
+              Tooltip: 'Notification Hub',
+              Image: require('../../assets/IconCloud/azure/appservices/10045-icon-Notification Hubs-App Services.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              resourceType: ResourceType.AppConfig()
+              resourceType: ResourceType.NotificationHub()
+            },
+            {
+              Name: 'static app web',
+              Tooltip: 'Static App',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/appservices/01007-icon-Static Apps-Preview.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.StaticApp()
             },
             {
               Name: 'media service video stream content',
               Tooltip: 'Azure Media Service',
-              Image: Utils.pngDataUrl(AzureIcons.MediaService()),
+              Image: require('../../assets/IconCloud/azure/appservices/10309-icon-Azure Media Service-Web.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.MediaService()
             },
-            {
-              Name: 'spring cloud microservice',
-              Tooltip: 'Azure Spring Cloud',
-              Image: Utils.pngDataUrl(AzureIcons.SpringCloud()),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.SpringCloud()
-            },
+            // {
+            //   Name: 'spring cloud microservice',
+            //   Tooltip: 'Azure Spring Cloud',
+            //   Image: Utils.pngDataUrl(AzureIcons.SpringCloud()),
+            //   Provisionable: false,
+            //   IsPng: false,
+            //   IsVisible:true,
+            //   resourceType: ResourceType.SpringCloud()
+            // },
           ]
         }
        },
@@ -1218,52 +1229,7 @@ export default class ResourcePalette extends Component {
           ]
         }
        },
-       {
-        resourceGroup: {
-          groupName: 'Storage',
-          groupExpanded: false,
-          groupSearchVisible: true,
-          resources: [
-            {
-                Name: 'blob table queue file storage',
-                Tooltip: 'Azure Storage Account',
-                azInfo: ['Private Link supported','Service Endpoint supported', 'deployable'],
-                Image: require('../../assets/azure_icons/Storage Service Color/Blob Storage.png'),
-                Provisionable: true,
-                IsPng: false,
-                IsVisible:true,
-                resourceType: ResourceType.StorageAccount()
-            },
-            {
-              Name: 'file sync',
-              Tooltip: 'Azure File Sync',
-              Image: require('../../assets/azure_icons/Storage Service Color/Storage Sync Services.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.AzFileSync()
-            },
-            {
-              Name: 'netapp files',
-              Tooltip: 'Azure NetApp Files',
-              Image: require('../../assets/azure_icons/Storage Service Color/Azure NetApp files.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.NetAppFile()
-            },
-            {
-              Name: 'data box',
-              Tooltip: 'Data Box',
-              Image: require('../../assets/azure_icons/Storage Service Color/Data Box.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.Databox()
-            }
-          ]
-        }
-       },
+
        {
         resourceGroup: {
           groupName: 'Database',
@@ -1359,62 +1325,63 @@ export default class ResourcePalette extends Component {
           ]
         }
        },
+
        {
         resourceGroup: {
-          groupName: 'Data',
+          groupName: 'Data & Storage',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
             {
-                Name: 'synapse analytics',
-                Tooltip: 'Synapse Analytics',
-                azInfo: ['Private Link supported','Service Endpoint supported'],
-                Image: require('../../assets/azure_icons/Databases Service Color/synapseanalytics.png'),
-                Provisionable: false,
+                Name: 'blob table queue file storage',
+                Tooltip: 'Azure Storage Account',
+                azInfo: ['Private Link supported','Service Endpoint supported', 'deployable'],
+                Image: require('../../assets/IconCloud/azure/data_storage/10086-icon-Storage Accounts-Storage.svg'),
+                Provisionable: true,
                 IsPng: false,
                 IsVisible:true,
-                resourceType: ResourceType.Synapse()
+                resourceType: ResourceType.StorageAccount()
             },
             {
-              Name: 'data lake analytics',
-              Tooltip: 'Data Lake Analytics',
-              Image: require('../../assets/azure_icons/Analytics Service Color/Data Lake Analytics.png'),
+              Name: 'storage sync service',
+              Tooltip: 'Storage Sync Service',
+              Image: require('../../assets/IconCloud/azure/data_storage/10093-icon-Storage Sync Services-Storage.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              resourceType: ResourceType.DataLakeAnalytics()
+              resourceType: ResourceType.AzFileSync()
             },
             {
-              Name: 'databricks data bricks',
-              Tooltip: 'Databricks',
-              Image: require('../../assets/azure_icons/Analytics Service Color/Azure Databricks.png'),
+              Name: 'netapp files',
+              Tooltip: 'Azure NetApp Files',
+              Image: require('../../assets/IconCloud/azure/data_storage/10096-icon-Azure NetApp Files-Storage.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              resourceType: ResourceType.Databricks()
+              resourceType: ResourceType.NetAppFile()
+            },
+            {
+              Name: 'data box',
+              Tooltip: 'Data Box',
+              Image: require('../../assets/IconCloud/azure/data_storage/10094-icon-Data Box-Migrate.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Databox()
             },
             {
               Name: 'data factory',
               Tooltip: 'Data Factory',
-              Image: require('../../assets/azure_icons/Analytics Service Color/Data Factories.png'),
+              Image: require('../../assets/IconCloud/azure/data_storage/10126-icon-Data Factory-Databases.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.DataFactory()
             },
             {
-              Name: 'hdinsight hd insight',
-              Tooltip: 'HDInsight',
-              Image: require('../../assets/azure_icons/Analytics Service Color/HDInsightClusters.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.HdInsight()
-            },
-            {
               Name: 'data explorer',
               Tooltip: 'Data Explorer',
-              Image: require('../../assets/azure_icons/Analytics Service Color/Azure Data Explorer Clusters.png'),
+              Image: require('../../assets/IconCloud/azure/data_storage/10145-icon-Azure Data Explorer Clusters-Databases.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1423,7 +1390,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'data catalog',
               Tooltip: 'Data Catalog',
-              Image: Utils.pngDataUrl(AzureIcons.DataCatalog()),
+              Image: require('../../assets/IconCloud/azure/data_storage/10216-icon-Azure Data Catalog-Integration.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1432,25 +1399,168 @@ export default class ResourcePalette extends Component {
             {
               Name: 'data share datashare',
               Tooltip: 'Data Share',
-              Image: Utils.pngDataUrl(AzureIcons.DataShare()),
+              Image: require('../../assets/IconCloud/azure/data_storage/10098-icon-Data Shares-Storage.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.DataShare()
+            },
+            {
+              Name: 'import export job',
+              Tooltip: 'Import/Export Job',
+              Image: require('../../assets/IconCloud/azure/data_storage/10100-icon-Import Export Jobs-Storage.svg'),
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'site recovery backup dr',
+              Tooltip: 'Site Recovery',
+              azInfo: ['-Purpose: Backup & DR','-Private Link supported','deployable'],
+              Image: require('../../assets/IconCloud/azure/data_storage/00017-icon-Recovery Services Vaults-Storage.svg'),
+              Provisionable: true,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.RecoveryServiceVault()
+            },
+            {
+              Name: 'backup vault up',
+              Tooltip: 'Backup Vault',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/data_storage/02361-icon-Backup Vault-menu.svg'),
+              Provisionable: true,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.BackupVault()
+            },
+            {
+              Name: 'azure stack edge',
+              Tooltip: 'Azure Stack Edge',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/data_storage/00691-icon-Azure Stack Edge-Storage.svg'),
+              Provisionable: true,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.AzureStackEdge()
+            },
+            {
+              Name: 'hpc cache',
+              Tooltip: 'HPC Cache',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/data_storage/00776-icon-Azure HCP Cache-Storage.svg'),
+              Provisionable: true,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.HPCCache()
+            },
+            {
+              Name: 'purview',
+              Tooltip: 'Purview Account',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/data_storage/02517-icon-Azure Purview Accounts-other.svg'),
+              Provisionable: true,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.PurviewAccount()
+            },
+            {
+              Name: 'on-premise data gateway onprem',
+              Tooltip: 'On-Premise Data Gateway',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/data_storage/10070-icon-On Premises Data Gateways-Networking.svg'),
+              Provisionable: true,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.OnPremDataGateway()
+            },
+            {
+              Name: 'storsimple data manager',
+              Tooltip: 'StorSimple Data Manager',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/data_storage/10092-icon-StorSimple Data Managers-Storage.svg'),
+              Provisionable: true,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.StorSimpleDataManager()
+            },
+          ]
+        }
+       },
+
+       {
+        resourceGroup: {
+          groupName: 'Analytics',
+          groupExpanded: false,
+          groupSearchVisible: true,
+          resources: [
+            {
+              Name: 'log analytics monitor',
+              Tooltip: 'Log Analytics',
+              Image: require('../../assets/IconCloud/azure/data_analytics/00009-icon-Log Analytics Workspaces-Analytics.svg'),
+              Provisionable: true,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.LogAnalytics()
+            },
+            {
+              Name: 'analysis service sql',
+              Tooltip: 'Analysis Service',
+              azInfo: [''],
+              Image: require('../../assets/IconCloud/azure/data_analytics/10148-icon-Analysis Services-Analytics.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.AnalysisService()
+            },
+            {
+                Name: 'synapse analytics',
+                Tooltip: 'Synapse Analytics',
+                azInfo: ['Private Link supported','Service Endpoint supported'],
+                Image: require('../../assets/IconCloud/azure/data_analytics/00606-icon-Azure Synapse Analytics-Analytics.svg'),
+                Provisionable: false,
+                IsPng: false,
+                IsVisible:true,
+                resourceType: ResourceType.Synapse()
+            },
+            {
+              Name: 'data lake analytics',
+              Tooltip: 'Data Lake Analytics',
+              Image: require('../../assets/IconCloud/azure/data_analytics/10143-icon-Data Lake Analytics-Analytics.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.DataLakeAnalytics()
+            },
+            {
+              Name: 'databricks data bricks',
+              Tooltip: 'Databricks',
+              Image: require('../../assets/IconCloud/azure/data_analytics/10787-icon-Azure Databricks-Analytics.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Databricks()
+            },
+            {
+              Name: 'hdinsight hd insight',
+              Tooltip: 'HDInsight',
+              Image: require('../../assets/IconCloud/azure/data_analytics/10142-icon-HD Insight Clusters-Analytics.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.HdInsight()
             }
           ]
         }
        },
        {
         resourceGroup: {
-          groupName: 'Data & AI',
+          groupName: 'AI & ML',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
             {
                 Name: 'cognitive',
                 Tooltip: 'Cognitive Service',
-                Image: require('../../assets/azure_icons/AI and ML Service Color/Cognitive Services.png'),
+                Image: require('../../assets/IconCloud/azure/ai_ml/10162-icon-Cognitive Services-AI + Machine Learning.svg'),
                 Provisionable: false,
                 IsPng: false,
                 IsVisible:true,
@@ -1459,7 +1569,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'bots service bot',
               Tooltip: 'Bots Service',
-              Image: require('../../assets/azure_icons/AI and ML Service Color/Bot Services.png'),
+              Image: require('../../assets/IconCloud/azure/ai_ml/10165-icon-Bot Services-AI + Machine Learning.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1468,7 +1578,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'genomics',
               Tooltip: 'Genomics Accounts',
-              Image: require('../../assets/azure_icons/AI and ML Service Color/Genomics Accounts.png'),
+              Image: require('../../assets/IconCloud/azure/ai_ml/10164-icon-Genomics Accounts-AI + Machine Learning.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1478,7 +1588,7 @@ export default class ResourcePalette extends Component {
               Name: 'machine learning service workspace',
               Tooltip: 'Machine Learning Service Workspaces',
               azInfo: ['Private Link supported'],
-              Image: require('../../assets/azure_icons/AI and ML Service Color/Machine Learning Service Workspaces.png'),
+              Image: require('../../assets/IconCloud/azure/ai_ml/10166-icon-Machine Learning-AI + Machine Learning.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1496,7 +1606,7 @@ export default class ResourcePalette extends Component {
             {
                 Name: 'container instance',
                 Tooltip: 'Container Instance',
-                Image: require('../../assets/azure_icons/Container Service Color/Container Instances.png'),
+                Image: require('../../assets/IconCloud/azure/container/10104-icon-Container Instances-Containers.svg'),
                 Provisionable: false,
                 IsPng: false,
                 IsVisible:true,
@@ -1664,6 +1774,16 @@ export default class ResourcePalette extends Component {
                 resourceType: ResourceType.Firewall()
             },
             {
+              Name: 'firewall manager azfw',
+              Tooltip: 'Firewall Manager',
+              azInfo: [''],
+              Image: require('../../assets/azure_icons/Networking Service Color/FirewallManager.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.FirewallManager()
+          },
+            {
               Name: 'sentinel',
               Tooltip: 'Azure Sentinel',
               Image: require('../../assets/azure_icons/Security Service Color/Azure Sentinel.png'),
@@ -1726,18 +1846,9 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              resourceType: ResourceType.RecoveryServiceVault()
+              resourceType: ResourceType.AzureMigrate()
             },
-            {
-                Name: 'site recovery backup dr',
-                Tooltip: 'Site Recovery',
-                azInfo: ['-Purpose: Backup & DR','-Private Link supported','deployable'],
-                Image: require('../../assets/azure_icons/Management and Governance Service Color/SiteRecovery.png'),
-                Provisionable: true,
-                IsPng: false,
-                IsVisible:true,
-                resourceType: ResourceType.RecoveryServiceVault()
-            },
+            
             {
               Name: 'app insights apm',
               Tooltip: 'Application Insights',
@@ -1747,15 +1858,6 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.AppInsights()
-            },
-            {
-              Name: 'log analytics monitor',
-              Tooltip: 'Log Analytics',
-              Image: require('../../assets/azure_icons/Management and Governance Service Color/Log Analytics Workspaces.png'),
-              Provisionable: true,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.LogAnalytics()
             },
             {
               Name: 'automation update',

@@ -27,6 +27,15 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
 import StatusBarHelper from './StatusBarHelper'
 
 //models
+import StorSimpleDataManager from "../../models/StorSimpleDataManager";
+import OnPremDataGateway from "../../models/OnPremDataGateway";
+import PurviewAccount from "../../models/PurviewAccount";
+import HPCCache from "../../models/HPCCache";
+import AzureStackEdge from "../../models/AzureStackEdge";
+import BackupVault from "../../models/BackupVault";
+import StaticApp from "../../models/StaticApp";
+import NotificationHub from "../../models/NotificationHub";
+import AppServicePlan from "../../models/AppServicePlan";
 import MediaService from "../../models/MediaService";
 import SpringCloud from "../../models/SpringCloud";
 import DataCatalog from "../../models/DataCatalog";
@@ -74,6 +83,7 @@ import ServiceEndpoint from "../../models/ServiceEndpoint";
 import StreamAnalytics from "../../models/StreamAnalytics";
 import EventHub from "../../models/EventHub";
 import AzureFirewall from "../../models/AzureFirewall";
+import AzureFirewallManager from "../../models/AzureFirewallManager";
 import Sentinel from "../../models/Sentinel";
 import KeyVault from "../../models/KeyVault";
 import DDoSStandard from "../../models/DDoSStandard";
@@ -125,10 +135,20 @@ import ASE from "../../models/ASE";
 import NSG from "../../models/NSG";
 import RouteTable from "../../models/RouteTable";
 import Arc from "../../models/Arc";
+import AnalysisService from "../../models/AnalysisService";
 import ElasticJobAgent from "../../models/ElasticJobAgent";
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
 
 //property panels
+import StorSimpleDataManagerPropPanel from './PropPanel/StorSimpleDataManagerPropPanel';
+import OnPremiseDataGatewayPropPanel from './PropPanel/OnPremiseDataGatewayPropPanel';
+import PurviewAccountPropPanel from './PropPanel/PurviewAccountPropPanel';
+import HPCCachePropPanel from './PropPanel/HPCCachePropPanel';
+import AzureStackEdgePropPanel from './PropPanel/AzureStackEdgePropPanel';
+import BackupVaultPropPanel from './PropPanel/BackupVaultPropPanel';
+import StaticAppPropPanel from './PropPanel/StaticAppPropPanel';
+import AnalysisServicePropPanel from './PropPanel/AnalysisServicePropPanel';
+import NotificationHubPropPanel from './PropPanel/NotificationHubPropPanel';
 import BlockchainPropPanel from './PropPanel/BlockchainPropPanel';
 import MediaServicePropPanel from './PropPanel/MediaServicePropPanel';
 import SpringCloudPropPanel from './PropPanel/SpringCloudPropPanel';
@@ -306,6 +326,15 @@ import AzureIcons from './Helpers/AzureIcons';
     return (
       <div id="diagramEditor" className="diagramEditor">
 
+        <StorSimpleDataManagerPropPanel  ref={this.storsimpledatamanagerPropPanel} />
+        <OnPremiseDataGatewayPropPanel ref={this.onpremdatagatewayPropPanel} />
+        <PurviewAccountPropPanel ref={this.purviewaccountPropPanel} />
+        <HPCCachePropPanel ref={this.hpccachePropPanel} />
+        <AzureStackEdgePropPanel ref={this.azstackedgePropPanel} />
+        <BackupVaultPropPanel ref={this.backupvaultPropPanel} />
+        <StaticAppPropPanel ref={this.staticappPropPanel} />
+        <AnalysisServicePropPanel ref={this.analysisservicePropPanel} />
+        <NotificationHubPropPanel ref={this.notificationhubPropPanel} />
         <BlockchainPropPanel ref={this.blockchainPropPanel} />
         <MediaServicePropPanel ref={this.mediaservicePropPanel} />
         <SpringCloudPropPanel ref={this.springcloudPropPanel} />
@@ -431,6 +460,15 @@ import AzureIcons from './Helpers/AzureIcons';
 
   initRef() {
 
+    this.storsimpledatamanagerPropPanel = React.createRef();
+    this.onpremdatagatewayPropPanel = React.createRef();
+    this.purviewaccountPropPanel = React.createRef();
+    this.hpccachePropPanel = React.createRef();
+    this.azstackedgePropPanel = React.createRef();
+    this.backupvaultPropPanel = React.createRef();
+    this.staticappPropPanel = React.createRef();
+    this.analysisservicePropPanel = React.createRef();
+    this.notificationhubPropPanel = React.createRef();
     this.blockchainPropPanel = React.createRef();
     this.mediaservicePropPanel = React.createRef();
     this.springcloudPropPanel = React.createRef();
@@ -766,63 +804,20 @@ createPictureShapeTemplate() {
       new go.Binding("source","source"),
       new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)
     ),
-    // the main object is a Panel that contains a Picture
-    // this.$(go.Panel, "Vertical",
-    //     //new go.Binding("desiredSize", "size", go.Size.parse), //follows panel resize below
-    //     this.$(go.Panel, "Table",
-    //       { 
-    //         name: "PANEL", 
-    //       },
-    //       //bind 2 ways to update model so that shape above can resize according
-    //       //to panel size
-    //       new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
-    //       this.$(go.Picture,
-    //         {
-    //           stretch: go.GraphObject.Fill,
-    //           width: 80,
-    //           height: 80
-    //         },
-    //         {row:0,column:0},
-    //         new go.Binding("source","source"),
-    //         new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)
-    //       )
-    //     ),//panel
-    //     this.$(go.TextBlock,
-    //       {
-    //         editable:true,
-    //         isMultiline: true,
-    //         textAlign: "center"
-    //       },
-    //       {row:1,column:0},
-    //       new go.Binding("text").makeTwoWay(),
-    //       new go.Binding("font").makeTwoWay(),
-    //       new go.Binding("stroke").makeTwoWay())
-    //     ),
-          this.makePort("T", go.Spot.Top,  go.Spot.TopSide, true, true),
-          this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true),
-          this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
-          this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true)
+
+        this.makePort("T", go.Spot.Top,  go.Spot.TopSide, true, true),
+        this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true),
+        this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
+        this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true)
     );
 
   return template;
 }
 
-createSkuBasedVIR(dropContext) {
+createVIRBySkuBased(dropContext) {
+
   switch(dropContext.resourceType) {
-      case ResourceType.ContainerInstance():
-        if(this.diagram.selection.first() != null)
-          this.createVIROntoSubnet({
-            resourceType: ResourceType.ContainerInstance(),
-            x: dropContext.x,
-            y: dropContext.y
-          })
-        else
-          this.createNonVIRAzureResource({
-            source: require('../../assets/azure_icons/Container Service Color/Container Instances.png'),
-            label: 'public container instance', x: dropContext.x, y: dropContext.y,
-            azcontext: new ContainerInstance()
-          });
-      break;
+
       case ResourceType.NLB():
         if(this.diagram.selection.first() != null)
           this.createVIROntoSubnet({
@@ -837,6 +832,7 @@ createSkuBasedVIR(dropContext) {
             azcontext: new NLB()
           });
       break;
+      
       case ResourceType.APIM():
 
         if(this.diagram.selection.first() != null)
@@ -867,7 +863,6 @@ createSkuBasedVIR(dropContext) {
             label: 'non-premium redis', x: dropContext.x, y: dropContext.y,
             azcontext: new Redis()
           });
-
       break;
   }
 }
@@ -905,7 +900,6 @@ createNonVIRAzureResourceTemplate() {
       new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
       new go.Binding("zOrder").makeTwoWay(),
       this.$(go.Panel, "Vertical",
-          //new go.Binding("desiredSize", "size", go.Size.parse), //follows panel resize below
           this.$(go.Panel, "Table",
             { 
               name: "PANEL", 
@@ -2016,15 +2010,16 @@ createVIROntoSubnet(dropContext) {
     var virLoc = new go.Point(subnet.location.x + 60, subnet.location.y +40);
 
     switch(dropContext.resourceType) {
-        case ResourceType.ContainerInstance():
-            if(!Utils.isVIRinDedicatedSubnet(subnet)) {
-              Toast.show('warining', 7000, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
-              return;
-            }
-            text = 'private container instance';
-            nodeKey = Utils.uniqueId('ci');
-            image = require('../../assets/azure_icons/Container Service Color/Container Instances.png');
-            azcontext = new ContainerInstance();
+        case ResourceType.HPCCache():
+          if(Utils.isSubnetTakenByDedicatedSubnetVIR(subnet)) {
+            Toast.show('warining', 2500, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
+            return;
+          }
+          
+          text = 'hpc cache';
+          nodeKey = 'hpccache-' + this.shortUID.randomUUID(6);
+          image = require('../../assets/IconCloud/azure/data_storage/00776-icon-Azure HCP Cache-Storage.svg');
+          azcontext = new HPCCache();
         break;
         case ResourceType.PrivateEndpoint():
           if(Utils.isSubnetTakenByDedicatedSubnetVIR(subnet)) {
@@ -2132,7 +2127,7 @@ createVIROntoSubnet(dropContext) {
           }
           text = 'ase';
           nodeKey = Utils.uniqueId('ase');
-          image = require('../../assets/azure_icons/Web Service Color/App Service Environments.png');
+          image = require('../../assets/IconCloud/azure/appservices/10047-icon-App Service Environments-App Services.svg');
           azcontext = new ASE();
         break;
         case ResourceType.ISE():
@@ -2163,7 +2158,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'hdinsight';
           nodeKey = Utils.uniqueId('hdinsight');
-          image = require('../../assets/azure_icons/Analytics Service Color/HDInsightClusters.png');
+          image = require('../../assets/IconCloud/azure/data_analytics/10142-icon-HD Insight Clusters-Analytics.svg');
           azcontext = new HdInsight();
         break;
         case ResourceType.Databricks():
@@ -2174,7 +2169,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'databricks';
           nodeKey = Utils.uniqueId('databricks');
-          image = require('../../assets/azure_icons/Analytics Service Color/Azure Databricks.png');
+          image = require('../../assets/IconCloud/azure/data_analytics/10787-icon-Azure Databricks-Analytics.svg');
           azcontext = new Databricks();
         break;
         case ResourceType.AADDomainService():
@@ -2207,7 +2202,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'netapp files';
           nodeKey = Utils.uniqueId('netapp');
-          image = require('../../assets/azure_icons/Storage Service Color/Azure NetApp files.png');
+          image = require('../../assets/IconCloud/azure/data_storage/10096-icon-Azure NetApp Files-Storage.svg');
           azcontext = new NetAppFile();
         break;
         case ResourceType.VirtualNetworkGateway():
@@ -2309,6 +2304,8 @@ createPictureShape(dropContext) {
       stroke: 'black',
       nodetype: GoNodeType.ImageShape(),
       size: go.Size.stringify(new go.Size(60,60)),
+      width: 60,
+      height: 60,
       zOrder: 50,
       loc: go.Point.stringify(canvasPoint), category: 'picshape'});
 }
@@ -3428,7 +3425,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       break;
       case 'Import/Export Job':
         this.createPictureShape
-        ({source:Utils.pngDataUrl(AzureIcons.ImportExportJobShape()),
+        ({source: require('../../assets/IconCloud/azure/data_storage//10100-icon-Import Export Jobs-Storage.svg'),
           label: 'Import/Export Job', x: dropContext.x, y: dropContext.y});
       break;
       case 'Network Security Group':
@@ -3447,9 +3444,73 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
           label: '', x: dropContext.x, y: dropContext.y});
       break;
 
+      //*non VIR
+      case ResourceType.StorSimpleDataManager():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/data_storage/10092-icon-StorSimple Data Managers-Storage.svg'),
+          label: 'storesimple data manager', x: dropContext.x, y: dropContext.y,
+          azcontext: new StorSimpleDataManager()
+        });
+      break;
+      case ResourceType.OnPremDataGateway():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/data_storage/10070-icon-On Premises Data Gateways-Networking.svg'),
+          label: 'on-prem data gateway', x: dropContext.x, y: dropContext.y,
+          azcontext: new OnPremDataGateway()
+        });
+      break;
+      case ResourceType.PurviewAccount():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/data_storage/02517-icon-Azure Purview Accounts-other.svg'),
+          label: 'purview', x: dropContext.x, y: dropContext.y,
+          azcontext: new PurviewAccount()
+        });
+      break;
+      case ResourceType.AzureStackEdge():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/data_storage/00691-icon-Azure Stack Edge-Storage.svg'),
+          label: 'stack edge', x: dropContext.x, y: dropContext.y,
+          azcontext: new AzureStackEdge()
+        });
+      break;
+      case ResourceType.BackupVault():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/data_storage/02361-icon-Backup Vault-menu.svg'),
+          label: 'backup vault', x: dropContext.x, y: dropContext.y,
+          azcontext: new BackupVault()
+        });
+      break;
+      case ResourceType.StaticApp():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/appservices/01007-icon-Static Apps-Preview.svg'),
+          label: 'static app', x: dropContext.x, y: dropContext.y,
+          azcontext: new StaticApp()
+        });
+      break;
+      case ResourceType.AnalysisService():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/data_analytics/10148-icon-Analysis Services-Analytics.svg'),
+          label: 'analysis service', x: dropContext.x, y: dropContext.y,
+          azcontext: new AnalysisService()
+        });
+      break;
+      case ResourceType.AppServicePlan():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/appservices/00046-icon-App Service Plans-App Services.svg'),
+          label: 'app service plan', x: dropContext.x, y: dropContext.y,
+          azcontext: new AppServicePlan()
+        });
+      break;
+      case ResourceType.FirewallManager():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/azure_icons/Networking Service Color/FirewallManager.svg'),
+          label: 'firewall manager', x: dropContext.x, y: dropContext.y,
+          azcontext: new AzureFirewallManager()
+        });
+      break;
       case ResourceType.MediaService():
         this.createNonVIRAzureResource({
-          source: Utils.pngDataUrl(AzureIcons.MediaService()),
+          source: require('../../assets/IconCloud/azure/appservices/10309-icon-Azure Media Service-Web.svg'),
           label: 'media service', x: dropContext.x, y: dropContext.y,
           azcontext: new MediaService()
         });
@@ -3463,14 +3524,14 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       break;
       case ResourceType.DataCatalog():
         this.createNonVIRAzureResource({
-          source: Utils.pngDataUrl(AzureIcons.DataCatalog()),
+          source: require('../../assets/IconCloud/azure/data_storage/10216-icon-Azure Data Catalog-Integration.svg'),
           label: 'data catalog', x: dropContext.x, y: dropContext.y,
           azcontext: new DataCatalog()
         });
       break;
       case ResourceType.DataShare():
         this.createNonVIRAzureResource({
-          source: Utils.pngDataUrl(AzureIcons.DataShare()),
+          source: require('../../assets/IconCloud/azure/data_storage//10098-icon-Data Shares-Storage.svg'),
           label: 'data share', x: dropContext.x, y: dropContext.y,
           azcontext: new DataShare()
         });
@@ -3505,7 +3566,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       break;
       case ResourceType.AppService():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Web Service Color/App Services.png'),
+          source: require('../../assets/IconCloud/azure/appservices/10035-icon-App Services-App Services.svg'),
           label: 'app service', x: dropContext.x, y: dropContext.y,
           azcontext: new AppService()
         });
@@ -3515,39 +3576,46 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         break;
       case ResourceType.Function():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Web Service Color/Function Apps.png'),
+          source: require('../../assets/IconCloud/azure/appservices/10029-icon-Function Apps-IoT.svg'),
           label: 'func', x: dropContext.x, y: dropContext.y,
           azcontext: new Function()
         });
         break;
       case ResourceType.AzureSearch():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Web Service Color/Azure Search.png'),
+          source: require('../../assets/IconCloud/azure/appservices/10044-icon-Search Services-App Services.svg'),
           label: 'azure search', x: dropContext.x, y: dropContext.y,
           azcontext: new AzureSearch()
         });
         break;
       case ResourceType.SignalR():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Web Service Color/SignalR.png'),
+          source: require('../../assets/IconCloud/azure/appservices/10052-icon-SignalR-Web.svg'),
           label: 'signalr', x: dropContext.x, y: dropContext.y,
           azcontext: new SignalR()
         });
         break;
       case ResourceType.AppServiceCert():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Web Service Color/App Service Certificates.png'),
+          source: require('../../assets/IconCloud/azure/appservices/00049-icon-App Service Certificates-App Services.svg'),
           label: 'app service certificate', x: dropContext.x, y: dropContext.y,
           azcontext: new AppServiceCert()
         });
         break;
       case ResourceType.AppServiceDomain():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Web Service Color/App Service Domains.png'),
+          source: require('../../assets/IconCloud/azure/appservices/00050-icon-App Service Domains-App Services.svg'),
           label: 'app service domain', x: dropContext.x, y: dropContext.y,
           azcontext: new AppServiceDomain()
         });
         break;
+        case ResourceType.NotificationHub():
+          this.createNonVIRAzureResource({
+            source: require('../../assets/IconCloud/azure/appservices/10045-icon-Notification Hubs-App Services.svg'),
+            label: 'notification hub', x: dropContext.x, y: dropContext.y,
+            azcontext: new NotificationHub()
+          });
+          break;
       case ResourceType.AppConfig():
         this.createNonVIRAzureResource({
           source: Utils.pngDataUrl(AzureIcons.AppConfig()),
@@ -3615,14 +3683,14 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
 
       case ResourceType.StorageAccount():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Storage Service Color/Blob Storage.png'),
+          source: require('../../assets/IconCloud/azure/data_storage/10086-icon-Storage Accounts-Storage.svg'),
           label: 'storage account', x: dropContext.x, y: dropContext.y,
           azcontext: new StorageAccount()
         });
         break;
       case ResourceType.Databox():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Storage Service Color/Data Box.png'),
+          source: require('../../assets/IconCloud/azure/data_storage/10094-icon-Data Box-Migrate.svg'),
           label: 'databox', x: dropContext.x, y: dropContext.y,
           azcontext: new Databox()
         });
@@ -3672,7 +3740,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         });
         break;
       case ResourceType.NLB():
-        this.createSkuBasedVIR({
+        this.createVIRBySkuBased({
           resourceType: ResourceType.NLB(),
           x: dropContext.x,
           y: dropContext.y
@@ -3708,8 +3776,8 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         break;
       case ResourceType.AzFileSync():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Storage Service Color/Storage Sync Services.png'),
-          label: 'az file sync', x: dropContext.x, y: dropContext.y,
+          source: require('../../assets/IconCloud/azure/data_storage/10093-icon-Storage Sync Services-Storage.svg'),
+          label: 'storage sync service', x: dropContext.x, y: dropContext.y,
           azcontext: new FileSync()
         });
         break;
@@ -3728,7 +3796,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         });
         break;
       case ResourceType.Redis():
-        this.createSkuBasedVIR({
+        this.createVIRBySkuBased({
           resourceType: ResourceType.Redis(),
           x: dropContext.x,
           y: dropContext.y
@@ -3739,7 +3807,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         break;
       case ResourceType.Synapse():
         this.createNonVIRAzureResource({
-          source: Utils.pngDataUrl(AzureIcons.Synapse()),
+          source: require('../../assets/IconCloud/azure/data_analytics/00606-icon-Azure Synapse Analytics-Analytics.svg'),
           label: 'synapse', x: dropContext.x, y: dropContext.y,
           azcontext: new SynapseAnalytics()
         });
@@ -3747,7 +3815,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
 
       case ResourceType.DataExplorer():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Analytics Service Color/Azure Data Explorer Clusters.png'),
+          source: require('../../assets/IconCloud/azure/data_storage/10145-icon-Azure Data Explorer Clusters-Databases.svg'),
           label: 'data explorer', x: dropContext.x, y: dropContext.y,
           azcontext: new DataExplorer()
         });
@@ -3755,7 +3823,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
 
       case ResourceType.Databricks():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Analytics Service Color/Azure Databricks.png'),
+          source: require('../../assets/IconCloud/azure/data_analytics/10787-icon-Azure Databricks-Analytics.svg'),
           label: 'databricks', x: dropContext.x, y: dropContext.y,
           azcontext: new Databricks()
         });
@@ -3763,7 +3831,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
 
       case ResourceType.DataFactory():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Analytics Service Color/Data Factories.png'),
+          source: require('../../assets/IconCloud/azure/data_storage/10126-icon-Data Factory-Databases.svg'),
           label: 'data factory', x: dropContext.x, y: dropContext.y,
           azcontext: new DataFactory()
         });
@@ -3771,7 +3839,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
 
       case ResourceType.DataLakeAnalytics():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Analytics Service Color/Data Lake Analytics.png'),
+          source: require('../../assets/IconCloud/azure/data_analytics/10143-icon-Data Lake Analytics-Analytics.svg'),
           label: 'datalake analytics', x: dropContext.x, y: dropContext.y,
           azcontext: new DataLakeAnalytics()
         });
@@ -3786,38 +3854,38 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
 
       case ResourceType.Cognitive():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/AI and ML Service Color/Cognitive Services.png'),
+          source: require('../../assets/IconCloud/azure/ai_ml/10162-icon-Cognitive Services-AI + Machine Learning.svg'),
           label: 'cognitive', x: dropContext.x, y: dropContext.y,
           azcontext: new Cognitive()
         });
         break;
       case ResourceType.BotsService():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/AI and ML Service Color/Bot Services.png'),
+          source: require('../../assets/IconCloud/azure/ai_ml/10165-icon-Bot Services-AI + Machine Learning.svg'),
           label: 'bot service', x: dropContext.x, y: dropContext.y,
           azcontext: new BotsService()
         });
         break;
       case ResourceType.Genomics():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/AI and ML Service Color/Genomics Accounts.png'),
+          source: require('../../assets/IconCloud/azure/ai_ml/10164-icon-Genomics Accounts-AI + Machine Learning.svg'),
           label: 'genomics', x: dropContext.x, y: dropContext.y,
           azcontext: new Genomics()
         });
         break;
       case ResourceType.MLServiceWorkspace():
         this.createNonVIRAzureResource({
-          source: Utils.pngDataUrl(AzureIcons.MachineLearningWorkspace()),
+          source: require('../../assets/IconCloud/azure/ai_ml/10166-icon-Machine Learning-AI + Machine Learning.svg'),
           label: 'ml', x: dropContext.x, y: dropContext.y,
           azcontext: new MLServiceWorkspace()
         });
         break;
 
       case ResourceType.ContainerInstance():
-        this.createSkuBasedVIR({
-          resourceType: ResourceType.ContainerInstance(),
-          x: dropContext.x,
-          y: dropContext.y
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/container/10104-icon-Container Instances-Containers.svg'),
+          label: 'container instance', x: dropContext.x, y: dropContext.y,
+          azcontext: new ContainerInstance()
         });
         break;
       case ResourceType.ContainerRegistry():
@@ -3828,13 +3896,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         });
         break;
       
-      case ResourceType.APIM():
-        this.createSkuBasedVIR({
-          resourceType: ResourceType.APIM(),
-          x: dropContext.x,
-          y: dropContext.y
-        });
-        break;
+
       case ResourceType.ASB():
         this.createNonVIRAzureResource({
           source: require('../../assets/azure_icons/Integration Service Color/Azure Service Bus.png'),
@@ -3933,7 +3995,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         break;
       case ResourceType.RecoveryServiceVault():
         this.createNonVIRAzureResource({
-          source:  require('../../assets/azure_icons/Management and Governance Service Color/SiteRecovery.png'),
+          source:  require('../../assets/IconCloud/azure/data_storage/00017-icon-Recovery Services Vaults-Storage.svg'),
           label: 'site recovery', x: dropContext.x, y: dropContext.y,
           azcontext: new RecoveryServiceVault()
         });
@@ -3947,7 +4009,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         break;
       case ResourceType.LogAnalytics():
         this.createNonVIRAzureResource({
-          source:  require('../../assets/azure_icons/Management and Governance Service Color/Log Analytics Workspaces.png'),
+          source:  require('../../assets/IconCloud/azure/data_analytics/00009-icon-Log Analytics Workspaces-Analytics.svg'),
           label: 'log analytics', x: dropContext.x, y: dropContext.y,
           azcontext: new LogAnalytics()
         });
@@ -4008,6 +4070,22 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         });
         break;
 
+      //*create vir
+      case ResourceType.APIM():
+        this.createVIRBySkuBased({
+          resourceType: ResourceType.APIM(),
+          x: dropContext.x,
+          y: dropContext.y
+        });
+        break;
+      case ResourceType.HPCCache():
+          this.createVIROntoSubnet({
+            resourceType: ResourceType.HPCCache(),
+            x: dropContext.x,
+            y: dropContext.y
+          })
+        break;
+
       default:
         break;
     }
@@ -4020,7 +4098,52 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
     let thisComp = this;
 
     switch (userObject.GraphModel.ResourceType) {
-
+      
+  case ResourceType.StorSimpleDataManager():
+        this.storsimpledatamanagerPropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+  case ResourceType.OnPremDataGateway():
+        this.onpremdatagatewayPropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+  case ResourceType.PurviewAccount():
+        this.purviewaccountPropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;  
+  case ResourceType.HPCCache():
+        this.hpccachePropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+  case ResourceType.AzureStackEdge():
+        this.azstackedgePropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+  case ResourceType.BackupVault():
+        this.backupvaultPropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+  case ResourceType.StaticApp():
+        this.staticappPropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+   case ResourceType.AnalysisService():
+        this.analysisservicePropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+    case ResourceType.NotificationHub():
+        this.notificationhubPropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
     case ResourceType.Blockchain():
         this.blockchainPropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
