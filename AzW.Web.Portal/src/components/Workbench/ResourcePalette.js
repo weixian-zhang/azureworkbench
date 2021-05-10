@@ -1201,7 +1201,7 @@ export default class ResourcePalette extends Component {
        },
        {
         resourceGroup: {
-          groupName: 'Network',
+          groupName: 'Networking',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
@@ -1209,7 +1209,7 @@ export default class ResourcePalette extends Component {
                 Name: 'virtual network vnet',
                 Tooltip: 'Virtual Network',
                 azInfo: ['deployable'],
-                Image: require('../../assets/azure_icons/Networking Service Color/Virtual Networks.png'),
+                Image: require('../../assets/IconCloud/azure/network/10061-icon-Virtual Networks-Networking.svg'),
                 Provisionable: true,
                 IsPng: false,
                 IsVisible:true,
@@ -1219,7 +1219,7 @@ export default class ResourcePalette extends Component {
               Name: 'load balancer nlb slb alb route',
               Tooltip: 'Load Balancer',
               azInfo: ['deployable'],
-              Image: require('../../assets/azure_icons/Networking Service Color/Load Balancers.png'),
+              Image: require('../../assets/IconCloud/azure/network/10062-icon-Load Balancers-Networking.svg'),
               Provisionable: true,
               IsPng: false,
               IsVisible:true,
@@ -1229,7 +1229,7 @@ export default class ResourcePalette extends Component {
               Name: 'application gatway appgw waf route',
               Tooltip: 'Application Gateway',
               azInfo: ['deployable'],
-              Image: require('../../assets/azure_icons/Networking Service Color/Application Gateway.png'),
+              Image: require('../../assets/IconCloud/azure/network/10076-icon-Application Gateways-Networking.svg'),
               Provisionable: true,
               IsPng: false,
               IsVisible:true,
@@ -1238,7 +1238,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'dns zone',
               Tooltip: 'Azure DNS',
-              Image: require('../../assets/azure_icons/Networking Service Color/azure-dns.png'),
+              Image: require('../../assets/IconCloud/azure/network/10064-icon-DNS Zones-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1247,16 +1247,16 @@ export default class ResourcePalette extends Component {
             {
               Name: 'dns private zone',
               Tooltip: 'DNS Private Zone',
-              Image: require('../../assets/azure_icons/Networking Service Color/DNS Private Zones.png'),
+              Image: require('../../assets/IconCloud/azure/network/10064-icon-DNS Zones-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.DNSPrivateZone()
             },
             {
-              Name: 'front door waf load balancer route',
+              Name: 'front door load balancer nlb',
               Tooltip: 'Front Door',
-              Image: require('../../assets/azure_icons/Networking Service Color/Front Doors.png'),
+              Image: require('../../assets/IconCloud/azure/network/10073-icon-Front Doors-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1265,16 +1265,25 @@ export default class ResourcePalette extends Component {
             {
               Name: 'public ip address pip',
               Tooltip: 'Public IP',
-              Image: require('../../assets/azure_icons/Networking Service Color/Public IP Addresses.png'),
+              Image: require('../../assets/IconCloud/azure/network/10069-icon-Public IP Addresses-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.PublicIp()
             },
             {
+              Name: 'public ip prefixes ',
+              Tooltip: 'Public IP Prefixes',
+              Image: require('../../assets/IconCloud/azure/network/10372-icon-Public IP Prefixes-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.PublicIpPrefixes()
+            },
+            {
               Name: 'express route mpls wan',
               Tooltip: 'ExpressRoute',
-              Image: require('../../assets/azure_icons/Networking Service Color/ExpressRoute Circuits.png'),
+              Image: require('../../assets/IconCloud/azure/network/10079-icon-ExpressRoute Circuits-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1283,7 +1292,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'traffic manager gtm route',
               Tooltip: 'Traffic Manager',
-              Image: require('../../assets/azure_icons/Networking Service Color/Traffic Manager Profiles.png'),
+              Image: require('../../assets/IconCloud/azure/network/10065-icon-Traffic Manager Profiles-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1292,34 +1301,34 @@ export default class ResourcePalette extends Component {
             {
               Name: 'virtual network gateway vnet',
               Tooltip: 'Virtual Network Gateway',
-              Image: require('../../assets/azure_icons/Networking Service Color/Virtual Network Gateways.png'),
+              Image: require('../../assets/IconCloud/azure/network/10063-icon-Virtual Network Gateways-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.VirtualNetworkGateway()
             },
             {
+              Name: 'local network gateway',
+              Tooltip: 'Local Network Gateway',
+              Image: require('../../assets/IconCloud/azure/network/10077-icon-Local Network Gateways-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.LocalNetworkGateway()
+            },
+            {
               Name: 'cdn',
               Tooltip: 'Azure CDN',
-              Image: require('../../assets/azure_icons/Networking Service Color/CDN Profiles.png'),
+              Image: require('../../assets/IconCloud/azure/network/00056-icon-CDN Profiles-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.CDN()
             },
             {
-              Name: 'application security group asg',
-              Tooltip: 'Application Security Group',
-              Image: require('../../assets/azure_icons/Networking Service Color/Application Security Groups.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.ASG()
-            },
-            {
               Name: 'network interface nic',
               Tooltip: 'Network Interface',
-              Image: require('../../assets/azure_icons/Networking Service Color/Network Interfaces.png'),
+              Image: require('../../assets/IconCloud/azure/network/10080-icon-Network Interfaces-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1328,7 +1337,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'private endpoint',
               Tooltip: 'Private Endpoint',
-              Image: require('../../assets/azure_icons/Networking Service Color/private-endpoint.png'),
+              Image: require('../../assets/IconCloud/azure/network/02579-icon-Private Endpoints-menu.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1337,12 +1346,32 @@ export default class ResourcePalette extends Component {
             {
               Name: 'virtual wan',
               Tooltip: 'Virtual WAN',
-              Image: Utils.pngDataUrl(AzureIcons.VirtualWAN()),
+              Image: require('../../assets/IconCloud/azure/network/10353-icon-Virtual WANs-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.VirtualWAN()
-            }
+            },
+            {
+              Name: 'firewall azfw',
+              Tooltip: 'Azure Firewall',
+              azInfo: ['deployable'],
+              Image: require('../../assets/IconCloud/azure/network/10084-icon-Firewalls-Networking.svg'),
+              Provisionable: true,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Firewall()
+            },
+            {
+              Name: 'firewall manager azfw',
+              Tooltip: 'Firewall Manager',
+              azInfo: [''],
+              Image: require('../../assets/IconCloud/azure/network/00271-icon-Azure Firewall Manager-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.FirewallManager()
+            },
           ]
         }
        },
@@ -1743,7 +1772,7 @@ export default class ResourcePalette extends Component {
               Name: 'container registry',
               Tooltip: 'Container Registry',
               azInfo: ['Private Link supported'],
-              Image: require('../../assets/azure_icons/Container Service Color/Container Registries.png'),
+              Image: require('../../assets/IconCloud/azure/container/10105-icon-Container Registries-Containers.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1873,25 +1902,15 @@ export default class ResourcePalette extends Component {
           groupSearchVisible: true,
           resources: [
             {
-                Name: 'firewall azfw',
-                Tooltip: 'Azure Firewall',
-                azInfo: ['deployable'],
-                Image: require('../../assets/azure_icons/Security Service Color/Azure Firewall.png'),
-                Provisionable: true,
-                IsPng: false,
-                IsVisible:true,
-                resourceType: ResourceType.Firewall()
-            },
-            {
-              Name: 'firewall manager azfw',
-              Tooltip: 'Firewall Manager',
-              azInfo: [''],
-              Image: require('../../assets/azure_icons/Networking Service Color/FirewallManager.svg'),
+              Name: 'application security group asg',
+              Tooltip: 'Application Security Group',
+              Image: require('../../assets/azure_icons/Networking Service Color/Application Security Groups.png'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              resourceType: ResourceType.FirewallManager()
-          },
+              resourceType: ResourceType.ASG()
+            },
+            
             {
               Name: 'sentinel',
               Tooltip: 'Azure Sentinel',

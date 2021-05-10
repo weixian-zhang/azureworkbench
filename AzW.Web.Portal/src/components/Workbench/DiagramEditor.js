@@ -27,6 +27,8 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
 import StatusBarHelper from './StatusBarHelper'
 
 //models
+import LocalNetworkGateway from "../../models/LocalNetworkGateway";
+import PublicIpPrefixes from "../../models/PublicIpPrefixes";
 import Host from "../../models/Host";
 import Hostgroup from "../../models/Hostgroup";
 import VMWareSolution from "../../models/VMWareSolution";
@@ -152,6 +154,8 @@ import ElasticJobAgent from "../../models/ElasticJobAgent";
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
 
 //property panels
+import LocalNetworkGatewayPropPanel from './PropPanel/LocalNetworkGatewayPropPanel';
+import PublicIpPrefixesPropPanel from './PropPanel/PublicIpPrefixesPropPanel';
 import HostPropPanel from './PropPanel/HostPropPanel';
 import HostgroupPropPanel from './PropPanel/HostgroupPropPanel';
 import VMWareSolutionPropPanel from './PropPanel/VMWareSolutionPropPanel';
@@ -268,6 +272,7 @@ import IoTCentralPropPanel from "./PropPanel/IoTCentralPropPanel";
 import NSGPropPanel from "./PropPanel/NSGPropPanel";
 import AzureBatchPropPanel from "./PropPanel/AzureBatchPropPanel";
 import DedicatedHostPropPanel from "./PropPanel/DedicatedHostPropPanel";
+import NICPropPanel from "./PropPanel/NICPropPanel";
 
 import OverlayPreviewDiagram from "./OverlayPreviewDiagram";
 import ARMService from "../../services/ARMService";
@@ -350,6 +355,8 @@ import AzureIcons from './Helpers/AzureIcons';
     return (
       <div id="diagramEditor" className="diagramEditor">
 
+        <LocalNetworkGatewayPropPanel  ref={this.localnetworkgwPanel} />
+        <PublicIpPrefixesPropPanel ref={this.pipprefixesPanel} />
         <HostPropPanel ref={this.hostpPropPanel} />
         <HostgroupPropPanel ref={this.hostgroupPropPanel} />
         <VMWareSolutionPropPanel ref={this.vmwaresolutionPropPanel} />
@@ -382,6 +389,7 @@ import AzureIcons from './Helpers/AzureIcons';
         <EventHubPropPanel ref={this.eventhubPropPanel} />
         <AzureBatchPropPanel ref={this.batchPropPanel} />
         <DedicatedHostPropPanel ref={this.dedicatedhostPropPanel} />
+        <NICPropPanel ref={this.nicPropPanel} />
         <CognitivePropPanel ref={this.cognitivePropPanel} />
         <BotsServicePropPanel ref={this.botsPropPanel} />
         <GenomicsPropPanel ref={this.genomicsPropPanel} />
@@ -496,6 +504,8 @@ import AzureIcons from './Helpers/AzureIcons';
 
   initRef() {
 
+    this.localnetworkgwPanel = React.createRef();
+    this.pipprefixesPanel = React.createRef();
     this.hostpPropPanel = React.createRef();
     this.hostgroupPropPanel = React.createRef();
     this.vmwaresolutionPropPanel = React.createRef();
@@ -525,7 +535,7 @@ import AzureIcons from './Helpers/AzureIcons';
     this.svcfabricclusterPropPanel = React.createRef();
     this.svcfabricmanagedclusterPropPanel = React.createRef();
     this.virtualwanPropPanel = React.createRef();
-
+    this.nicPropPanel = React.createRef();
     this.eventhubPropPanel = React.createRef();
     this.batchPropPanel = React.createRef();
     this.dedicatedhostPropPanel = React.createRef();
@@ -890,7 +900,7 @@ createVIRBySkuBased(dropContext) {
           })
         else
           this.createNonVIRAzureResource({
-            source: require('../../assets/azure_icons/Networking Service Color/Load Balancers.png'),
+            source: require('../../assets/IconCloud/azure/network/10062-icon-Load Balancers-Networking.svg'),
             label: 'external load balancer', x: dropContext.x, y: dropContext.y,
             azcontext: new NLB()
           });
@@ -1629,14 +1639,14 @@ createVNetTemplate() {
           stretch: go.GraphObject.Fill,
           desiredSize: new go.Size(25,25),
           alignment: go.Spot.TopRight, alignmentFocus: go.Spot.BottomRight,
-          source: require('../../assets/azure_icons/Networking Service Color/Virtual Networks.png')
+          source: require('../../assets/IconCloud/azure/network/10061-icon-Virtual Networks-Networking.svg')
         }),
         this.$(go.Picture, {
           name: "NATGW",
           stretch: go.GraphObject.Fill,
-          desiredSize: new go.Size(30,30),
-          alignment: new go.Spot(1, 0, -40, -12),
-          source: require('../../assets/azure_icons/Networking Service Color/nat-gateway.png'),
+          desiredSize: new go.Size(25,25),
+          alignment: new go.Spot(1, 0, -42, -12),
+          source: require('../../assets/IconCloud/azure/network/10310-icon-NAT-Networking.svg'),
           doubleClick: function(e, shape) {
             e.handled = true;
             e.event.preventDefault();
@@ -1733,7 +1743,7 @@ createSubnetTemplate() {
         stretch: go.GraphObject.Fill,
         desiredSize: new go.Size(24,24),
         alignment: new go.Spot(0, 0, 6, -15),
-        source: Utils.pngDataUrl(AzureIcons.NSGShape()),
+        source: require('../../assets/IconCloud/azure/nondeployable/10067-icon-Network Security Groups-Networking.svg'),
         
         doubleClick: function(e, picture) {
           e.handled = true;
@@ -1761,7 +1771,7 @@ createSubnetTemplate() {
         stretch: go.GraphObject.Fill,
         desiredSize: new go.Size(25,25),
         alignment: new go.Spot(0, 0, 31, -17),
-        source: require('../../assets/azure_icons/Networking Service Color/Route Tables.png'),
+        source: require('../../assets/IconCloud/azure/nondeployable/10082-icon-Route Tables-Networking.svg'),
         doubleClick: function(e, picture) {
           e.handled = true;
           e.event.preventDefault();
@@ -1785,12 +1795,20 @@ createSubnetTemplate() {
         new go.Binding('udrazcontext').makeTwoWay()
       ),
       this.$(go.Picture, {
+        stretch: go.GraphObject.Fill,
+        desiredSize: new go.Size(25,25),
+        alignment: go.Spot.TopRight,
+        alignmentFocus: go.Spot.BottomLeft,
+        
+        source: require('../../assets/IconCloud/azure/network/02742-icon-Subnet-menu.svg')
+      }),
+      this.$(go.Picture, {
         name: "SVCEndpoint",
         stretch: go.GraphObject.Fill,
         desiredSize: new go.Size(25,25),
         alignment: new go.Spot(0, 0, 61, -15),
-        isActionable: true,
-        source: Utils.pngDataUrl(AzureIcons.ServiceEndpoint()),
+        isActionable: true,  
+        source: require('../../assets/IconCloud/azure/nondeployable/10085-icon-Service Endpoint Policies-Networking.svg'),
         doubleClick: function(e, picture) {
           e.handled = true;
           e.event.preventDefault();
@@ -2129,7 +2147,7 @@ createVIROntoSubnet(dropContext) {
           }
           text = 'private endpoint';
           nodeKey = Utils.uniqueId('pendp');
-          image = require('../../assets/azure_icons/Networking Service Color/private-endpoint.png');
+          image = require('../../assets/IconCloud/azure/network/02579-icon-Private Endpoints-menu.svg');
           azcontext = new PrivateEndpoint();
         break;
         case ResourceType.WindowsVM():
@@ -2188,7 +2206,7 @@ createVIROntoSubnet(dropContext) {
           }
           text = 'firewall';
           nodeKey = 'azfw-' + this.shortUID.randomUUID(6);
-          image = require('../../assets/azure_icons/Security Service Color/Azure Firewall.png');
+          image = require('../../assets/IconCloud/azure/network/10084-icon-Firewalls-Networking.svg');
           azcontext = new AzureFirewall();
         break;
         case ResourceType.Bastion():
@@ -2208,7 +2226,7 @@ createVIROntoSubnet(dropContext) {
           }
           text = 'app gateway';
           nodeKey = 'appgw-' + this.shortUID.randomUUID(6);
-          image = require('../../assets/azure_icons/Networking Service Color/Application Gateway.png');
+          image = require('../../assets/IconCloud/azure/network/10076-icon-Application Gateways-Networking.svg');
           azcontext = new AppGateway();
         break;
         case ResourceType.ASE():
@@ -2304,7 +2322,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'vnet gateway';
           nodeKey = Utils.uniqueId('vnetgw');
-          image = require('../../assets/azure_icons/Networking Service Color/Virtual Network Gateways.png');
+          image = require('../../assets/IconCloud/azure/network/10063-icon-Virtual Network Gateways-Networking.svg');
           azcontext = new VirtualNetworkGateway();
         break;
         case ResourceType.ASE():
@@ -2326,7 +2344,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'internal lb';
           nodeKey = Utils.uniqueId('internallb');
-          image = require('../../assets/azure_icons/Networking Service Color/Load Balancers.png');
+          image = require('../../assets/IconCloud/azure/network/10062-icon-Load Balancers-Networking.svg');
           
           var nlb = new NLB();
           nlb.ProvisionContext.IsInternalNLB = true;
@@ -3537,6 +3555,22 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
 
       //*non VIR
 
+      case ResourceType.LocalNetworkGateway():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/network/10077-icon-Local Network Gateways-Networking.svg'),
+          label: 'local network gateway', x: dropContext.x, y: dropContext.y,
+          azcontext: new LocalNetworkGateway()
+        });
+      break;
+
+      case ResourceType.PublicIpPrefixes():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/network/10372-icon-Public IP Prefixes-Networking.svg'),
+          label: 'publicip prefixes', x: dropContext.x, y: dropContext.y,
+          azcontext: new PublicIpPrefixes()
+        });
+      break;
+
       case ResourceType.Host():
         this.createNonVIRAzureResource({
           source: require('../../assets/IconCloud/azure/compute/10347-icon-Hosts-Compute.svg'),
@@ -3731,7 +3765,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       break;
       case ResourceType.VirtualWAN():
         this.createNonVIRAzureResource({
-          source: Utils.pngDataUrl(AzureIcons.VirtualWAN()),
+          source: require('../../assets/IconCloud/azure/network/10353-icon-Virtual WANs-Networking.svg'),
           label: 'virtual wan', x: dropContext.x, y: dropContext.y,
           azcontext: new VirtualWAN()
         });
@@ -3825,14 +3859,14 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         break;
       case ResourceType.PublicIp():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Networking Service Color/Public IP Addresses.png'),
+          source: require('../../assets/IconCloud/azure/network/10069-icon-Public IP Addresses-Networking.svg'),
           label: 'public ip', x: dropContext.x, y: dropContext.y,
           azcontext: new PublicIp()
         });
         break;
       case ResourceType.TrafficManager():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Networking Service Color/Traffic Manager Profiles.png'),
+          source: require('../../assets/IconCloud/azure/network/10065-icon-Traffic Manager Profiles-Networking.svg'),
           label: 'traffic manager', x: dropContext.x, y: dropContext.y,
           azcontext: new TrafficManager()
         });
@@ -3840,7 +3874,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       
       case ResourceType.CDN():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Networking Service Color/CDN Profiles.png'),
+          source: require('../../assets/IconCloud/azure/network/00056-icon-CDN Profiles-Networking.svg'),
           label: 'cdn', x: dropContext.x, y: dropContext.y,
           azcontext: new AzureCDN()
         });
@@ -3854,7 +3888,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         break;
       case ResourceType.NIC():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Networking Service Color/Network Interfaces.png'),
+          source: require('../../assets/IconCloud/azure/network/10080-icon-Network Interfaces-Networking.svg'),
           label: 'nic', x: dropContext.x, y: dropContext.y,
           azcontext: new NIC()
         });
@@ -3927,28 +3961,28 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         break;
       case ResourceType.DNS():
           this.createNonVIRAzureResource({
-            source: Utils.pngDataUrl(AzureIcons.DNS()),
+            source: require('../../assets/IconCloud/azure/network/10064-icon-DNS Zones-Networking.svg'),
             label: 'dns zone', x: dropContext.x, y: dropContext.y,
             azcontext: new DNS()
           });
           break;
       case ResourceType.DNSPrivateZone():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Networking Service Color/DNS Private Zones.png'),
+          source: require('../../assets/IconCloud/azure/network/10064-icon-DNS Zones-Networking.svg'),
           label: 'private dns zone', x: dropContext.x, y: dropContext.y,
           azcontext: new DNSPrivateZone()
         });
         break;
       case ResourceType.FrontDoor():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Networking Service Color/Front Doors.png'),
+          source: require('../../assets/IconCloud/azure/network/10073-icon-Front Doors-Networking.svg'),
           label: 'front door', x: dropContext.x, y: dropContext.y,
           azcontext: new FrontDoor()
         });
         break;
       case ResourceType.ExpressRouteCircuit():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Networking Service Color/ExpressRoute Circuits.png'),
+          source: require('../../assets/IconCloud/azure/network/10079-icon-ExpressRoute Circuits-Networking.svg'),
           label: 'expressroute circuit', x: dropContext.x, y: dropContext.y,
           azcontext: new ExpressRouteCircuit()
         });
@@ -4069,7 +4103,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         break;
       case ResourceType.ContainerRegistry():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Container Service Color/Container Registries.png'),
+          source: require('../../assets/IconCloud/azure/container/10105-icon-Container Registries-Containers.svg'),
           label: 'container registry', x: dropContext.x, y: dropContext.y,
           azcontext: new ContainerRegistry()
         });
@@ -4140,9 +4174,9 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         });
         break;
   
-      case ResourceType.Firewall():
-        this.addFirewall(dropContext);
-        break;
+      // case ResourceType.Firewall():
+      //   this.addFirewall(dropContext);
+      //   break;
       case ResourceType.Sentinel():
         this.createNonVIRAzureResource({
           source: require('../../assets/azure_icons/Security Service Color/Azure Sentinel.png'),
@@ -4278,7 +4312,17 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
 
     switch (userObject.GraphModel.ResourceType) {
       
-  
+      
+  case ResourceType.LocalNetworkGateway():
+    this.localnetworkgwPanel.current.show(userObject, function(savedUserObject){
+        onContextSaveCallback(Utils.deepClone(savedUserObject));
+    });
+  break;
+  case ResourceType.PublicIpPrefixes():
+    this.pipprefixesPanel.current.show(userObject, function(savedUserObject){
+        onContextSaveCallback(Utils.deepClone(savedUserObject));
+    });
+  break;
   case ResourceType.Host():
         this.hostpPropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
@@ -4617,7 +4661,12 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
             onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
       break;
-        
+      case ResourceType.NIC():
+        this.nicPropPanel.current.show(userObject, function(savedUserObject){
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+      break;
+      
       case ResourceType.ISE():
         this.isePropPanel.current.show(userObject, function(savedUserObject){
             onContextSaveCallback(Utils.deepClone(savedUserObject));

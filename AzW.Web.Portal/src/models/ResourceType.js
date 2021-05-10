@@ -28,11 +28,13 @@ export default class ResourceType
 
     static SharedImageGallery() {return 'sig'; }
     static FrontDoor() {return 'frontdoor'; }
+    static PublicIpPrefixes() {return 'pipprefixes'; }
     static PublicIp() {return 'pip'; }
     static ExpressRouteCircuit() {return 'expressroute'; }
     static TrafficManager() {return 'trafficmanager'; }
     static LabService() {return 'labservice'; }
     static DevTestLab() {return 'devtestlab'; }
+    static LocalNetworkGateway() {return 'localnetworkgateway'; }
     static VirtualNetworkGateway() {return 'vnetgateway'; }
     static CDN() {return 'cdn'; }
     static NSG() {return 'nsg'; }
