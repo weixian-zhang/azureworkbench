@@ -27,6 +27,17 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
 import StatusBarHelper from './StatusBarHelper'
 
 //models
+import Host from "../../models/Host";
+import Hostgroup from "../../models/Hostgroup";
+import VMWareSolution from "../../models/VMWareSolution";
+import WorkspaceWVD from "../../models/WorkspaceWVD";
+import DiskEncryptionSet from "../../models/DiskEncryptionSet";
+import Image from "../../models/Image";
+import DiskSnapshot from "../../models/DiskSnapshot";
+import ImageTemplate from "../../models/ImageTemplate";
+import Automanage from "../../models/Automanage";
+import LabService from "../../models/LabService";
+import DataBoxEdge from "../../models/DataBoxEdge";
 import StorSimpleDataManager from "../../models/StorSimpleDataManager";
 import OnPremDataGateway from "../../models/OnPremDataGateway";
 import PurviewAccount from "../../models/PurviewAccount";
@@ -41,7 +52,8 @@ import SpringCloud from "../../models/SpringCloud";
 import DataCatalog from "../../models/DataCatalog";
 import DataShare from "../../models/DataShare";
 import ManagedIdentity from "../../models/ManagedIdentity";
-import MeshApplication from "../../models/MeshApplication";
+import ServiceFabricCluster from "../../models/ServiceFabricCluster";
+import ServiceFabricManagedCluster from "../../models/ServiceFabricManagedCluster";
 import VirtualWAN from "../../models/VirtualWAN";
 import Blockchain from "../../models/Blockchain";
 import DNS from "../../models/DNS";
@@ -140,6 +152,17 @@ import ElasticJobAgent from "../../models/ElasticJobAgent";
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
 
 //property panels
+import HostPropPanel from './PropPanel/HostPropPanel';
+import HostgroupPropPanel from './PropPanel/HostgroupPropPanel';
+import VMWareSolutionPropPanel from './PropPanel/VMWareSolutionPropPanel';
+import WorkspaceWVDPropPanel from './PropPanel/WorkspaceWVDPropPanel';
+import DiskEncryptionSetPropPanel from './PropPanel/DiskEncryptionSetPropPanel';
+import ImagePropPanel from './PropPanel/ImagePropPanel';
+import DiskSnapshotPropPanel from './PropPanel/DiskSnapshotPropPanel';
+import ImageTemplatePropPanel from './PropPanel/ImageTemplatePropPanel';
+import AutomanagePropPanel from './PropPanel/AutomanagePropPanel';
+import LabServicePropPanel from './PropPanel/LabServicePropPanel';
+import DataBoxEdgePropPanel from './PropPanel/DataBoxEdgePropPanel';
 import StorSimpleDataManagerPropPanel from './PropPanel/StorSimpleDataManagerPropPanel';
 import OnPremiseDataGatewayPropPanel from './PropPanel/OnPremiseDataGatewayPropPanel';
 import PurviewAccountPropPanel from './PropPanel/PurviewAccountPropPanel';
@@ -155,7 +178,8 @@ import SpringCloudPropPanel from './PropPanel/SpringCloudPropPanel';
 import DataCatalogPropPanel from './PropPanel/DataCatalogPropPanel';
 import DataSharePropPanel from './PropPanel/DataSharePropPanel';
 import ManagedIdentityPropPanel from './PropPanel/ManagedIdentityPropPanel';
-import MeshApplicationPropPanel from './PropPanel/MeshApplicationPropPanel';
+import ServiceFabricClusterPropPanel from './PropPanel/ServiceFabricClusterPropPanel';
+import ServiceFabricManagedClusterPropPanel from './PropPanel/ServiceFabricManagedClusterPropPanel';
 import VirtualWANPropPanel from './PropPanel/VirtualWANPropPanel';
 import ServiceEndpointPropPanel from './PropPanel/ServiceEndpointPropPanel';
 import EventGridDomainPropPanel from './PropPanel/EventGridDomainPropPanel';
@@ -326,6 +350,17 @@ import AzureIcons from './Helpers/AzureIcons';
     return (
       <div id="diagramEditor" className="diagramEditor">
 
+        <HostPropPanel ref={this.hostpPropPanel} />
+        <HostgroupPropPanel ref={this.hostgroupPropPanel} />
+        <VMWareSolutionPropPanel ref={this.vmwaresolutionPropPanel} />
+        <WorkspaceWVDPropPanel ref={this.workspacewvdPropPanel} />
+        <DiskEncryptionSetPropPanel ref={this.diskencryptionsetPropPanel} />
+        <ImagePropPanel ref={this.imagePropPanel} />
+        <DiskSnapshotPropPanel ref={this.disksnapshotPropPanel} />
+        <ImageTemplatePropPanel ref={this.imagetemplatePropPanel} />
+        <AutomanagePropPanel  ref={this.automanagePropPanel} />
+        <LabServicePropPanel  ref={this.labsvcPropPanel} />
+        <DataBoxEdgePropPanel ref={this.databoxedgePropPanel} />
         <StorSimpleDataManagerPropPanel  ref={this.storsimpledatamanagerPropPanel} />
         <OnPremiseDataGatewayPropPanel ref={this.onpremdatagatewayPropPanel} />
         <PurviewAccountPropPanel ref={this.purviewaccountPropPanel} />
@@ -341,7 +376,8 @@ import AzureIcons from './Helpers/AzureIcons';
         <DataCatalogPropPanel ref={this.datacatalogPropPanel} />
         <DataSharePropPanel ref={this.datasharePropPanel} />
         <ManagedIdentityPropPanel ref={this.managedidentityPropPanel} />
-        <MeshApplicationPropPanel ref={this.meshappPropPanel} />
+        <ServiceFabricClusterPropPanel ref={this.svcfabricclusterPropPanel} />
+        <ServiceFabricManagedClusterPropPanel ref={this.svcfabricmanagedclusterPropPanel} />
         <VirtualWANPropPanel ref={this.virtualwanPropPanel} />
         <EventHubPropPanel ref={this.eventhubPropPanel} />
         <AzureBatchPropPanel ref={this.batchPropPanel} />
@@ -460,6 +496,17 @@ import AzureIcons from './Helpers/AzureIcons';
 
   initRef() {
 
+    this.hostpPropPanel = React.createRef();
+    this.hostgroupPropPanel = React.createRef();
+    this.vmwaresolutionPropPanel = React.createRef();
+    this.workspacewvdPropPanel = React.createRef();
+    this.diskencryptionsetPropPanel = React.createRef();
+    this.imagePropPanel = React.createRef();
+    this.disksnapshotPropPanel = React.createRef();
+    this.imagetemplatePropPanel = React.createRef();
+    this.automanagePropPanel = React.createRef();
+    this.labsvcPropPanel  = React.createRef();
+    this.databoxedgePropPanel = React.createRef();
     this.storsimpledatamanagerPropPanel = React.createRef();
     this.onpremdatagatewayPropPanel = React.createRef();
     this.purviewaccountPropPanel = React.createRef();
@@ -475,7 +522,8 @@ import AzureIcons from './Helpers/AzureIcons';
     this.datacatalogPropPanel = React.createRef();
     this.datasharePropPanel = React.createRef();
     this.managedidentityPropPanel = React.createRef();
-    this.meshappPropPanel = React.createRef();
+    this.svcfabricclusterPropPanel = React.createRef();
+    this.svcfabricmanagedclusterPropPanel = React.createRef();
     this.virtualwanPropPanel = React.createRef();
 
     this.eventhubPropPanel = React.createRef();
@@ -817,6 +865,21 @@ createPictureShapeTemplate() {
 createVIRBySkuBased(dropContext) {
 
   switch(dropContext.resourceType) {
+
+      case ResourceType.SpringCloud():
+        if(this.diagram.selection.first() != null)
+          this.createVIROntoSubnet({
+            resourceType: ResourceType.SpringCloud(),
+            x: dropContext.x,
+            y: dropContext.y
+          })
+        else
+          this.createNonVIRAzureResource({
+            source: require('../../assets/IconCloud/azure/compute/10370-icon-Azure Spring Cloud-Compute.svg'),
+            label: 'spring cloud', x: dropContext.x, y: dropContext.y,
+            azcontext: new SpringCloud()
+          });
+      break;
 
       case ResourceType.NLB():
         if(this.diagram.selection.first() != null)
@@ -2010,6 +2073,43 @@ createVIROntoSubnet(dropContext) {
     var virLoc = new go.Point(subnet.location.x + 60, subnet.location.y +40);
 
     switch(dropContext.resourceType) {
+
+        case ResourceType.SpringCloud():
+          if(Utils.isSubnetTakenByDedicatedSubnetVIR(subnet)) {
+            Toast.show('warining', 2500, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
+            return;
+          }
+          
+          text = 'spring cloud';
+          nodeKey = 'springcloud-' + this.shortUID.randomUUID(6);
+          image = require('../../assets/IconCloud/azure/compute/10370-icon-Azure Spring Cloud-Compute.svg');
+          azcontext = new SpringCloud();
+        break;
+
+        case ResourceType.ServiceFabricCluster():
+          if(Utils.isSubnetTakenByDedicatedSubnetVIR(subnet)) {
+            Toast.show('warining', 2500, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
+            return;
+          }
+          
+          text = 'service fabric cluster';
+          nodeKey = 'svcfabriccluster-' + this.shortUID.randomUUID(6);
+          image = require('../../assets/IconCloud/azure/compute/10036-icon-Service Fabric Clusters-Compute.svg');
+          azcontext = new ServiceFabricCluster();
+        break;
+
+        case ResourceType.ServiceFabricManagedCluster():
+          if(Utils.isSubnetTakenByDedicatedSubnetVIR(subnet)) {
+            Toast.show('warining', 2500, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
+            return;
+          }
+          
+          text = 'service fabric managed cluster';
+          nodeKey = 'svcfabricmanagedcluster-' + this.shortUID.randomUUID(6);
+          image = require('../../assets/IconCloud/azure/compute/02370-icon-Managed Service Fabric-New Icons.svg');
+          azcontext = new ServiceFabricManagedCluster();
+        break;
+
         case ResourceType.HPCCache():
           if(Utils.isSubnetTakenByDedicatedSubnetVIR(subnet)) {
             Toast.show('warining', 2500, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
@@ -2021,6 +2121,7 @@ createVIROntoSubnet(dropContext) {
           image = require('../../assets/IconCloud/azure/data_storage/00776-icon-Azure HCP Cache-Storage.svg');
           azcontext = new HPCCache();
         break;
+
         case ResourceType.PrivateEndpoint():
           if(Utils.isSubnetTakenByDedicatedSubnetVIR(subnet)) {
             Toast.show('warining', 7000, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
@@ -2077,18 +2178,8 @@ createVIROntoSubnet(dropContext) {
           
           text = 'vm scale sets';
           nodeKey = 'vmss-' + this.shortUID.randomUUID(6);
-          image = require('../../assets/azure_icons/ComputeServiceColor/VM/VM Scale Sets.png');
+          image = require('../../assets/IconCloud/azure/compute/10034-icon-VM Scale Sets-Compute.svg');
           azcontext = new VMSS();
-        break;
-        case ResourceType.Batch():  
-          if(Utils.isSubnetTakenByDedicatedSubnetVIR(subnet)) {
-            Toast.show('warining', 2500, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
-            return;
-          }    
-          text = 'batch';
-          nodeKey = Utils.uniqueId('batch');
-          image = require('../../assets/azure_icons/ComputeServiceColor/Batch Accounts.png');
-          azcontext = new AzureBatch();
         break;
         case ResourceType.Firewall():
           if(!Utils.isVIRinDedicatedSubnet(subnet)) {
@@ -2191,7 +2282,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'k8s';
           nodeKey = Utils.uniqueId('k8s');
-          image = require('../../assets/azure_icons/Container Service Color/Kubernetes Services.png');
+          image = require('../../assets/IconCloud/azure/compute/10023-icon-Kubernetes Services-Compute.svg');
           azcontext = new Kubernetes();
         break;
         case ResourceType.NetAppFile():
@@ -3445,6 +3536,101 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       break;
 
       //*non VIR
+
+      case ResourceType.Host():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/compute/10347-icon-Hosts-Compute.svg'),
+          label: 'host', x: dropContext.x, y: dropContext.y,
+          azcontext: new Host()
+        });
+      break;
+
+      case ResourceType.Hostgroup():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/compute/10346-icon-Host Groups-Compute.svg'),
+          label: 'host group', x: dropContext.x, y: dropContext.y,
+          azcontext: new Hostgroup()
+        });
+      break;
+
+      case ResourceType.VMWareSolution():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/compute/00524-icon-AVS-Azure VMware Solution.svg'),
+          label: 'avs', x: dropContext.x, y: dropContext.y,
+          azcontext: new VMWareSolution()
+        });
+      break;
+
+      case ResourceType.WorkspaceWVD():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/compute/00400-icon-Workspaces-Compute.svg'),
+          label: 'workspace', x: dropContext.x, y: dropContext.y,
+          azcontext: new WorkspaceWVD()
+        });
+      break;
+
+      case ResourceType.DiskEncryptionSet():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/compute/00398-icon-Disk Encryption Sets-Compute.svg'),
+          label: 'image', x: dropContext.x, y: dropContext.y,
+          azcontext: new DiskEncryptionSet()
+        });
+      break;
+
+      case ResourceType.Image():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/compute/10033-icon-Images-Compute.svg'),
+          label: 'image', x: dropContext.x, y: dropContext.y,
+          azcontext: new Image()
+        });
+      break;
+
+      case ResourceType.DiskSnapshot():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/compute/10026-icon-Disks Snapshots-Compute.svg'),
+          label: 'disk snapshot', x: dropContext.x, y: dropContext.y,
+          azcontext: new DiskSnapshot()
+        });
+      break;
+
+      case ResourceType.ImageTemplate():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/compute/02634-icon-Image Templates-Compute.svg'),
+          label: 'image template', x: dropContext.x, y: dropContext.y,
+          azcontext: new ImageTemplate()
+        });
+      break;
+
+      case ResourceType.Automanage():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/compute/02112-icon-Automanaged VM-Compute.svg'),
+          label: 'automanage', x: dropContext.x, y: dropContext.y,
+          azcontext: new Automanage()
+        });
+      break;
+
+      case ResourceType.LabService():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/compute/10265-icon-Lab Services-DevOps.svg'),
+          label: 'lab service', x: dropContext.x, y: dropContext.y,
+          azcontext: new LabService()
+        });
+      break;
+      case ResourceType.Batch():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/compute/10031-icon-Batch Accounts-Containers.svg'),
+          label: 'batch account', x: dropContext.x, y: dropContext.y,
+          azcontext: new AzureBatch()
+        });
+      break;
+
+      case ResourceType.DataboxEdge():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/data_storage/10095-icon-Data Box Edge-Migrate.svg'),
+          label: 'data box edge', x: dropContext.x, y: dropContext.y,
+          azcontext: new DataBoxEdge()
+        });
+      break;
       case ResourceType.StorSimpleDataManager():
         this.createNonVIRAzureResource({
           source: require('../../assets/IconCloud/azure/data_storage/10092-icon-StorSimple Data Managers-Storage.svg'),
@@ -3516,10 +3702,10 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         });
       break;
       case ResourceType.SpringCloud():
-        this.createNonVIRAzureResource({
-          source: Utils.pngDataUrl(AzureIcons.SpringCloud()),
-          label: 'azure spring cloud', x: dropContext.x, y: dropContext.y,
-          azcontext: new SpringCloud()
+        this.createVIRBySkuBased({
+          resourceType: ResourceType.SpringCloud(),
+          x: dropContext.x,
+          y: dropContext.y
         });
       break;
       case ResourceType.DataCatalog():
@@ -3541,13 +3727,6 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
           source: Utils.pngDataUrl(AzureIcons.ManagedIdentity()),
           label: 'user assigned managed identity', x: dropContext.x, y: dropContext.y,
           azcontext: new ManagedIdentity()
-        });
-      break;
-      case ResourceType.MeshApplication():
-        this.createNonVIRAzureResource({
-          source: Utils.pngDataUrl(AzureIcons.MeshApplication()),
-          label: 'mesh app', x: dropContext.x, y: dropContext.y,
-          azcontext: new MeshApplication()
         });
       break;
       case ResourceType.VirtualWAN():
@@ -3632,14 +3811,14 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         break;
       case ResourceType.SharedImageGallery():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/ComputeServiceColor/Shared Image Galleries.png'),
+          source: require('../../assets/IconCloud/azure/compute/10039-icon-Shared Image Galleries-Compute.svg'),
           label: 'shared image gallery', x: dropContext.x, y: dropContext.y,
           azcontext: new SharedImageGallery()
         });
         break;
       case ResourceType.DevTestLab():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/ComputeServiceColor/Azure DevTest Labs.png'),
+          source: require('../../assets/IconCloud/azure/compute/10264-icon-DevTest Labs-DevOps.svg'),
           label: 'devtest lab', x: dropContext.x, y: dropContext.y,
           azcontext: new DevTestLab()
         });
@@ -4099,6 +4278,62 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
 
     switch (userObject.GraphModel.ResourceType) {
       
+  
+  case ResourceType.Host():
+        this.hostpPropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+  case ResourceType.Hostgroup():
+        this.hostgroupPropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+  case ResourceType.VMWareSolution():
+        this.vmwaresolutionPropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+  case ResourceType.WorkspaceWVD():
+        this.workspacewvdPropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+  case ResourceType.DiskEncryptionSet():
+        this.diskencryptionsetPropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+  case ResourceType.Image():
+        this.imagePropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+  case ResourceType.DiskSnapshot():
+        this.disksnapshotPropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+  case ResourceType.ImageTemplate():
+        this.imagetemplatePropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+  case ResourceType.Automanage():
+        this.automanagePropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+  case ResourceType.LabService():
+        this.labsvcPropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;
+  case ResourceType.DataboxEdge():
+        this.databoxedgePropPanel.current.show(userObject, function(savedUserObject){
+           onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+        break;   
   case ResourceType.StorSimpleDataManager():
         this.storsimpledatamanagerPropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
@@ -4174,8 +4409,13 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
          onContextSaveCallback(Utils.deepClone(savedUserObject));
       });
     break;
-    case ResourceType.MeshApplication():
-      this.meshappPropPanel.current.show(userObject, function(savedUserObject){
+    case ResourceType.ServiceFabricCluster():
+      this.svcfabricclusterPropPanel.current.show(userObject, function(savedUserObject){
+         onContextSaveCallback(Utils.deepClone(savedUserObject));
+      });
+    break;
+    case ResourceType.ServiceFabricManagedCluster():
+      this.svcfabricmanagedclusterPropPanel.current.show(userObject, function(savedUserObject){
          onContextSaveCallback(Utils.deepClone(savedUserObject));
       });
     break;

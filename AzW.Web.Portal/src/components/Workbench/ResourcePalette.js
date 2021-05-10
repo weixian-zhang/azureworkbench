@@ -1037,47 +1037,164 @@ export default class ResourcePalette extends Component {
               Name: 'vm scale sets vmss',
               Tooltip: 'VM Scale Sets',
               azInfo: ['deployable'],
-              Image: require('../../assets/azure_icons/ComputeServiceColor/VM/VM Scale Sets.png'),
+              Image: require('../../assets/IconCloud/azure/compute/10034-icon-VM Scale Sets-Compute.svg'),
               Provisionable: true,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.VMSS()
             },
             {
-              Name: 'batch',
-              Tooltip: 'Azure Batch',
-              Image: require('../../assets/azure_icons/ComputeServiceColor/Batch Accounts.png'),
+              Name: 'batch account',
+              Tooltip: 'Batch Account',
+              Image: require('../../assets/IconCloud/azure/compute/10031-icon-Batch Accounts-Containers.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.Batch()
             },
             {
-              Name: 'vm dedicated host',
-              Tooltip: 'Dedicated Host',
-              Image: require('../../assets/azure_icons/ComputeServiceColor/azure-dedicatedhost.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.DedicatedHost()
-            },
-            {
               Name: 'vm devtest lab',
               Tooltip: 'DevTest Labs',
-              Image: require('../../assets/azure_icons/ComputeServiceColor/Azure DevTest Labs.png'),
+              Image: require('../../assets/IconCloud/azure/compute/10264-icon-DevTest Labs-DevOps.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.DevTestLab()
             },
             {
+              Name: 'lab service',
+              Tooltip: 'Lab Service',
+              Image: require('../../assets/IconCloud/azure/compute/10265-icon-Lab Services-DevOps.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.LabService()
+            },
+            {
               Name: 'shared image gallery sig',
               Tooltip: 'Shared Image Gallery',
-              Image: require('../../assets/azure_icons/ComputeServiceColor/Shared Image Galleries.png'),
+              Image: require('../../assets/IconCloud/azure/compute/10039-icon-Shared Image Galleries-Compute.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.SharedImageGallery()
+            },
+            {
+              Name: 'kubernetes kube k8s microservice',
+              Tooltip: 'Azure Kubernetes',
+              Image: require('../../assets/IconCloud/azure/compute/10023-icon-Kubernetes Services-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Kubernetes()
+            },
+            {
+              Name: 'service fabric cluster',
+              Tooltip: 'Service Fabric Cluster',
+              Image: require('../../assets/IconCloud/azure/compute/10036-icon-Service Fabric Clusters-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.ServiceFabricCluster()
+            },
+            {
+              Name: 'service fabric managed cluster',
+              Tooltip: 'Service Fabric Managed Cluster',
+              Image: require('../../assets/IconCloud/azure/compute/02370-icon-Managed Service Fabric-New Icons.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.ServiceFabricManagedCluster()
+            },
+            {
+              Name: 'automanage auto vm',
+              Tooltip: 'Automanage',
+              Image: require('../../assets/IconCloud/azure/compute/02112-icon-Automanaged VM-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Automanage()
+            },
+            {
+              Name: 'image builder image template',
+              Tooltip: 'Image Template',
+              Image: require('../../assets/IconCloud/azure/compute/02634-icon-Image Templates-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.ImageTemplate()
+            },
+            {
+              Name: 'disk snapshot',
+              Tooltip: 'Disk Snapshot',
+              Image: require('../../assets/IconCloud/azure/compute/10026-icon-Disks Snapshots-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.DiskSnapshot()
+            },
+            {
+              Name: 'image',
+              Tooltip: 'Image',
+              Image: require('../../assets/IconCloud/azure/compute/10033-icon-Images-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Image()
+            },
+            {
+              Name: 'disk encryption set',
+              Tooltip: 'Disk Encryption Set',
+              Image: require('../../assets/IconCloud/azure/compute/00398-icon-Disk Encryption Sets-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.DiskEncryptionSet()
+            },
+            {
+              Name: 'wvd workspace',
+              Tooltip: 'Workspace(WVD)',
+              Image: require('../../assets/IconCloud/azure/compute/00400-icon-Workspaces-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.WorkspaceWVD()
+            },
+            {
+              Name: 'vmware solution',
+              Tooltip: 'VMware Solution',
+              Image: require('../../assets/IconCloud/azure/compute/00524-icon-AVS-Azure VMware Solution.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.VMWareSolution()
+            },
+            {
+              Name: 'hostgroup dedicated',
+              Tooltip: 'Host group (dedicated host)',
+              Image: require('../../assets/IconCloud/azure/compute/10346-icon-Host Groups-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Hostgroup()
+            },
+            {
+              Name: 'host dedicated',
+              Tooltip: 'Host (dedicated host)',
+              Image: require('../../assets/IconCloud/azure/compute/10347-icon-Hosts-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Host()
+            },
+            {
+              Name: 'spring cloud',
+              Tooltip: 'Spring Cloud',
+              Image: require('../../assets/IconCloud/azure/compute/10370-icon-Azure Spring Cloud-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.SpringCloud()
             }
           ]
         }
@@ -1361,15 +1478,6 @@ export default class ResourcePalette extends Component {
               resourceType: ResourceType.NetAppFile()
             },
             {
-              Name: 'data box',
-              Tooltip: 'Data Box',
-              Image: require('../../assets/IconCloud/azure/data_storage/10094-icon-Data Box-Migrate.svg'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.Databox()
-            },
-            {
               Name: 'data factory',
               Tooltip: 'Data Factory',
               Image: require('../../assets/IconCloud/azure/data_storage/10126-icon-Data Factory-Databases.svg'),
@@ -1406,13 +1514,6 @@ export default class ResourcePalette extends Component {
               resourceType: ResourceType.DataShare()
             },
             {
-              Name: 'import export job',
-              Tooltip: 'Import/Export Job',
-              Image: require('../../assets/IconCloud/azure/data_storage/10100-icon-Import Export Jobs-Storage.svg'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
               Name: 'site recovery backup dr',
               Tooltip: 'Site Recovery',
               azInfo: ['-Purpose: Backup & DR','-Private Link supported','deployable'],
@@ -1427,7 +1528,7 @@ export default class ResourcePalette extends Component {
               Tooltip: 'Backup Vault',
               azInfo: [],
               Image: require('../../assets/IconCloud/azure/data_storage/02361-icon-Backup Vault-menu.svg'),
-              Provisionable: true,
+              Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.BackupVault()
@@ -1437,7 +1538,7 @@ export default class ResourcePalette extends Component {
               Tooltip: 'Azure Stack Edge',
               azInfo: [],
               Image: require('../../assets/IconCloud/azure/data_storage/00691-icon-Azure Stack Edge-Storage.svg'),
-              Provisionable: true,
+              Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.AzureStackEdge()
@@ -1447,7 +1548,7 @@ export default class ResourcePalette extends Component {
               Tooltip: 'HPC Cache',
               azInfo: [],
               Image: require('../../assets/IconCloud/azure/data_storage/00776-icon-Azure HCP Cache-Storage.svg'),
-              Provisionable: true,
+              Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.HPCCache()
@@ -1457,7 +1558,7 @@ export default class ResourcePalette extends Component {
               Tooltip: 'Purview Account',
               azInfo: [],
               Image: require('../../assets/IconCloud/azure/data_storage/02517-icon-Azure Purview Accounts-other.svg'),
-              Provisionable: true,
+              Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.PurviewAccount()
@@ -1467,7 +1568,7 @@ export default class ResourcePalette extends Component {
               Tooltip: 'On-Premise Data Gateway',
               azInfo: [],
               Image: require('../../assets/IconCloud/azure/data_storage/10070-icon-On Premises Data Gateways-Networking.svg'),
-              Provisionable: true,
+              Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.OnPremDataGateway()
@@ -1477,10 +1578,36 @@ export default class ResourcePalette extends Component {
               Tooltip: 'StorSimple Data Manager',
               azInfo: [],
               Image: require('../../assets/IconCloud/azure/data_storage/10092-icon-StorSimple Data Managers-Storage.svg'),
-              Provisionable: true,
+              Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.StorSimpleDataManager()
+            },
+            {
+              Name: 'data box',
+              Tooltip: 'Data Box',
+              Image: require('../../assets/IconCloud/azure/data_storage/10094-icon-Data Box-Migrate.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Databox()
+            },
+            {
+              Name: 'import export job',
+              Tooltip: 'Import/Export Job',
+              Image: require('../../assets/IconCloud/azure/data_storage/10100-icon-Import Export Jobs-Storage.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'data box edge',
+              Tooltip: 'Data Box Edge',
+              Image: require('../../assets/IconCloud/azure/data_storage/10095-icon-Data Box Edge-Migrate.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.DataboxEdge()
             },
           ]
         }
@@ -1621,24 +1748,6 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.ContainerRegistry()
-            },
-            {
-              Name: 'kubernetes kube k8s microservice',
-              Tooltip: 'Azure Kubernetes',
-              Image: require('../../assets/azure_icons/Container Service Color/Kubernetes Services.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.Kubernetes()
-            },
-            {
-              Name: 'mesh service fabric',
-              Tooltip: 'Mesh Application',
-              Image: Utils.pngDataUrl(AzureIcons.MeshApplication()),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.MeshApplication()
             }
           ]
         }

@@ -31,6 +31,7 @@ export default class ResourceType
     static PublicIp() {return 'pip'; }
     static ExpressRouteCircuit() {return 'expressroute'; }
     static TrafficManager() {return 'trafficmanager'; }
+    static LabService() {return 'labservice'; }
     static DevTestLab() {return 'devtestlab'; }
     static VirtualNetworkGateway() {return 'vnetgateway'; }
     static CDN() {return 'cdn'; }
@@ -46,6 +47,7 @@ export default class ResourceType
     static NetAppFile() {return 'netappfile'; }
     static QueueStorage() {return 'queuestorage'; }
     static TableStorage() {return 'tablestorage'; }
+    static DataboxEdge() {return 'databoxedge'; }
     static Databox() {return 'databox'; }
     static PostgreSQL() {return 'postgresql'; }
     static MariaDB() {return 'maria'; }
@@ -114,7 +116,17 @@ export default class ResourceType
     static DataCatalog() {return 'datacatalog';}
     static DataShare() {return 'datashare';}
     static ManagedIdentity() {return 'managedidentity';}
-    static MeshApplication() {return 'meshapplication';}
+    static ServiceFabricCluster() {return 'servicefabriccluster';}
+    static ServiceFabricManagedCluster() {return 'servicefabricmanagedcluster';}
+    static Automanage() {return 'automanage';}
+    static Image() {return 'image';}
+    static Host() {return 'host';}
+    static Hostgroup() {return 'hostgroup';}
+    static VMWareSolution() {return 'vmwaresolution';}
+    static WorkspaceWVD() {return 'workspacewvd';}
+    static DiskEncryptionSet() {return 'diskencryptionset';}
+    static DiskSnapshot() {return 'disksnapshot';}
+    static ImageTemplate() {return 'imagetemplate';}
     static VirtualWAN() {return 'virtualwan';}
     static AAD() {return 'aad'; }
     static AADB2C() {return 'aadb2c'; }

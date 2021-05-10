@@ -1,15 +1,15 @@
 import ResourceType from './ResourceType'
-export default class MeshApplication
+export default class DataBoxEdge
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.MeshApplication(),
+            ResourceType: ResourceType.DataboxEdge(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.MeshApplication(),
+            ResourceType: ResourceType.DataboxEdge(),
             Name: '',
             Location: '',
             ResourceGroupName: '',

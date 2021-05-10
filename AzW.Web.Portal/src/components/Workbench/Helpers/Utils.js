@@ -8,11 +8,12 @@ export default class Utils
     //follows Tooltip name
     static isResourceTypeVIR(resourceType) {
         var VIR = [ResourceType.VM(), ResourceType.WindowsVM(), ResourceType.LinuxVM(), ResourceType.VMSS(),
-            ResourceType.Batch(), ResourceType.HdInsight(), ResourceType.Databricks(), ResourceType.AADDomainService(),
+            ResourceType.HdInsight(), ResourceType.Databricks(), ResourceType.AADDomainService(),
             ResourceType.Kubernetes(),ResourceType.NetAppFile(), ResourceType.VirtualNetworkGateway(),
             ResourceType.ASE(),ResourceType.AppGw(),ResourceType.Firewall(),ResourceType.Bastion(),
             ResourceType.VMSS(), ResourceType.SQLMI(), ResourceType.ISE(),
-            ResourceType.PrivateEndpoint()];
+            ResourceType.PrivateEndpoint(), ResourceType.ServiceFabricCluster(),
+            ResourceType.ServiceFabricManagedCluster()];
             
         for(var x of VIR) {
             if(x == resourceType)
@@ -38,7 +39,8 @@ export default class Utils
 
         var VIR = [ ResourceType.ASE(),ResourceType.AppGw(), ResourceType.ISE(),
             ResourceType.Firewall(),ResourceType.Bastion(), ResourceType.VirtualNetworkGateway(),
-            ResourceType.SQLMI(), ResourceType.NetAppFile()];
+            ResourceType.SQLMI(), ResourceType.NetAppFile(), ResourceType.ServiceFabricCluster(),
+            ResourceType.ServiceFabricManagedCluster(), ResourceType.SpringCloud()];
         
         var resourceType = node.data.azcontext.ProvisionContext.ResourceType;
             

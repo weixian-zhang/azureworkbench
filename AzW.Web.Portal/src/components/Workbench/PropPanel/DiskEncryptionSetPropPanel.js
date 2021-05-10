@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import MeshApplication from '../../../models/MeshApplication';
+import DiskEncryptionSet from '../../../models/DiskEncryptionSet';
 import { FormGroup, Drawer, Intent, Button, Switch } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
 import Tabs from '@material-ui/core/Tabs';
@@ -10,13 +10,13 @@ import SelectLocation from '../SelectLocation';
 import SelectResourceGroup from '../SelectResourceGroup';
 import Utils from '../Helpers/Utils';
 
-export default class MeshApplicationPropPanel extends Component {
+export default class DiskEncryptionSetPropPanel extends Component {
   constructor(props) {
       super(props);
 
       this.state ={
         isOpen: false,
-        userObject: new MeshApplication(),
+        userObject: new DiskEncryptionSet(),
 
         saveCallback: function () {},
       }
@@ -28,7 +28,7 @@ export default class MeshApplicationPropPanel extends Component {
   render = () => {
     return (
       <Drawer
-          title="Mesh Application Properties"
+          title="Disk Encryption Set Properties"
           autoFocus= {true}
           canEscapeKeyClose= {true}
           canOutsideClickClose= {true}
