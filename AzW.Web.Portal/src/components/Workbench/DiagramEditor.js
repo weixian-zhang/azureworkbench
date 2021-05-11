@@ -999,7 +999,7 @@ createVIRBySkuBased(dropContext) {
         })
         else
           this.createNonVIRAzureResource({
-            source: require('../../assets/azure_icons/Databases Service Color/Azure Cache for Redis.png'),
+            source: require('../../assets/IconCloud/azure/databases/10137-icon-Cache Redis-Databases.svg'),
             label: 'non-premium redis', x: dropContext.x, y: dropContext.y,
             azcontext: new Redis()
           });
@@ -2323,7 +2323,7 @@ createVIROntoSubnet(dropContext) {
           }
           text = 'sql mi';
           nodeKey = Utils.uniqueId('sqlmi');
-          image = require('../../assets/azure_icons/Databases Service Color/SQL Managed Instances.png');
+          image = require('../../assets/IconCloud/azure/databases/10136-icon-SQL Managed Instance-Databases.svg');
           azcontext = new SQLMI();
         break;
         case ResourceType.HdInsight():
@@ -2436,7 +2436,7 @@ createVIROntoSubnet(dropContext) {
   
             text = 'redis premium';
             nodeKey = Utils.uniqueId('redispremium');
-            image = require('../../assets/azure_icons/Databases Service Color/Azure Cache for Redis.png');
+            image = require('../../assets/IconCloud/azure/databases/10137-icon-Cache Redis-Databases.svg');
             azcontext = new Redis();
             break;
         case ResourceType.ContainerInstance():
@@ -4087,35 +4087,35 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         break;
       case ResourceType.PostgreSQL():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Databases Service Color/Azure Database for PostgreSQL servers.png'),
+          source: require('../../assets/IconCloud/azure/databases/10131-icon-Azure Database PostgreSQL Server-Databases.svg'),
           label: 'postgresql', x: dropContext.x, y: dropContext.y,
           azcontext: new PostgreSQL()
         });
         break;
       case ResourceType.MariaDB():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Databases Service Color/Azure Database for MariaDB servers.png'),
+          source: require('../../assets/IconCloud/azure/databases/10123-icon-Azure Database MariaDB Server-Databases.svg'),
           label: 'mariadb', x: dropContext.x, y: dropContext.y,
           azcontext: new MariaDB()
         });
         break;
       case ResourceType.SQLDB():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Databases Service Color/SQL Databases.png'),
+          source: require('../../assets/IconCloud/azure/databases/10130-icon-SQL Database-Databases.svg'),
           label: 'sql db', x: dropContext.x, y: dropContext.y,
           azcontext: new SQLDB()
         });
         break;
       case ResourceType.ElasticJobAgent():
           this.createNonVIRAzureResource({
-            source: Utils.pngDataUrl(AzureIcons.ElasticJobAgent()),
+            source: require('../../assets/IconCloud/azure/databases/10128-icon-Elastic Job Agents-Databases.svg'),
             label: 'elastic job agent', x: dropContext.x, y: dropContext.y,
             azcontext: new ElasticJobAgent()
           });
         break;
       case ResourceType.CosmosDB():
           this.createNonVIRAzureResource({
-          source:require('../../assets/azure_icons/Databases Service Color/azure-cosmos-db.png'),
+          source:require('../../assets/IconCloud/azure/databases/10121-icon-Azure Cosmos DB-Databases.svg'),
           label: 'cosmos db', x: dropContext.x, y: dropContext.y,
           azcontext: new Cosmos()
         });
@@ -4173,14 +4173,14 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         break;
       case ResourceType.MySQL():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Databases Service Color/Azure Database for MySQL servers.png'),
+          source: require('../../assets/IconCloud/azure/databases/10122-icon-Azure Database MySQL Server-Databases.svg'),
           label: 'mysql', x: dropContext.x, y: dropContext.y,
           azcontext: new MySQL()
         });
         break;
       case ResourceType.SQLElasticPool():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Databases Service Color/Elastic Database Pools.png'),
+          source: require('../../assets/IconCloud/azure/databases/10134-icon-SQL Elastic Pools-Databases.svg'),
           label: 'elastic db pool', x: dropContext.x, y: dropContext.y,
           azcontext: new SQLElasticPool()
         });
