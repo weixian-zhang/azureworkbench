@@ -12,6 +12,15 @@ export default class ResourceType
     static Function() {return 'func'; }
     static VNet() {return 'vnet'; }
     static PrivateEndpoint() {return 'privateendpoint'; }
+    static PrivateLink() {return 'privatelink'; }
+    static IPGroup() {return 'ipgroups'; }
+    static AMPLS() {return 'ampls'; }
+    static NetworkManager() {return 'networkmanager'; }
+    static RouteFilters() {return 'routefilters'; }
+    static WAF() {return 'waf'; }
+    static ProximityPlacementGroup() {return 'proximityplacementgroup'; }
+    static AvailabilitySet() {return 'availabilityset'; }
+    
     static NetworkWatcher() {return 'networkwatcher'; }
     static Subnet() {return 'subnet'; }
     static NLB() {return 'nlb'; }

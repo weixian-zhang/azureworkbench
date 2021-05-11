@@ -881,7 +881,39 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true
-            }
+            },
+            {
+              Name: 'migrate',
+              Tooltip: 'Azure Migrate',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10281-icon-Azure Migrate-Migrate.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'arc',
+              Tooltip: 'Azure Arc',
+              Image: require('../../assets/IconCloud/azure/nondeployable/00756-icon-Azure Arc-Management + Governance.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'ad aad active directory oauth oidc openid login',
+              Tooltip: 'Azure AD',
+              Image: require('../../assets/IconCloud/azure/nondeployable/identity/10221-icon-Azure Active Directory-Identity.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'ad b2c active directory oauth oidc openid social login',
+              Tooltip: 'Azure AD B2C',
+              Image: require('../../assets/IconCloud/azure/nondeployable/identity/10228-icon-Azure AD B2C-Identity.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
           ]
         }
      },
@@ -994,16 +1026,7 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.MediaService()
-            },
-            // {
-            //   Name: 'spring cloud microservice',
-            //   Tooltip: 'Azure Spring Cloud',
-            //   Image: Utils.pngDataUrl(AzureIcons.SpringCloud()),
-            //   Provisionable: false,
-            //   IsPng: false,
-            //   IsVisible:true,
-            //   resourceType: ResourceType.SpringCloud()
-            // },
+            }
           ]
         }
        },
@@ -1254,7 +1277,7 @@ export default class ResourcePalette extends Component {
               resourceType: ResourceType.DNSPrivateZone()
             },
             {
-              Name: 'front door load balancer nlb',
+              Name: 'front door load balancer waf nlb',
               Tooltip: 'Front Door',
               Image: require('../../assets/IconCloud/azure/network/10073-icon-Front Doors-Networking.svg'),
               Provisionable: false,
@@ -1335,15 +1358,6 @@ export default class ResourcePalette extends Component {
               resourceType: ResourceType.NIC()
             },
             {
-              Name: 'private endpoint',
-              Tooltip: 'Private Endpoint',
-              Image: require('../../assets/IconCloud/azure/network/02579-icon-Private Endpoints-menu.svg'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.PrivateEndpoint()
-            },
-            {
               Name: 'virtual wan',
               Tooltip: 'Virtual WAN',
               Image: require('../../assets/IconCloud/azure/network/10353-icon-Virtual WANs-Networking.svg'),
@@ -1372,6 +1386,96 @@ export default class ResourcePalette extends Component {
               IsVisible:true,
               resourceType: ResourceType.FirewallManager()
             },
+            {
+              Name: 'private endpoint',
+              Tooltip: 'Private Endpoint',
+              Image: require('../../assets/IconCloud/azure/network/02579-icon-Private Endpoints-menu.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.PrivateEndpoint()
+            },
+            {
+              Name: 'private link',
+              Tooltip: 'Private Link (S-NLB)',
+              Image: require('../../assets/IconCloud/azure/network/00427-icon-Private Link-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.PrivateLink()
+            },
+            {
+              Name: 'ip group',
+              Tooltip: 'IP Groups',
+              Image: require('../../assets/IconCloud/azure/network/00701-icon-IP Groups-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.IPGroup()
+            },
+            {
+              Name: 'monitor private link scope',
+              Tooltip: 'Monitor Private Link Scope',
+              Image: require('../../assets/IconCloud/azure/network/01036-icon-Azure Monitor Private Link Scope-menu.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.AMPLS()
+            },
+            {
+              Name: 'network manager',
+              Tooltip: 'Network Manager',
+              Image: require('../../assets/IconCloud/azure/network/02237-icon-Azure Network Manager-Preview.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.NetworkManager()
+            },
+            {
+              Name: 'route filters',
+              Tooltip: 'Route Filters',
+              Image: require('../../assets/IconCloud/azure/network/10071-icon-Route Filters-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.RouteFilters()
+            },
+            {
+              Name: 'ddos protection standard',
+              Tooltip: 'DDoS Protection Standard',
+              Image: require('../../assets/IconCloud/azure/network/10072-icon-DDoS Protection Plans-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.DDoSStandard()
+            },
+            {
+              Name: 'web application firewall waf',
+              Tooltip: 'Web Application Firewall',
+              Image: require('../../assets/IconCloud/azure/network/10362-icon-Web Application Firewall Policies(WAF)-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.WAF()
+            },
+            {
+              Name: 'availability set avai',
+              Tooltip: 'Availability Set',
+              Image: require('../../assets/IconCloud/azure/network/10025-icon-Availability Sets-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.AvailabilitySet()
+            },
+            {
+              Name: 'proximity placement group',
+              Tooltip: 'Proximity Placement Group',
+              Image: require('../../assets/IconCloud/azure/network/10365-icon-Proximity Placement Groups-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.ProximityPlacementGroup()
+            }
           ]
         }
        },
@@ -1474,7 +1578,7 @@ export default class ResourcePalette extends Component {
 
        {
         resourceGroup: {
-          groupName: 'Data & Storage',
+          groupName: 'Storage & Migrate',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
@@ -1637,7 +1741,7 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.DataboxEdge()
-            },
+            }
           ]
         }
        },
@@ -1897,14 +2001,14 @@ export default class ResourcePalette extends Component {
        },
        {
         resourceGroup: {
-          groupName: 'Security',
+          groupName: 'Security & Identity',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
             {
               Name: 'application security group asg',
               Tooltip: 'Application Security Group',
-              Image: require('../../assets/azure_icons/Networking Service Color/Application Security Groups.png'),
+              Image: require('../../assets/IconCloud/azure/security_identity/10244-icon-Application Security Groups-Security.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1914,7 +2018,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'sentinel',
               Tooltip: 'Azure Sentinel',
-              Image: require('../../assets/azure_icons/Security Service Color/Azure Sentinel.png'),
+              Image: require('../../assets/IconCloud/azure/security_identity/10248-icon-Azure Sentinel-Security.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1924,7 +2028,7 @@ export default class ResourcePalette extends Component {
               Name: 'key vault akv',
               Tooltip: 'Key Vault',
               azInfo: ['Private Link supported','Service Endpoint supported'],
-              Image: require('../../assets/azure_icons/Security Service Color/Key Vaults.png'),
+              Image: require('../../assets/IconCloud/azure/security_identity/10245-icon-Key Vaults-Security.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1934,49 +2038,48 @@ export default class ResourcePalette extends Component {
               Name: 'security center asc',
               Tooltip: 'Security Center',
               azInfo: ['deployable'],
-              Image: require('../../assets/azure_icons/Security Service Color/Security Center.png'),
+              Image: require('../../assets/IconCloud/azure/security_identity/10241-icon-Security Center-Security.svg'),
               Provisionable: true,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.SecurityCenter()
             },
             {
-              Name: 'ddos protection standard',
-              Tooltip: 'DDoS Protection Standard',
-              Image: require('../../assets/azure_icons/Security Service Color/DDOS Protection Plans.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.DDoSStandard()
-            },
-            {
               Name: 'bastion jumphost jh',
               Tooltip: 'Bastion',
-              Image: require('../../assets/azure_icons/Security Service Color/azure-bastion-icon.png'),
+              Image: require('../../assets/IconCloud/azure/security_identity/02422-icon-Bastions-Preview.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.Bastion()
+            },
+            {
+              Name: 'ad ad domain service',
+              Tooltip: 'Azure AD Domain Service',
+              Image: require('../../assets/IconCloud/azure/security_identity/10222-icon-Azure AD Domain Services-Identity.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.AADDomainService()
+            },
+            {
+              Name: 'managed identity user assigned',
+              Tooltip: 'Managed Identity',
+              Image: require('../../assets/IconCloud/azure/security_identity/10227-icon-Managed Identities-Identity.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.ManagedIdentity()
             }
           ]
         }
        },
        {
         resourceGroup: {
-          groupName: 'Management & Identity',
+          groupName: 'Management',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
-            {
-              Name: 'migrate',
-              Tooltip: 'Azure Migrate',
-              Image: require('../../assets/azure_icons/Management and Governance Service Color/Azure Migrate.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.AzureMigrate()
-            },
-            
             {
               Name: 'app insights apm',
               Tooltip: 'Application Insights',
@@ -1996,51 +2099,6 @@ export default class ResourcePalette extends Component {
               IsVisible:true,
               resourceType: ResourceType.Automation()
             },
-            {
-              Name: 'arc',
-              Tooltip: 'Azure Arc',
-              Image: require('../../assets/azure_icons/Management and Governance Service Color/azure-arc.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.Arc()
-            },
-            {
-              Name: 'ad aad oauth oidc openid',
-              Tooltip: 'Azure AD',
-              Image: require('../../assets/azure_icons/Identity Service Color/Azure AD.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.AAD()
-            },
-            {
-              Name: 'ad b2c oauth oidc openid',
-              Tooltip: 'Azure AD B2C',
-              Image: require('../../assets/azure_icons/Identity Service Color/Azure AD B2C.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.AADB2C()
-            },
-            {
-              Name: 'ad ad domain service',
-              Tooltip: 'Azure AD Domain Service',
-              Image: require('../../assets/azure_icons/Identity Service Color/azuread-domainservice.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.AADDomainService()
-            },
-            {
-              Name: 'managed identity',
-              Tooltip: 'Managed Identity',
-              Image: Utils.pngDataUrl(AzureIcons.ManagedIdentity()),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.ManagedIdentity()
-            }
           ]
         }
        },

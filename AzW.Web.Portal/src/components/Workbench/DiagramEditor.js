@@ -27,6 +27,15 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
 import StatusBarHelper from './StatusBarHelper'
 
 //models
+import IPGroups from "../../models/IPGroups";
+import AMPLS from "../../models/AMPLS";
+import NetworkManager from "../../models/NetworkManager";
+import RouteFilters from "../../models/RouteFilters";
+import WAF from "../../models/WAF";
+import AvailabilitySet from "../../models/AvailabilitySet";
+import ProximityPlacementGroup from "../../models/ProximityPlacementGroup";
+
+import PrivateLink from "../../models/PrivateLink";
 import LocalNetworkGateway from "../../models/LocalNetworkGateway";
 import PublicIpPrefixes from "../../models/PublicIpPrefixes";
 import Host from "../../models/Host";
@@ -154,6 +163,15 @@ import ElasticJobAgent from "../../models/ElasticJobAgent";
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
 
 //property panels
+import IPGroupsPropPanel from './PropPanel/IPGroupsPropPanel';
+import AMPLSPropPanel from './PropPanel/AMPLSPropPanel';
+import NetworkManagerPropPanel from './PropPanel/NetworkManagerPropPanel';
+import RouteFiltersPropPanel from './PropPanel/RouteFiltersPropPanel';
+import WAFPropPanel from './PropPanel/WAFPropPanel';
+import AvailabilitySetPropPanel from './PropPanel/AvailabilitySetPropPanel';
+import ProximityPlacementGroupPropPanel from './PropPanel/ProximityPlacementGroupPropPanel';
+
+import PrivateLinkPropPanel from './PropPanel/PrivateLinkPropPanel';
 import LocalNetworkGatewayPropPanel from './PropPanel/LocalNetworkGatewayPropPanel';
 import PublicIpPrefixesPropPanel from './PropPanel/PublicIpPrefixesPropPanel';
 import HostPropPanel from './PropPanel/HostPropPanel';
@@ -355,6 +373,15 @@ import AzureIcons from './Helpers/AzureIcons';
     return (
       <div id="diagramEditor" className="diagramEditor">
 
+        <IPGroupsPropPanel ref={this.ipgroupsPropPanel} />
+        <AMPLSPropPanel ref={this.amplsPropPanel} />
+        <NetworkManagerPropPanel ref={this.networkmanagerPropPanel} />
+        <RouteFiltersPropPanel ref={this.routefiltersPropPanel} />
+        <WAFPropPanel ref={this.wafPropPanel} />
+        <AvailabilitySetPropPanel ref={this.availabilitysetPropPanel} />
+        <ProximityPlacementGroupPropPanel ref={this.proxpgPropPanel} />
+
+        <PrivateLinkPropPanel ref={this.privatelinkPropPanel} />
         <LocalNetworkGatewayPropPanel  ref={this.localnetworkgwPanel} />
         <PublicIpPrefixesPropPanel ref={this.pipprefixesPanel} />
         <HostPropPanel ref={this.hostpPropPanel} />
@@ -504,6 +531,15 @@ import AzureIcons from './Helpers/AzureIcons';
 
   initRef() {
 
+    this.ipgroupsPropPanel = React.createRef();
+    this.amplsPropPanel = React.createRef();
+    this.networkmanagerPropPanel = React.createRef();
+    this.routefiltersPropPanel = React.createRef();
+    this.availabilitysetPropPanel = React.createRef();
+    this.proxpgPropPanel = React.createRef();
+    this.wafPropPanel = React.createRef();
+
+    this.privatelinkPropPanel = React.createRef();
     this.localnetworkgwPanel = React.createRef();
     this.pipprefixesPanel = React.createRef();
     this.hostpPropPanel = React.createRef();
@@ -844,24 +880,55 @@ createPictureShapeTemplate() {
     new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
     new go.Binding("zOrder").makeTwoWay(),
     { 
+      locationSpot: go.Spot.Center,
       selectable: true,
       resizable: true, 
-      resizeObjectName: "PICTURE",
-      selectionObjectName: "PICTURE",
+      resizeObjectName: "PANEL",
+      selectionObjectName: "PANEL",
       selectionChanged: function(p) {
         p.layerName = (p.isSelected ? "Foreground" : '');
       },
       contextMenu: this.initContextMenu()
     },
-    this.$(go.Picture,
-      {
-        name: "PICTURE",
-        stretch: go.GraphObject.Fill
-      },
-      {row:0,column:0},
-      new go.Binding("source","source"),
-      new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)
+    this.$(go.Panel, "Vertical",
+          this.$(go.Panel, "Table",
+            { 
+              name: "PANEL", 
+            },
+            //bind 2 ways to update model so that shape above can resize according
+            //to panel size
+            new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+            this.$(go.Picture,
+              {
+                stretch: go.GraphObject.Fill
+              },
+              {row:0,column:0},
+              new go.Binding("source","source")
+            )
+          ),//panel
+          this.$(go.TextBlock,
+            {
+              editable:true,
+              isMultiline: true,
+              textAlign: "center"
+            },
+            {row:1,column:0},
+            new go.Binding("textAlign").makeTwoWay(),
+            new go.Binding("text").makeTwoWay(),
+            new go.Binding("font").makeTwoWay(),
+            new go.Binding("stroke").makeTwoWay()
+            ),
     ),
+    // this.$(go.Picture,
+    //   {
+    //     name: "PICTURE",
+    //     stretch: go.GraphObject.Fill
+    //   },
+    //   {row:0,column:0},
+    //   new go.Binding("source","source"),
+    //   new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)
+    // ),
+    
 
         this.makePort("T", go.Spot.Top,  go.Spot.TopSide, true, true),
         this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true),
@@ -2216,7 +2283,7 @@ createVIROntoSubnet(dropContext) {
           }
           text = 'bastion';
           nodeKey = 'bastion-' + this.shortUID.randomUUID(6);
-          image = require('../../assets/azure_icons/Security Service Color/azure-bastion-icon.png');
+          image = require('../../assets/IconCloud/azure/security_identity/02422-icon-Bastions-Preview.svg');
           azcontext = new Bastion();
         break;
         case ResourceType.AppGw():
@@ -2289,7 +2356,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'aad domain service';
           nodeKey = Utils.uniqueId('databricks');
-          image = Utils.pngDataUrl(AzureIcons.AADDomainService());
+          image = require('../../assets/IconCloud/azure/security_identity/10222-icon-Azure AD Domain Services-Identity.svg');
           azcontext = new AzureADDomainService();
         break;
         case ResourceType.Kubernetes():
@@ -3115,6 +3182,52 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       case 'Location':
           this.createShape({figure: 'Location', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
+      
+      //*picture
+      case ResourceType.Arc():
+        this.createNonVIRAzureResource({
+          source:  Utils.pngDataUrl(AzureIcons.AzureArc()),
+          label: 'azure arc', x: dropContext.x, y: dropContext.y,
+          azcontext: new Arc()
+        });
+      break;
+
+      case ResourceType.AAD():
+        this.createPictureShape
+        ({source: Utils.pngDataUrl(AzureIcons.ShapeAAD()),
+          label: 'aad', x: dropContext.x, y: dropContext.y});
+      break;
+      case ResourceType.AADB2C():
+        this.createNonVIRAzureResource({
+          source:  require('../../assets/azure_icons/Identity Service Color/Azure AD B2C.png'),
+          label: 'aad b2c', x: dropContext.x, y: dropContext.y,
+          azcontext: new AADB2C()
+        });
+        break;
+
+      case 'Azure Arc':
+        this.createPictureShape
+        ({source: require('../../assets/IconCloud/azure/nondeployable/00756-icon-Azure Arc-Management + Governance.svg'),
+          label: 'arc', x: dropContext.x, y: dropContext.y});
+        break;
+
+      case 'Azure AD':
+        this.createPictureShape
+        ({source: require('../../assets/IconCloud/azure/nondeployable/identity/10221-icon-Azure Active Directory-Identity.svg'),
+          label: 'aad', x: dropContext.x, y: dropContext.y});
+        break;
+
+      case 'Azure AD B2C':
+        this.createPictureShape
+        ({source: require('../../assets/IconCloud/azure/nondeployable/identity/10228-icon-Azure AD B2C-Identity.svg'),
+          label: 'b2c', x: dropContext.x, y: dropContext.y});
+        break;
+
+      case 'Azure Migrate':
+        this.createPictureShape
+        ({source: require('../../assets/IconCloud/azure/nondeployable/10281-icon-Azure Migrate-Migrate.svg'),
+          label: 'az migrate', x: dropContext.x, y: dropContext.y});
+        break;
       case 'User':
         this.createPictureShape
         ({source: require('../../assets/azure_icons/shape-user.png'),
@@ -3550,10 +3663,74 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       case 'Kusto':
         this.createPictureShape
         ({source:Utils.pngDataUrl(AzureIcons.Kusto()),
-          label: '', x: dropContext.x, y: dropContext.y});
+          label: 'kusto', x: dropContext.x, y: dropContext.y});
       break;
 
       //*non VIR
+
+      case ResourceType.ProximityPlacementGroup():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/network/10365-icon-Proximity Placement Groups-Networking.svg'),
+          label: 'proximity placement group', x: dropContext.x, y: dropContext.y,
+          azcontext: new ProximityPlacementGroup()
+        });
+      break;
+
+      case ResourceType.AvailabilitySet():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/network/10025-icon-Availability Sets-Compute.svg'),
+          label: 'availability set', x: dropContext.x, y: dropContext.y,
+          azcontext: new AvailabilitySet()
+        });
+      break;
+
+      case ResourceType.WAF():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/network/10362-icon-Web Application Firewall Policies(WAF)-Networking.svg'),
+          label: 'waf', x: dropContext.x, y: dropContext.y,
+          azcontext: new WAF()
+        });
+      break;
+
+      case ResourceType.RouteFilters():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/network/10071-icon-Route Filters-Networking.svg'),
+          label: 'route filters', x: dropContext.x, y: dropContext.y,
+          azcontext: new RouteFilters()
+        });
+      break;
+
+      case ResourceType.NetworkManager():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/network/02237-icon-Azure Network Manager-Preview.svg'),
+          label: 'network manager', x: dropContext.x, y: dropContext.y,
+          azcontext: new NetworkManager()
+        });
+      break;
+
+      case ResourceType.AMPLS():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/network/01036-icon-Azure Monitor Private Link Scope-menu.svg'),
+          label: 'ampls', x: dropContext.x, y: dropContext.y,
+          azcontext: new AMPLS()
+        });
+      break;
+
+      case ResourceType.IPGroup():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/network/00701-icon-IP Groups-Networking.svg'),
+          label: 'ip group', x: dropContext.x, y: dropContext.y,
+          azcontext: new IPGroups()
+        });
+      break;
+
+      case ResourceType.PrivateLink():
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/network/00427-icon-Private Link-Networking.svg'),
+          label: 'private link', x: dropContext.x, y: dropContext.y,
+          azcontext: new PrivateLink()
+        });
+      break;
 
       case ResourceType.LocalNetworkGateway():
         this.createNonVIRAzureResource({
@@ -3758,7 +3935,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       break;
       case ResourceType.ManagedIdentity():
         this.createNonVIRAzureResource({
-          source: Utils.pngDataUrl(AzureIcons.ManagedIdentity()),
+          source: require('../../assets/IconCloud/azure/security_identity/10227-icon-Managed Identities-Identity.svg'),
           label: 'user assigned managed identity', x: dropContext.x, y: dropContext.y,
           azcontext: new ManagedIdentity()
         });
@@ -3881,8 +4058,8 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         break;
         case ResourceType.ASG():
           this.createNonVIRAzureResource({
-            source: require('../../assets/azure_icons/Networking Service Color/Application Security Groups.png'),
-            label: 'application security group', x: dropContext.x, y: dropContext.y,
+            source: require('../../assets/IconCloud/azure/security_identity/10244-icon-Application Security Groups-Security.svg'),
+            label: 'asg', x: dropContext.x, y: dropContext.y,
             azcontext: new ASG()
           });
         break;
@@ -4179,28 +4356,28 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       //   break;
       case ResourceType.Sentinel():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Security Service Color/Azure Sentinel.png'),
+          source: require('../../assets/IconCloud/azure/security_identity/10248-icon-Azure Sentinel-Security.svg'),
           label: 'sentinel', x: dropContext.x, y: dropContext.y,
           azcontext: new Sentinel()
         });
         break;
       case ResourceType.KeyVault():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Security Service Color/Key Vaults.png'),
+          source: require('../../assets/IconCloud/azure/security_identity/10245-icon-Key Vaults-Security.svg'),
           label: 'key vault', x: dropContext.x, y: dropContext.y,
           azcontext: new KeyVault()
         });
         break;
       case ResourceType.SecurityCenter():
         this.createNonVIRAzureResource({
-          source:  require('../../assets/azure_icons/Security Service Color/Security Center.png'),
+          source:  require('../../assets/IconCloud/azure/security_identity/10241-icon-Security Center-Security.svg'),
           label: 'security center', x: dropContext.x, y: dropContext.y,
           azcontext: new SecurityCenter()
         });
         break;
       case ResourceType.DDoSStandard():
         this.createNonVIRAzureResource({
-          source:  require('../../assets/azure_icons/Security Service Color/DDOS Protection Plans.png'),
+          source:  require('../../assets/IconCloud/azure/network/10072-icon-DDoS Protection Plans-Networking.svg'),
           label: 'ddos standard', x: dropContext.x, y: dropContext.y,
           azcontext: new DDoSStandard()
         });
@@ -4234,26 +4411,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
           azcontext: new Automation()
         });
       break;
-      case ResourceType.Arc():
-        this.createNonVIRAzureResource({
-          source:  Utils.pngDataUrl(AzureIcons.AzureArc()),
-          label: 'azure arc', x: dropContext.x, y: dropContext.y,
-          azcontext: new Arc()
-        });
-      break;
 
-      case ResourceType.AAD():
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeAAD()),
-          label: 'aad', x: dropContext.x, y: dropContext.y});
-      break;
-      case ResourceType.AADB2C():
-        this.createNonVIRAzureResource({
-          source:  require('../../assets/azure_icons/Identity Service Color/Azure AD B2C.png'),
-          label: 'aad b2c', x: dropContext.x, y: dropContext.y,
-          azcontext: new AADB2C()
-        });
-        break;
       case ResourceType.IoTHub():
         this.createNonVIRAzureResource({
           source: require('../../assets/azure_icons/Internet of Things Service Color/Azure IoT Hub.png'),
@@ -4311,8 +4469,54 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
     let thisComp = this;
 
     switch (userObject.GraphModel.ResourceType) {
+
+  case ResourceType.WAF():
+    this.wafPropPanel.current.show(userObject, function(savedUserObject){
+        onContextSaveCallback(Utils.deepClone(savedUserObject));
+    });
+  break;
+
+  case ResourceType.ProximityPlacementGroup():
+    this.proxpgPropPanel.current.show(userObject, function(savedUserObject){
+        onContextSaveCallback(Utils.deepClone(savedUserObject));
+    });
+  break;
+
+  case ResourceType.AvailabilitySet():
+    this.availabilitysetPropPanel.current.show(userObject, function(savedUserObject){
+        onContextSaveCallback(Utils.deepClone(savedUserObject));
+    });
+  break;
+
+  case ResourceType.RouteFilters():
+    this.routefiltersPropPanel.current.show(userObject, function(savedUserObject){
+        onContextSaveCallback(Utils.deepClone(savedUserObject));
+    });
+  break;
+
+  case ResourceType.IPGroup():
+    this.ipgroupsPropPanel.current.show(userObject, function(savedUserObject){
+        onContextSaveCallback(Utils.deepClone(savedUserObject));
+    });
+  break;
+
+  case ResourceType.AMPLS():
+    this.amplsPropPanel.current.show(userObject, function(savedUserObject){
+        onContextSaveCallback(Utils.deepClone(savedUserObject));
+    });
+  break;
+
+  case ResourceType.NetworkManager():
+    this.networkmanagerPropPanel.current.show(userObject, function(savedUserObject){
+        onContextSaveCallback(Utils.deepClone(savedUserObject));
+    });
+  break;
       
-      
+  case ResourceType.PrivateLink():
+    this.privatelinkPropPanel.current.show(userObject, function(savedUserObject){
+        onContextSaveCallback(Utils.deepClone(savedUserObject));
+    });
+  break;
   case ResourceType.LocalNetworkGateway():
     this.localnetworkgwPanel.current.show(userObject, function(savedUserObject){
         onContextSaveCallback(Utils.deepClone(savedUserObject));
