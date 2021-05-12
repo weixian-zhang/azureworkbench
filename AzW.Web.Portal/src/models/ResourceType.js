@@ -91,11 +91,15 @@ export default class ResourceType
     static ASB() {return 'asb'; }
     static Relay() {return 'relay'; }
     static LogicApp() {return 'logicapp'; }
+    static LogicAppCustomConnector() {return 'logicappcustomconnector'; }
     static ISE() {return 'ise'; }
     static EventGridTopic() {return 'egtopic'; }
     static EventGridSubscription() {return 'egsubscription'; }
     static EventGridDomain() {return 'egdomain'; }
+    static CommunicationService() {return 'communicationservice'; }
+    
     static EventHub() {return 'eventhub'; }
+    static EventHubCluster() {return 'eventhubcluster'; }
     static StreamAnalytics() {return 'streamanalytics'; }
     static SendGrid() {return 'sendgrid'; }
     static StaticApp() {return 'staticapp'; }
@@ -143,6 +147,10 @@ export default class ResourceType
     static AADB2C() {return 'aadb2c'; }
     static AADDomainService() {return 'aaddomainservice'; }
     static IoTHub() {return 'iothub'; }
+    static DeviceProvisioningService() {return 'deviceprovisioningservice'; }
+    static DeviceUpdateForIoTHub() {return 'deviceupdateforiothub'; }
+    static DigitalTwins() {return 'digitaltwins'; }
+    static TimeSeriesInsightsEventSource() {return 'timeseriesinsightseventsource'; }
     static IoTCentral() {return 'iotcentral'; }
     static AzureMaps() {return 'maps'; }
     static TimeSeriesInsights() {return 'timeseriesinsights'; }

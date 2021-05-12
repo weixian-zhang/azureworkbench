@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <g id="canvas" opacity="0" fill="none">
+    <path d="M16,16H0V0H16Z" opacity="0" fill="none" />
+  </g>
+  <g id="level-1">
+    <path d="M13,6V8h1V9H13v1H12V9H10v1H9V9H8V8H9V6H8V5H9V4h1V5h2V4h1V5h1V6ZM12,6H10V8h2ZM6.318,5.127H3.328v2.4H6.084V8.653H3.328V12H2V4H6.318Z" fill="#6936aa" />
+  </g>
+</svg>
