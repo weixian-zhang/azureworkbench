@@ -366,6 +366,13 @@ export default class ResourcePalette extends Component {
               IsVisible:true,
             },
             {
+              Name: 'tablet',
+              Tooltip: 'Tablet',
+              Image: require('../../assets/IconCloud/fluent/devices/tablet.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
               Name: 'tape',
               Tooltip: 'Tape',
               Image: require('../../assets/IconCloud/fluent/devices/tape.svg'),
@@ -419,290 +426,599 @@ export default class ResourcePalette extends Component {
       },
       {
         resourceGroup: {
-          groupName: 'Software',
+          groupName: 'Software & Tools',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
             {
-                Name: 'helm',
-                Tooltip: 'Helm',
-                Image: require('../../assets/azure_icons/software/helm.png'),
+                Name: 'file',
+                Tooltip: 'File',
+                Image: require('../../assets/IconCloud/fluent/software/00058-icon-Files-menu.svg'),
                 IsPng: false,
                 IsVisible:true,
-                ref: this.shapehelm
             },
             {
-              Name: 'c# csharp',
-              Tooltip: 'C#',
-              Image: require('../../assets/azure_icons/software/software-c#.png'),
+              Name: 'file',
+              Tooltip: 'Files',
+              Image: require('../../assets/IconCloud/fluent/software/files.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'dapr framework microservice',
-              Tooltip: 'Dapr',
-              Image: require('../../assets/azure_icons/software/software-dapr.png'),
+              Name: 'folder',
+              Tooltip: 'Folder',
+              Image: require('../../assets/IconCloud/fluent/software/10802-icon-Folder Blank-General.svg'),
               IsPng: false,
               IsVisible:true,
             },
+            {
+              Name: 'directory dir',
+              Tooltip: 'Directory Structure',
+              Image: require('../../assets/IconCloud/fluent/software/02270-icon-Directory-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'folder sync',
+              Tooltip: 'Folder Sync',
+              Image: require('../../assets/IconCloud/fluent/software/sync-folder.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'sync',
+              Tooltip: 'Sync',
+              Image: require('../../assets/IconCloud/fluent/software/sync.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'search',
+              Tooltip: 'Search',
+              Image: require('../../assets/IconCloud/fluent/software/search.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'filter',
+              Tooltip: 'Filter',
+              Image: require('../../assets/IconCloud/fluent/software/filter.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'ssh key',
+              Tooltip: 'SSH Key',
+              Image: require('../../assets/IconCloud/fluent/software/00412-icon-SSH Keys-Other.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+
+            {
+              Name: 'rsa key',
+              Tooltip: 'RSA Key',
+              Image: require('../../assets/IconCloud/fluent/software/00787-icon-Keys-Other.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+
+            {
+              Name: 'anti virus',
+              Tooltip: 'Antivirus',
+              Image: require('../../assets/IconCloud/fluent/software/00555-icon-Antivirus-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'diagnostic tool',
+              Tooltip: 'Diagnostic Tool',
+              Image: require('../../assets/IconCloud/fluent/software/00689-icon-Diagnostic Tools B-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'data warehouse',
+              Tooltip: 'Data Warehouse',
+              Image: require('../../assets/IconCloud/fluent/software/00760-icon-Data Warehouse-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+
+            {
+              Name: 'invoice',
+              Tooltip: 'Invoice',
+              Image: require('../../assets/IconCloud/fluent/software/00916-Icon-Invoice-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+
+            {
+              Name: 'qr code',
+              Tooltip: 'QR Code',
+              Image: require('../../assets/IconCloud/fluent/software/QRCode.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+
+            {
+              Name: 'drive',
+              Tooltip: 'Drive',
+              Image: require('../../assets/IconCloud/fluent/software/01026-icon-Drives-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'email',
+              Tooltip: 'Email',
+              Image: require('../../assets/IconCloud/fluent/software/02271-icon-Email Message-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'process',
+              Tooltip: 'Process 1',
+              Image: require('../../assets/IconCloud/fluent/software/02275-icon-Process-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'process',
+              Tooltip: 'Process 2',
+              Image: require('../../assets/IconCloud/fluent/software/process-2.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'windows registry',
+              Tooltip: 'Windows Registry',
+              Image: require('../../assets/IconCloud/fluent/software/02279-icon-Windows Registry Key-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'gpu',
+              Tooltip: 'GPU',
+              Image: require('../../assets/IconCloud/fluent/software/02492-icon-GPU-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'saas software as a service',
+              Tooltip: 'Software-as-a-Service',
+              Image: require('../../assets/IconCloud/fluent/software/10213-icon-Software as a Service-Integration.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            
+            {
+              Name: 'browser web',
+              Tooltip: 'Browser',
+              Image: require('../../assets/IconCloud/fluent/software/10783-icon-Browser-General.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            
+            {
+              Name: 'scheduler cron',
+              Tooltip: 'Scheduler',
+              Image: require('../../assets/IconCloud/fluent/software/10833-icon-Scheduler-General.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'table',
+              Tooltip: 'Table',
+              Image: require('../../assets/IconCloud/fluent/software/10841-icon-Table-General.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'workflow',
+              Tooltip: 'Workflow',
+              Image: require('../../assets/IconCloud/fluent/software/10852-icon-Workflow-General.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            
+            {
+              Name: 'data copy',
+              Tooltip: 'Data Copy',
+              Image: require('../../assets/IconCloud/fluent/software/data-copy.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'data movement',
+              Tooltip: 'Data Movement',
+              Image: require('../../assets/IconCloud/fluent/software/data-movement.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'pipeline',
+              Tooltip: 'Pipeline',
+              Image: require('../../assets/IconCloud/fluent/software/pipeline.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            
             {
               Name: 'docker container',
               Tooltip: 'Docker',
-              Image: require('../../assets/azure_icons/software/software-docker.png'),
+              Image: require('../../assets/IconCloud/fluent/software/docker.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'elastic search elk',
-              Tooltip: 'ElasticSearch',
-              Image: require('../../assets/azure_icons/software/software-elasticsearch.png'),
+              Name: 'container',
+              Tooltip: 'Container 1',
+              Image: require('../../assets/IconCloud/fluent/software/container-1.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'enterprise service bus esb middleware',
-              Tooltip: 'Enterprise Service Bus',
-              Image: require('../../assets/azure_icons/software/software-esbmiddleware.png'),
+              Name: 'container',
+              Tooltip: 'Container 2',
+              Image: require('../../assets/IconCloud/fluent/software/container-2.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'github git',
+              Name: 'git github',
               Tooltip: 'GitHub',
-              Image: require('../../assets/azure_icons/software/software-github.png'),
+              Image: require('../../assets/IconCloud/fluent/software/Github.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'github actions git',
+              Name: 'git github action',
               Tooltip: 'GitHub Actions',
-              Image: require('../../assets/azure_icons/software/software-githubactions.png'),
+              Image: require('../../assets/IconCloud/fluent/software/github-actions.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'go lang',
-              Tooltip: 'Go',
-              Image: require('../../assets/azure_icons/software/software-golang.png'),
+              Name: 'git',
+              Tooltip: 'Git',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightBrandGit.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'jenkins',
-              Tooltip: 'Jenkins',
-              Image: require('../../assets/azure_icons/software/software-jenkins.png'),
+              Name: 'holo hololens',
+              Tooltip: 'Hololens',
+              Image: require('../../assets/IconCloud/fluent/software/hololens.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'grafana',
-              Tooltip: 'Grafana',
-              Image: require('../../assets/azure_icons/software/software-grafana.png'),
-              IsPng: false,
-              IsVisible:true,
-              ref: this.shapegrafana
-            },
-            {
-              Name: 'consul hashicorp',
-              Tooltip: 'Hashicorp Consul',
-              Image: require('../../assets/azure_icons/software/software-hashicorpconsul.png'),
+              Name: 'internet',
+              Tooltip: 'Internet',
+              Image: require('../../assets/IconCloud/fluent/software/internet.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'terraform hashicorp',
-              Tooltip: 'Terraform',
-              Image: require('../../assets/azure_icons/software/software-hashicorpterraform.png'),
+              Name: 'chrome',
+              Tooltip: 'Chrome',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightBrandChrome.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'hashicorp vault',
-              Tooltip: 'Hashicorp Vault',
-              Image: require('../../assets/azure_icons/software/software-hashicorpvault.png'),
+              Name: 'google drive',
+              Tooltip: 'Google Drive',
+              Image: require('../../assets/IconCloud/fluent/software/google-drive.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapehashicorpvault
             },
             {
-              Name: 'influx db time series',
-              Tooltip: 'InfluxDB',
-              Image: require('../../assets/azure_icons/software/software-influxdb.png'),
+              Name: 'edge',
+              Tooltip: 'Edge',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightBrandEdge.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapeinfluxdb
             },
+            {
+              Name: 'func function',
+              Tooltip: 'Function',
+              Image: require('../../assets/IconCloud/fluent/software/function.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'ps ps1 powershell',
+              Tooltip: 'Powershell',
+              Image: require('../../assets/IconCloud/fluent/software/10825-icon-Powershell-General.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'c# .net dotnet',
+              Tooltip: 'C#',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightCSFileNode.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: '',
+              Tooltip: '.Net',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightDotNET.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'bug',
+              Tooltip: 'Bug',
+              Image: require('../../assets/IconCloud/fluent/software/10784-icon-Bug-General.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'code',
+              Tooltip: 'Code 1',
+              Image: require('../../assets/IconCloud/fluent/software/10787-icon-Code-General.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'code',
+              Tooltip: 'Code 2',
+              Image: require('../../assets/IconCloud/fluent/software/code-2.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'file binaries code',
+              Tooltip: 'File Binaries',
+              Image: require('../../assets/IconCloud/fluent/software/file-binaries.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'js javascript',
+              Tooltip: 'Javascript',
+              Image: require('../../assets/IconCloud/fluent/software/ic_fluent_javascript_24_regular.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'nuget',
+              Tooltip: 'Nuget',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightBrandNuget.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'f#',
+              Tooltip: 'F#',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightFSFileNode.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'py python',
+              Tooltip: 'Python',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightPYProjectNode.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'ts typescript',
+              Tooltip: 'TypeScript',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightTSFileNode.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'vb visual basic',
+              Tooltip: 'Visual Basic',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightVBFileNode.svg'),
+              IsPng: false,
+              IsVisible:true,
+            }, 
             {
               Name: 'java',
               Tooltip: 'Java',
-              Image: require('../../assets/azure_icons/software/software-java.png'),
+              Image: require('../../assets/IconCloud/fluent/software/java.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapejava
+            },  
+            {
+              Name: 'cpp c++',
+              Tooltip: 'C++',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightCPPProjectNode.svg'),
+              IsPng: false,
+              IsVisible:true,
             },
             {
-              Name: 'javascript',
-              Tooltip: 'Javascript',
-              Image: require('../../assets/azure_icons/software/software-javascript.png'),
+              Name: 'vs visual studio',
+              Tooltip: 'Visual Studio',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightBrandVisualStudio.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapejavascript
             },
             {
-              Name: 'kafka',
-              Tooltip: 'Kafka',
-              Image: require('../../assets/azure_icons/software/software-kafka.png'),
+              Name: 'web api',
+              Tooltip: 'Web Api',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightWebAPI.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapekafka
+            }, 
+            {
+              Name: 'web service',
+              Tooltip: 'Web Service',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightWebService.svg'),
+              IsPng: false,
+              IsVisible:true,
+            }, 
+            {
+              Name: 'webhook web',
+              Tooltip: 'Webhook',
+              Image: require('../../assets/IconCloud/fluent/software/web-02437-icon-Webhook-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
             },
             {
-              Name: 'kubernetes microservice',
-              Tooltip: 'Kubernetes (shape)',
-              azInfo: ['Private Link supported as Private Cluster'],
-              Image: require('../../assets/azure_icons/software/software-kubernetes.png'),
+              Name: 'event trigger',
+              Tooltip: 'Event',
+              Image: require('../../assets/IconCloud/fluent/software/web-event.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapekube
+            },
+            
+            {
+              Name: 'execute run',
+              Tooltip: 'Execute',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightExecute.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+
+            {
+              Name: 'message',
+              Tooltip: 'Message',
+              Image: require('../../assets/IconCloud/fluent/software/message.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+
+            {
+              Name: 'queue',
+              Tooltip: 'Queue',
+              Image: require('../../assets/IconCloud/fluent/software/60049-Icon-Queued-command.svg'),
+              IsPng: false,
+              IsVisible:true,
             },
             {
-              Name: 'message queue',
-              Tooltip: 'Message Queue',
-              Image: require('../../assets/azure_icons/software/software-messagequeue.png'),
+              Name: 'publish pub',
+              Tooltip: 'Publish',
+              Image: require('../../assets/IconCloud/fluent/software/publish.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapemessagequeue
             },
             {
-              Name: 'mongo db',
-              Tooltip: 'MongoDB',
-              Image: require('../../assets/azure_icons/software/software-mongodb.png'),
+              Name: 'subscribe sub',
+              Tooltip: 'Subscribe',
+              Image: require('../../assets/IconCloud/fluent/software/subscribe.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapemongodb
             },
             {
-              Name: '.net core ',
-              Tooltip: '.Net Core',
-              Image: require('../../assets/azure_icons/software/software-netcore.png'),
+              Name: 'report',
+              Tooltip: 'Report',
+              Image: require('../../assets/IconCloud/fluent/software/report.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapenetcore
+            },
+
+            {
+              Name: 'biztalk',
+              Tooltip: 'BizTalk',
+              Image: require('../../assets/IconCloud/fluent/software/10779-icon-Biz Talk-General.svg'),
+              IsPng: false,
+              IsVisible:true,
             },
             {
-              Name: 'nginx',
-              Tooltip: 'Nginx',
-              Image: require('../../assets/azure_icons/software/software-nginx.png'),
+              Name: 'd365',
+              Tooltip: 'D365',
+              Image: require('../../assets/IconCloud/fluent/software/D365.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapenginx
             },
             {
-              Name: 'nginx plus',
-              Tooltip: 'Nginx Plus',
-              Image: require('../../assets/azure_icons/software/software-nginxplus.png'),
+              Name: 'o365 office',
+              Tooltip: 'office',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightBrandOffice.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapenginxplus
+            }, 
+            {
+              Name: 'o365 outlook',
+              Tooltip: 'Outlook',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightBrandOutlook.svg'),
+              IsPng: false,
+              IsVisible:true,
             },
             {
-              Name: 'nodejs node',
-              Tooltip: 'NodeJS',
-              Image: require('../../assets/azure_icons/software/software-node.png'),
+              Name: 'o365 ppt powerpoint',
+              Tooltip: 'PowerPoint',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightBrandPowerPoint.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapenodejs
             },
             {
-              Name: 'powershell ps',
-              Tooltip: 'Powershell',
-              Image: require('../../assets/azure_icons/software/software-powershell.png'),
+              Name: 'o365 project',
+              Tooltip: 'Project',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightBrandProject.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapepowershell
+            },
+            {
+              Name: 'o365 word',
+              Tooltip: 'Words',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightBrandWord.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'o365 cms sharepoint',
+              Tooltip: 'SharePoint',
+              Image: require('../../assets/IconCloud/fluent/software/sharepoint.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+
+            {
+              Name: 'ci cd jenkins',
+              Tooltip: 'Jenkins',
+              Image: require('../../assets/IconCloud/fluent/software/jenkins.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'linux',
+              Tooltip: 'Linux',
+              Image: require('../../assets/IconCloud/fluent/software/linux.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'win windows',
+              Tooltip: 'Windows',
+              Image: require('../../assets/IconCloud/fluent/software/windows-logo.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'microsoft',
+              Tooltip: 'Microsoft',
+              Image: require('../../assets/IconCloud/fluent/software/microsoft-logo.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'pdf',
+              Tooltip: 'PDf',
+              Image: require('../../assets/IconCloud/fluent/software/pdf.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'image',
+              Tooltip: 'Image',
+              Image: require('../../assets/IconCloud/fluent/software/10812-icon-Image-General.svg'),
+              IsPng: false,
+              IsVisible:true,
             },
             {
               Name: 'power bi',
               Tooltip: 'Power BI',
-              Image: require('../../assets/azure_icons/software/software-powerbi.png'),
+              Image: require('../../assets/IconCloud/fluent/software/powerbi.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapepowerbi
             },
-            {
-              Name: 'python py',
-              Tooltip: 'Python',
-              Image: require('../../assets/azure_icons/software/software-python.png'),
-              IsPng: false,
-              IsVisible:true,
-              ref: this.shapepython
-            },
-            {
-              Name: 'rabbit mq',
-              Tooltip: 'RabbitMQ',
-              Image: require('../../assets/azure_icons/software/software-rabbitmq.png'),
-              IsPng: false,
-              IsVisible:true,
-              ref: this.shaperabbitmq
-            },
-            {
-              Name: 'ruby on rails',
-              Tooltip: 'Ruby On Rails',
-              Image: require('../../assets/azure_icons/software/software-rubyonrails.png'),
-              IsPng: false,
-              IsVisible:true,
-              ref: this.shaperubyonrails
-            },
-            {
-              Name: 'traefik microservice',
-              Tooltip: 'Traefik',
-              Image: require('../../assets/azure_icons/software/software-traefik.png'),
-              IsPng: false,
-              IsVisible:true,
-              ref: this.shapetraefik
-            },
-            {
-              Name: 'zipkin microservice',
-              Tooltip: 'Zipkin',
-              Image: require('../../assets/azure_icons/software/software-Zipkin.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'jaeger microservice',
-              Tooltip: 'Jaeger',
-              Image: require('../../assets/azure_icons/software/software-jaeger.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'calico microservice',
-              Tooltip: 'Calico',
-              Image: require('../../assets/azure_icons/software/software-calico.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'cmd cli command exe',
-              Tooltip: 'CLI',
-              Image: require('../../assets/azure_icons/software/software-cli.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'json file',
-              Tooltip: 'Json File',
-              Image: require('../../assets/azure_icons/software/software-jsonfile.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'api',
-              Tooltip: 'API',
-              Image: require('../../assets/azure_icons/software/software-api.png'),
-              IsPng: false,
-              IsVisible:true
-            }
+            
           ]
         }
       },
@@ -727,6 +1043,15 @@ export default class ResourcePalette extends Component {
               Name: 'devops',
               Tooltip: 'Azure DevOps',
               Image: require('../../assets/IconCloud/azure/nondeployable/10261-icon-Azure DevOps-DevOps.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'arm template',
+              Tooltip: 'ARM Template',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10009-icon-Templates-General.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true
@@ -1143,6 +1468,71 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true
             },
+            {
+              Name: 'rbac custom role aad',
+              Tooltip: 'Custom Role',
+              Image: require('../../assets/IconCloud/azure/nondeployable/identity/02680-icon-Custom Azure AD Roles-Identity.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'license aad',
+              Tooltip: 'Azure AD User License',
+              Image: require('../../assets/IconCloud/azure/nondeployable/identity/02681-icon-AAD Licenses-Identity.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'group aad',
+              Tooltip: 'Group',
+              Image: require('../../assets/IconCloud/azure/nondeployable/identity/10223-icon-Groups-Identity.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'enterprise app aad',
+              Tooltip: 'Enterprise App',
+              Image: require('../../assets/IconCloud/azure/nondeployable/identity/10225-icon-Enterprise Applications-Identity.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'information protection aad',
+              Tooltip: 'Information Protection',
+              Image: require('../../assets/IconCloud/azure/nondeployable/identity/10229-icon-Azure Information Protection-Identity.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'app registration aad',
+              Tooltip: 'App Registration',
+              Image: require('../../assets/IconCloud/azure/nondeployable/identity/10232-icon-App Registrations-Identity.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'conditional access aad',
+              Tooltip: 'Conditional Access',
+              Image: require('../../assets/IconCloud/azure/nondeployable/identity/10233-icon-Conditional Access-Security.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'privilege pim aad',
+              Tooltip: 'PIM',
+              Image: require('../../assets/IconCloud/azure/nondeployable/identity/10234-icon-Azure AD Privilege Identity Management-Identity.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
           ]
         }
      },
@@ -1266,25 +1656,25 @@ export default class ResourcePalette extends Component {
           groupSearchVisible: true,
           resources: [
             {
-                Name: 'windows vm',
-                Tooltip: 'Windows VM',
+                Name: 'vm virtual machine',
+                Tooltip: 'VM',
                 azInfo: ['deployable'],
-                Image: require('../../assets/azure_icons/ComputeServiceColor/VM/VM-windows.png'),
+                Image: require('../../assets/IconCloud/azure/compute/10021-icon-Virtual Machine-Compute.svg'),
                 Provisionable: true,
                 IsPng: false,
                 IsVisible:true,
-                resourceType: ResourceType.WindowsVM()
+                resourceType: ResourceType.VM()
             },
-            {
-              Name: 'linux vm',
-              Tooltip: 'Linux VM',
-              azInfo: ['deployable'],
-              Image: require('../../assets/azure_icons/ComputeServiceColor/VM/VM-Linux.png'),
-              Provisionable: true,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.LinuxVM()
-            },
+            // {
+            //   Name: 'linux vm',
+            //   Tooltip: 'Linux VM',
+            //   azInfo: ['deployable'],
+            //   Image: require('../../assets/azure_icons/ComputeServiceColor/VM/VM-Linux.png'),
+            //   Provisionable: true,
+            //   IsPng: false,
+            //   IsVisible:true,
+            //   resourceType: ResourceType.LinuxVM()
+            // },
             {
               Name: 'vm scale sets vmss',
               Tooltip: 'VM Scale Sets',
@@ -2205,6 +2595,16 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.EventGridDomain()
+            },
+            {
+              Name: 'app config',
+              Tooltip: 'App Configuration',
+              azInfo: [''],
+              Image: require('../../assets/IconCloud/azure/integration/10219-icon-App Configuration-Integration.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.AppConfig()
             },
             {
               Name: 'communication service email sms',

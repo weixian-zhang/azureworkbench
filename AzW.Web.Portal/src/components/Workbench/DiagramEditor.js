@@ -1160,6 +1160,20 @@ makePort(name, align, spot, output, input) {
   var horizontal = align.equals(go.Spot.Top) || align.equals(go.Spot.Bottom);
   // the port is basically just a transparent rectangle that stretches along the side of the node,
   // and becomes colored when the mouse passes over it
+
+  // this.$(go.Shape,
+  //   {
+  //     name: 'SHAPE',
+  //     strokeWidth: 2,
+  //     desiredSize: new go.Size(10, 10),
+  //     figure: "Arrow"
+  //   },
+  //   new go.Binding("strokeDashArray", "strokeDashArray").makeTwoWay(),
+  //   new go.Binding("fill").makeTwoWay(),
+  //   new go.Binding("stroke").makeTwoWay(),
+  //   new go.Binding("desiredSize").makeTwoWay(),
+  // ),
+
   return this.$(go.Shape,
     {
       fill: "transparent",  // changed to a color in the mouseEnter event handler
@@ -2260,44 +2274,44 @@ createVIROntoSubnet(dropContext) {
           image = require('../../assets/IconCloud/azure/network/02579-icon-Private Endpoints-menu.svg');
           azcontext = new PrivateEndpoint();
         break;
-        case ResourceType.WindowsVM():
+        case ResourceType.VM():
           if(Utils.isSubnetTakenByDedicatedSubnetVIR(subnet)) {
             Toast.show('warining', 7000, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
             return;
           }
 
           text = 'vm';
-          nodeKey = 'vmwin-' + this.shortUID.randomUUID(6);
-          image = require('../../assets/azure_icons/ComputeServiceColor/VM/VM-windows.png');
+          nodeKey = 'vm-' + this.shortUID.randomUUID(6);
+          image = require('../../assets/IconCloud/azure/compute/10021-icon-Virtual Machine-Compute.svg');
           
           if(azcontext != null)
             azcontext = azcontext;
           else {
             var vm = new VM();
-            vm.ProvisionContext.ResourceType = ResourceType.WindowsVM();
-            vm.GraphModel.ResourceType = ResourceType.WindowsVM();
+            vm.ProvisionContext.ResourceType = ResourceType.VM();
+            vm.GraphModel.ResourceType = ResourceType.VM();
             azcontext = vm;
           }
         break;
-        case ResourceType.LinuxVM():
-          if(Utils.isSubnetTakenByDedicatedSubnetVIR(subnet)) {
-            Toast.show('warining', 7000, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
-            return;
-          }
+        // case ResourceType.LinuxVM():
+        //   if(Utils.isSubnetTakenByDedicatedSubnetVIR(subnet)) {
+        //     Toast.show('warining', 7000, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
+        //     return;
+        //   }
 
-          text = 'vm';
-          nodeKey = 'vmlinux-' + this.shortUID.randomUUID(6);
-          image = require('../../assets/azure_icons/ComputeServiceColor/VM/VM-Linux.png');
+        //   text = 'vm';
+        //   nodeKey = 'vmlinux-' + this.shortUID.randomUUID(6);
+        //   image = require('../../assets/IconCloud/azure/compute/VM-Linux.png');
           
-          if(azcontext != null)
-            azcontext = azcontext;
-          else {
-            var vm = new VM();
-            vm.ProvisionContext.ResourceType = ResourceType.LinuxVM();
-            vm.GraphModel.ResourceType = ResourceType.LinuxVM();
-            azcontext = vm;
-          }
-        break;
+        //   if(azcontext != null)
+        //     azcontext = azcontext;
+        //   else {
+        //     var vm = new VM();
+        //     vm.ProvisionContext.ResourceType = ResourceType.LinuxVM();
+        //     vm.GraphModel.ResourceType = ResourceType.LinuxVM();
+        //     azcontext = vm;
+        //   }
+        // break;
         case ResourceType.VMSS():
           if(Utils.isSubnetTakenByDedicatedSubnetVIR(subnet)) {
             Toast.show('warining', 2500, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
@@ -2443,7 +2457,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'ase';
           nodeKey = Utils.uniqueId('vnetgw');
-          image = require('../../assets/azure_icons/Networking Service Color/Virtual Network Gateways.png');
+          image = require('../../assets/IconCloud/azure/network/10063-icon-Virtual Network Gateways-Networking.svg');
           azcontext = new VirtualNetworkGateway();
           break;
         case ResourceType.NLB():
@@ -2489,7 +2503,7 @@ createVIROntoSubnet(dropContext) {
               }
               text = 'private container instance';
               nodeKey = Utils.uniqueId('privateci');
-              image = require('../../assets/azure_icons/Container Service Color/Container Instances.png');
+              image = require('../../assets/IconCloud/azure/container/10104-icon-Container Instances-Containers.svg');
               azcontext = new ContainerInstance();
             break;
     }
@@ -3348,6 +3362,12 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
           label: 'mobile', x: dropContext.x, y: dropContext.y});
       break;
 
+      case 'Tablet':
+        this.createPictureShape
+        ({source: require('../../assets/IconCloud/fluent/devices/tablet.svg'),
+          label: 'tablet', x: dropContext.x, y: dropContext.y});
+      break;
+
       case 'Printer':
         this.createPictureShape
         ({source: require('../../assets/IconCloud/fluent/devices/device-printer.svg'),
@@ -3390,201 +3410,429 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
           label: 'db', x: dropContext.x, y: dropContext.y});
       break; 
 
-      //people
-
-      //devices
-
       //software
-      case 'CLI':
+      case 'File':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-cli.png'),
-          label: 'cli', x: dropContext.x, y: dropContext.y});
+        ({source: require('../../assets/IconCloud/fluent/software/00058-icon-Files-menu.svg'),
+          label: 'file', x: dropContext.x, y: dropContext.y});
       break;
-      case 'Helm':
+
+      case 'Files':
         this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/helm.png'),
-          label: '', x: dropContext.x, y: dropContext.y});
+        ({source: require('../../assets/IconCloud/fluent/software/files.svg'),
+          label: 'files', x: dropContext.x, y: dropContext.y});
       break;
-      case 'Azure DevOps':
+
+      case 'Folder':
         this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeAzureDevOps()),
-          label: 'Azure DevOps', x: dropContext.x, y: dropContext.y});
+        ({source: require('../../assets/IconCloud/fluent/software/10802-icon-Folder Blank-General.svg'),
+        label: 'folder', x: dropContext.x, y: dropContext.y});
+        break;
+
+      case 'Directory Structure':
+      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/02270-icon-Directory-menu.svg'), label: '', x: dropContext.x, y: dropContext.y});
       break;
-      case 'C#':
-        this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-c#.png'),
-          label: 'c#', x: dropContext.x, y: dropContext.y});
+      
+      case 'Folder Sync':
+      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/sync-folder.svg'), label: '', x: dropContext.x, y: dropContext.y});
       break;
-      case 'Dapr':
-        this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-dapr.png'),
-          label: '', x: dropContext.x, y: dropContext.y});
+
+      case 'Sync':
+      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/sync.svg'), label: '', x: dropContext.x, y: dropContext.y}); 
       break;
-      case 'Docker':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeDocker()),
-          label: '', x: dropContext.x, y: dropContext.y});
+
+      case 'Search':
+      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/search.svg'), label: '', x: dropContext.x, y: dropContext.y}); 
       break;
-      case 'ElasticSearch':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeElasticSearch()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Enterprise Service Bus':
-        this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-esbmiddleware.png'),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
+
+      case 'Filter':
+      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/filter.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'SSH Key':
+      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00412-icon-SSH Keys-Other.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'RSA Key':
+      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00787-icon-Keys-Other.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'Antivirus':
+      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00555-icon-Antivirus-menu.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'Diagnostic Tool':
+      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00689-icon-Diagnostic Tools B-menu.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'Data Warehouse':
+      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00760-icon-Data Warehouse-menu.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+      
+      case 'Invoice':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00916-Icon-Invoice-menu.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+    
+        case 'QR Code':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/QRCode.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+    
+        case 'Drive':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/01026-icon-Drives-menu.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'Email':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/02271-icon-Email Message-menu.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'Process 1':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/02275-icon-Process-menu.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'Process 2':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/process-2.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'Windows Registry':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/02279-icon-Windows Registry Key-menu.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'GPU':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/02492-icon-GPU-menu.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'Software-as-a-Service':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10213-icon-Software as a Service-Integration.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+    
+        case 'Browser':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10783-icon-Browser-General.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+    
+        case 'Scheduler':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10833-icon-Scheduler-General.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'Table':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10841-icon-Table-General.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'Workflow':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10852-icon-Workflow-General.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+    
+        case 'Data Copy':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/data-copy.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'Data Movement':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/data-movement.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'Pipeline':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/pipeline.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+    
+        case 'Docker':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/docker.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'Container 1':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/container-1.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'Container 2':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/container-2.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
       case 'GitHub':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeGithub()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/Github.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
       case 'GitHub Actions':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeGithubActions()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Go':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeGo()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Grafana':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeGrafana()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Hashicorp Consul':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeHashicorpConsul()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Terraform':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeHashicorpTerraform()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Hashicorp Vault':
-        this.createPictureShape
-        ({source: require('../../assets/azure_icons/software/software-hashicorpvault.png'),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'InfluxDB':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeInfluxDB()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Java':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeJava()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Javascript':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeJavascript()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Kafka':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeKafka()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Kubernetes (shape)':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeKube()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Message Queue':
-        this.createPictureShape
-        ({source:Utils.pngDataUrl(AzureIcons.ShapeMessageQueue()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'MongoDB':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeMongoDB()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case '.Net Core':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeNetCore()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Nginx':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeNginx()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Nginx Plus':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeNginxPlus()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'NodeJS':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeNode()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Powershell':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapePowershell()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Power BI':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapePowerBI()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Python':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapePython()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'RabbitMQ':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeRabbitMQ()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Ruby On Rails':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeRubyOnRails()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Traefik':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeTraefik()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Zipkin':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeZipkin()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Jaeger':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeJaeger()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Calico':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeCalico()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Json File':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.JsonFile()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'API':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.API()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
-      case 'Jenkins':
-        this.createPictureShape
-        ({source: Utils.pngDataUrl(AzureIcons.ShapeJenkins()),
-          label: '', x: dropContext.x, y: dropContext.y});
-      break;
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/github-actions.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'Git':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandGit.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'Hololens':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/hololens.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'Internet':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/internet.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+    
+      case 'Chrome':
+        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandChrome.svg'),
+        label: '', x: dropContext.x, y: dropContext.y});
+        break;
+  
+    case 'Google Drive':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/google-drive.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Edge':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandEdge.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Function':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/function.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Powershell':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10825-icon-Powershell-General.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    
+  case 'C#':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightCSFileNode.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case '.Net':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightDotNET.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+  
+    case 'Bug':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10784-icon-Bug-General.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Code 1':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10787-icon-Code-General.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Code 2':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/code-2.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'File Binaries':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/file-binaries.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Javascript':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/ic_fluent_javascript_24_regular.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Nuget':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandNuget.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'F#':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightFSFileNode.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Python':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightPYProjectNode.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'TypeScript':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightTSFileNode.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Visual Basic':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightVBFileNode.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+   
+    case 'Java':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/java.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+    
+    case 'C++':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightCPPProjectNode.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Visual Studio':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandVisualStudio.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Web Api':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightWebAPI.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+   
+    case 'Web Service':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightWebService.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+   
+    case 'Webhook':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/web-02437-icon-Webhook-menu.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Event':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/web-event.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+  
+    case 'Execute':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightExecute.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+  
+    case 'Message':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/message.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+  
+    case 'Queue':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/60049-Icon-Queued-command.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Publish':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/publish.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Subscribe':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/subscribe.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Report':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/report.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+  
+    case 'BizTalk':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10779-icon-Biz Talk-General.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'D365':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/D365.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'office':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandOffice.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+   
+    case 'Outlook':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandOutlook.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'PowerPoint':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandPowerPoint.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Project':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandProject.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Words':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandWord.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'SharePoint':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/sharepoint.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+  
+    case 'Jenkins':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/jenkins.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Linux':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/linux.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Windows':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/windows-logo.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Microsoft':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/microsoft-logo.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'PDf':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/pdf.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Image':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10812-icon-Image-General.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Power BI':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/powerbi.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
 
       //azure nondeployable
       
@@ -3597,13 +3845,13 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       case 'Azure DevOps':
         this.createPictureShape
         ({source: require('../../assets/IconCloud/azure/nondeployable/10261-icon-Azure DevOps-DevOps.svg'),
-          label: '', x: dropContext.x, y: dropContext.y});
+          label: 'Azure DevOps', x: dropContext.x, y: dropContext.y});
       break;
 
-      case 'Azure DevOps':
+      case 'ARM Template':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10261-icon-Azure DevOps-DevOps.svg'),
-          label: '', x: dropContext.x, y: dropContext.y});
+        ({source: require('../../assets/IconCloud/azure/nondeployable/10009-icon-Templates-General.svg'),
+          label: 'arm', x: dropContext.x, y: dropContext.y});
       break;
       
       case 'Azure LightHouse':
@@ -3864,8 +4112,6 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
           label: 'kusto', x: dropContext.x, y: dropContext.y});
       break;
 
-
-
       case 'Azure Arc':
         this.createPictureShape
         ({source: require('../../assets/IconCloud/azure/nondeployable/00756-icon-Azure Arc-Management + Governance.svg'),
@@ -3889,6 +4135,49 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         ({source: require('../../assets/IconCloud/azure/nondeployable/10281-icon-Azure Migrate-Migrate.svg'),
           label: 'az migrate', x: dropContext.x, y: dropContext.y});
         break;
+
+        
+  case 'Custom Role':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/02680-icon-Custom Azure AD Roles-Identity.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Azure AD User License':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/02681-icon-AAD Licenses-Identity.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Group':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/10223-icon-Groups-Identity.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Enterprise App':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/10225-icon-Enterprise Applications-Identity.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'Information Protection':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/10229-icon-Azure Information Protection-Identity.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'App Registration':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/10232-icon-App Registrations-Identity.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+  
+    case 'Conditional Access':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/10233-icon-Conditional Access-Security.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
+    case 'PIM':
+    this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/10234-icon-Azure AD Privilege Identity Management-Identity.svg'),
+    label: '', x: dropContext.x, y: dropContext.y});
+    break;
+  
 
 
       //*non VIR
@@ -4288,14 +4577,14 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
           break;
       case ResourceType.AppConfig():
         this.createNonVIRAzureResource({
-          source: Utils.pngDataUrl(AzureIcons.AppConfig()),
+          source: require('../../assets/IconCloud/azure/integration/10219-icon-App Configuration-Integration.svg'),
           label: 'app configuration', x: dropContext.x, y: dropContext.y,
           azcontext: new AppConfig()
         });
         break;
         case ResourceType.DedicatedHost():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/ComputeServiceColor/azure-dedicatedhost.png'),
+          source: require('../../assets/IconCloud/azure/compute/10346-icon-Host Groups-Compute.svg'),
           label: 'dedicated host', x: dropContext.x, y: dropContext.y,
           azcontext: new DedicatedHost()
         });
@@ -4516,7 +4805,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         break;
       case ResourceType.HdInsight():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Analytics Service Color/HDInsightClusters.png'),
+          source: require('../../assets/IconCloud/azure/data_analytics/10142-icon-HD Insight Clusters-Analytics.svg'),
           label: 'hdinsight', x: dropContext.x, y: dropContext.y,
           azcontext: new HdInsight()
         });

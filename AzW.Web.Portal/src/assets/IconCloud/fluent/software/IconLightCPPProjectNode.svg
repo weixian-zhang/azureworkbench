@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 16 16">
+  <g id="canvas">
+    <path d="M16,16H0V0H16Z" fill="none" opacity="0" />
+  </g>
+  <g id="level-2">
+    <g opacity="0.75">
+      <path d="M14.5,2.5v11H1.5V2.5Z" fill="#212121" opacity="0.1" />
+      <path d="M14.5,2H1.5L1,2.5v11l.5.5h13l.5-.5V2.5ZM14,13H2V3H14Z" fill="#212121" />
+    </g>
+  </g>
+  <g id="level-1">
+    <path d="M8,8H6v2H5V8H3V7H5V5H6V7H8Zm3,2V8H10v2H8v1h2v2h1V11h2V10Z" opacity="0.1" />
+    <path d="M8,7H6V9H5V7H3V6H5V4H6V6H8Zm3,2V7H10V9H8v1h2v2h1V10h2V9Z" fill="#c50b17" />
+  </g>
+</svg>

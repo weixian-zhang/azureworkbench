@@ -78,14 +78,14 @@ namespace AzW.Infrastructure.AzureServices
                                 VM vm = jObj.ToObject<VM>();
                                 await CreateVMAsync(vm);
                             break;
-                            case ResourceType.WindowsVM:
-                                VM windowsVM = jObj.ToObject<VM>();
-                                await CreateVMAsync(windowsVM);
-                            break;
-                            case ResourceType.LinuxVM:
-                                VM linuxVM = jObj.ToObject<VM>();
-                                await CreateVMAsync(linuxVM);
-                            break;
+                            // case ResourceType.WindowsVM:
+                            //     VM windowsVM = jObj.ToObject<VM>();
+                            //     await CreateVMAsync(windowsVM);
+                            // break;
+                            // case ResourceType.LinuxVM:
+                            //     VM linuxVM = jObj.ToObject<VM>();
+                            //     await CreateVMAsync(linuxVM);
+                            // break;
                             case ResourceType.VMSS:
                                 VMSS vmss = jObj.ToObject<VMSS>();
                                 await CreateVMSS(vmss);
