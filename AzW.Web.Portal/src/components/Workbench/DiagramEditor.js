@@ -1438,6 +1438,9 @@ initContextMenu() {
   var thisComp = this;
 
   return this.$("ContextMenu",
+
+      
+
       this.$("ContextMenuButton",
         this.$(go.TextBlock, "Add Subnet"),
             { 
@@ -1448,6 +1451,20 @@ initContextMenu() {
             new go.Binding("visible", "", function(o) {
                 return Utils.isVNet(o.diagram.selection.first());
             }).ofObject()),
+        
+      this.$("ContextMenuButton",
+      this.$(go.TextBlock, "Duplicate"),
+          { 
+            click: function(e, obj) {
+              var selectedNode = thisComp.diagram.selection.first();
+              var newLoc = new go.Point(selectedNode.actualBounds.x, selectedNode.actualBounds.y + 6 )
+              go.CommandHandler.prototype.copySelection.call(thisComp.diagram.commandHandler);
+              go.CommandHandler.prototype.pasteSelection.call(thisComp.diagram.commandHandler, newLoc);
+            } 
+          },
+          new go.Binding("visible", "", function(o) {
+              return o.diagram.selection.first() != null;
+          }).ofObject()),
 
         this.$("ContextMenuButton",
           this.$(go.TextBlock, "Add/Remove NSG"),
@@ -3725,6 +3742,12 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         this.createPictureShape
         ({source: require('../../assets/IconCloud/azure/nondeployable/10781-icon-Blob Page-General.svg'),
           label: 'page blob', x: dropContext.x, y: dropContext.y});
+      break;
+
+      case 'Integration Account':
+        this.createPictureShape
+        ({source: require('../../assets/IconCloud/azure/nondeployable/10218-icon-Integration Accounts-Integration.svg'),
+          label: 'integration acct', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Azure Stack':

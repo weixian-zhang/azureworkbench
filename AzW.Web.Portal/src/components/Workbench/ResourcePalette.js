@@ -1102,6 +1102,15 @@ export default class ResourcePalette extends Component {
             },
 
             {
+              Name: 'integration account',
+              Tooltip: 'Integration Account',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10218-icon-Integration Accounts-Integration.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
               Name: 'kusto kql',
               Tooltip: 'Kusto',
               Image: require('../../assets/IconCloud/azure/nondeployable/Kusto.png'),
