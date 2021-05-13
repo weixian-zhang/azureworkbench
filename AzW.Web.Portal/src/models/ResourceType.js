@@ -12,6 +12,15 @@ export default class ResourceType
     static Function() {return 'func'; }
     static VNet() {return 'vnet'; }
     static PrivateEndpoint() {return 'privateendpoint'; }
+    static PrivateLink() {return 'privatelink'; }
+    static IPGroup() {return 'ipgroups'; }
+    static AMPLS() {return 'ampls'; }
+    static NetworkManager() {return 'networkmanager'; }
+    static RouteFilters() {return 'routefilters'; }
+    static WAF() {return 'waf'; }
+    static ProximityPlacementGroup() {return 'proximityplacementgroup'; }
+    static AvailabilitySet() {return 'availabilityset'; }
+    
     static NetworkWatcher() {return 'networkwatcher'; }
     static Subnet() {return 'subnet'; }
     static NLB() {return 'nlb'; }
@@ -21,14 +30,20 @@ export default class ResourceType
     static AzureSearch() {return 'search'; }
     static SignalR() {return 'signalr'; }
     static AppServiceCert() {return 'appsvccert'; }
+    static AppServicePlan() {return 'appsvcplan'; }
     static AppServiceDomain() {return 'appsvcdomain'; }
+    static NotificationHub() {return 'notificationhub'; }
+
 
     static SharedImageGallery() {return 'sig'; }
     static FrontDoor() {return 'frontdoor'; }
+    static PublicIpPrefixes() {return 'pipprefixes'; }
     static PublicIp() {return 'pip'; }
     static ExpressRouteCircuit() {return 'expressroute'; }
     static TrafficManager() {return 'trafficmanager'; }
+    static LabService() {return 'labservice'; }
     static DevTestLab() {return 'devtestlab'; }
+    static LocalNetworkGateway() {return 'localnetworkgateway'; }
     static VirtualNetworkGateway() {return 'vnetgateway'; }
     static CDN() {return 'cdn'; }
     static NSG() {return 'nsg'; }
@@ -43,6 +58,7 @@ export default class ResourceType
     static NetAppFile() {return 'netappfile'; }
     static QueueStorage() {return 'queuestorage'; }
     static TableStorage() {return 'tablestorage'; }
+    static DataboxEdge() {return 'databoxedge'; }
     static Databox() {return 'databox'; }
     static PostgreSQL() {return 'postgresql'; }
     static MariaDB() {return 'maria'; }
@@ -75,21 +91,34 @@ export default class ResourceType
     static ASB() {return 'asb'; }
     static Relay() {return 'relay'; }
     static LogicApp() {return 'logicapp'; }
+    static LogicAppCustomConnector() {return 'logicappcustomconnector'; }
     static ISE() {return 'ise'; }
     static EventGridTopic() {return 'egtopic'; }
     static EventGridSubscription() {return 'egsubscription'; }
     static EventGridDomain() {return 'egdomain'; }
+    static CommunicationService() {return 'communicationservice'; }
+    
     static EventHub() {return 'eventhub'; }
+    static EventHubCluster() {return 'eventhubcluster'; }
     static StreamAnalytics() {return 'streamanalytics'; }
     static SendGrid() {return 'sendgrid'; }
+    static StaticApp() {return 'staticapp'; }
     static AppConfig() {return 'appconfig'; }
+    static AnalysisService() {return 'analysisservice'; }
     static Firewall() {return 'firewall'; }
+    static FirewallManager() {return 'firewallmanager'; }
     static Sentinel() {return 'sentinel'; }
     static KeyVault() {return 'keyvault'; }
     static SecurityCenter() {return 'asc'; }
     static DDoSStandard() {return 'ddosstandard'; }
     static Bastion() {return 'bastion'; }
-
+    
+    static StorSimpleDataManager() {return 'storsimpledatamanager'; }
+    static OnPremDataGateway() {return 'onpremdatagateway'; }
+    static PurviewAccount() {return 'purviewaccount'; }
+    static HPCCache() {return 'hpccache'; }
+    static AzureStackEdge() {return 'azstackedge'; }
+    static BackupVault() {return 'backupvault'; }
     static RecoveryServiceVault() {return 'recoveryservicevault'; }
     static AppInsights() {return 'appinsights'; }
     static LogAnalytics() {return 'loganalytics'; }
@@ -102,12 +131,26 @@ export default class ResourceType
     static DataCatalog() {return 'datacatalog';}
     static DataShare() {return 'datashare';}
     static ManagedIdentity() {return 'managedidentity';}
-    static MeshApplication() {return 'meshapplication';}
+    static ServiceFabricCluster() {return 'servicefabriccluster';}
+    static ServiceFabricManagedCluster() {return 'servicefabricmanagedcluster';}
+    static Automanage() {return 'automanage';}
+    static Image() {return 'image';}
+    static Host() {return 'host';}
+    static Hostgroup() {return 'hostgroup';}
+    static VMWareSolution() {return 'vmwaresolution';}
+    static WorkspaceWVD() {return 'workspacewvd';}
+    static DiskEncryptionSet() {return 'diskencryptionset';}
+    static DiskSnapshot() {return 'disksnapshot';}
+    static ImageTemplate() {return 'imagetemplate';}
     static VirtualWAN() {return 'virtualwan';}
     static AAD() {return 'aad'; }
     static AADB2C() {return 'aadb2c'; }
     static AADDomainService() {return 'aaddomainservice'; }
     static IoTHub() {return 'iothub'; }
+    static DeviceProvisioningService() {return 'deviceprovisioningservice'; }
+    static DeviceUpdateForIoTHub() {return 'deviceupdateforiothub'; }
+    static DigitalTwins() {return 'digitaltwins'; }
+    static TimeSeriesInsightsEventSource() {return 'timeseriesinsightseventsource'; }
     static IoTCentral() {return 'iotcentral'; }
     static AzureMaps() {return 'maps'; }
     static TimeSeriesInsights() {return 'timeseriesinsights'; }

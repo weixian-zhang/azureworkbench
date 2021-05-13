@@ -29,8 +29,7 @@ export default class ResourcePalette extends Component {
     this.state = {
       graphContainer: null,
       searchText: '',
-      filteredResources: this.initPaletteResources(),
-      onSearchExpandPanel: false
+      filteredResources: this.initPaletteResources()
     }
 
     this.styles = {
@@ -42,7 +41,7 @@ export default class ResourcePalette extends Component {
       }
     }
 
-    this.setGlobal({drawResourcePaletteOpen:false});
+    this.setGlobal({drawResourcePaletteOpen:true});
 
   }
   
@@ -63,7 +62,7 @@ export default class ResourcePalette extends Component {
              {
                  Name: 'Straight Arrow',
                  Tooltip: 'Straight Arrow',
-                 Image: require('../../assets/azure_icons/straight-connector.png'),
+                 Image: require('../../assets/IconCloud/fluent/shape/shape-arrowforward.svg'),
                  IsPng: true,
                  IsVisible:true,
                  ref: this.straightArrow
@@ -71,7 +70,7 @@ export default class ResourcePalette extends Component {
              {
                  Name: 'Orthognal Arrow',
                  Tooltip: 'Orthognal Arrow',
-                 Image: require('../../assets/azure_icons/round-connector.png'),
+                 Image: require('../../assets/IconCloud/fluent/shape/shape-orthogonalarrow.svg'),
                  IsPng: true,
                  IsVisible:true,
                  ref: this.elbowArrow
@@ -79,21 +78,21 @@ export default class ResourcePalette extends Component {
             {
               Name: 'curve bezier arrow',
               Tooltip: 'Bezier Curve Arrow',
-              Image:require('../../assets/azure_icons/shape-bezierarrow.png'),
+              Image:require('../../assets/IconCloud/fluent/shape/shape-curvearrow.svg'),
               IsPng: true,
               IsVisible:true
             },
             {
               Name: 'double ended arrow',
               Tooltip: 'Double Ended Arrow',
-              Image:require('../../assets/azure_icons/shape-doubleendedarrow.png'),
+              Image:require('../../assets/IconCloud/fluent/shape/shape-doubleendarrow.svg'),
               IsPng: true,
               IsVisible:true
             },
              {
                 Name: 'text label',
                 Tooltip: 'Text',
-                Image: require('../../assets/azure_icons/text.png'),
+                Image: require('../../assets/IconCloud/fluent/shape/shape-text.svg'),
                 IsPng: true,
                 IsVisible:true,
                 ref: this.label
@@ -101,7 +100,7 @@ export default class ResourcePalette extends Component {
              {
               Name: 'rectangle rect',
               Tooltip: 'Rectangle',
-              Image: require('../../assets/azure_icons/shape-rectangle.png'),
+              Image: require('../../assets/IconCloud/fluent/shape/shape-rect.svg'),
               IsPng: true,
               IsVisible:true,
               ref: this.rectangle
@@ -109,7 +108,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'rounded rectangle rect',
               Tooltip: 'Rectangle Rounded',
-              Image: require('../../assets/azure_icons/shape-roundedrectangle.png'),
+              Image: require('../../assets/IconCloud/fluent/shape/shape-roundedrect.svg'),
               IsPng: true,
               IsVisible:true,
               ref: this.roundedrectangle
@@ -117,7 +116,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'triangle tri',
               Tooltip: 'Triangle',
-              Image: require('../../assets/azure_icons/shape-triangle.png'),
+              Image: require('../../assets/IconCloud/fluent/shape/shape-triangle.svg'),
               IsPng: true,
               IsVisible:true,
               ref: this.triangle
@@ -125,7 +124,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'circle',
               Tooltip: 'Circle',
-              Image: require('../../assets/azure_icons/shape-circle.png'),
+              Image: require('../../assets/IconCloud/fluent/shape/shape-circle.svg'),
               IsPng: true,
               IsVisible:true,
               ref: this.circle
@@ -133,28 +132,28 @@ export default class ResourcePalette extends Component {
             {
               Name: 'cylinder',
               Tooltip: 'Cylinder',
-              Image: require('../../assets/azure_icons/shape-cylinder.png'),
+              Image: require('../../assets/IconCloud/fluent/shape/shape-cylinder.svg'),
               IsPng: true,
               IsVisible:true,
             },
             {
               Name: 'hexagon',
               Tooltip: 'Hexagon',
-              Image:require('../../assets/azure_icons/shape-hexagon.png'),
+              Image:require('../../assets/IconCloud/fluent/shape/shape-hexagon.svg'),
               IsPng: true,
               IsVisible:true,
             },
             {
               Name: 'nonagon',
               Tooltip: 'Nonagon',
-              Image:require('../../assets/azure_icons/shape-nonagon.png'),
+              Image:require('../../assets/IconCloud/fluent/shape/shape-nonagon.svg'),
               IsPng: true,
               IsVisible:true,
             },
             {
-              Name: '3d box cube',
-              Tooltip: '3D Cube',
-              Image:require('../../assets/azure_icons/shape-3dbox.png'),
+              Name: 'box cube',
+              Tooltip: 'Cube',
+              Image:require('../../assets/IconCloud/fluent/shape/shape-cube.svg'),
               IsPng: true,
               IsVisible:true,
               ref: this.threedbox
@@ -162,63 +161,56 @@ export default class ResourcePalette extends Component {
             {
               Name: 'arrow',
               Tooltip: 'Arrow',
-              Image:require('../../assets/azure_icons/shape-arrow.png'),
+              Image:require('../../assets/IconCloud/fluent/shape/shape-rightarrow.svg'),
+              IsPng: true,
+              IsVisible:true,
+            },
+            {
+              Name: 'lightning',
+              Tooltip: 'Lightning',
+              Image:require('../../assets/IconCloud/fluent/shape/shape-lightning.svg'),
               IsPng: true,
               IsVisible:true,
             },
             {
               Name: 'x cross',
-              Tooltip: 'ThinX',
-              Image:require('../../assets/azure_icons/shape-thinx.png'),
-              IsPng: true,
-              IsVisible:true,
-            },
-            {
-              Name: 'lightning light',
-              Tooltip: 'Lightning',
-              Image:require('../../assets/azure_icons/shape-lightning.png'),
+              Tooltip: 'Thin X',
+              Image:require('../../assets/IconCloud/fluent/shape/shape-cross.svg'),
               IsPng: true,
               IsVisible:true,
             },
             {
               Name: 'chevron arrow',
               Tooltip: 'Chevron',
-              Image:require('../../assets/azure_icons/shape-chevron.png'),
-              IsPng: true,
-              IsVisible:true,
-            },
-            {
-              Name: 'pyramid',
-              Tooltip: 'Pyramid',
-              Image:require('../../assets/azure_icons/shape-pyramid.png'),
+              Image:require('../../assets/IconCloud/fluent/shape/shape-chevron.svg'),
               IsPng: true,
               IsVisible:true,
             },
             {
               Name: 'decision',
               Tooltip: 'Decision',
-              Image:require('../../assets/azure_icons/shape-decision.png'),
+              Image:require('../../assets/IconCloud/fluent/shape/shape-decision.svg'),
               IsPng: true,
               IsVisible:true,
             },
             {
               Name: 'component',
               Tooltip: 'Component',
-              Image:require('../../assets/azure_icons/shape-component.png'),
-              IsPng: true,
-              IsVisible:true,
-            },
-            {
-              Name: 'package',
-              Tooltip: 'Package',
-              Image:require('../../assets/azure_icons/shape-package.png'),
+              Image:require('../../assets/IconCloud/fluent/shape/shape-component.svg'),
               IsPng: true,
               IsVisible:true,
             },
             {
               Name: 'location pin',
-              Tooltip: 'Location',
-              Image:require('../../assets/azure_icons/shape-location.png'),
+              Tooltip: 'Location 1',
+              Image: require('../../assets/IconCloud/fluent/shape/shape-location-1.svg'),
+              IsPng: true,
+              IsVisible:true,
+            },
+            {
+              Name: 'location pin',
+              Tooltip: 'Location 2',
+              Image:require('../../assets/IconCloud/fluent/shape/shape-location-2.svg'),
               IsPng: true,
               IsVisible:true,
             }
@@ -226,675 +218,1327 @@ export default class ResourcePalette extends Component {
          }
       },
       {
+        resourceGroup: {
+          groupName: 'People',
+          groupExpanded: false,
+          groupSearchVisible: true,
+          resources: [
+            {
+              Name: 'user person',
+              Tooltip: 'User 1',
+              Image: require('../../assets/IconCloud/fluent/people/ic_fluent_person-1.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'user person',
+              Tooltip: 'User 2',
+              Image: require('../../assets/IconCloud/fluent/people/user-2.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'user account acct',
+              Tooltip: 'User Account',
+              Image: require('../../assets/IconCloud/fluent/people/ic_fluent_person_accounts_24_filled.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'user support',
+              Tooltip: 'User Support',
+              Image: require('../../assets/IconCloud/fluent/people/ic_fluent_person_support_24_filled.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'user team',
+              Tooltip: 'Team 1',
+              Image: require('../../assets/IconCloud/fluent/people/ic_fluent_people_team-1.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'user team',
+              Tooltip: 'Team 2',
+              Image: require('../../assets/IconCloud/fluent/people/people-team-2.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'user team',
+              Tooltip: 'Team 3',
+              Image: require('../../assets/IconCloud/fluent/people/team-3.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+          ]
+        }
+      },
+      {
        resourceGroup: {
-         groupName: 'Device / User',
+         groupName: 'Devices',
          groupExpanded: false,
          groupSearchVisible: true,
          resources: [
-           {
-               Name: 'client laptop com',
-               Tooltip: 'Client Machine',
-               Image: require('../../assets/azure_icons/shape-computer.png'),
-               IsPng: false,
-               IsVisible:true,
-           },
-           {
-            Name: 'tv television tele',
-            Tooltip: 'TV',
-            Image: require('../../assets/azure_icons/shape-tv.png'),
-            IsPng: false,
-            IsVisible:true,
-            },
             {
-              Name: 'kiosk',
-              Tooltip: 'Kiosk',
-              Image: require('../../assets/azure_icons/shape-kiosk.png'),
+              Name: 'server farm',
+              Tooltip: 'Server Farm',
+              Image: require('../../assets/IconCloud/fluent/devices/10835-icon-Server Farm-General.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'tablet apple andriod',
+              Name: 'server',
+              Tooltip: 'Server',
+              Image: require('../../assets/IconCloud/fluent/devices/00060-icon-Servers-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'web server',
+              Tooltip: 'Web Server',
+              Image: require('../../assets/IconCloud/fluent/devices/IconLightWebServer.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'firewall',
+              Tooltip: 'Firewall',
+              Image: require('../../assets/IconCloud/fluent/devices/00059-icon-Firewall-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'mac',
+              Tooltip: 'MacOS',
+              Image: require('../../assets/IconCloud/fluent/devices/00593-icon-macOS-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'windows wsus',
+              Tooltip: 'Windows WSUS',
+              Image: require('../../assets/IconCloud/fluent/devices/02212-icon-WSUS-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'baremetal server',
+              Tooltip: 'BareMetal Server',
+              Image: require('../../assets/IconCloud/fluent/devices/02561-icon-Bare Metal Infrastructure-New Icons.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'vm',
+              Tooltip: 'VM',
+              Image: require('../../assets/IconCloud/fluent/devices/10021-icon-Virtual Machine-Compute.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'sql vm',
+              Tooltip: 'SQL VM',
+              Image: require('../../assets/IconCloud/fluent/devices/10124-icon-Azure SQL VM-Databases.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'devices',
+              Tooltip: 'Devices',
+              Image: require('../../assets/IconCloud/fluent/devices/10332-icon-Devices-family.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'camera',
+              Tooltip: 'Camera',
+              Image: require('../../assets/IconCloud/fluent/devices/device-camera.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'mobile',
+              Tooltip: 'Mobile',
+              Image: require('../../assets/IconCloud/fluent/devices/device-mobile.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'tablet',
               Tooltip: 'Tablet',
-              Image: require('../../assets/azure_icons/shape-tablet.png'),
+              Image: require('../../assets/IconCloud/fluent/devices/tablet.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'switch network',
-              Tooltip: 'Switch',
-              Image: require('../../assets/azure_icons/shape-switch.png'),
+              Name: 'tape',
+              Tooltip: 'Tape',
+              Image: require('../../assets/IconCloud/fluent/devices/tape.svg'),
               IsPng: false,
               IsVisible:true,
             },
-           {
-               Name: 'ADFS active directory federation service',
-               Tooltip: 'ADFS',
-               Image: require('../../assets/azure_icons/ADFS.png'),
-               IsPng: false,
-               IsVisible:true,
-           },
-           {
-            Name: 'adfs proxy active directory federation service',
-            Tooltip: 'ADFS Proxy',
-            Image: require('../../assets/azure_icons/ADFS Proxy.png'),
-            IsPng: false,
-            IsVisible:true,
-        },
-           {
-                Name: 'andriod driod',
-                Tooltip: 'Andriod',
-                Image: require('../../assets/azure_icons/shape-andriod.png'),
-                IsPng: false,
-                IsVisible:true,
-           },
-           {
-                Name: 'iphone apple',
-                Tooltip: 'iPhone',
-                Image: require('../../assets/azure_icons/shape-iphone.png'),
-                IsPng: false,
-                IsVisible:true,
-           },
-          {
-            Name: 'datacenter dc',
-            Tooltip: 'Datacenter',
-            Image:require('../../assets/azure_icons/shape-dc.png'),
-            IsPng: true,
-            IsVisible:true,
-            ref: this.datacenter
-          },
-          {
-            Name: 'internet',
-            Tooltip: 'Internet',
-            Image:require('../../assets/azure_icons/shape-internet.png'),
-            IsPng: true,
-            IsVisible:true
-          },
-          {
-            Name: 'vm virtual machine',
-            Tooltip: 'Azure VM',
-            Image: require('../../assets/azure_icons/shape-vm.png'),
-            IsPng: false,
-            IsVisible:true
-          },
-          {
-            Name: 'vm virtual machine',
-            Tooltip: 'VM',
-            Image: require('../../assets/azure_icons/shape-vm2.png'),
-            IsPng: false,
-            IsVisible:true
-          },
-          {
-            Name: 'physical server',
-            Tooltip: 'Physical Server',
-            Image: require('../../assets/azure_icons/shape-server1.png'),
-            IsPng: false,
-            IsVisible:true
-          },
-          {
-            Name: 'physical blade server',
-            Tooltip: 'Blade Server',
-            Image: require('../../assets/azure_icons/shape-server2.png'),
-            IsPng: false,
-            IsVisible:true,
-            ref: this.server2
-          },
-          {
-            Name: 'database db',
-            Tooltip: 'Database Black',
-            Image: require('../../assets/azure_icons/shape-dbblack.png'),
-            IsPng: false,
-            IsVisible:true,
-            ref: this.dbblack
-          },
-          {
-            Name: 'database db',
-            Tooltip: 'Database HA Black',
-            Image: require('../../assets/azure_icons/shape-dbhablack.png'),
-            IsPng: false,
-            IsVisible:true,
-            ref: this.dbblackha
-          },
-          {
-            Name: 'database db',
-            Tooltip: 'Database Blue',
-            Image: require('../../assets/azure_icons/shape-dbblue.png'),
-            IsPng: false,
-            IsVisible:true,
-            ref: this.dbblue
-          },
-          {
-            Name: 'firewall',
-            Tooltip: 'Firewall',
-            Image: require('../../assets/azure_icons/shape-firewall.png'),
-            IsPng: false,
-            IsVisible:true
-          },
-          {
-            Name: 'user',
-            Tooltip: 'User',
-            Image:require('../../assets/azure_icons/shape-user.png'),
-            IsPng: true,
-            IsVisible:true,
-          },
-          {
-            Name: 'user',
-            Tooltip: 'User Blue',
-            Image:require('../../assets/azure_icons/shape-userblue.png'),
-            IsPng: true,
-            IsVisible:true,
-          },
-          {
-            Name: 'user',
-            Tooltip: 'User Lady 1',
-            Image:require('../../assets/azure_icons/shape-user-lady-1.png'),
-            IsPng: true,
-            IsVisible:true,
-          },
-          {
-            Name: 'user',
-            Tooltip: 'User Ian',
-            Image:require('../../assets/azure_icons/shape-user-ian.png'),
-            IsPng: true,
-            IsVisible:true,
-          },
-          {
-            Name: 'user group',
-            Tooltip: 'User Group 1',
-            Image:require('../../assets/azure_icons/shape-usergroup-1.png'),
-            IsPng: true,
-            IsVisible:true,
-          },
-          {
-            Name: 'user group',
-            Tooltip: 'User Group 2',
-            Image:require('../../assets/azure_icons/shape-usergroup-2.png'),
-            IsPng: true,
-            IsVisible:true,
-          },
+            {
+              Name: 'printer',
+              Tooltip: 'Printer',
+              Image: require('../../assets/IconCloud/fluent/devices/device-printer.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'storage device',
+              Tooltip: 'Storage Device',
+              Image: require('../../assets/IconCloud/fluent/devices/device-storage.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'storage device',
+              Tooltip: 'Storage Device 2',
+              Image: require('../../assets/IconCloud/fluent/devices/device-storage-2.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'cloud server',
+              Tooltip: 'Cloud Server',
+              Image: require('../../assets/IconCloud/fluent/devices/IconLightCloudServer.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'database db',
+              Tooltip: 'Database',
+              Image: require('../../assets/IconCloud/fluent/devices/IconLightDatabase.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'database db server',
+              Tooltip: 'Database Server',
+              Image: require('../../assets/IconCloud/fluent/devices/IconLightServerDatabase.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
          ]
        }
       },
       {
         resourceGroup: {
-          groupName: 'Software',
+          groupName: 'Software & Tools',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
             {
-                Name: 'helm',
-                Tooltip: 'Helm',
-                Image: require('../../assets/azure_icons/software/helm.png'),
+                Name: 'file',
+                Tooltip: 'File',
+                Image: require('../../assets/IconCloud/fluent/software/00058-icon-Files-menu.svg'),
                 IsPng: false,
                 IsVisible:true,
-                ref: this.shapehelm
             },
             {
-              Name: 'c# csharp',
-              Tooltip: 'C#',
-              Image: require('../../assets/azure_icons/software/software-c#.png'),
+              Name: 'file',
+              Tooltip: 'Files',
+              Image: require('../../assets/IconCloud/fluent/software/files.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'dapr framework microservice',
-              Tooltip: 'Dapr',
-              Image: require('../../assets/azure_icons/software/software-dapr.png'),
+              Name: 'folder',
+              Tooltip: 'Folder',
+              Image: require('../../assets/IconCloud/fluent/software/10802-icon-Folder Blank-General.svg'),
               IsPng: false,
               IsVisible:true,
             },
+            {
+              Name: 'directory dir',
+              Tooltip: 'Directory Structure',
+              Image: require('../../assets/IconCloud/fluent/software/02270-icon-Directory-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'folder sync',
+              Tooltip: 'Folder Sync',
+              Image: require('../../assets/IconCloud/fluent/software/sync-folder.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'sync',
+              Tooltip: 'Sync',
+              Image: require('../../assets/IconCloud/fluent/software/sync.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'search',
+              Tooltip: 'Search',
+              Image: require('../../assets/IconCloud/fluent/software/search.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'filter',
+              Tooltip: 'Filter',
+              Image: require('../../assets/IconCloud/fluent/software/filter.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'ssh key',
+              Tooltip: 'SSH Key',
+              Image: require('../../assets/IconCloud/fluent/software/00412-icon-SSH Keys-Other.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+
+            {
+              Name: 'rsa key',
+              Tooltip: 'RSA Key',
+              Image: require('../../assets/IconCloud/fluent/software/00787-icon-Keys-Other.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+
+            {
+              Name: 'anti virus',
+              Tooltip: 'Antivirus',
+              Image: require('../../assets/IconCloud/fluent/software/00555-icon-Antivirus-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'diagnostic tool',
+              Tooltip: 'Diagnostic Tool',
+              Image: require('../../assets/IconCloud/fluent/software/00689-icon-Diagnostic Tools B-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'data warehouse',
+              Tooltip: 'Data Warehouse',
+              Image: require('../../assets/IconCloud/fluent/software/00760-icon-Data Warehouse-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+
+            {
+              Name: 'invoice',
+              Tooltip: 'Invoice',
+              Image: require('../../assets/IconCloud/fluent/software/00916-Icon-Invoice-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+
+            {
+              Name: 'qr code',
+              Tooltip: 'QR Code',
+              Image: require('../../assets/IconCloud/fluent/software/QRCode.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+
+            {
+              Name: 'drive',
+              Tooltip: 'Drive',
+              Image: require('../../assets/IconCloud/fluent/software/01026-icon-Drives-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'email',
+              Tooltip: 'Email',
+              Image: require('../../assets/IconCloud/fluent/software/02271-icon-Email Message-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'process',
+              Tooltip: 'Process 1',
+              Image: require('../../assets/IconCloud/fluent/software/02275-icon-Process-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'process',
+              Tooltip: 'Process 2',
+              Image: require('../../assets/IconCloud/fluent/software/process-2.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'windows registry',
+              Tooltip: 'Windows Registry',
+              Image: require('../../assets/IconCloud/fluent/software/02279-icon-Windows Registry Key-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'gpu',
+              Tooltip: 'GPU',
+              Image: require('../../assets/IconCloud/fluent/software/02492-icon-GPU-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'saas software as a service',
+              Tooltip: 'Software-as-a-Service',
+              Image: require('../../assets/IconCloud/fluent/software/10213-icon-Software as a Service-Integration.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            
+            {
+              Name: 'browser web',
+              Tooltip: 'Browser',
+              Image: require('../../assets/IconCloud/fluent/software/10783-icon-Browser-General.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            
+            {
+              Name: 'scheduler cron',
+              Tooltip: 'Scheduler',
+              Image: require('../../assets/IconCloud/fluent/software/10833-icon-Scheduler-General.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'table',
+              Tooltip: 'Table',
+              Image: require('../../assets/IconCloud/fluent/software/10841-icon-Table-General.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'workflow',
+              Tooltip: 'Workflow',
+              Image: require('../../assets/IconCloud/fluent/software/10852-icon-Workflow-General.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            
+            {
+              Name: 'data copy',
+              Tooltip: 'Data Copy',
+              Image: require('../../assets/IconCloud/fluent/software/data-copy.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'data movement',
+              Tooltip: 'Data Movement',
+              Image: require('../../assets/IconCloud/fluent/software/data-movement.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'pipeline',
+              Tooltip: 'Pipeline',
+              Image: require('../../assets/IconCloud/fluent/software/pipeline.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            
             {
               Name: 'docker container',
               Tooltip: 'Docker',
-              Image: require('../../assets/azure_icons/software/software-docker.png'),
+              Image: require('../../assets/IconCloud/fluent/software/docker.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'elastic search elk',
-              Tooltip: 'ElasticSearch',
-              Image: require('../../assets/azure_icons/software/software-elasticsearch.png'),
+              Name: 'container',
+              Tooltip: 'Container 1',
+              Image: require('../../assets/IconCloud/fluent/software/container-1.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'enterprise service bus esb middleware',
-              Tooltip: 'Enterprise Service Bus',
-              Image: require('../../assets/azure_icons/software/software-esbmiddleware.png'),
+              Name: 'container',
+              Tooltip: 'Container 2',
+              Image: require('../../assets/IconCloud/fluent/software/container-2.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'github git',
+              Name: 'git github',
               Tooltip: 'GitHub',
-              Image: require('../../assets/azure_icons/software/software-github.png'),
+              Image: require('../../assets/IconCloud/fluent/software/Github.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'github actions git',
+              Name: 'git github action',
               Tooltip: 'GitHub Actions',
-              Image: require('../../assets/azure_icons/software/software-githubactions.png'),
+              Image: require('../../assets/IconCloud/fluent/software/github-actions.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'go lang',
-              Tooltip: 'Go',
-              Image: require('../../assets/azure_icons/software/software-golang.png'),
+              Name: 'git',
+              Tooltip: 'Git',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightBrandGit.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'jenkins',
-              Tooltip: 'Jenkins',
-              Image: require('../../assets/azure_icons/software/software-jenkins.png'),
+              Name: 'holo hololens',
+              Tooltip: 'Hololens',
+              Image: require('../../assets/IconCloud/fluent/software/hololens.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'grafana',
-              Tooltip: 'Grafana',
-              Image: require('../../assets/azure_icons/software/software-grafana.png'),
-              IsPng: false,
-              IsVisible:true,
-              ref: this.shapegrafana
-            },
-            {
-              Name: 'consul hashicorp',
-              Tooltip: 'Hashicorp Consul',
-              Image: require('../../assets/azure_icons/software/software-hashicorpconsul.png'),
+              Name: 'internet',
+              Tooltip: 'Internet',
+              Image: require('../../assets/IconCloud/fluent/software/internet.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'terraform hashicorp',
-              Tooltip: 'Terraform',
-              Image: require('../../assets/azure_icons/software/software-hashicorpterraform.png'),
+              Name: 'chrome',
+              Tooltip: 'Chrome',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightBrandChrome.svg'),
               IsPng: false,
               IsVisible:true,
             },
             {
-              Name: 'hashicorp vault',
-              Tooltip: 'Hashicorp Vault',
-              Image: require('../../assets/azure_icons/software/software-hashicorpvault.png'),
+              Name: 'google drive',
+              Tooltip: 'Google Drive',
+              Image: require('../../assets/IconCloud/fluent/software/google-drive.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapehashicorpvault
             },
             {
-              Name: 'influx db time series',
-              Tooltip: 'InfluxDB',
-              Image: require('../../assets/azure_icons/software/software-influxdb.png'),
+              Name: 'edge',
+              Tooltip: 'Edge',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightBrandEdge.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapeinfluxdb
             },
+            {
+              Name: 'func function',
+              Tooltip: 'Function',
+              Image: require('../../assets/IconCloud/fluent/software/function.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'ps ps1 powershell',
+              Tooltip: 'Powershell',
+              Image: require('../../assets/IconCloud/fluent/software/10825-icon-Powershell-General.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'c# .net dotnet',
+              Tooltip: 'C#',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightCSFileNode.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: '',
+              Tooltip: '.Net',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightDotNET.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'bug',
+              Tooltip: 'Bug',
+              Image: require('../../assets/IconCloud/fluent/software/10784-icon-Bug-General.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'code',
+              Tooltip: 'Code 1',
+              Image: require('../../assets/IconCloud/fluent/software/10787-icon-Code-General.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'code',
+              Tooltip: 'Code 2',
+              Image: require('../../assets/IconCloud/fluent/software/code-2.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'file binaries code',
+              Tooltip: 'File Binaries',
+              Image: require('../../assets/IconCloud/fluent/software/file-binaries.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'js javascript',
+              Tooltip: 'Javascript',
+              Image: require('../../assets/IconCloud/fluent/software/ic_fluent_javascript_24_regular.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'nuget',
+              Tooltip: 'Nuget',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightBrandNuget.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'f#',
+              Tooltip: 'F#',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightFSFileNode.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'py python',
+              Tooltip: 'Python',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightPYProjectNode.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'ts typescript',
+              Tooltip: 'TypeScript',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightTSFileNode.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'vb visual basic',
+              Tooltip: 'Visual Basic',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightVBFileNode.svg'),
+              IsPng: false,
+              IsVisible:true,
+            }, 
             {
               Name: 'java',
               Tooltip: 'Java',
-              Image: require('../../assets/azure_icons/software/software-java.png'),
+              Image: require('../../assets/IconCloud/fluent/software/java.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapejava
+            },  
+            {
+              Name: 'cpp c++',
+              Tooltip: 'C++',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightCPPProjectNode.svg'),
+              IsPng: false,
+              IsVisible:true,
             },
             {
-              Name: 'javascript',
-              Tooltip: 'Javascript',
-              Image: require('../../assets/azure_icons/software/software-javascript.png'),
+              Name: 'vs visual studio',
+              Tooltip: 'Visual Studio',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightBrandVisualStudio.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapejavascript
             },
             {
-              Name: 'kafka',
-              Tooltip: 'Kafka',
-              Image: require('../../assets/azure_icons/software/software-kafka.png'),
+              Name: 'web api',
+              Tooltip: 'Web Api',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightWebAPI.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapekafka
+            }, 
+            {
+              Name: 'web service',
+              Tooltip: 'Web Service',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightWebService.svg'),
+              IsPng: false,
+              IsVisible:true,
+            }, 
+            {
+              Name: 'webhook web',
+              Tooltip: 'Webhook',
+              Image: require('../../assets/IconCloud/fluent/software/web-02437-icon-Webhook-menu.svg'),
+              IsPng: false,
+              IsVisible:true,
             },
             {
-              Name: 'kubernetes microservice',
-              Tooltip: 'Kubernetes (shape)',
-              azInfo: ['Private Link supported as Private Cluster'],
-              Image: require('../../assets/azure_icons/software/software-kubernetes.png'),
+              Name: 'event trigger',
+              Tooltip: 'Event',
+              Image: require('../../assets/IconCloud/fluent/software/web-event.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapekube
+            },
+            
+            {
+              Name: 'execute run',
+              Tooltip: 'Execute',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightExecute.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+
+            {
+              Name: 'message',
+              Tooltip: 'Message',
+              Image: require('../../assets/IconCloud/fluent/software/message.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+
+            {
+              Name: 'queue',
+              Tooltip: 'Queue',
+              Image: require('../../assets/IconCloud/fluent/software/60049-Icon-Queued-command.svg'),
+              IsPng: false,
+              IsVisible:true,
             },
             {
-              Name: 'message queue',
-              Tooltip: 'Message Queue',
-              Image: require('../../assets/azure_icons/software/software-messagequeue.png'),
+              Name: 'publish pub',
+              Tooltip: 'Publish',
+              Image: require('../../assets/IconCloud/fluent/software/publish.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapemessagequeue
             },
             {
-              Name: 'mongo db',
-              Tooltip: 'MongoDB',
-              Image: require('../../assets/azure_icons/software/software-mongodb.png'),
+              Name: 'subscribe sub',
+              Tooltip: 'Subscribe',
+              Image: require('../../assets/IconCloud/fluent/software/subscribe.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapemongodb
             },
             {
-              Name: '.net core ',
-              Tooltip: '.Net Core',
-              Image: require('../../assets/azure_icons/software/software-netcore.png'),
+              Name: 'report',
+              Tooltip: 'Report',
+              Image: require('../../assets/IconCloud/fluent/software/report.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapenetcore
+            },
+
+            {
+              Name: 'biztalk',
+              Tooltip: 'BizTalk',
+              Image: require('../../assets/IconCloud/fluent/software/10779-icon-Biz Talk-General.svg'),
+              IsPng: false,
+              IsVisible:true,
             },
             {
-              Name: 'nginx',
-              Tooltip: 'Nginx',
-              Image: require('../../assets/azure_icons/software/software-nginx.png'),
+              Name: 'd365',
+              Tooltip: 'D365',
+              Image: require('../../assets/IconCloud/fluent/software/D365.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapenginx
             },
             {
-              Name: 'nginx plus',
-              Tooltip: 'Nginx Plus',
-              Image: require('../../assets/azure_icons/software/software-nginxplus.png'),
+              Name: 'o365 office',
+              Tooltip: 'office',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightBrandOffice.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapenginxplus
+            }, 
+            {
+              Name: 'o365 outlook',
+              Tooltip: 'Outlook',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightBrandOutlook.svg'),
+              IsPng: false,
+              IsVisible:true,
             },
             {
-              Name: 'nodejs node',
-              Tooltip: 'NodeJS',
-              Image: require('../../assets/azure_icons/software/software-node.png'),
+              Name: 'o365 ppt powerpoint',
+              Tooltip: 'PowerPoint',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightBrandPowerPoint.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapenodejs
             },
             {
-              Name: 'powershell ps',
-              Tooltip: 'Powershell',
-              Image: require('../../assets/azure_icons/software/software-powershell.png'),
+              Name: 'o365 project',
+              Tooltip: 'Project',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightBrandProject.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapepowershell
+            },
+            {
+              Name: 'o365 word',
+              Tooltip: 'Words',
+              Image: require('../../assets/IconCloud/fluent/software/IconLightBrandWord.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'o365 cms sharepoint',
+              Tooltip: 'SharePoint',
+              Image: require('../../assets/IconCloud/fluent/software/sharepoint.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+
+            {
+              Name: 'ci cd jenkins',
+              Tooltip: 'Jenkins',
+              Image: require('../../assets/IconCloud/fluent/software/jenkins.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'linux',
+              Tooltip: 'Linux',
+              Image: require('../../assets/IconCloud/fluent/software/linux.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'win windows',
+              Tooltip: 'Windows',
+              Image: require('../../assets/IconCloud/fluent/software/windows-logo.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'microsoft',
+              Tooltip: 'Microsoft',
+              Image: require('../../assets/IconCloud/fluent/software/microsoft-logo.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'pdf',
+              Tooltip: 'PDf',
+              Image: require('../../assets/IconCloud/fluent/software/pdf.svg'),
+              IsPng: false,
+              IsVisible:true,
+            },
+            {
+              Name: 'image',
+              Tooltip: 'Image',
+              Image: require('../../assets/IconCloud/fluent/software/10812-icon-Image-General.svg'),
+              IsPng: false,
+              IsVisible:true,
             },
             {
               Name: 'power bi',
               Tooltip: 'Power BI',
-              Image: require('../../assets/azure_icons/software/software-powerbi.png'),
+              Image: require('../../assets/IconCloud/fluent/software/powerbi.svg'),
               IsPng: false,
               IsVisible:true,
-              ref: this.shapepowerbi
             },
-            {
-              Name: 'python py',
-              Tooltip: 'Python',
-              Image: require('../../assets/azure_icons/software/software-python.png'),
-              IsPng: false,
-              IsVisible:true,
-              ref: this.shapepython
-            },
-            {
-              Name: 'rabbit mq',
-              Tooltip: 'RabbitMQ',
-              Image: require('../../assets/azure_icons/software/software-rabbitmq.png'),
-              IsPng: false,
-              IsVisible:true,
-              ref: this.shaperabbitmq
-            },
-            {
-              Name: 'ruby on rails',
-              Tooltip: 'Ruby On Rails',
-              Image: require('../../assets/azure_icons/software/software-rubyonrails.png'),
-              IsPng: false,
-              IsVisible:true,
-              ref: this.shaperubyonrails
-            },
-            {
-              Name: 'traefik microservice',
-              Tooltip: 'Traefik',
-              Image: require('../../assets/azure_icons/software/software-traefik.png'),
-              IsPng: false,
-              IsVisible:true,
-              ref: this.shapetraefik
-            },
-            {
-              Name: 'zipkin microservice',
-              Tooltip: 'Zipkin',
-              Image: require('../../assets/azure_icons/software/software-Zipkin.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'jaeger microservice',
-              Tooltip: 'Jaeger',
-              Image: require('../../assets/azure_icons/software/software-jaeger.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'calico microservice',
-              Tooltip: 'Calico',
-              Image: require('../../assets/azure_icons/software/software-calico.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'cmd cli command exe',
-              Tooltip: 'CLI',
-              Image: require('../../assets/azure_icons/software/software-cli.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'json file',
-              Tooltip: 'Json File',
-              Image: require('../../assets/azure_icons/software/software-jsonfile.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'api',
-              Tooltip: 'API',
-              Image: require('../../assets/azure_icons/software/software-api.png'),
-              IsPng: false,
-              IsVisible:true
-            }
+            
           ]
         }
       },
       {
         resourceGroup: {
-          groupName: 'Azure (non-deployable)',
+          groupName: 'Azure - Not Deployable',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
-            {
-              Name: 'resource group',
-              Tooltip: 'Azure Resource Group',
-              Image: require('../../assets/azure_icons/azure non-deployable/software-resourcegroup.png'),
-              IsPng: false,
-              IsVisible:true
-            },
+            
             {
               Name: 'azure',
               Tooltip: 'Azure',
-              Image: require('../../assets/azure_icons/azure non-deployable/software-azure.png'),
+              Image: require('../../assets/IconCloud/azure/nondeployable/60115-Icon-Azure.svg'),
+              Provisionable: false,
               IsPng: false,
               IsVisible:true
             },
+
+
             {
-              Name: 'activity log',
-              Tooltip: 'Activity Log',
-              Image: require('../../assets/azure_icons/azure non-deployable/Activity Log.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'azure devops',
+              Name: 'devops',
               Tooltip: 'Azure DevOps',
-              Image: require('../../assets/azure_icons/azure non-deployable/Azure DevOps.png'),
-              IsPng: false,
-              IsVisible:true,
-              ref: this.shapeazuredevops
-            },
-            {
-              Name: 'azure artifact',
-              Tooltip: 'Azure Artifact',
-              Image: require('../../assets/azure_icons/azure non-deployable/Azure Artifact.png'),
+              Image: require('../../assets/IconCloud/azure/nondeployable/10261-icon-Azure DevOps-DevOps.svg'),
+              Provisionable: false,
               IsPng: false,
               IsVisible:true
             },
-            {
-              Name: 'azure board',
-              Tooltip: 'Azure Board',
-              Image: require('../../assets/azure_icons/azure non-deployable/Azure Board.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'azure repo',
-              Tooltip: 'Azure Repo',
-              Image: require('../../assets/azure_icons/azure non-deployable/Azure Repo.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'azure test plan',
-              Tooltip: 'Azure Test Plan',
-              Image: require('../../assets/azure_icons/azure non-deployable/Azure Test Plan.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'blueprint',
-              Tooltip: 'Azure Blueprint',
-              Image: require('../../assets/azure_icons/azure non-deployable/Azure Blueprint.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'stack',
-              Tooltip: 'Azure Stack',
-              Image: require('../../assets/azure_icons/azure non-deployable/Azure Stack.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'cost billing',
-              Tooltip: 'Azure Cost Management',
-              Image: require('../../assets/azure_icons/azure non-deployable/Cost Management And Billing.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'disk encryption',
-              Tooltip: 'Disk Encryption',
-              Image: require('../../assets/azure_icons/azure non-deployable/Disk Encryption Set.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'premium disk ssd',
-              Tooltip: 'Premium Disk SSD',
-              Image: require('../../assets/azure_icons/azure non-deployable/Managed Disk Premium SSD.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'managed disk snapshot',
-              Tooltip: 'Managed Disk Snapshot',
-              Image: require('../../assets/azure_icons/azure non-deployable/Managed Disk Snapshot.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'management group mg',
-              Tooltip: 'Management Group',
-              Image: require('../../assets/azure_icons/azure non-deployable/Management Group.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'reservation reserved instance',
-              Tooltip: 'Reservations',
-              Image: require('../../assets/azure_icons/azure non-deployable/Reservation.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'subscription',
-              Tooltip: 'Azure Subscription',
-              Image: require('../../assets/azure_icons/azure non-deployable/Subscription.png'),
-              IsPng: false,
-              IsVisible:true
-            },
+
             {
               Name: 'arm template',
               Tooltip: 'ARM Template',
-              Image: require('../../assets/azure_icons/azure non-deployable/Template.png'),
+              Image: require('../../assets/IconCloud/azure/nondeployable/10009-icon-Templates-General.svg'),
+              Provisionable: false,
               IsPng: false,
               IsVisible:true
             },
+
             {
-              Name: 'monitor workbook',
-              Tooltip: 'Workbook',
-              azInfo: ["Azure Monitor"],
-              Image: require('../../assets/azure_icons/azure non-deployable/Workbook.png'),
+              Name: 'lighthouse light house',
+              Tooltip: 'Azure LightHouse',
+              Image: require('../../assets/IconCloud/azure/nondeployable/00471-icon-Azure Lighthouse-Management-Governance.svg'),
+              Provisionable: false,
               IsPng: false,
               IsVisible:true
             },
+            
             {
-              Name: 'monitor workbook',
+              Name: 'monitor',
               Tooltip: 'Azure Monitor',
-              Image: require('../../assets/azure_icons/azure non-deployable/AzureMonitor.png'),
+              Image: require('../../assets/IconCloud/azure/nondeployable/00001-icon-Monitor-Management-Governance.svg'),
+              Provisionable: false,
               IsPng: false,
               IsVisible:true
             },
+
             {
-              Name: 'private link',
-              Tooltip: 'Private Link',
-              azInfo:['Private Endpoint deployable soon...'],
-              Image: require('../../assets/azure_icons/azure non-deployable/Private Link.png'),
+              Name: 'alert',
+              Tooltip: 'Alert',
+              Image: require('../../assets/IconCloud/azure/nondeployable/00002-icon-Alerts-Management-Governance.svg'),
+              Provisionable: false,
               IsPng: false,
               IsVisible:true
             },
+
             {
-              Name: 'import export job',
-              Tooltip: 'Import/Export Job',
-              Image: require('../../assets/azure_icons/azure non-deployable/Import Export Job.png'),
+              Name: 'advisor',
+              Tooltip: 'Advisor',
+              Image: require('../../assets/IconCloud/azure/nondeployable/00003-icon-Advisor-Management-Governance.svg'),
+              Provisionable: false,
               IsPng: false,
               IsVisible:true
             },
+
+            {
+              Name: 'cost bill',
+              Tooltip: 'Cost Management',
+              Image: require('../../assets/IconCloud/azure/nondeployable/00004-icon-Cost Management and Billing-Migrate.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'blueprint arm',
+              Tooltip: 'Blueprint',
+              Image: require('../../assets/IconCloud/azure/nondeployable/00006-icon-Blueprints-Management-Governance.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'policy',
+              Tooltip: 'Policy',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10316-icon-Policy-Management-Governance.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'activity log',
+              Tooltip: 'Activity Log',
+              Image: require('../../assets/IconCloud/azure/nondeployable/00007-icon-Activity Log-Management-Governance.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'metrics monitor',
+              Tooltip: 'Metrics',
+              Image: require('../../assets/IconCloud/azure/nondeployable/00020-icon-Metrics-Management-Governance.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'solution monitor',
+              Tooltip: 'Monitoring Solution',
+              Image: require('../../assets/IconCloud/azure/nondeployable/00021-icon-Solutions-Management-Governance.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'peering service',
+              Tooltip: 'Peering Service',
+              Image: require('../../assets/IconCloud/azure/nondeployable/00973-icon-Peering Service prefix-menu.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'universal print',
+              Tooltip: 'Universal Print',
+              Image: require('../../assets/IconCloud/azure/nondeployable/00631-icon-Universal Print Connectors-menu.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'workbook monitor',
+              Tooltip: 'Workbook',
+              Image: require('../../assets/IconCloud/azure/nondeployable/02189-icon-Azure Workbooks-Preview.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'defender security',
+              Tooltip: 'Azure Defender',
+              Image: require('../../assets/IconCloud/azure/nondeployable/02247-icon-Azure Defender-Security.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'backup center',
+              Tooltip: 'Backup Center',
+              Image: require('../../assets/IconCloud/azure/nondeployable/02360-icon-Azure Backup Center-Other.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'dashboard portal',
+              Tooltip: 'Azure Dashboard',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10015-icon-Dashboard-General.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'data studio',
+              Tooltip: 'Azure Data Studio',
+              Image: require('../../assets/IconCloud/azure/nondeployable/02558-icon-Azure Data Studio-menu.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'storage explorer',
+              Tooltip: 'Storage Explorer',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10091-icon-Storage Explorer-Storage.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'resource graph explorer',
+              Tooltip: 'Resource Graph Explorer',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10318-icon-Resource Graph Explorer-Management-Governance.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'resource explorer',
+              Tooltip: 'Resource Explorer',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10349-icon-Resource Explorer-General.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'cloud shell',
+              Tooltip: 'Cloud Shell',
+              Image: require('../../assets/IconCloud/azure/nondeployable/cloudshell.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'block blob',
+              Tooltip: 'Storage Block Blob',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10780-icon-Blob Block-General.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'page blob',
+              Tooltip: 'Storage Page Blob',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10781-icon-Blob Page-General.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'azure stack',
+              Tooltip: 'Azure Stack',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10114-icon-Azure Stack-Azure Stack.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'azure sql stretch db',
+              Tooltip: 'Azure SQL Stretch DB',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10137-icon-Azure SQL Server Stretch Databases-Databases.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'azure sphere',
+              Tooltip: 'Azure Sphere',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10190-icon-Azure Sphere-Preview.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'vm health',
+              Tooltip: 'VM Health',
+              Image: require('../../assets/IconCloud/azure/nondeployable/02648-icon-VM Health-menu.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'service health',
+              Tooltip: 'Azure Service Health',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10004-icon-Service Health-General.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'orbital',
+              Tooltip: 'Azure Orbital',
+              Image: require('../../assets/IconCloud/azure/nondeployable/02697-icon-Azure Orbital-Preview.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'management group',
+              Tooltip: 'Management Group',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10011-icon-Management Groups-General.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'subscription',
+              Tooltip: 'Subscription',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10002-icon-Subscriptions-General.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'resource group rg',
+              Tooltip: 'Resource Group',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10007-icon-Resource Groups-General.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'kubernetes kube',
+              Tooltip: 'Azure Kubernetes',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10023-icon-Kubernetes Services-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'cloud service',
+              Tooltip: 'Cloud Service(classic)',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10030-icon-Cloud Services (Classic)-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
             {
               Name: 'network watcher',
               Tooltip: 'Network Watcher',
-              Image: require('../../assets/azure_icons/Networking Service Color/NetworkWatcher.png'),
-              IsPng: false,
-              IsVisible:true
-            },
-            {
-              Name: 'network security group nsg',
-              Tooltip: 'Network Security Group',
-              Image: require('../../assets/azure_icons/azure non-deployable/NSG.png'),
+              Image: require('../../assets/IconCloud/azure/nondeployable/10066-icon-Network Watcher-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true
             },
+
+            {
+              Name: 'subnet',
+              Tooltip: 'Subnet',
+              Image: require('../../assets/IconCloud/azure/nondeployable/02742-icon-Subnet-menu.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'vnet peering',
+              Tooltip: 'VNet Peering',
+              Image: require('../../assets/IconCloud/azure/nondeployable/02743-icon-Peerings-menu.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'nat gateway',
+              Tooltip: 'Nat Gateway',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10310-icon-NAT-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'service endpoint',
+              Tooltip: 'Service Endpoint',
+              Image: require('../../assets/IconCloud/azure/nondeployable/02578-icon-Service Endpoints-menu.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'nsg network security group',
+              Tooltip: 'Network Security Group',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10067-icon-Network Security Groups-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'route table udr',
+              Tooltip: 'Route Table',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10082-icon-Route Tables-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'integration account',
+              Tooltip: 'Integration Account',
+              Image: require('../../assets/IconCloud/azure/nondeployable/10218-icon-Integration Accounts-Integration.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
             {
               Name: 'kusto kql',
               Tooltip: 'Kusto',
-              Image: require('../../assets/azure_icons/azure non-deployable/Kusto.png'),
+              Image: require('../../assets/IconCloud/azure/nondeployable/Kusto.png'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true
-            }
+            },
+            
+            {
+              Name: 'arc',
+              Tooltip: 'Azure Arc',
+              Image: require('../../assets/IconCloud/azure/nondeployable/00756-icon-Azure Arc-Management-Governance.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'ad aad active directory oauth oidc openid login',
+              Tooltip: 'Azure AD',
+              Image: require('../../assets/IconCloud/azure/nondeployable/identity/10221-icon-Azure Active Directory-Identity.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'ad b2c active directory oauth oidc openid social login',
+              Tooltip: 'Azure AD B2C',
+              Image: require('../../assets/IconCloud/azure/nondeployable/identity/10228-icon-Azure AD B2C-Identity.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'rbac custom role aad',
+              Tooltip: 'Custom Role',
+              Image: require('../../assets/IconCloud/azure/nondeployable/identity/02680-icon-Custom Azure AD Roles-Identity.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'license aad',
+              Tooltip: 'Azure AD User License',
+              Image: require('../../assets/IconCloud/azure/nondeployable/identity/02681-icon-AAD Licenses-Identity.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'group aad',
+              Tooltip: 'Group',
+              Image: require('../../assets/IconCloud/azure/nondeployable/identity/10223-icon-Groups-Identity.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'enterprise app aad',
+              Tooltip: 'Enterprise App',
+              Image: require('../../assets/IconCloud/azure/nondeployable/identity/10225-icon-Enterprise Applications-Identity.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'information protection aad',
+              Tooltip: 'Information Protection',
+              Image: require('../../assets/IconCloud/azure/nondeployable/identity/10229-icon-Azure Information Protection-Identity.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'app registration aad',
+              Tooltip: 'App Registration',
+              Image: require('../../assets/IconCloud/azure/nondeployable/identity/10232-icon-App Registrations-Identity.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
+              Name: 'conditional access aad',
+              Tooltip: 'Conditional Access',
+              Image: require('../../assets/IconCloud/azure/nondeployable/identity/10233-icon-Conditional Access-Security.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'privilege pim aad',
+              Tooltip: 'PIM',
+              Image: require('../../assets/IconCloud/azure/nondeployable/identity/10234-icon-Azure AD Privilege Identity Management-Identity.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
           ]
         }
      },
       {
         resourceGroup: {
-          groupName: 'Web',
+          groupName: 'Azure App Services',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
@@ -902,7 +1546,7 @@ export default class ResourcePalette extends Component {
                 Name: 'app service',
                 Tooltip: 'App Service',
                 azInfo: ['Private Link supported','Service Endpoint supported','deployable'],
-                Image: require('../../assets/azure_icons/Web Service Color/App Services.png'),
+                Image: require('../../assets/IconCloud/azure/appservices/10035-icon-App Services-App Services.svg'),
                 Provisionable: true,
                 IsPng: false,
                 IsVisible:true,
@@ -912,7 +1556,7 @@ export default class ResourcePalette extends Component {
               Name: 'app service environment',
               Tooltip: 'App Service Environment',
               azInfo: ['deployable'],
-              Image: require('../../assets/azure_icons/Web Service Color/App Service Environments.png'),
+              Image: require('../../assets/IconCloud/azure/appservices/10047-icon-App Service Environments-App Services.svg'),
               Provisionable: true,
               IsPng: false,
               IsVisible:true,
@@ -922,7 +1566,7 @@ export default class ResourcePalette extends Component {
               Name: 'azure function',
               Tooltip: 'Function',
               azInfo: ['deployable'],
-              Image: require('../../assets/azure_icons/Web Service Color/Function Apps.png'),
+              Image: require('../../assets/IconCloud/azure/appservices/10029-icon-Function Apps-IoT.svg'),
               Provisionable: true,
               IsPng: false,
               IsVisible:true,
@@ -932,7 +1576,7 @@ export default class ResourcePalette extends Component {
               Name: 'azure search',
               Tooltip: 'Azure Search',
               azInfo: ['Private Link supported'],
-              Image: require('../../assets/azure_icons/Web Service Color/Azure Search.png'),
+              Image: require('../../assets/IconCloud/azure/appservices/10044-icon-Search Services-App Services.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -941,7 +1585,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'azure signalr websocket',
               Tooltip: 'Azure SignalR',
-              Image: require('../../assets/azure_icons/Web Service Color/SignalR.png'),
+              Image: require('../../assets/IconCloud/azure/appservices/10052-icon-SignalR-Web.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -950,130 +1594,256 @@ export default class ResourcePalette extends Component {
             {
               Name: 'app service certificate',
               Tooltip: 'App Service Certificate',
-              Image: require('../../assets/azure_icons/Web Service Color/App Service Certificates.png'),
+              Image: require('../../assets/IconCloud/azure/appservices/00049-icon-App Service Certificates-App Services.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.AppServiceCert()
             },
             {
+              Name: 'app service plan',
+              Tooltip: 'App Service Plan',
+              Image: require('../../assets/IconCloud/azure/appservices/00046-icon-App Service Plans-App Services.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.AppServicePlan()
+            },
+            {
               Name: 'app service domain',
               Tooltip: 'App Service Domain',
-              Image: require('../../assets/azure_icons/Web Service Color/App Service Domains.png'),
+              Image: require('../../assets/IconCloud/azure/appservices/00050-icon-App Service Domains-App Services.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.AppServiceDomain()
             },
             {
-              Name: 'app configuration',
-              Tooltip: 'App Configuration',
-              azInfo: ['Private Link supported'],
-              Image: require('../../assets/azure_icons/Web Service Color/App Configuration.png'),
+              Name: 'notification hub',
+              Tooltip: 'Notification Hub',
+              Image: require('../../assets/IconCloud/azure/appservices/10045-icon-Notification Hubs-App Services.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              resourceType: ResourceType.AppConfig()
+              resourceType: ResourceType.NotificationHub()
+            },
+            {
+              Name: 'static app web',
+              Tooltip: 'Static App',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/appservices/01007-icon-Static Apps-Preview.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.StaticApp()
             },
             {
               Name: 'media service video stream content',
               Tooltip: 'Azure Media Service',
-              Image: Utils.pngDataUrl(AzureIcons.MediaService()),
+              Image: require('../../assets/IconCloud/azure/appservices/10309-icon-Azure Media Service-Web.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.MediaService()
-            },
-            {
-              Name: 'spring cloud microservice',
-              Tooltip: 'Azure Spring Cloud',
-              Image: Utils.pngDataUrl(AzureIcons.SpringCloud()),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.SpringCloud()
-            },
-          ]
-        }
-       },
-       {
-        resourceGroup: {
-          groupName: 'Compute',
-          groupExpanded: false,
-          groupSearchVisible: true,
-          resources: [
-            {
-                Name: 'windows vm',
-                Tooltip: 'Windows VM',
-                azInfo: ['deployable'],
-                Image: require('../../assets/azure_icons/ComputeServiceColor/VM/VM-windows.png'),
-                Provisionable: true,
-                IsPng: false,
-                IsVisible:true,
-                resourceType: ResourceType.WindowsVM()
-            },
-            {
-              Name: 'linux vm',
-              Tooltip: 'Linux VM',
-              azInfo: ['deployable'],
-              Image: require('../../assets/azure_icons/ComputeServiceColor/VM/VM-Linux.png'),
-              Provisionable: true,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.LinuxVM()
-            },
-            {
-              Name: 'vm scale sets vmss',
-              Tooltip: 'VM Scale Sets',
-              azInfo: ['deployable'],
-              Image: require('../../assets/azure_icons/ComputeServiceColor/VM/VM Scale Sets.png'),
-              Provisionable: true,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.VMSS()
-            },
-            {
-              Name: 'batch',
-              Tooltip: 'Azure Batch',
-              Image: require('../../assets/azure_icons/ComputeServiceColor/Batch Accounts.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.Batch()
-            },
-            {
-              Name: 'vm dedicated host',
-              Tooltip: 'Dedicated Host',
-              Image: require('../../assets/azure_icons/ComputeServiceColor/azure-dedicatedhost.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.DedicatedHost()
-            },
-            {
-              Name: 'vm devtest lab',
-              Tooltip: 'DevTest Labs',
-              Image: require('../../assets/azure_icons/ComputeServiceColor/Azure DevTest Labs.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.DevTestLab()
-            },
-            {
-              Name: 'shared image gallery sig',
-              Tooltip: 'Shared Image Gallery',
-              Image: require('../../assets/azure_icons/ComputeServiceColor/Shared Image Galleries.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.SharedImageGallery()
             }
           ]
         }
        },
        {
         resourceGroup: {
-          groupName: 'Network',
+          groupName: 'Azure Compute',
+          groupExpanded: false,
+          groupSearchVisible: true,
+          resources: [
+            {
+                Name: 'vm virtual machine',
+                Tooltip: 'VM',
+                azInfo: ['deployable'],
+                Image: require('../../assets/IconCloud/azure/compute/10021-icon-Virtual Machine-Compute.svg'),
+                Provisionable: true,
+                IsPng: false,
+                IsVisible:true,
+                resourceType: ResourceType.VM()
+            },
+            // {
+            //   Name: 'linux vm',
+            //   Tooltip: 'Linux VM',
+            //   azInfo: ['deployable'],
+            //   Image: require('../../assets/azure_icons/ComputeServiceColor/VM/VM-Linux.png'),
+            //   Provisionable: true,
+            //   IsPng: false,
+            //   IsVisible:true,
+            //   resourceType: ResourceType.LinuxVM()
+            // },
+            {
+              Name: 'vm scale sets vmss',
+              Tooltip: 'VM Scale Sets',
+              azInfo: ['deployable'],
+              Image: require('../../assets/IconCloud/azure/compute/10034-icon-VM Scale Sets-Compute.svg'),
+              Provisionable: true,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.VMSS()
+            },
+            {
+              Name: 'batch account',
+              Tooltip: 'Batch Account',
+              Image: require('../../assets/IconCloud/azure/compute/10031-icon-Batch Accounts-Containers.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Batch()
+            },
+            {
+              Name: 'vm devtest lab',
+              Tooltip: 'DevTest Labs',
+              Image: require('../../assets/IconCloud/azure/compute/10264-icon-DevTest Labs-DevOps.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.DevTestLab()
+            },
+            {
+              Name: 'lab service',
+              Tooltip: 'Lab Service',
+              Image: require('../../assets/IconCloud/azure/compute/10265-icon-Lab Services-DevOps.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.LabService()
+            },
+            {
+              Name: 'shared image gallery sig',
+              Tooltip: 'Shared Image Gallery',
+              Image: require('../../assets/IconCloud/azure/compute/10039-icon-Shared Image Galleries-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.SharedImageGallery()
+            },
+            {
+              Name: 'kubernetes kube k8s microservice',
+              Tooltip: 'Azure Kubernetes',
+              Image: require('../../assets/IconCloud/azure/compute/10023-icon-Kubernetes Services-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Kubernetes()
+            },
+            {
+              Name: 'service fabric cluster',
+              Tooltip: 'Service Fabric Cluster',
+              Image: require('../../assets/IconCloud/azure/compute/10036-icon-Service Fabric Clusters-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.ServiceFabricCluster()
+            },
+            {
+              Name: 'service fabric managed cluster',
+              Tooltip: 'Service Fabric Managed Cluster',
+              Image: require('../../assets/IconCloud/azure/compute/02370-icon-Managed Service Fabric-New Icons.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.ServiceFabricManagedCluster()
+            },
+            {
+              Name: 'automanage auto vm',
+              Tooltip: 'Automanage',
+              Image: require('../../assets/IconCloud/azure/compute/02112-icon-Automanaged VM-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Automanage()
+            },
+            {
+              Name: 'image builder image template',
+              Tooltip: 'Image Template',
+              Image: require('../../assets/IconCloud/azure/compute/02634-icon-Image Templates-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.ImageTemplate()
+            },
+            {
+              Name: 'disk snapshot',
+              Tooltip: 'Disk Snapshot',
+              Image: require('../../assets/IconCloud/azure/compute/10026-icon-Disks Snapshots-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.DiskSnapshot()
+            },
+            {
+              Name: 'image',
+              Tooltip: 'Image',
+              Image: require('../../assets/IconCloud/azure/compute/10033-icon-Images-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Image()
+            },
+            {
+              Name: 'disk encryption set',
+              Tooltip: 'Disk Encryption Set',
+              Image: require('../../assets/IconCloud/azure/compute/00398-icon-Disk Encryption Sets-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.DiskEncryptionSet()
+            },
+            {
+              Name: 'wvd workspace',
+              Tooltip: 'Workspace(WVD)',
+              Image: require('../../assets/IconCloud/azure/compute/00400-icon-Workspaces-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.WorkspaceWVD()
+            },
+            {
+              Name: 'vmware solution',
+              Tooltip: 'VMware Solution',
+              Image: require('../../assets/IconCloud/azure/compute/00524-icon-AVS-Azure VMware Solution.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.VMWareSolution()
+            },
+            {
+              Name: 'hostgroup dedicated',
+              Tooltip: 'Host group (dedicated host)',
+              Image: require('../../assets/IconCloud/azure/compute/10346-icon-Host Groups-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Hostgroup()
+            },
+            {
+              Name: 'host dedicated',
+              Tooltip: 'Host (dedicated host)',
+              Image: require('../../assets/IconCloud/azure/compute/10347-icon-Hosts-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Host()
+            },
+            {
+              Name: 'spring cloud',
+              Tooltip: 'Spring Cloud',
+              Image: require('../../assets/IconCloud/azure/compute/10370-icon-Azure Spring Cloud-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.SpringCloud()
+            }
+          ]
+        }
+       },
+       {
+        resourceGroup: {
+          groupName: 'Azure Networking',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
@@ -1081,7 +1851,7 @@ export default class ResourcePalette extends Component {
                 Name: 'virtual network vnet',
                 Tooltip: 'Virtual Network',
                 azInfo: ['deployable'],
-                Image: require('../../assets/azure_icons/Networking Service Color/Virtual Networks.png'),
+                Image: require('../../assets/IconCloud/azure/network/10061-icon-Virtual Networks-Networking.svg'),
                 Provisionable: true,
                 IsPng: false,
                 IsVisible:true,
@@ -1091,7 +1861,7 @@ export default class ResourcePalette extends Component {
               Name: 'load balancer nlb slb alb route',
               Tooltip: 'Load Balancer',
               azInfo: ['deployable'],
-              Image: require('../../assets/azure_icons/Networking Service Color/Load Balancers.png'),
+              Image: require('../../assets/IconCloud/azure/network/10062-icon-Load Balancers-Networking.svg'),
               Provisionable: true,
               IsPng: false,
               IsVisible:true,
@@ -1101,7 +1871,7 @@ export default class ResourcePalette extends Component {
               Name: 'application gatway appgw waf route',
               Tooltip: 'Application Gateway',
               azInfo: ['deployable'],
-              Image: require('../../assets/azure_icons/Networking Service Color/Application Gateway.png'),
+              Image: require('../../assets/IconCloud/azure/network/10076-icon-Application Gateways-Networking.svg'),
               Provisionable: true,
               IsPng: false,
               IsVisible:true,
@@ -1110,7 +1880,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'dns zone',
               Tooltip: 'Azure DNS',
-              Image: require('../../assets/azure_icons/Networking Service Color/azure-dns.png'),
+              Image: require('../../assets/IconCloud/azure/network/10064-icon-DNS Zones-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1119,16 +1889,16 @@ export default class ResourcePalette extends Component {
             {
               Name: 'dns private zone',
               Tooltip: 'DNS Private Zone',
-              Image: require('../../assets/azure_icons/Networking Service Color/DNS Private Zones.png'),
+              Image: require('../../assets/IconCloud/azure/network/10064-icon-DNS Zones-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.DNSPrivateZone()
             },
             {
-              Name: 'front door waf load balancer route',
+              Name: 'front door load balancer waf nlb',
               Tooltip: 'Front Door',
-              Image: require('../../assets/azure_icons/Networking Service Color/Front Doors.png'),
+              Image: require('../../assets/IconCloud/azure/network/10073-icon-Front Doors-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1137,16 +1907,25 @@ export default class ResourcePalette extends Component {
             {
               Name: 'public ip address pip',
               Tooltip: 'Public IP',
-              Image: require('../../assets/azure_icons/Networking Service Color/Public IP Addresses.png'),
+              Image: require('../../assets/IconCloud/azure/network/10069-icon-Public IP Addresses-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.PublicIp()
             },
             {
+              Name: 'public ip prefixes ',
+              Tooltip: 'Public IP Prefixes',
+              Image: require('../../assets/IconCloud/azure/network/10372-icon-Public IP Prefixes-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.PublicIpPrefixes()
+            },
+            {
               Name: 'express route mpls wan',
               Tooltip: 'ExpressRoute',
-              Image: require('../../assets/azure_icons/Networking Service Color/ExpressRoute Circuits.png'),
+              Image: require('../../assets/IconCloud/azure/network/10079-icon-ExpressRoute Circuits-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1155,7 +1934,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'traffic manager gtm route',
               Tooltip: 'Traffic Manager',
-              Image: require('../../assets/azure_icons/Networking Service Color/Traffic Manager Profiles.png'),
+              Image: require('../../assets/IconCloud/azure/network/10065-icon-Traffic Manager Profiles-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1164,156 +1943,212 @@ export default class ResourcePalette extends Component {
             {
               Name: 'virtual network gateway vnet',
               Tooltip: 'Virtual Network Gateway',
-              Image: require('../../assets/azure_icons/Networking Service Color/Virtual Network Gateways.png'),
+              Image: require('../../assets/IconCloud/azure/network/10063-icon-Virtual Network Gateways-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.VirtualNetworkGateway()
             },
             {
+              Name: 'local network gateway',
+              Tooltip: 'Local Network Gateway',
+              Image: require('../../assets/IconCloud/azure/network/10077-icon-Local Network Gateways-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.LocalNetworkGateway()
+            },
+            {
               Name: 'cdn',
               Tooltip: 'Azure CDN',
-              Image: require('../../assets/azure_icons/Networking Service Color/CDN Profiles.png'),
+              Image: require('../../assets/IconCloud/azure/network/00056-icon-CDN Profiles-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.CDN()
             },
             {
-              Name: 'application security group asg',
-              Tooltip: 'Application Security Group',
-              Image: require('../../assets/azure_icons/Networking Service Color/Application Security Groups.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.ASG()
-            },
-            {
               Name: 'network interface nic',
               Tooltip: 'Network Interface',
-              Image: require('../../assets/azure_icons/Networking Service Color/Network Interfaces.png'),
+              Image: require('../../assets/IconCloud/azure/network/10080-icon-Network Interfaces-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.NIC()
             },
             {
+              Name: 'virtual wan',
+              Tooltip: 'Virtual WAN',
+              Image: require('../../assets/IconCloud/azure/network/10353-icon-Virtual WANs-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.VirtualWAN()
+            },
+            {
+              Name: 'firewall azfw',
+              Tooltip: 'Azure Firewall',
+              azInfo: ['deployable'],
+              Image: require('../../assets/IconCloud/azure/network/10084-icon-Firewalls-Networking.svg'),
+              Provisionable: true,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Firewall()
+            },
+            {
+              Name: 'firewall manager azfw',
+              Tooltip: 'Firewall Manager',
+              azInfo: [''],
+              Image: require('../../assets/IconCloud/azure/network/00271-icon-Azure Firewall Manager-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.FirewallManager()
+            },
+            {
               Name: 'private endpoint',
               Tooltip: 'Private Endpoint',
-              Image: require('../../assets/azure_icons/Networking Service Color/private-endpoint.png'),
+              Image: require('../../assets/IconCloud/azure/network/02579-icon-Private Endpoints-menu.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.PrivateEndpoint()
             },
             {
-              Name: 'virtual wan',
-              Tooltip: 'Virtual WAN',
-              Image: Utils.pngDataUrl(AzureIcons.VirtualWAN()),
+              Name: 'private link',
+              Tooltip: 'Private Link (S-NLB)',
+              Image: require('../../assets/IconCloud/azure/network/00427-icon-Private Link-Networking.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              resourceType: ResourceType.VirtualWAN()
+              resourceType: ResourceType.PrivateLink()
+            },
+            {
+              Name: 'ip group',
+              Tooltip: 'IP Groups',
+              Image: require('../../assets/IconCloud/azure/network/00701-icon-IP Groups-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.IPGroup()
+            },
+            {
+              Name: 'monitor private link scope',
+              Tooltip: 'Monitor Private Link Scope',
+              Image: require('../../assets/IconCloud/azure/network/01036-icon-Azure Monitor Private Link Scope-menu.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.AMPLS()
+            },
+            {
+              Name: 'network manager',
+              Tooltip: 'Network Manager',
+              Image: require('../../assets/IconCloud/azure/network/02237-icon-Azure Network Manager-Preview.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.NetworkManager()
+            },
+            {
+              Name: 'route filters',
+              Tooltip: 'Route Filters',
+              Image: require('../../assets/IconCloud/azure/network/10071-icon-Route Filters-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.RouteFilters()
+            },
+            {
+              Name: 'ddos protection standard',
+              Tooltip: 'DDoS Protection Standard',
+              Image: require('../../assets/IconCloud/azure/network/10072-icon-DDoS Protection Plans-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.DDoSStandard()
+            },
+            {
+              Name: 'web application firewall waf',
+              Tooltip: 'Web Application Firewall',
+              Image: require('../../assets/IconCloud/azure/network/10362-icon-Web Application Firewall Policies(WAF)-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.WAF()
+            },
+            {
+              Name: 'availability set avai',
+              Tooltip: 'Availability Set',
+              Image: require('../../assets/IconCloud/azure/network/10025-icon-Availability Sets-Compute.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.AvailabilitySet()
+            },
+            {
+              Name: 'proximity placement group',
+              Tooltip: 'Proximity Placement Group',
+              Image: require('../../assets/IconCloud/azure/network/10365-icon-Proximity Placement Groups-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.ProximityPlacementGroup()
             }
           ]
         }
        },
+
        {
         resourceGroup: {
-          groupName: 'Storage',
+          groupName: 'Azure Database',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
             {
-                Name: 'blob table queue file storage',
-                Tooltip: 'Azure Storage Account',
-                azInfo: ['Private Link supported','Service Endpoint supported', 'deployable'],
-                Image: require('../../assets/azure_icons/Storage Service Color/Blob Storage.png'),
-                Provisionable: true,
-                IsPng: false,
-                IsVisible:true,
-                resourceType: ResourceType.StorageAccount()
-            },
-            {
-              Name: 'file sync',
-              Tooltip: 'Azure File Sync',
-              Image: require('../../assets/azure_icons/Storage Service Color/Storage Sync Services.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.AzFileSync()
-            },
-            {
-              Name: 'netapp files',
-              Tooltip: 'Azure NetApp Files',
-              Image: require('../../assets/azure_icons/Storage Service Color/Azure NetApp files.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.NetAppFile()
-            },
-            {
-              Name: 'data box',
-              Tooltip: 'Data Box',
-              Image: require('../../assets/azure_icons/Storage Service Color/Data Box.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.Databox()
-            }
-          ]
-        }
-       },
-       {
-        resourceGroup: {
-          groupName: 'Database',
-          groupExpanded: false,
-          groupSearchVisible: true,
-          resources: [
-            {
-                Name: 'postgresql',
+                Name: 'postgresql db',
                 Tooltip: 'Azure Database for PostgreSQL',
                 azInfo: ['Private Link supported','Service Endpoint supported'],
-                Image: require('../../assets/azure_icons/Databases Service Color/Azure Database for PostgreSQL servers.png'),
+                Image: require('../../assets/IconCloud/azure/databases/10131-icon-Azure Database PostgreSQL Server-Databases.svg'),
                 Provisionable: false,
                 IsPng: false,
                 IsVisible:true,
                 resourceType: ResourceType.PostgreSQL()
             },
             {
-              Name: 'maria',
+              Name: 'maria db',
               Tooltip: 'Azure Database for MariaDB',
               azInfo: ['Private Link supported','Service Endpoint supported'],
-              Image: require('../../assets/azure_icons/Databases Service Color/Azure Database for MariaDB servers.png'),
+              Image: require('../../assets/IconCloud/azure/databases/10123-icon-Azure Database MariaDB Server-Databases.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.MariaDB()
             },
             {
-              Name: 'sql tsql',
+              Name: 'sql db',
               Tooltip: 'Azure SQL',
               azInfo: ['Private Link supported','Service Endpoint supported'],
-              Image: require('../../assets/azure_icons/Databases Service Color/SQL Databases.png'),
+              Image: require('../../assets/IconCloud/azure/databases/10130-icon-SQL Database-Databases.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.SQLDB()
             },
             {
-              Name: 'elastic job agent tsql script',
+              Name: 'elastic job agent',
               Tooltip: 'Elastic Job Agent',
-              Image: require('../../assets/azure_icons/Databases Service Color/azure-sqlelasticjobagent.png'),
+              Image: require('../../assets/IconCloud/azure/databases/10128-icon-Elastic Job Agents-Databases.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.ElasticJobAgent()
             },
             {
-              Name: 'cosmos mongo cassandra graph documentdb',
+              Name: 'cosmos mongo cassandra graph documentdb db',
               Tooltip: 'CosmosDB',
               azInfo: ['Private Link supported','Service Endpoint supported','deployable'],
-              Image: require('../../assets/azure_icons/Databases Service Color/azure-cosmos-db.png'),
+              Image: require('../../assets/IconCloud/azure/databases/10121-icon-Azure Cosmos DB-Databases.svg'),
               Provisionable: true,
               IsPng: false,
               IsVisible:true,
@@ -1323,7 +2158,7 @@ export default class ResourcePalette extends Component {
               Name: 'mysql',
               Tooltip: 'Azure Database for MySQL',
               azInfo: ['Private Link supported','Service Endpoint supported'],
-              Image: require('../../assets/azure_icons/Databases Service Color/Azure Database for MySQL servers.png'),
+              Image: require('../../assets/IconCloud/azure/databases/10122-icon-Azure Database MySQL Server-Databases.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1332,7 +2167,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'sql elastic pool',
               Tooltip: ' SQL Elastic Database Pool',
-              Image: require('../../assets/azure_icons/Databases Service Color/Elastic Database Pools.png'),
+              Image: require('../../assets/IconCloud/azure/databases/10134-icon-SQL Elastic Pools-Databases.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1341,7 +2176,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'sql managed instance mi',
               Tooltip: 'Azure SQL Managed Instance',
-              Image: require('../../assets/azure_icons/Databases Service Color/SQL Managed Instances.png'),
+              Image: require('../../assets/IconCloud/azure/databases/10136-icon-SQL Managed Instance-Databases.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1350,7 +2185,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'redis',
               Tooltip: 'Azure Cache for Redis',
-              Image: require('../../assets/azure_icons/Databases Service Color/Azure Cache for Redis.png'),
+              Image: require('../../assets/IconCloud/azure/databases/10137-icon-Cache Redis-Databases.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1359,62 +2194,54 @@ export default class ResourcePalette extends Component {
           ]
         }
        },
+
        {
         resourceGroup: {
-          groupName: 'Data',
+          groupName: 'Azure Storage & Migrate',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
             {
-                Name: 'synapse analytics',
-                Tooltip: 'Synapse Analytics',
-                azInfo: ['Private Link supported','Service Endpoint supported'],
-                Image: require('../../assets/azure_icons/Databases Service Color/synapseanalytics.png'),
-                Provisionable: false,
+                Name: 'blob table queue file storage',
+                Tooltip: 'Azure Storage Account',
+                azInfo: ['Private Link supported','Service Endpoint supported', 'deployable'],
+                Image: require('../../assets/IconCloud/azure/data_storage/10086-icon-Storage Accounts-Storage.svg'),
+                Provisionable: true,
                 IsPng: false,
                 IsVisible:true,
-                resourceType: ResourceType.Synapse()
+                resourceType: ResourceType.StorageAccount()
             },
             {
-              Name: 'data lake analytics',
-              Tooltip: 'Data Lake Analytics',
-              Image: require('../../assets/azure_icons/Analytics Service Color/Data Lake Analytics.png'),
+              Name: 'storage sync service',
+              Tooltip: 'Storage Sync Service',
+              Image: require('../../assets/IconCloud/azure/data_storage/10093-icon-Storage Sync Services-Storage.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              resourceType: ResourceType.DataLakeAnalytics()
+              resourceType: ResourceType.AzFileSync()
             },
             {
-              Name: 'databricks data bricks',
-              Tooltip: 'Databricks',
-              Image: require('../../assets/azure_icons/Analytics Service Color/Azure Databricks.png'),
+              Name: 'netapp files',
+              Tooltip: 'Azure NetApp Files',
+              Image: require('../../assets/IconCloud/azure/data_storage/10096-icon-Azure NetApp Files-Storage.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              resourceType: ResourceType.Databricks()
+              resourceType: ResourceType.NetAppFile()
             },
             {
               Name: 'data factory',
               Tooltip: 'Data Factory',
-              Image: require('../../assets/azure_icons/Analytics Service Color/Data Factories.png'),
+              Image: require('../../assets/IconCloud/azure/data_storage/10126-icon-Data Factory-Databases.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.DataFactory()
             },
             {
-              Name: 'hdinsight hd insight',
-              Tooltip: 'HDInsight',
-              Image: require('../../assets/azure_icons/Analytics Service Color/HDInsightClusters.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.HdInsight()
-            },
-            {
               Name: 'data explorer',
               Tooltip: 'Data Explorer',
-              Image: require('../../assets/azure_icons/Analytics Service Color/Azure Data Explorer Clusters.png'),
+              Image: require('../../assets/IconCloud/azure/data_storage/10145-icon-Azure Data Explorer Clusters-Databases.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1423,7 +2250,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'data catalog',
               Tooltip: 'Data Catalog',
-              Image: Utils.pngDataUrl(AzureIcons.DataCatalog()),
+              Image: require('../../assets/IconCloud/azure/data_storage/10216-icon-Azure Data Catalog-Integration.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1432,25 +2259,187 @@ export default class ResourcePalette extends Component {
             {
               Name: 'data share datashare',
               Tooltip: 'Data Share',
-              Image: Utils.pngDataUrl(AzureIcons.DataShare()),
+              Image: require('../../assets/IconCloud/azure/data_storage/10098-icon-Data Shares-Storage.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.DataShare()
+            },
+            {
+              Name: 'site recovery backup dr',
+              Tooltip: 'Site Recovery',
+              azInfo: ['-Purpose: Backup & DR','-Private Link supported','deployable'],
+              Image: require('../../assets/IconCloud/azure/data_storage/00017-icon-Recovery Services Vaults-Storage.svg'),
+              Provisionable: true,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.RecoveryServiceVault()
+            },
+            {
+              Name: 'backup vault up',
+              Tooltip: 'Backup Vault',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/data_storage/02361-icon-Backup Vault-menu.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.BackupVault()
+            },
+            {
+              Name: 'azure stack edge',
+              Tooltip: 'Azure Stack Edge',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/data_storage/00691-icon-Azure Stack Edge-Storage.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.AzureStackEdge()
+            },
+            {
+              Name: 'hpc cache',
+              Tooltip: 'HPC Cache',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/data_storage/00776-icon-Azure HCP Cache-Storage.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.HPCCache()
+            },
+            {
+              Name: 'purview',
+              Tooltip: 'Purview Account',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/data_storage/02517-icon-Azure Purview Accounts-other.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.PurviewAccount()
+            },
+            {
+              Name: 'on-premise data gateway onprem',
+              Tooltip: 'On-Premise Data Gateway',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/data_storage/10070-icon-On Premises Data Gateways-Networking.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.OnPremDataGateway()
+            },
+            {
+              Name: 'storsimple data manager',
+              Tooltip: 'StorSimple Data Manager',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/data_storage/10092-icon-StorSimple Data Managers-Storage.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.StorSimpleDataManager()
+            },
+            {
+              Name: 'data box',
+              Tooltip: 'Data Box',
+              Image: require('../../assets/IconCloud/azure/data_storage/10094-icon-Data Box-Migrate.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Databox()
+            },
+            {
+              Name: 'import export job',
+              Tooltip: 'Import/Export Job',
+              Image: require('../../assets/IconCloud/azure/data_storage/10100-icon-Import Export Jobs-Storage.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+            {
+              Name: 'data box edge',
+              Tooltip: 'Data Box Edge',
+              Image: require('../../assets/IconCloud/azure/data_storage/10095-icon-Data Box Edge-Migrate.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.DataboxEdge()
+            }
+          ]
+        }
+       },
+
+       {
+        resourceGroup: {
+          groupName: 'Azure Analytics',
+          groupExpanded: false,
+          groupSearchVisible: true,
+          resources: [
+            {
+              Name: 'log analytics monitor',
+              Tooltip: 'Log Analytics',
+              Image: require('../../assets/IconCloud/azure/data_analytics/00009-icon-Log Analytics Workspaces-Analytics.svg'),
+              Provisionable: true,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.LogAnalytics()
+            },
+            {
+              Name: 'analysis service sql',
+              Tooltip: 'Analysis Service',
+              azInfo: [''],
+              Image: require('../../assets/IconCloud/azure/data_analytics/10148-icon-Analysis Services-Analytics.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.AnalysisService()
+            },
+            {
+                Name: 'synapse analytics',
+                Tooltip: 'Synapse Analytics',
+                azInfo: ['Private Link supported','Service Endpoint supported'],
+                Image: require('../../assets/IconCloud/azure/data_analytics/00606-icon-Azure Synapse Analytics-Analytics.svg'),
+                Provisionable: false,
+                IsPng: false,
+                IsVisible:true,
+                resourceType: ResourceType.Synapse()
+            },
+            {
+              Name: 'data lake analytics',
+              Tooltip: 'Data Lake Analytics',
+              Image: require('../../assets/IconCloud/azure/data_analytics/10143-icon-Data Lake Analytics-Analytics.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.DataLakeAnalytics()
+            },
+            {
+              Name: 'databricks data bricks',
+              Tooltip: 'Databricks',
+              Image: require('../../assets/IconCloud/azure/data_analytics/10787-icon-Azure Databricks-Analytics.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Databricks()
+            },
+            {
+              Name: 'hdinsight hd insight',
+              Tooltip: 'HDInsight',
+              Image: require('../../assets/IconCloud/azure/data_analytics/10142-icon-HD Insight Clusters-Analytics.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.HdInsight()
             }
           ]
         }
        },
        {
         resourceGroup: {
-          groupName: 'Data & AI',
+          groupName: 'Azure AI & ML',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
             {
                 Name: 'cognitive',
                 Tooltip: 'Cognitive Service',
-                Image: require('../../assets/azure_icons/AI and ML Service Color/Cognitive Services.png'),
+                Image: require('../../assets/IconCloud/azure/ai_ml/10162-icon-Cognitive Services-AI-Machine Learning.svg'),
                 Provisionable: false,
                 IsPng: false,
                 IsVisible:true,
@@ -1459,7 +2448,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'bots service bot',
               Tooltip: 'Bots Service',
-              Image: require('../../assets/azure_icons/AI and ML Service Color/Bot Services.png'),
+              Image: require('../../assets/IconCloud/azure/ai_ml/10165-icon-Bot Services-AI-Machine Learning.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1468,7 +2457,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'genomics',
               Tooltip: 'Genomics Accounts',
-              Image: require('../../assets/azure_icons/AI and ML Service Color/Genomics Accounts.png'),
+              Image: require('../../assets/IconCloud/azure/ai_ml/10164-icon-Genomics Accounts-AI-Machine Learning.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1478,7 +2467,7 @@ export default class ResourcePalette extends Component {
               Name: 'machine learning service workspace',
               Tooltip: 'Machine Learning Service Workspaces',
               azInfo: ['Private Link supported'],
-              Image: require('../../assets/azure_icons/AI and ML Service Color/Machine Learning Service Workspaces.png'),
+              Image: require('../../assets/IconCloud/azure/ai_ml/10166-icon-Machine Learning-AI-Machine Learning.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1489,14 +2478,14 @@ export default class ResourcePalette extends Component {
        },
        {
         resourceGroup: {
-          groupName: 'Containers',
+          groupName: 'Azure Containers',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
             {
                 Name: 'container instance',
                 Tooltip: 'Container Instance',
-                Image: require('../../assets/azure_icons/Container Service Color/Container Instances.png'),
+                Image: require('../../assets/IconCloud/azure/container/10104-icon-Container Instances-Containers.svg'),
                 Provisionable: false,
                 IsPng: false,
                 IsVisible:true,
@@ -1506,43 +2495,25 @@ export default class ResourcePalette extends Component {
               Name: 'container registry',
               Tooltip: 'Container Registry',
               azInfo: ['Private Link supported'],
-              Image: require('../../assets/azure_icons/Container Service Color/Container Registries.png'),
+              Image: require('../../assets/IconCloud/azure/container/10105-icon-Container Registries-Containers.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.ContainerRegistry()
-            },
-            {
-              Name: 'kubernetes kube k8s microservice',
-              Tooltip: 'Azure Kubernetes',
-              Image: require('../../assets/azure_icons/Container Service Color/Kubernetes Services.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.Kubernetes()
-            },
-            {
-              Name: 'mesh service fabric',
-              Tooltip: 'Mesh Application',
-              Image: Utils.pngDataUrl(AzureIcons.MeshApplication()),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.MeshApplication()
             }
           ]
         }
        },
        {
         resourceGroup: {
-          groupName: 'Integration',
+          groupName: 'Azure Integration',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
             {
                 Name: 'api management apim',
                 Tooltip: 'API Management',
-                Image: require('../../assets/azure_icons/Integration Service Color/API Management Services.png'),
+                Image: require('../../assets/IconCloud/azure/integration/10042-icon-API Management Services-Integration.svg'),
                 Provisionable: false,
                 IsPng: false,
                 IsVisible:true,
@@ -1552,7 +2523,7 @@ export default class ResourcePalette extends Component {
               Name: 'service bus asb',
               Tooltip: 'Azure Service Bus',
               azInfo: ['Private Link supported','Service Endpoint supported'],
-              Image: require('../../assets/azure_icons/Integration Service Color/Azure Service Bus.png'),
+              Image: require('../../assets/IconCloud/azure/integration/10836-icon-Service Bus-General.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1562,7 +2533,7 @@ export default class ResourcePalette extends Component {
               Name: 'relays',
               Tooltip: 'Azure Relays',
               azInfo: ['Private Link supported'],
-              Image: require('../../assets/azure_icons/Integration Service Color/Relay.png'),
+              Image: require('../../assets/IconCloud/azure/integration/10209-icon-Relays-Integration.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1571,16 +2542,25 @@ export default class ResourcePalette extends Component {
             {
               Name: 'logic app',
               Tooltip: 'Logic App',
-              Image: require('../../assets/azure_icons/Integration Service Color/Logic Apps.png'),
+              Image: require('../../assets/IconCloud/azure/integration/10201-icon-Logic Apps-IoT.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.LogicApp()
             },
             {
-              Name: 'integration service environment ise',
-              Tooltip: 'Integration Service Environment for Logic App',
-              Image: require('../../assets/azure_icons/Integration Service Color/Integration Service Environments.png'),
+              Name: 'logic app custom connector',
+              Tooltip: 'Logic App Custom Connector',
+              Image: require('../../assets/IconCloud/azure/integration/10363-icon-Logic Apps Custom Connector-Integration.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.LogicAppCustomConnector()
+            },
+            {
+              Name: 'integration service environment ise logic app',
+              Tooltip: 'Integration Service Environment',
+              Image: require('../../assets/IconCloud/azure/integration/00555-icon-Integration Service Environments-Integration.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1590,7 +2570,7 @@ export default class ResourcePalette extends Component {
               Name: 'event grid topic',
               Tooltip: 'Event Grid Topic',
               azInfo: ['Private Link supported'],
-              Image: require('../../assets/azure_icons/Integration Service Color/Event Grid Topics.png'),
+              Image: require('../../assets/IconCloud/azure/integration/10206-icon-Event Grid Topics-Integration.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1600,7 +2580,7 @@ export default class ResourcePalette extends Component {
               Name: 'event grid subscription',
               Tooltip: 'Event Grid Subscription',
               azInfo: ['Private Link supported'],
-              Image: require('../../assets/azure_icons/Integration Service Color/Event Grid Subscriptions.png'),
+              Image: require('../../assets/IconCloud/azure/integration/10221-icon-Event Grid Subscriptions-Integration.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1610,35 +2590,36 @@ export default class ResourcePalette extends Component {
               Name: 'event grid domain',
               Tooltip: 'Event Grid Domain',
               azInfo: ['Private Link supported'],
-              Image: require('../../assets/azure_icons/Integration Service Color/Event Grid Domain.png'),
+              Image: require('../../assets/IconCloud/azure/integration/10215-icon-Event Grid Domains-Integration.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.EventGridDomain()
             },
             {
-              Name: 'stream analytics',
-              Tooltip: 'Stream Analytics',
-              Image: require('../../assets/azure_icons/Integration Service Color/Stream-Analytics.png'),
+              Name: 'app config',
+              Tooltip: 'App Configuration',
+              azInfo: [''],
+              Image: require('../../assets/IconCloud/azure/integration/10219-icon-App Configuration-Integration.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              resourceType: ResourceType.StreamAnalytics()
+              resourceType: ResourceType.AppConfig()
             },
             {
-              Name: 'event hub',
-              Tooltip: 'Event Hub',
-              azInfo: ['Private Link supported','Service Endpoint supported'],
-              Image: require('../../assets/azure_icons/Integration Service Color/event hub.png'),
+              Name: 'communication service email sms',
+              Tooltip: 'Communication Service',
+              azInfo: [''],
+              Image: require('../../assets/IconCloud/azure/integration/00968-icon-Azure Communication Services-Other.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              resourceType: ResourceType.EventHub()
+              resourceType: ResourceType.CommunicationService()
             },
             {
               Name: 'sendgrid email',
               Tooltip: 'SendGrid',
-              Image: require('../../assets/azure_icons/Integration Service Color/SendGrid Accounts.png'),
+              Image: require('../../assets/IconCloud/azure/integration/10220-icon-SendGrid Accounts-Integration.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1649,24 +2630,24 @@ export default class ResourcePalette extends Component {
        },
        {
         resourceGroup: {
-          groupName: 'Security',
+          groupName: 'Azure Security & Identity',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
             {
-                Name: 'firewall azfw',
-                Tooltip: 'Azure Firewall',
-                azInfo: ['deployable'],
-                Image: require('../../assets/azure_icons/Security Service Color/Azure Firewall.png'),
-                Provisionable: true,
-                IsPng: false,
-                IsVisible:true,
-                resourceType: ResourceType.Firewall()
+              Name: 'application security group asg',
+              Tooltip: 'Application Security Group',
+              Image: require('../../assets/IconCloud/azure/security_identity/10244-icon-Application Security Groups-Security.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.ASG()
             },
+            
             {
               Name: 'sentinel',
               Tooltip: 'Azure Sentinel',
-              Image: require('../../assets/azure_icons/Security Service Color/Azure Sentinel.png'),
+              Image: require('../../assets/IconCloud/azure/security_identity/10248-icon-Azure Sentinel-Security.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1676,7 +2657,7 @@ export default class ResourcePalette extends Component {
               Name: 'key vault akv',
               Tooltip: 'Key Vault',
               azInfo: ['Private Link supported','Service Endpoint supported'],
-              Image: require('../../assets/azure_icons/Security Service Color/Key Vaults.png'),
+              Image: require('../../assets/IconCloud/azure/security_identity/10245-icon-Key Vaults-Security.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1686,131 +2667,67 @@ export default class ResourcePalette extends Component {
               Name: 'security center asc',
               Tooltip: 'Security Center',
               azInfo: ['deployable'],
-              Image: require('../../assets/azure_icons/Security Service Color/Security Center.png'),
+              Image: require('../../assets/IconCloud/azure/security_identity/10241-icon-Security Center-Security.svg'),
               Provisionable: true,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.SecurityCenter()
             },
             {
-              Name: 'ddos protection standard',
-              Tooltip: 'DDoS Protection Standard',
-              Image: require('../../assets/azure_icons/Security Service Color/DDOS Protection Plans.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.DDoSStandard()
-            },
-            {
               Name: 'bastion jumphost jh',
               Tooltip: 'Bastion',
-              Image: require('../../assets/azure_icons/Security Service Color/azure-bastion-icon.png'),
+              Image: require('../../assets/IconCloud/azure/security_identity/02422-icon-Bastions-Preview.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.Bastion()
-            }
-          ]
-        }
-       },
-       {
-        resourceGroup: {
-          groupName: 'Management & Identity',
-          groupExpanded: false,
-          groupSearchVisible: true,
-          resources: [
-            {
-              Name: 'migrate',
-              Tooltip: 'Azure Migrate',
-              Image: require('../../assets/azure_icons/Management and Governance Service Color/Azure Migrate.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.RecoveryServiceVault()
-            },
-            {
-                Name: 'site recovery backup dr',
-                Tooltip: 'Site Recovery',
-                azInfo: ['-Purpose: Backup & DR','-Private Link supported','deployable'],
-                Image: require('../../assets/azure_icons/Management and Governance Service Color/SiteRecovery.png'),
-                Provisionable: true,
-                IsPng: false,
-                IsVisible:true,
-                resourceType: ResourceType.RecoveryServiceVault()
-            },
-            {
-              Name: 'app insights apm',
-              Tooltip: 'Application Insights',
-              azInfo: ['deployable'],
-              Image: require('../../assets/azure_icons/Management and Governance Service Color/AppInsights.png'),
-              Provisionable: true,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.AppInsights()
-            },
-            {
-              Name: 'log analytics monitor',
-              Tooltip: 'Log Analytics',
-              Image: require('../../assets/azure_icons/Management and Governance Service Color/Log Analytics Workspaces.png'),
-              Provisionable: true,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.LogAnalytics()
-            },
-            {
-              Name: 'automation update',
-              Tooltip: 'Automation',
-              Image: require('../../assets/azure_icons/Management and Governance Service Color/Automation Accounts.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.Automation()
-            },
-            {
-              Name: 'arc',
-              Tooltip: 'Azure Arc',
-              Image: require('../../assets/azure_icons/Management and Governance Service Color/azure-arc.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.Arc()
-            },
-            {
-              Name: 'ad aad oauth oidc openid',
-              Tooltip: 'Azure AD',
-              Image: require('../../assets/azure_icons/Identity Service Color/Azure AD.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.AAD()
-            },
-            {
-              Name: 'ad b2c oauth oidc openid',
-              Tooltip: 'Azure AD B2C',
-              Image: require('../../assets/azure_icons/Identity Service Color/Azure AD B2C.png'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.AADB2C()
             },
             {
               Name: 'ad ad domain service',
               Tooltip: 'Azure AD Domain Service',
-              Image: require('../../assets/azure_icons/Identity Service Color/azuread-domainservice.png'),
+              Image: require('../../assets/IconCloud/azure/security_identity/10222-icon-Azure AD Domain Services-Identity.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.AADDomainService()
             },
             {
-              Name: 'managed identity',
+              Name: 'managed identity user assigned',
               Tooltip: 'Managed Identity',
-              Image: Utils.pngDataUrl(AzureIcons.ManagedIdentity()),
+              Image: require('../../assets/IconCloud/azure/security_identity/10227-icon-Managed Identities-Identity.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.ManagedIdentity()
             }
+          ]
+        }
+       },
+       {
+        resourceGroup: {
+          groupName: 'Azure Management',
+          groupExpanded: false,
+          groupSearchVisible: true,
+          resources: [
+            {
+              Name: 'app insights apm',
+              Tooltip: 'Application Insights',
+              azInfo: ['deployable'],
+              Image: require('../../assets/IconCloud/azure/management/00012-icon-Application Insights-Management-Governance.svg'),
+              Provisionable: true,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.AppInsights()
+            },
+            {
+              Name: 'automation update',
+              Tooltip: 'Automation',
+              Image: require('../../assets/IconCloud/azure/management/00022-icon-Automation Accounts-Management-Governance.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.Automation()
+            },
           ]
         }
        },
@@ -1824,16 +2741,75 @@ export default class ResourcePalette extends Component {
                 Name: 'iot hub',
                 Tooltip: 'IoT Hub',
                 azInfo: ['Private Link supported'],
-                Image: require('../../assets/azure_icons/Internet of Things Service Color/Azure IoT Hub.png'),
+                Image: require('../../assets/IconCloud/azure/iot/10182-icon-IoT Hub-IoT.svg'),
                 Provisionable: false,
                 IsPng: false,
                 IsVisible:true,
                 resourceType: ResourceType.IoTHub()
             },
             {
+              Name: 'device provisioning service',
+              Tooltip: 'Device Provisioning Service',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/iot/10369-icon-Device Provisioning Services-IoT.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.DeviceProvisioningService()
+            },
+            {
+              Name: 'device update for iot hub',
+              Tooltip: 'Device Update For IoT Hub',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/iot/02475-icon-Device Update IoT Hub-IoT.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.DeviceUpdateForIoTHub()
+            },
+            {
+              Name: 'digital twins',
+              Tooltip: 'Digital Twins',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/iot/01030-icon-Digital Twins-IoT.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.DigitalTwins()
+            },
+            {
+              Name: 'stream analytics',
+              Tooltip: 'Stream Analytics',
+              Image: require('../../assets/IconCloud/azure/iot/00042-icon-Stream Analytics Jobs-IoT.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.StreamAnalytics()
+            },
+            {
+              Name: 'event hub',
+              Tooltip: 'Event Hub',
+              azInfo: ['Private Link supported','Service Endpoint supported'],
+              Image: require('../../assets/IconCloud/azure/iot/00039-icon-Event Hubs-IoT.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.EventHub()
+            },
+            {
+              Name: 'event hub cluster',
+              Tooltip: 'Event Hub Cluster',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/iot/10149-icon-Event Hub Clusters-Analytics.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.EventHubCluster()
+            },
+            {
               Name: 'iot central app applications',
               Tooltip: 'IoT Central Applications',
-              Image: require('../../assets/azure_icons/Internet of Things Service Color/IoT Central Applications.png'),
+              Image: require('../../assets/IconCloud/azure/iot/10184-icon-IoT Central Applications-IoT.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1842,7 +2818,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'map',
               Tooltip: 'Azure Map',
-              Image: require('../../assets/azure_icons/Internet of Things Service Color/Azure Maps.png'),
+              Image: require('../../assets/IconCloud/azure/iot/10185-icon-Azure Maps Accounts-IoT.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1851,25 +2827,35 @@ export default class ResourcePalette extends Component {
             {
               Name: 'time series insights environment',
               Tooltip: 'Time Series Insights Environment',
-              Image: require('../../assets/azure_icons/Internet of Things Service Color/Time Series Insights environments.png'),
+              Image: require('../../assets/IconCloud/azure/iot/10181-icon-Time Series Insights Environments-IoT.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.TimeSeriesInsights()
             },
+            {
+              Name: 'time series insights event source',
+              Tooltip: 'Time Series Insights Event Source',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/iot/10188-icon-Time Series Insights Event Sources-IoT.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.TimeSeriesInsightsEventSource()
+            }
           ]
         }
        },
        {
         resourceGroup: {
-          groupName: 'Blockchain',
+          groupName: 'Azure Blockchain',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
             {
                 Name: 'blockchain block',
                 Tooltip: 'Azure Blockchain Service',
-                Image: Utils.pngDataUrl(AzureIcons.Blockchain()),
+                Image: require('../../assets/IconCloud/azure/blockchain/10366-icon-Azure Blockchain Service-Blockchain.svg'),
                 Provisionable: false,
                 IsPng: false,
                 IsVisible:true,

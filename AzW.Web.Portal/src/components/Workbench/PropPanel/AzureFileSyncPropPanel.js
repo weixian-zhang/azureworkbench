@@ -28,7 +28,7 @@ export default class AzureFileSyncPropPanel extends Component {
   render = () => {
     return (
       <Drawer
-          title="File Sync Properties"
+          title="Storage Sync Service Properties"
           autoFocus= {true}
           canEscapeKeyClose= {true}
           canOutsideClickClose= {true}

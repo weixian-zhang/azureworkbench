@@ -98,7 +98,7 @@ export default class Header extends Component {
                 <MenuIcon />
               </IconButton>
             <Typography color="inherit">
-              <img src ={require('../../assets/azure_icons/azworkbench-logo.png')} alt="" style={{width : 25, height : 25, marginRight: 3}} />
+              <img src ={require('../../assets/IconCloud/azworkbench/azworkbench-logo.png')} alt="" style={{width : 25, height : 25, marginRight: 3}} />
               Azure Workbench
             </Typography>
             <section style={this.style.rightToolbar}>
@@ -120,7 +120,7 @@ export default class Header extends Component {
                      <MenuDivider />
                      <MenuItem  text="Import Workbench file(.azwb)" onClick={this.importWorkbenchFormat} />
                      <MenuDivider />
-                     <MenuItem  text="Export as SVG" onClick={this.exportDiagramAsSVG} />
+                     {/* <MenuItem  text="Export as SVG" onClick={this.exportDiagramAsSVG} /> */}
                      <MenuItem  text="Export as PNG"  onClick={this.exportDiagramAsPNG}/>
                      <MenuItem  text="Export as PDF" onClick={this.exportDiagramAsPDF} />
                      <MenuItem  text="Export as Workbench file(.azwb)" onClick={this.exportWorkbenchFormat} />

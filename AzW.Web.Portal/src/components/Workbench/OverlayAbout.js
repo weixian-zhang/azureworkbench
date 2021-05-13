@@ -16,7 +16,7 @@ export default class OverlayAbout extends Component {
             <Overlay isOpen={this.state.isOpen} onClose={this.handleClose}>
                 <Card className='workspace-overlay-about' interactive={false} elevation={Elevation.ONE}>
                     <Typography color="inherit" variant="h6" align="center">
-                        <img src ={require('../../assets/azure_icons/azworkbench-logo.png')} alt="" style={{width : 25, height : 25, marginRight: 3}} />
+                        <img src ={require('../../assets/IconCloud/azworkbench/azworkbench-logo.png')} alt="" style={{width : 25, height : 25, marginRight: 3}} />
                         <b>Azure Workbench</b>
                     </Typography>
                     <Typography variant="body1" align="left" gutterBottom>
