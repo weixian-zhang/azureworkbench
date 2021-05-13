@@ -4469,7 +4469,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       break;
       case ResourceType.FirewallManager():
         this.createNonVIRAzureResource({
-          source: require('../../assets/azure_icons/Networking Service Color/FirewallManager.svg'),
+          source: require('../../assets/IconCloud/azure/network/00271-icon-Azure Firewall Manager-Networking.svg'),
           label: 'firewall manager', x: dropContext.x, y: dropContext.y,
           azcontext: new AzureFirewallManager()
         });
@@ -6041,33 +6041,33 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
   }
 
 
-  exportAsSvg(){
-    if(Utils.isCanvasEmpty(this.diagram))
-    {
-      Toaster.create({
-        position: Position.TOP,
-        autoFocus: false,
-        canEscapeKeyClear: true
-      }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.NoCellOnGraph()});
-      return;
-    }
+  // exportAsSvg(){
+  //   if(Utils.isCanvasEmpty(this.diagram))
+  //   {
+  //     Toaster.create({
+  //       position: Position.TOP,
+  //       autoFocus: false,
+  //       canEscapeKeyClear: true
+  //     }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.NoCellOnGraph()});
+  //     return;
+  //   }
    
-    var svg = this.diagram.makeSvg({ scale: 1.0,
-      background: "transparent", showTemporary:true,
-      maxSize: new go.Size(Infinity, Infinity)});
+  //   var svg = this.diagram.makeSvg({ scale: 1.0,
+  //     background: "transparent", showTemporary:true,
+  //     maxSize: new go.Size(Infinity, Infinity)});
 
-    //var svg =document.getElementById('diagramEditor').firstChild;
+  //   //var svg =document.getElementById('diagramEditor').firstChild;
 
-    var svgXmlString = new XMLSerializer().serializeToString(svg);
+  //   var svgXmlString = new XMLSerializer().serializeToString(svg);
 
-    const blob = new Blob([svgXmlString], {type: 'image/svg+xml'});
+  //   const blob = new Blob([svgXmlString], {type: 'image/svg+xml'});
 
-    var link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.setAttribute('download', 'diagram.svg');
-    document.body.appendChild(link);
-    link.click();
-  }
+  //   var link = document.createElement("a");
+  //   link.href = URL.createObjectURL(blob);
+  //   link.setAttribute('download', 'diagram.svg');
+  //   document.body.appendChild(link);
+  //   link.click();
+  // }
 
   exportAsPng() {
     if(Utils.isCanvasEmpty(this.diagram))

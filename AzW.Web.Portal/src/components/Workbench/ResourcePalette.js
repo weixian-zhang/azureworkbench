@@ -1594,7 +1594,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'app service certificate',
               Tooltip: 'App Service Certificate',
-              Image: require('../../assets/IconCloud/azure/appservices/00049-icon-App Service Certificates-App Services.svg'), //require('../../assets/azure_icons/Web Service Color/App Service Certificates.png'),
+              Image: require('../../assets/IconCloud/azure/appservices/00049-icon-App Service Certificates-App Services.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1603,7 +1603,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'app service plan',
               Tooltip: 'App Service Plan',
-              Image: require('../../assets/IconCloud/azure/appservices/00046-icon-App Service Plans-App Services.svg'), //require('../../assets/azure_icons/Web Service Color/App Service Certificates.png'),
+              Image: require('../../assets/IconCloud/azure/appservices/00046-icon-App Service Plans-App Services.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
