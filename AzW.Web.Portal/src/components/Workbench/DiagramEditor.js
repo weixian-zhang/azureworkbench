@@ -2536,7 +2536,7 @@ createPictureShape(dropContext) {
       font: '17px Segoe UI',
       stroke: 'black',
       nodetype: GoNodeType.ImageShape(),
-      size: go.Size.stringify(new go.Size(60,60)),
+      size: go.Size.stringify(new go.Size(40,40)),
       width: 60,
       height: 60,
       zOrder: 50,
@@ -2553,7 +2553,7 @@ createNonVIRAzureResource(dropContext) {
       text: label, 
       azcontext: dropContext.azcontext,
       source: image, 
-      size: go.Size.stringify(new go.Size(50,50)),
+      size: go.Size.stringify(new go.Size(40,40)),
       zOrder: 50,
       font: '17px Segoe UI',
       stroke: 'black',
@@ -3209,13 +3209,13 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       case 'Circle':
         this.createShape({figure: 'Circle', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
-      case '3D Cube':
+      case 'Cube':
           this.createShape({figure: 'Cube2', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'Arrow':
           this.createShape({figure: 'Arrow', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
-      case 'ThinX':
+      case 'Thin X':
           this.createShape({figure: 'ThinX', label: '', angle: 0, x: dropContext.x, y: dropContext.y});
         break;
       case 'Lightning':
@@ -3434,130 +3434,130 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       break;
       
       case 'Folder Sync':
-      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/sync-folder.svg'), label: '', x: dropContext.x, y: dropContext.y});
+      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/sync-folder.svg'), label: 'folder sync', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Sync':
-      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/sync.svg'), label: '', x: dropContext.x, y: dropContext.y}); 
+      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/sync.svg'), label: 'sync', x: dropContext.x, y: dropContext.y}); 
       break;
 
       case 'Search':
-      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/search.svg'), label: '', x: dropContext.x, y: dropContext.y}); 
+      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/search.svg'), label: 'search', x: dropContext.x, y: dropContext.y}); 
       break;
 
       case 'Filter':
       this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/filter.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'filter', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'SSH Key':
       this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00412-icon-SSH Keys-Other.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'ssh key', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'RSA Key':
       this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00787-icon-Keys-Other.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'rsa key', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'Antivirus':
       this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00555-icon-Antivirus-menu.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'antivirus', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'Diagnostic Tool':
       this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00689-icon-Diagnostic Tools B-menu.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'diagnostic tool', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'Data Warehouse':
       this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00760-icon-Data Warehouse-menu.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'data warehouse', x: dropContext.x, y: dropContext.y});
         break;
       
       case 'Invoice':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00916-Icon-Invoice-menu.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'invoice', x: dropContext.x, y: dropContext.y});
         break;
     
     
         case 'QR Code':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/QRCode.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'qrcode', x: dropContext.x, y: dropContext.y});
         break;
     
     
         case 'Drive':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/01026-icon-Drives-menu.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'drive', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'Email':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/02271-icon-Email Message-menu.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'email', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'Process 1':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/02275-icon-Process-menu.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'process', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'Process 2':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/process-2.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'process', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'Windows Registry':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/02279-icon-Windows Registry Key-menu.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'win registry', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'GPU':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/02492-icon-GPU-menu.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'gpu', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'Software-as-a-Service':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10213-icon-Software as a Service-Integration.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'SaaS', x: dropContext.x, y: dropContext.y});
         break;
     
     
         case 'Browser':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10783-icon-Browser-General.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'browser', x: dropContext.x, y: dropContext.y});
         break;
     
     
         case 'Scheduler':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10833-icon-Scheduler-General.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'scheduler', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'Table':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10841-icon-Table-General.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'table', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'Workflow':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10852-icon-Workflow-General.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'workflow', x: dropContext.x, y: dropContext.y});
         break;
     
     
         case 'Data Copy':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/data-copy.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'data copy', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'Data Movement':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/data-movement.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'data movement', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'Pipeline':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/pipeline.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'pipeline', x: dropContext.x, y: dropContext.y});
         break;
     
     
@@ -3568,12 +3568,12 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
     
       case 'Container 1':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/container-1.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'container', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'Container 2':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/container-2.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'container', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'GitHub':
@@ -3583,22 +3583,22 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
     
       case 'GitHub Actions':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/github-actions.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'github actions', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'Git':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandGit.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'git', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'Hololens':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/hololens.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'hololens', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'Internet':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/internet.svg'),
-        label: '', x: dropContext.x, y: dropContext.y});
+        label: 'Internet', x: dropContext.x, y: dropContext.y});
         break;
     
       case 'Chrome':
@@ -3608,22 +3608,22 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
   
     case 'Google Drive':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/google-drive.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'Google Drive', x: dropContext.x, y: dropContext.y});
     break;
   
     case 'Edge':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandEdge.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'Edge', x: dropContext.x, y: dropContext.y});
     break;
   
     case 'Function':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/function.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'func', x: dropContext.x, y: dropContext.y});
     break;
   
     case 'Powershell':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10825-icon-Powershell-General.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'ps', x: dropContext.x, y: dropContext.y});
     break;
   
     
@@ -3634,28 +3634,28 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
   
     case '.Net':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightDotNET.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: '.Net', x: dropContext.x, y: dropContext.y});
     break;
   
   
     case 'Bug':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10784-icon-Bug-General.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'bug', x: dropContext.x, y: dropContext.y});
     break;
   
     case 'Code 1':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10787-icon-Code-General.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'code', x: dropContext.x, y: dropContext.y});
     break;
   
     case 'Code 2':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/code-2.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'code', x: dropContext.x, y: dropContext.y});
     break;
   
     case 'File Binaries':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/file-binaries.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'binaries', x: dropContext.x, y: dropContext.y});
     break;
   
     case 'Javascript':
@@ -3665,7 +3665,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
   
     case 'Nuget':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandNuget.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'nuget', x: dropContext.x, y: dropContext.y});
     break;
   
     case 'F#':
@@ -3690,76 +3690,76 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
    
     case 'Java':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/java.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'java', x: dropContext.x, y: dropContext.y});
     break;
     
     case 'C++':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightCPPProjectNode.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'C++', x: dropContext.x, y: dropContext.y});
     break;
   
     case 'Visual Studio':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandVisualStudio.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'vs', x: dropContext.x, y: dropContext.y});
     break;
   
     case 'Web Api':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightWebAPI.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'Web Api', x: dropContext.x, y: dropContext.y});
     break;
    
     case 'Web Service':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightWebService.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'Web Service', x: dropContext.x, y: dropContext.y});
     break;
    
     case 'Webhook':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/web-02437-icon-Webhook-menu.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'webhook', x: dropContext.x, y: dropContext.y});
     break;
   
     case 'Event':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/web-event.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'event', x: dropContext.x, y: dropContext.y});
     break;
   
   
     case 'Execute':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightExecute.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'execute', x: dropContext.x, y: dropContext.y});
     break;
   
   
     case 'Message':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/message.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'message', x: dropContext.x, y: dropContext.y});
     break;
   
   
     case 'Queue':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/60049-Icon-Queued-command.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'queue', x: dropContext.x, y: dropContext.y});
     break;
   
     case 'Publish':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/publish.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'pub', x: dropContext.x, y: dropContext.y});
     break;
   
     case 'Subscribe':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/subscribe.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'sub', x: dropContext.x, y: dropContext.y});
     break;
   
     case 'Report':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/report.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'report', x: dropContext.x, y: dropContext.y});
     break;
   
   
     case 'BizTalk':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10779-icon-Biz Talk-General.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'BizTalk', x: dropContext.x, y: dropContext.y});
     break;
   
     case 'D365':
@@ -3784,7 +3784,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
   
     case 'Project':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandProject.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'ms project', x: dropContext.x, y: dropContext.y});
     break;
   
     case 'Words':
@@ -3794,13 +3794,13 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
   
     case 'SharePoint':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/sharepoint.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'SharePoint', x: dropContext.x, y: dropContext.y});
     break;
   
   
     case 'Jenkins':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/jenkins.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'Jenkins', x: dropContext.x, y: dropContext.y});
     break;
   
     case 'Linux':
@@ -3818,14 +3818,14 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
     label: '', x: dropContext.x, y: dropContext.y});
     break;
   
-    case 'PDf':
+    case 'PDF':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/pdf.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
   
     case 'Image':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10812-icon-Image-General.svg'),
-    label: '', x: dropContext.x, y: dropContext.y});
+    label: 'image', x: dropContext.x, y: dropContext.y});
     break;
   
     case 'Power BI':
@@ -3856,25 +3856,25 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
       
       case 'Azure LightHouse':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/00471-icon-Azure Lighthouse-Management + Governance.svg'),
+        ({source: require('../../assets/IconCloud/azure/nondeployable/00471-icon-Azure Lighthouse-Management-Governance.svg'),
           label: 'lighthouse', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Azure Monitor':
         this.createPictureShape
-        ({source:  require('../../assets/IconCloud/azure/nondeployable/00001-icon-Monitor-Management + Governance.svg'),
+        ({source:  require('../../assets/IconCloud/azure/nondeployable/00001-icon-Monitor-Management-Governance.svg'),
           label: 'monitor', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Alert':
         this.createPictureShape
-        ({source:  require('../../assets/IconCloud/azure/nondeployable/00002-icon-Alerts-Management + Governance.svg'),
+        ({source:  require('../../assets/IconCloud/azure/nondeployable/00002-icon-Alerts-Management-Governance.svg'),
           label: 'alert', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Advisor':
         this.createPictureShape
-        ({source:require('../../assets/IconCloud/azure/nondeployable/00003-icon-Advisor-Management + Governance.svg'),
+        ({source:require('../../assets/IconCloud/azure/nondeployable/00003-icon-Advisor-Management-Governance.svg'),
           label: 'advisor', x: dropContext.x, y: dropContext.y});
       break;
 
@@ -3886,31 +3886,31 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
 
       case 'Blueprint':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/00006-icon-Blueprints-Management + Governance.svg'),
+        ({source: require('../../assets/IconCloud/azure/nondeployable/00006-icon-Blueprints-Management-Governance.svg'),
           label: 'blueprint', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Policy':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10316-icon-Policy-Management + Governance.svg'),
+        ({source: require('../../assets/IconCloud/azure/nondeployable/10316-icon-Policy-Management-Governance.svg'),
           label: 'policy', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Activity Log':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/00007-icon-Activity Log-Management + Governance.svg'),
+        ({source: require('../../assets/IconCloud/azure/nondeployable/00007-icon-Activity Log-Management-Governance.svg'),
           label: 'activity', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Metrics':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/00020-icon-Metrics-Management + Governance.svg'),
+        ({source: require('../../assets/IconCloud/azure/nondeployable/00020-icon-Metrics-Management-Governance.svg'),
           label: 'metrics', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Monitoring Solution':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/00021-icon-Solutions-Management + Governance.svg'),
+        ({source: require('../../assets/IconCloud/azure/nondeployable/00021-icon-Solutions-Management-Governance.svg'),
           label: 'solution', x: dropContext.x, y: dropContext.y});
       break;
 
@@ -3964,7 +3964,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
 
       case 'Resource Graph Explorer':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10318-icon-Resource Graph Explorer-Management + Governance.svg'),
+        ({source: require('../../assets/IconCloud/azure/nondeployable/10318-icon-Resource Graph Explorer-Management-Governance.svg'),
           label: 'resource graph explorer', x: dropContext.x, y: dropContext.y});
       break;
 
@@ -4114,7 +4114,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
 
       case 'Azure Arc':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/00756-icon-Azure Arc-Management + Governance.svg'),
+        ({source: require('../../assets/IconCloud/azure/nondeployable/00756-icon-Azure Arc-Management-Governance.svg'),
           label: 'arc', x: dropContext.x, y: dropContext.y});
         break;
 
@@ -4813,28 +4813,28 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
 
       case ResourceType.Cognitive():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/ai_ml/10162-icon-Cognitive Services-AI + Machine Learning.svg'),
+          source: require('../../assets/IconCloud/azure/ai_ml/10162-icon-Cognitive Services-AI-Machine Learning.svg'),
           label: 'cognitive', x: dropContext.x, y: dropContext.y,
           azcontext: new Cognitive()
         });
         break;
       case ResourceType.BotsService():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/ai_ml/10165-icon-Bot Services-AI + Machine Learning.svg'),
+          source: require('../../assets/IconCloud/azure/ai_ml/10165-icon-Bot Services-AI-Machine Learning.svg'),
           label: 'bot service', x: dropContext.x, y: dropContext.y,
           azcontext: new BotsService()
         });
         break;
       case ResourceType.Genomics():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/ai_ml/10164-icon-Genomics Accounts-AI + Machine Learning.svg'),
+          source: require('../../assets/IconCloud/azure/ai_ml/10164-icon-Genomics Accounts-AI-Machine Learning.svg'),
           label: 'genomics', x: dropContext.x, y: dropContext.y,
           azcontext: new Genomics()
         });
         break;
       case ResourceType.MLServiceWorkspace():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/ai_ml/10166-icon-Machine Learning-AI + Machine Learning.svg'),
+          source: require('../../assets/IconCloud/azure/ai_ml/10166-icon-Machine Learning-AI-Machine Learning.svg'),
           label: 'ml', x: dropContext.x, y: dropContext.y,
           azcontext: new MLServiceWorkspace()
         });
@@ -4961,7 +4961,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         break;
       case ResourceType.AppInsights():
         this.createNonVIRAzureResource({
-          source:  require('../../assets/IconCloud/azure/management/00012-icon-Application Insights-Management + Governance.svg'),
+          source:  require('../../assets/IconCloud/azure/management/00012-icon-Application Insights-Management-Governance.svg'),
           label: 'app insights', x: dropContext.x, y: dropContext.y,
           azcontext: new AppInsights()
         });
@@ -4975,7 +4975,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         break;
       case ResourceType.Automation():
         this.createNonVIRAzureResource({
-          source:  require('../../assets/IconCloud/azure/management/00022-icon-Automation Accounts-Management + Governance.svg'),
+          source:  require('../../assets/IconCloud/azure/management/00022-icon-Automation Accounts-Management-Governance.svg'),
           label: 'automation', x: dropContext.x, y: dropContext.y,
           azcontext: new Automation()
         });

@@ -174,7 +174,7 @@ export default class ResourcePalette extends Component {
             },
             {
               Name: 'x cross',
-              Tooltip: 'cross',
+              Tooltip: 'Thin X',
               Image:require('../../assets/IconCloud/fluent/shape/shape-cross.svg'),
               IsPng: true,
               IsVisible:true,
@@ -1058,9 +1058,9 @@ export default class ResourcePalette extends Component {
             },
 
             {
-              Name: 'light house',
+              Name: 'lighthouse light house',
               Tooltip: 'Azure LightHouse',
-              Image: require('../../assets/IconCloud/azure/nondeployable/00471-icon-Azure Lighthouse-Management + Governance.svg'),
+              Image: require('../../assets/IconCloud/azure/nondeployable/00471-icon-Azure Lighthouse-Management-Governance.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true
@@ -1069,7 +1069,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'monitor',
               Tooltip: 'Azure Monitor',
-              Image: require('../../assets/IconCloud/azure/nondeployable/00001-icon-Monitor-Management + Governance.svg'),
+              Image: require('../../assets/IconCloud/azure/nondeployable/00001-icon-Monitor-Management-Governance.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true
@@ -1078,7 +1078,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'alert',
               Tooltip: 'Alert',
-              Image: require('../../assets/IconCloud/azure/nondeployable/00002-icon-Alerts-Management + Governance.svg'),
+              Image: require('../../assets/IconCloud/azure/nondeployable/00002-icon-Alerts-Management-Governance.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true
@@ -1087,7 +1087,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'advisor',
               Tooltip: 'Advisor',
-              Image: require('../../assets/IconCloud/azure/nondeployable/00003-icon-Advisor-Management + Governance.svg'),
+              Image: require('../../assets/IconCloud/azure/nondeployable/00003-icon-Advisor-Management-Governance.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true
@@ -1105,7 +1105,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'blueprint arm',
               Tooltip: 'Blueprint',
-              Image: require('../../assets/IconCloud/azure/nondeployable/00006-icon-Blueprints-Management + Governance.svg'),
+              Image: require('../../assets/IconCloud/azure/nondeployable/00006-icon-Blueprints-Management-Governance.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true
@@ -1114,7 +1114,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'policy',
               Tooltip: 'Policy',
-              Image: require('../../assets/IconCloud/azure/nondeployable/10316-icon-Policy-Management + Governance.svg'),
+              Image: require('../../assets/IconCloud/azure/nondeployable/10316-icon-Policy-Management-Governance.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true
@@ -1123,7 +1123,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'activity log',
               Tooltip: 'Activity Log',
-              Image: require('../../assets/IconCloud/azure/nondeployable/00007-icon-Activity Log-Management + Governance.svg'),
+              Image: require('../../assets/IconCloud/azure/nondeployable/00007-icon-Activity Log-Management-Governance.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true
@@ -1132,7 +1132,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'metrics monitor',
               Tooltip: 'Metrics',
-              Image: require('../../assets/IconCloud/azure/nondeployable/00020-icon-Metrics-Management + Governance.svg'),
+              Image: require('../../assets/IconCloud/azure/nondeployable/00020-icon-Metrics-Management-Governance.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true
@@ -1141,7 +1141,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'solution monitor',
               Tooltip: 'Monitoring Solution',
-              Image: require('../../assets/IconCloud/azure/nondeployable/00021-icon-Solutions-Management + Governance.svg'),
+              Image: require('../../assets/IconCloud/azure/nondeployable/00021-icon-Solutions-Management-Governance.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true
@@ -1222,7 +1222,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'resource graph explorer',
               Tooltip: 'Resource Graph Explorer',
-              Image: require('../../assets/IconCloud/azure/nondeployable/10318-icon-Resource Graph Explorer-Management + Governance.svg'),
+              Image: require('../../assets/IconCloud/azure/nondeployable/10318-icon-Resource Graph Explorer-Management-Governance.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true
@@ -1447,7 +1447,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'arc',
               Tooltip: 'Azure Arc',
-              Image: require('../../assets/IconCloud/azure/nondeployable/00756-icon-Azure Arc-Management + Governance.svg'),
+              Image: require('../../assets/IconCloud/azure/nondeployable/00756-icon-Azure Arc-Management-Governance.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true
@@ -2439,7 +2439,7 @@ export default class ResourcePalette extends Component {
             {
                 Name: 'cognitive',
                 Tooltip: 'Cognitive Service',
-                Image: require('../../assets/IconCloud/azure/ai_ml/10162-icon-Cognitive Services-AI + Machine Learning.svg'),
+                Image: require('../../assets/IconCloud/azure/ai_ml/10162-icon-Cognitive Services-AI-Machine Learning.svg'),
                 Provisionable: false,
                 IsPng: false,
                 IsVisible:true,
@@ -2448,7 +2448,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'bots service bot',
               Tooltip: 'Bots Service',
-              Image: require('../../assets/IconCloud/azure/ai_ml/10165-icon-Bot Services-AI + Machine Learning.svg'),
+              Image: require('../../assets/IconCloud/azure/ai_ml/10165-icon-Bot Services-AI-Machine Learning.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -2457,7 +2457,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'genomics',
               Tooltip: 'Genomics Accounts',
-              Image: require('../../assets/IconCloud/azure/ai_ml/10164-icon-Genomics Accounts-AI + Machine Learning.svg'),
+              Image: require('../../assets/IconCloud/azure/ai_ml/10164-icon-Genomics Accounts-AI-Machine Learning.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -2467,7 +2467,7 @@ export default class ResourcePalette extends Component {
               Name: 'machine learning service workspace',
               Tooltip: 'Machine Learning Service Workspaces',
               azInfo: ['Private Link supported'],
-              Image: require('../../assets/IconCloud/azure/ai_ml/10166-icon-Machine Learning-AI + Machine Learning.svg'),
+              Image: require('../../assets/IconCloud/azure/ai_ml/10166-icon-Machine Learning-AI-Machine Learning.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -2713,7 +2713,7 @@ export default class ResourcePalette extends Component {
               Name: 'app insights apm',
               Tooltip: 'Application Insights',
               azInfo: ['deployable'],
-              Image: require('../../assets/IconCloud/azure/management/00012-icon-Application Insights-Management + Governance.svg'),
+              Image: require('../../assets/IconCloud/azure/management/00012-icon-Application Insights-Management-Governance.svg'),
               Provisionable: true,
               IsPng: false,
               IsVisible:true,
@@ -2722,7 +2722,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'automation update',
               Tooltip: 'Automation',
-              Image: require('../../assets/IconCloud/azure/management/00022-icon-Automation Accounts-Management + Governance.svg'),
+              Image: require('../../assets/IconCloud/azure/management/00022-icon-Automation Accounts-Management-Governance.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
