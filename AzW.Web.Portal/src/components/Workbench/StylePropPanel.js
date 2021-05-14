@@ -16,8 +16,12 @@ export default class StylePropPanel extends Component {
       this.state = {
         node: null,
         saveCallback: null,
-        colors: ['transparent', '#4D4D4D', '#999999', '#FFFFFF', '#F44E3B', '#FE9200', '#FCDC00', '#DBDF00', '#A4DD00', '#68CCCA', '#73D8FF', '#AEA1FF', '#FDA1FF', '#333333', '#808080', '#cccccc', '#D33115', '#E27300', '#FCC400', '#B0BC00', '#68BC00', '#16A5A5', '#009CE0', '#7B64FF', '#FA28FF', '#000000', '#666666', '#B3B3B3', '#9F0500', '#C45100', '#FB9E00', '#808900', '#194D33', '#0C797D', '#0062B1', '#653294', '#AB149E']
-        // colors: ["transparent","#ffffff", "#cccccc", "#ededed", "#B2B2B2", "#4C4C4C", "#000000", "#f44336", "#e91e63", "#ddd3ee", "#9c27b0", "#673ab7", "#e6f3f7", "#3f51b5", "#2196f3", "#03a9f4", "#00bcd4", "#009688", "#4caf50", "#8bc34a", "#cddc39", "#ffeb3b", "#ffc107", "#ff9800", "#ff5722", "#795548", "#607d8b"]
+        colors: ['transparent', '#4D4D4D', '#999999', '#FFFFFF', '#F44E3B', '#FE9200', '#FCDC00', '#DBDF00', '#A4DD00', '#68CCCA', '#73D8FF', '#AEA1FF', '#FDA1FF', '#333333', '#808080', '#cccccc', '#D33115', '#E27300', '#FCC400', '#B0BC00', '#68BC00', '#16A5A5', '#009CE0', '#7B64FF', '#FA28FF', '#000000', '#666666', '#B3B3B3', '#9F0500', '#C45100', '#FB9E00', '#808900', '#194D33', '#0C797D', '#0062B1', '#653294', '#AB149E'],
+        
+        freehandStroke: '#000000',
+        freehandStrokeWidth: 2,
+        freehandCallbackFunc: null
+
       }; 
   }
 
@@ -59,6 +63,11 @@ export default class StylePropPanel extends Component {
 
   renderUIByCellType() {
 
+    //set freehand drawing style
+    if(this.state.freehandCallbackFunc != null) {
+        return this.renderFreeHandDrawingStyleProperties();
+    }
+
     if(Utils.IsNullOrUndefine(this.state.node))
       return;
 
@@ -78,6 +87,35 @@ export default class StylePropPanel extends Component {
     else if(this.state.node.data.nodetype == GoNodeType.ImageShape()) {
       return this.renderPictureShapeStyleProperties();
     }
+  }
+
+  renderFreeHandDrawingStyleProperties() {
+    return (
+      <div>
+          <div>
+            <h4>Edge Width</h4>
+            <NumericInput placeholder="Stroke Width"
+              max={15}
+              allowNumericCharactersOnly ={true}
+              clampValueOnBlur={true}
+              value={this.state.freehandStrokeWidth}
+              onValueChange={
+                (value) => {
+                    this.setState({freehandStrokeWidth: value});
+                }
+              } />
+          </div>
+          <div>
+            <h4>Stroke Color</h4>
+            <CompactPicker  colors={this.state.colors}
+              onChangeComplete={
+                (color) => {
+                  this.setState({freehandStroke: color.hex});
+                }
+              } />
+          </div>
+      </div>
+    );
   }
 
   renderTextblockStyleProperties() {
@@ -511,6 +549,15 @@ export default class StylePropPanel extends Component {
     this.diagram = diagram;
   }
 
+  showFreehandStyle = (currentStyleObj, callbackFunc) => {
+      this.setState({
+        isOpen: true,
+        freehandStroke: currentStyleObj.freehandStroke,
+        freehandStrokeWidth: currentStyleObj.freehandStrokeWidth,
+        freehandCallbackFunc: callbackFunc
+      });
+  }
+
   checkZOrderNaN(node, diagram) {
     if(node.data && isNaN(node.data.zOrder))
     {
@@ -520,6 +567,18 @@ export default class StylePropPanel extends Component {
   }
 
   drawerClose = () => {
-    this.setState({ isOpen: false});
+
+    //return change style to diagramEditor
+    if(this.state.freehandCallbackFunc != null) {
+      var style = {
+        freehandStroke: this.state.freehandStroke,
+        freehandStrokeWidth: this.state.freehandStrokeWidth
+      }
+      this.state.freehandCallbackFunc(style);
+    }
+
+    this.setState({ 
+      freehandCallbackFunc: null,
+      isOpen: false});
   }
 }

@@ -319,6 +319,8 @@ import GuidedDraggingTool from  "./GojsExtensions/GuidedDraggingTool.ts";
 import  ResizeRotateMultipleTool from "./GojsExtensions/ResizeMultipleTool";
 import './GojsExtensions/TextEditor';
 import LocalStorageCommandHandler from './GojsExtensions/LocalStorageCommandHandler';
+import FreehandDrawingTool from './GojsExtensions/FreehandDrawingTool';
+import GeometryReshapingTool from './GojsExtensions/GeometryReshapingTool';
 import AzureIcons from './Helpers/AzureIcons';
 
  export default class DiagramEditor extends Component {
@@ -339,7 +341,7 @@ import AzureIcons from './Helpers/AzureIcons';
         isDiagramLoadedFromStorage: false,
         archetypeLinkMode: "o", //toggle between straight/ortho mode
         unsavedChanges: false,
-
+        freehandmode: false,
         queryString: this.props.queryString,
         incrementalChanges: ''
     };
@@ -379,7 +381,6 @@ import AzureIcons from './Helpers/AzureIcons';
     this.loadSharedDiagram();
 
     this.startTimerAutosave();
-
  }
 
   render() {
@@ -692,8 +693,6 @@ import AzureIcons from './Helpers/AzureIcons';
   }
   
   initDiagramCanvas = (model) => {
-    var thisComp = this;
-    var GroupMargin = new go.Margin(3);
 
     this.diagram =
       this.$(go.Diagram, 'diagramEditor', 
@@ -759,6 +758,8 @@ import AzureIcons from './Helpers/AzureIcons';
             category: 'ortho'
           }
       });
+    
+    
     this.diagram.layout.isInitial = false;
 
     this.diagram.toolManager.textEditingTool.defaultTextEditor = window.TextEditor;
@@ -769,6 +770,9 @@ import AzureIcons from './Helpers/AzureIcons';
     this.diagram.toolManager.mouseDownTools.add(new ResizeRotateMultipleTool());
 
     this.initDiagramBehaviors();
+
+    this.initFreehandTool();
+    
 
     var model =
       new go.GraphLinksModel(this.nodeDataArray, this.linkDataArray);
@@ -1453,7 +1457,8 @@ initContextMenu() {
 
   return this.$("ContextMenu",
 
-      
+  //https://github.com/NorthwoodsSoftware/GoJS/blob/master/extensions/FreehandDrawing.html
+  //freehand draw
 
       this.$("ContextMenuButton",
         this.$(go.TextBlock, "Add Subnet"),
@@ -1465,6 +1470,82 @@ initContextMenu() {
             new go.Binding("visible", "", function(o) {
                 return Utils.isVNet(o.diagram.selection.first());
             }).ofObject()),
+
+            this.$("ContextMenuButton",
+            this.$(go.TextBlock, "Add/Remove NSG"),
+                { 
+                  click: function(e, obj) {
+                    if(Utils.isNSG(obj.part)) {
+                        if(obj.part.data.nsgVisible == false)
+                          thisComp.diagram.model.setDataProperty(obj.part.data, 'nsgVisible', true);
+                        else
+                          thisComp.diagram.model.setDataProperty(obj.part.data, 'nsgVisible', false);
+                      
+                        thisComp.setDiagramModifiedTrue();
+                    }
+                  } 
+                },
+                new go.Binding("visible", "", function(o) {
+                    return Utils.isSubnet(o.diagram.selection.first());
+                }).ofObject()
+          ),
+  
+          this.$("ContextMenuButton",
+            this.$(go.TextBlock, "Add/Remove UDR"),
+                { 
+                  click: function(e, obj) {
+                    if(Utils.isUDR(obj.part)) {
+                        if(obj.part.data.udrVisible == false)
+                          thisComp.diagram.model.setDataProperty(obj.part.data, 'udrVisible', true);
+                        else
+                          thisComp.diagram.model.setDataProperty(obj.part.data, 'udrVisible', false);
+                      
+                        thisComp.setDiagramModifiedTrue();
+                    }
+                  } 
+                },
+                new go.Binding("visible", "", function(o) {
+                    return Utils.isSubnet(o.diagram.selection.first());
+                }).ofObject()
+            ),
+          
+          this.$("ContextMenuButton",
+            this.$(go.TextBlock, "Add/Remove Service Endpoint"),
+                { 
+                  click: function(e, obj) {
+                    if(Utils.isUDR(obj.part)) {
+                        if(obj.part.data.svcendVisible == false)
+                          thisComp.diagram.model.setDataProperty(obj.part.data, 'svcendVisible', true);
+                        else
+                          thisComp.diagram.model.setDataProperty(obj.part.data, 'svcendVisible', false);
+                        
+                        thisComp.setDiagramModifiedTrue();
+                    }
+                  } 
+                },
+                new go.Binding("visible", "", function(o) {
+                    return Utils.isSubnet(o.diagram.selection.first());
+                }).ofObject()
+            ),
+          
+          this.$("ContextMenuButton",
+            this.$(go.TextBlock, "Add/Remove NAT Gateway"),
+                { 
+                  click: function(e, obj) {
+                    if(Utils.isNATGW(obj.part)) {
+                        if(obj.part.data.natgwVisible == false)
+                          thisComp.diagram.model.setDataProperty(obj.part.data, 'natgwVisible', true);
+                        else
+                          thisComp.diagram.model.setDataProperty(obj.part.data, 'natgwVisible', false);
+                    }
+                  } 
+                },
+                new go.Binding("visible", "", function(o) {
+                    return Utils.isVNet(o.diagram.selection.first());
+                }).ofObject()
+            ),
+
+      this.$(go.Shape, 'LineH', {strokeWidth: 1.5, height: 1, stretch: go.GraphObject.Horizontal}),
         
       this.$("ContextMenuButton",
       this.$(go.TextBlock, "Duplicate"),
@@ -1480,79 +1561,6 @@ initContextMenu() {
               return o.diagram.selection.first() != null;
           }).ofObject()),
 
-        this.$("ContextMenuButton",
-          this.$(go.TextBlock, "Add/Remove NSG"),
-              { 
-                click: function(e, obj) {
-                  if(Utils.isNSG(obj.part)) {
-                      if(obj.part.data.nsgVisible == false)
-                        thisComp.diagram.model.setDataProperty(obj.part.data, 'nsgVisible', true);
-                      else
-                        thisComp.diagram.model.setDataProperty(obj.part.data, 'nsgVisible', false);
-                    
-                      thisComp.setDiagramModifiedTrue();
-                  }
-                } 
-              },
-              new go.Binding("visible", "", function(o) {
-                  return Utils.isSubnet(o.diagram.selection.first());
-              }).ofObject()
-        ),
-
-        this.$("ContextMenuButton",
-          this.$(go.TextBlock, "Add/Remove UDR"),
-              { 
-                click: function(e, obj) {
-                  if(Utils.isUDR(obj.part)) {
-                      if(obj.part.data.udrVisible == false)
-                        thisComp.diagram.model.setDataProperty(obj.part.data, 'udrVisible', true);
-                      else
-                        thisComp.diagram.model.setDataProperty(obj.part.data, 'udrVisible', false);
-                    
-                      thisComp.setDiagramModifiedTrue();
-                  }
-                } 
-              },
-              new go.Binding("visible", "", function(o) {
-                  return Utils.isSubnet(o.diagram.selection.first());
-              }).ofObject()
-          ),
-        
-        this.$("ContextMenuButton",
-          this.$(go.TextBlock, "Add/Remove Service Endpoint"),
-              { 
-                click: function(e, obj) {
-                  if(Utils.isUDR(obj.part)) {
-                      if(obj.part.data.svcendVisible == false)
-                        thisComp.diagram.model.setDataProperty(obj.part.data, 'svcendVisible', true);
-                      else
-                        thisComp.diagram.model.setDataProperty(obj.part.data, 'svcendVisible', false);
-                      
-                      thisComp.setDiagramModifiedTrue();
-                  }
-                } 
-              },
-              new go.Binding("visible", "", function(o) {
-                  return Utils.isSubnet(o.diagram.selection.first());
-              }).ofObject()
-          ),
-        
-        this.$("ContextMenuButton",
-          this.$(go.TextBlock, "Add/Remove NAT Gateway"),
-              { 
-                click: function(e, obj) {
-                  if(Utils.isNATGW(obj.part)) {
-                      if(obj.part.data.natgwVisible == false)
-                        thisComp.diagram.model.setDataProperty(obj.part.data, 'natgwVisible', true);
-                      else
-                        thisComp.diagram.model.setDataProperty(obj.part.data, 'natgwVisible', false);
-                  }
-                } 
-              },
-              new go.Binding("visible", "", function(o) {
-                  return Utils.isVNet(o.diagram.selection.first());
-              }).ofObject()
-          ),
 
         this.$("ContextMenuButton",
           this.$(go.TextBlock, "Undo"),
@@ -1591,6 +1599,8 @@ initContextMenu() {
                     function(o) {
                       return o.diagram.commandHandler.canUngroupSelection();
                     }).ofObject()),
+
+        this.$(go.Shape, 'LineH', {strokeWidth: 1.5, height: 1, stretch: go.GraphObject.Horizontal}),
 
         this.$("ContextMenuButton",
           this.$(go.TextBlock, "Bring to Front"),
@@ -1640,6 +1650,8 @@ initContextMenu() {
                           return true;
                   }).ofObject()),
 
+       
+
         this.$("ContextMenuButton",
           this.$(go.TextBlock, "Zoom to Fit"),
               { 
@@ -1664,6 +1676,8 @@ initContextMenu() {
                     }).ofObject()
                 ),
           
+          this.$(go.Shape, 'LineH', {strokeWidth: 1.5, height: 1, stretch: go.GraphObject.Horizontal}),
+          
           this.$("ContextMenuButton",
               this.$(go.TextBlock, "Animate"),
                   { 
@@ -1687,7 +1701,79 @@ initContextMenu() {
                   new go.Binding("visible", "", function(o) {
                       return o.data.nodetype == "link";
                   }).ofObject()
-              )
+              ),
+
+              this.$(go.Shape, 'LineH', {strokeWidth: 1.5, height: 1, stretch: go.GraphObject.Horizontal}),
+
+              //free hand drawing
+              this.$("ContextMenuButton",
+                this.$(go.TextBlock, "Disable Freehand Draw"),
+                    { 
+                      click: function(e, obj) {
+                        thisComp.setFreehandMode();
+                      } 
+                    },
+                    new go.Binding("visible", "", function(o) {
+                        return thisComp.state.freehandmode;
+                    }).ofObject()),
+          
+              this.$("ContextMenuButton",
+                this.$(go.TextBlock, "Enable Freehand Draw"),
+                    { 
+                      click: function(e, obj) {
+                        thisComp.setFreehandMode();
+                      } 
+                    },
+                    new go.Binding("visible", "", function(o) {
+
+                      if(o.data.nodetype == "link"
+                            || Utils.isVNet(o.diagram.selection.first())
+                            || Utils.isSubnet(o.diagram.selection.first())){
+                              return false;
+                      }
+
+                        return !thisComp.state.freehandmode;
+
+                    }).ofObject()),
+              
+            this.$("ContextMenuButton",
+              this.$(go.TextBlock, "Freehand Draw Style"),
+                  { 
+                    click: function(e, obj) {
+                      thisComp.openFreeHandStylePanel();
+                    } 
+                  },
+                  new go.Binding("visible", "", function(o) {
+
+                    if(o.data.nodetype == "link"
+                    || Utils.isVNet(o.diagram.selection.first())
+                    || Utils.isSubnet(o.diagram.selection.first())){
+                      return false;
+                    }
+
+                      return true;
+                  }).ofObject()),
+          
+            this.$(go.Shape, 'LineH', {strokeWidth: 1.5, height: 1, stretch: go.GraphObject.Horizontal}),
+          
+            this.$("ContextMenuButton",
+              this.$(go.TextBlock, "Clear Freehand Draw"),
+                  { 
+                    click: function(e, obj) {
+                      thisComp.clearFreehandShapes();
+                    } 
+                  },
+                  new go.Binding("visible", "", function(o) {
+                    if(o.data.nodetype == "link"
+                    || Utils.isVNet(o.diagram.selection.first())
+                    || Utils.isSubnet(o.diagram.selection.first())){
+                      return false;
+                    }
+
+                      return true;
+                  }).ofObject()),
+          
+                
     );
 }
 
@@ -1736,7 +1822,7 @@ createVNetTemplate() {
         stroke: "deepskyblue", 
         strokeWidth: 1.5,
         cursor: "pointer",
-        desiredSize: new go.Size(600,500),
+        desiredSize: new go.Size(400,300),
         // allow all kinds of links from and to this port
         fromLinkable: false, fromLinkableSelfNode: false, fromLinkableDuplicates: true,
         toLinkable: false, toLinkableSelfNode: false, toLinkableDuplicates: true
@@ -1918,14 +2004,14 @@ createSubnetTemplate() {
         new go.Binding('visible', 'udrVisible').makeTwoWay(),
         new go.Binding('udrazcontext').makeTwoWay()
       ),
-      this.$(go.Picture, {
-        stretch: go.GraphObject.Fill,
-        desiredSize: new go.Size(25,25),
-        alignment: go.Spot.TopRight,
-        alignmentFocus: go.Spot.BottomLeft,
+      // this.$(go.Picture, {
+      //   stretch: go.GraphObject.Fill,
+      //   desiredSize: new go.Size(25,25),
+      //   alignment: go.Spot(0,0)
+      //   alignmentFocus: go.Spot.BottomLeft,
         
-        source: require('../../assets/IconCloud/azure/network/02742-icon-Subnet-menu.svg')
-      }),
+      //   source: require('../../assets/IconCloud/azure/network/02742-icon-Subnet-menu.svg')
+      //}),
       this.$(go.Picture, {
         name: "SVCEndpoint",
         stretch: go.GraphObject.Fill,
@@ -2152,7 +2238,7 @@ createSubnet(vnetKey, subnetNodekey = '') {
 
   var subnetKey = subnetNodekey != '' ? subnetNodekey :  Utils.uniqueId('subnet');
   var subnetLoc = new go.Point(vnet.location.x + 10, vnet.location.y +20);
-  var subnetSize = new go.Size((vnet.actualBounds.width - 40), 80);
+  var subnetSize = new go.Size((vnet.actualBounds.width - 45), 70);
   
   this.diagram.model.addNodeData
     ({key: subnetKey,
@@ -2674,9 +2760,17 @@ addKeyPressShortcuts() {
     }
 
     if (e.alt && e.key === "S") {
+
+      if (thisComp.state.freehandmode) {
+          thisComp.openFreeHandStylePanel();
+          return;
+      }
+
       var selectedNode = thisComp.diagram.selection.first();
-      if(selectedNode == null)
+      if(selectedNode == null) {
         return;
+      }
+        
       thisComp.openStylePanel(selectedNode);
       return;
     }
@@ -2844,20 +2938,11 @@ addKeyPressShortcuts() {
 
 openStylePanel = (node) => {
 
-  this.stylePanel.current.show(node, this.diagram) //, function(style) {
-
-  // let  properties = Object.getOwnPropertyNames(style)
-
-  // var newStyles = new Map();
-
-  // properties.map(propName => {
-  //   let propDesc = Object.getOwnPropertyDescriptor(style, propName)
-  //   newStyles.set(propName, propDesc.value);
-  // })
-
-  // thisComp.graphManager.setNewStyleFromStylePropPanel(cell, newStyles);  
-  // })
-//})
+  if (node.data != null && node.data.category == "FreehandDrawing") {
+      return;
+  }
+  
+  this.stylePanel.current.show(node, this.diagram) 
 }
 
 saveDiagramToBrowser = () => {
@@ -2942,6 +3027,113 @@ notifyStatusBarLoadSource(source, collection, diagramName) {
     }
 
     this.setGlobal(diagramSrc);
+}
+
+setFreehandMode() {
+  
+  if(this.state.freehandmode) {
+      this.setState({freehandmode: false});
+      this.diagram.currentCursor = 'crosshair';
+  }
+  else {
+      this.setState({freehandmode: true});
+      this.diagram.currentCursor = 'default';
+  }
+
+  var tool = this.diagram.toolManager.findTool("FreehandDrawing");
+  tool.isEnabled = this.state.freehandmode;
+}
+
+initFreehandTool(){
+
+  var $ = this.$;
+
+  this.diagram.toolManager.mouseDownTools.insertAt(3, new GeometryReshapingTool());
+
+  this.diagram.nodeTemplateMap.add("FreehandDrawing",
+        $(go.Node,
+          { 
+            locationSpot: go.Spot.Center, 
+            isLayoutPositioned: false,
+            zOrder: 1000
+          },
+          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+          {
+            selectionAdorned: true, selectionObjectName: "SHAPE",
+            selectionAdornmentTemplate:  // custom selection adornment: a blue rectangle
+              $(go.Adornment, "Auto",
+                $(go.Shape, { stroke: "dodgerblue", fill: null }),
+                $(go.Placeholder, { margin: -1 }))
+          },
+          { resizable: true, resizeObjectName: "SHAPE" },
+          { rotatable: true, rotateObjectName: "SHAPE" },
+          { reshapable: true },  // GeometryReshapingTool assumes nonexistent Part.reshapeObjectName would be "SHAPE"
+          $(go.Shape,
+            { name: "SHAPE", 
+              fill: null, 
+              strokeWidth: 1.5
+            },
+            new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
+            new go.Binding("angle").makeTwoWay(),
+            new go.Binding("geometryString", "geo").makeTwoWay(),
+            new go.Binding("fill"),
+            new go.Binding("stroke"),
+            new go.Binding("strokeWidth")),
+            new go.Binding("strokeDashArray")
+        ));
+
+      // create drawing tool for myDiagram, defined in FreehandDrawingTool.js
+      var tool = new FreehandDrawingTool();
+
+      tool.isEnabled = false;
+
+      // provide the default JavaScript object for a new polygon in the model
+      tool.archetypePartData =
+        { stroke: '#000000',
+          strokeWidth: 2,
+          category: "FreehandDrawing" };
+
+      // allow the tool to start on top of an existing Part
+      tool.isBackgroundOnly = false;
+      // install as first mouse-move-tool
+      this.diagram.toolManager.mouseMoveTools.insertAt(0, tool);
+}
+
+clearFreehandShapes() {
+  var thisComp = this;
+  this.diagram.nodes.each(function(n) {
+      if (n.data.category == "FreehandDrawing") {
+        thisComp.diagram.remove(n);
+      }
+  });
+}
+
+openFreeHandStylePanel = () => {
+
+  var thisComp = this;
+
+  var tool = thisComp.diagram.toolManager.findTool("FreehandDrawing");
+
+  var freehandStyle = {
+    freehandStroke: tool.archetypePartData.stroke,
+    freehandStrokeWidth: tool.archetypePartData.strokeWidth,
+    freehandStrokeDashArray: tool.archetypePartData.strokeDashArray
+  };
+
+  this.stylePanel.current.showFreehandStyle(freehandStyle, function(newStyle){
+    var tool = thisComp.diagram.toolManager.findTool("FreehandDrawing");
+    tool.archetypePartData =
+        { stroke:newStyle.freehandStroke, 
+          strokeWidth: newStyle.freehandStrokeWidth,
+          strokeDashArray: newStyle.freehandStrokeDashArray, 
+          category: "FreehandDrawing" };
+
+    // thisComp.setState({
+    //     freehandStroke: newStyle.freehandStroke,
+    //     freehandStrokeWidth: newStyle.freehandStrokeWidth,
+    //     freehandStrokeDashArray: newStyle.freehandStrokeDashArray,
+    //   });
+  }); 
 }
 
 //create vertex from browser clipboard image
