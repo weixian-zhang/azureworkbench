@@ -7,16 +7,17 @@ using System.Threading.Tasks;
 using AzW.Infrastructure.AzureServices;
 using AzW.Infrastructure.Data;
 using AzW.Model;
-using Microsoft.Azure.Management.Compute.Fluent;
-using Microsoft.Azure.Management.Fluent;
-using Microsoft.Azure.Management.Network.Fluent;
-using Microsoft.Azure.Management.Network.Fluent.Models;
-using Microsoft.Azure.Management.ResourceManager.Fluent;
-using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
-using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
-using Microsoft.Azure.WebJobs;
 using AzW.Secret;
 using Newtonsoft.Json;
+using Microsoft.Azure.Management.Compute.Fluent;
+using Microsoft.Azure.Management.Fluent;
+using Microsoft.Azure.Management.ResourceManager.Fluent;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
+using Microsoft.Azure.WebJobs;
+
+using Microsoft.Azure.Services.AppAuthentication;
+using Microsoft.Rest;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
 
 namespace AzW.Job.CacheHydrator
 {
@@ -31,16 +32,33 @@ namespace AzW.Job.CacheHydrator
 
             _blobManager = new BlobManager(secret.StorageConnString);
 
-            sdkCred =
-                new ServiceClientCredential(_secret.TenantId, _secret.ClientId, _secret.ClientSecret);
+            // sdkCred =
+            //     new ServiceClientCredential(_secret.TenantId, _secret.ClientId, _secret.ClientSecret);
             
-            azureCreds = new AzureCredentials
-                (sdkCred, null, _secret.TenantId, AzureEnvironment.AzureGlobalCloud);
+            // azureCreds = new AzureCredentials
+            //     (sdkCred, null, _secret.TenantId, AzureEnvironment.AzureGlobalCloud);
+
+           
+
+            
         }
 
         [FunctionName("CacheHydrator")]
-        public async Task Run([TimerTrigger("* */10 * * * *")]TimerInfo myTimer, Microsoft.Extensions.Logging.ILogger log)
+        public async Task Run([TimerTrigger("*/5 * * * * *")]TimerInfo myTimer, Microsoft.Extensions.Logging.ILogger log)
         {
+            var azureServiceTokenProvider = new AzureServiceTokenProvider();
+
+            var accessToken = await azureServiceTokenProvider.GetAccessTokenAsync("https://management.azure.com/").ConfigureAwait(false);
+
+            var azCred = new AzureCredentials
+                (new TokenCredentials(accessToken), null, _secret.TenantId, AzureEnvironment.AzureGlobalCloud);
+            
+
+           _azure = Microsoft.Azure.Management.Fluent.Azure
+                .Configure()
+                .Authenticate(azCred)
+                .WithSubscription(_secret.SubscriptionId);
+
             _logger.Information("CacheHydrator started");
 
             await HydrateServiceTag();
@@ -60,11 +78,9 @@ namespace AzW.Job.CacheHydrator
 
                 _logger.Information("CacheHydrator-VMSize cache empty, start hydrating");
                 
-                var azure = Microsoft.Azure.Management.Fluent.Azure.Configure().Authenticate(azureCreds);
+                //var azure = Microsoft.Azure.Management.Fluent.Azure.Configure().Authenticate(azureCreds);
 
-                var vmSizes = await azure
-                        .WithSubscription(_secret.SubscriptionId)
-                        .VirtualMachines.Sizes.ListByRegionAsync("southeastasia");
+                var vmSizes = await _azure.VirtualMachines.Sizes.ListByRegionAsync("southeastasia");
                         
                 foreach(var size in vmSizes)
                 {
@@ -461,10 +477,9 @@ namespace AzW.Job.CacheHydrator
 
             try
             {     
-                var _azure = Microsoft.Azure.Management.Fluent.Azure.Configure().Authenticate(azureCreds);
+                //var _azure = Microsoft.Azure.Management.Fluent.Azure.Configure().Authenticate(azureCreds);
                         
-                publishers = _azure.WithSubscription(_secret.SubscriptionId)
-                    .VirtualMachineImages.Publishers.ListByRegion(Region.AsiaSouthEast);
+                publishers = _azure.VirtualMachineImages.Publishers.ListByRegion(Region.AsiaSouthEast);
             }
             catch(Exception ex)
             {
@@ -658,8 +673,7 @@ namespace AzW.Job.CacheHydrator
         //     }
         // }
         
-        ServiceClientCredential sdkCred;
-        AzureCredentials azureCreds;
+        private Microsoft.Azure.Management.Fluent.IAzure _azure;
 
         private BlobManager _blobManager;
 

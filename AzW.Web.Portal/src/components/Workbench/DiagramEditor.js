@@ -4028,6 +4028,12 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
 
       //azure nondeployable
       
+      case 'Windows Virtual Desktop':
+        this.createPictureShape
+        ({source: require('../../assets/IconCloud/azure/nondeployable/00327-icon-Windows Virtual Desktop-Other.svg'),
+          label: 'wvd', x: dropContext.x, y: dropContext.y});
+      break;
+
       case 'Azure':
         this.createPictureShape
         ({source: require('../../assets/IconCloud/azure/nondeployable/60115-Icon-Azure.svg'),
@@ -5884,16 +5890,16 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         break;
         
         
-      case ResourceType.WindowsVM():
+      case ResourceType.VM():
         this.vmPropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
-      case ResourceType.LinuxVM():
-        this.vmPropPanel.current.show(userObject, function(savedUserObject){
-            onContextSaveCallback(Utils.deepClone(savedUserObject));
-        });
-        break;
+      // case ResourceType.LinuxVM():
+      //   this.vmPropPanel.current.show(userObject, function(savedUserObject){
+      //       onContextSaveCallback(Utils.deepClone(savedUserObject));
+      //   });
+      //   break;
       case ResourceType.VNet():
         this.vnetPropPanel.current.show(userObject, function(savedUserObject){
             onContextSaveCallback(Utils.deepClone(savedUserObject));

@@ -93,7 +93,7 @@ export default class StylePropPanel extends Component {
     return (
       <div>
           <div>
-            <h4>Edge Width</h4>
+            <h4>Freehand Draw - Stroke Width</h4>
             <NumericInput placeholder="Stroke Width"
               max={15}
               allowNumericCharactersOnly ={true}
@@ -106,7 +106,7 @@ export default class StylePropPanel extends Component {
               } />
           </div>
           <div>
-            <h4>Stroke Color</h4>
+            <h4>Freehand Draw - Stroke Color</h4>
             <CompactPicker  colors={this.state.colors}
               onChangeComplete={
                 (color) => {
