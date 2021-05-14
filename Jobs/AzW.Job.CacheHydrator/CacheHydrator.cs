@@ -44,11 +44,12 @@ namespace AzW.Job.CacheHydrator
         }
 
         [FunctionName("CacheHydrator")]
-        public async Task Run([TimerTrigger("*/5 * * * * *")]TimerInfo myTimer, Microsoft.Extensions.Logging.ILogger log)
+        public async Task Run([TimerTrigger("* */60 * * * *")]TimerInfo myTimer, Microsoft.Extensions.Logging.ILogger log)
         {
-            var azureServiceTokenProvider = new AzureServiceTokenProvider();
+            var azureServiceTokenProvider = new AzureServiceTokenProvider("RunAs=App;");
 
-            var accessToken = await azureServiceTokenProvider.GetAccessTokenAsync("https://management.azure.com/").ConfigureAwait(false);
+            string resource = @"https://management.azure.com/";
+            var accessToken = await azureServiceTokenProvider.GetAccessTokenAsync(resource).ConfigureAwait(false);
 
             var azCred = new AzureCredentials
                 (new TokenCredentials(accessToken), null, _secret.TenantId, AzureEnvironment.AzureGlobalCloud);
