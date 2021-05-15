@@ -34,8 +34,8 @@ namespace AzW.Job.CacheHydrator
                 RedisHost = config.GetValue<string>("RedisHost"),
                 RedisPassword = config.GetValue<string>("RedisPassword"),
                 AppInsightsKey = config.GetValue<string>("AppInsightsKey"),
-                ClientId = config.GetValue<string>("ClientId"),
-                ClientSecret = config.GetValue<string>("ClientSecret"),
+                // ClientId = config.GetValue<string>("ClientId"),
+                // ClientSecret = config.GetValue<string>("ClientSecret"),
                 TenantId = config.GetValue<string>("TenantId"),
                 SubscriptionId = config.GetValue<string>("SubscriptionId")
             };
