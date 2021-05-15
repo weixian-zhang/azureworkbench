@@ -6206,12 +6206,12 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
     this.diagramService.saveDiagramToWorkspace(diagramContext,
       function onSuccess() {
 
+        Toast.show('success', 2000, Messages.SavedSuccessfully());
+        
         thisComp.setDiagramModifiedFalse();
         thisComp.clearAutosaveDiagram();
 
         thisComp.statusbarHelper.setShortcutSavedDiagram(diagramContext.CollectionName, diagramContext.DiagramName)
-
-        Toast.show('success', 2000, Messages.SavedSuccessfully());
 
         return;
       },
