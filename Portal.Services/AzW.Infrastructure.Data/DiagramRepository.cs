@@ -323,8 +323,8 @@ namespace AzW.Infrastructure.Data
                     IEnumerable<WorkspaceDiagramContext> batch = cursor.Current;
                     foreach (WorkspaceDiagramContext context in batch)
                     {
-                       double size =
-                        await _blob.GetBlobSizeInMB(context.EmailId, context.CollectionName, context.DiagramName);
+                    //    double size =
+                    //     await _blob.GetBlobSizeInMB(context.EmailId, context.CollectionName, context.DiagramName);
                        contextResult.Add(new WorkspaceDiagramContextResult()
                        {
                            EmailId = context.EmailId,
@@ -332,8 +332,8 @@ namespace AzW.Infrastructure.Data
                            UID = context.UID,
                            CollectionName = context.CollectionName,
                            DiagramName = context.DiagramName,
-                           DateTimeSaved = context.DateTimeSaved,
-                           SizeInMB = size
+                           DateTimeSaved = context.DateTimeSaved
+                        //    SizeInMB = size
                            
                        });
                     }

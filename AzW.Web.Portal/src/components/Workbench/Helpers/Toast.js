@@ -11,7 +11,6 @@ export const AppToaster = Toaster.create({
 
 export default class Toast extends Component {
     constructor(props) {
-      super(props);
     }
   
     static show = (intent, duration, message) => {

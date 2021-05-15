@@ -1058,6 +1058,15 @@ export default class ResourcePalette extends Component {
             },
 
             {
+              Name: 'wvd windows virtual desktop',
+              Tooltip: 'Windows Virtual Desktop',
+              Image: require('../../assets/IconCloud/azure/nondeployable/00327-icon-Windows Virtual Desktop-Other.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
+
+            {
               Name: 'lighthouse light house',
               Tooltip: 'Azure LightHouse',
               Image: require('../../assets/IconCloud/azure/nondeployable/00471-icon-Azure Lighthouse-Management-Governance.svg'),

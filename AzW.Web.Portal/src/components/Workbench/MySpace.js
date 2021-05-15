@@ -197,7 +197,7 @@ export default class MySpace extends Component {
                   <TableCell>Collection</TableCell>
                   <TableCell align="right">Diagram Name</TableCell>
                   <TableCell align="right">Last Modified</TableCell>
-                  <TableCell align="right">Size</TableCell>
+                  {/* <TableCell align="right">Size</TableCell> */}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -209,7 +209,7 @@ export default class MySpace extends Component {
                     </TableCell>
                     <TableCell align="right">{diagram.diagramName}</TableCell>
                     <TableCell align="right">{new moment(diagram.dateTimeSaved).fromNow()}</TableCell>
-                    <TableCell align="right">{diagram.sizeInMB} MB</TableCell>
+                    {/* <TableCell align="right">{diagram.sizeInMB} MB</TableCell> */}
                     <TableCell align="right">
                       <Button text="Update" icon="floppy-disk"
                             onClick={() =>

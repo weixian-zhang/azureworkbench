@@ -10,7 +10,7 @@
                 "name": "Redis-Dev",
                 "host": "redis-azworkbench-dev.redis.cache.windows.net",
                 "accessKey": "9rqrRizYuQCtdDESI+B6qSey73uOmtee7XgGcq0vFCQ=",
-                "filter": "servicetag*",
+                "filter": "desktop*",
                 "port": "6380"
             },
             {
