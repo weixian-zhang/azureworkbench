@@ -51,7 +51,7 @@ import Hostgroup from "../../models/Hostgroup";
 import VMWareSolution from "../../models/VMWareSolution";
 import WorkspaceWVD from "../../models/WorkspaceWVD";
 import DiskEncryptionSet from "../../models/DiskEncryptionSet";
-import Image from "../../models/Image";
+import VMImage from "../../models/VMImage";
 import DiskSnapshot from "../../models/DiskSnapshot";
 import ImageTemplate from "../../models/ImageTemplate";
 import Automanage from "../../models/Automanage";
@@ -967,6 +967,23 @@ createPictureShapeTemplate() {
     );
 
   return template;
+}
+
+createTableTemplate(){
+  //https://gojs.net/latest/samples/addRemoveColumns.html
+}
+
+tableAddRow() {
+
+}
+tableRemoveRow() {
+  
+}
+tableAddColumn() {
+  
+}
+tableRemoveColumn() {
+  
 }
 
 createVIRBySkuBased(dropContext) {
@@ -3224,36 +3241,40 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
           return;
       }
 
-      // Create an abstract canvas and get context
-      var mycanvas = document.createElement("canvas");
-      var ctx = mycanvas.getContext('2d');
-      
-      // Create an image
-      var img = new Image();
-
-      // Once the image loads, render the img on the canvas
-      img.onload = function(){
-          // Update dimensions of the canvas with the dimensions of the image
-          mycanvas.width = this.width;
-          mycanvas.height = this.height;
-
-          // Draw the image
-          ctx.drawImage(img, 0, 0);
-
-          // Execute callback with the base64 URI of the image
-          if(typeof(callback) == "function"){
-            var dataUrl = mycanvas.toDataURL();
-            callback(dataUrl);
-          }
-      };
-
       // Crossbrowser support for URL
-      var URLObj = window.URL || window.webkitURL;
+      var url = window.URL || window.webkitURL;
+      var src = url.createObjectURL(blob);
 
-      // Creates a DOMString containing a URL representing the object given in the parameter
-      // namely the original Blob
-      img.src = URLObj.createObjectURL(blob);
+      thisComp.loadPastedImageFromBrowserClipboard(src, callback);
   }
+}
+
+loadPastedImageFromBrowserClipboard(src, callback){
+
+  // Create an abstract canvas and get context
+  var mycanvas = document.createElement("canvas");
+  var ctx = mycanvas.getContext('2d');
+
+  // Create an image
+  var img = new Image();
+
+  //Once the image loads, render the img on the canvas
+  img.onload = function() {
+      // Update dimensions of the canvas with the dimensions of the image
+      mycanvas.width = this.width;
+      mycanvas.height = this.height;
+
+      // Draw the image
+      ctx.drawImage(img, 0, 0);
+
+      // Execute callback with the base64 URI of the image
+      if(typeof(callback) == "function"){
+        var dataUrl = mycanvas.toDataURL();
+        callback(dataUrl);
+      }
+  };
+
+  img.src = src;  
 }
 
   loadAutoSavedRecoveryPoint() {
@@ -4555,11 +4576,11 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
         });
       break;
 
-      case ResourceType.Image():
+      case ResourceType.VMImage():
         this.createNonVIRAzureResource({
           source: require('../../assets/IconCloud/azure/compute/10033-icon-Images-Compute.svg'),
           label: 'image', x: dropContext.x, y: dropContext.y,
-          azcontext: new Image()
+          azcontext: new VMImage()
         });
       break;
 
@@ -5363,7 +5384,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
-  case ResourceType.Image():
+  case ResourceType.VMImage():
         this.imagePropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });

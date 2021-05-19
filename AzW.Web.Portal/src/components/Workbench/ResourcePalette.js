@@ -1791,7 +1791,7 @@ export default class ResourcePalette extends Component {
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
-              resourceType: ResourceType.Image()
+              resourceType: ResourceType.VMImage()
             },
             {
               Name: 'disk encryption set',

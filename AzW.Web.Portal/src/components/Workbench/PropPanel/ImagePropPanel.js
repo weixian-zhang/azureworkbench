@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Image from '../../../models/Image';
+import VMImage from '../../../models/VMImage';
 import { FormGroup, Drawer, Intent, Button, Switch } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
 import Tabs from '@material-ui/core/Tabs';
@@ -16,7 +16,7 @@ export default class ImagePropPanel extends Component {
 
       this.state ={
         isOpen: false,
-        userObject: new Image(),
+        userObject: new VMImage(),
 
         saveCallback: function () {},
       }

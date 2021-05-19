@@ -134,7 +134,7 @@ export default class ResourceType
     static ServiceFabricCluster() {return 'servicefabriccluster';}
     static ServiceFabricManagedCluster() {return 'servicefabricmanagedcluster';}
     static Automanage() {return 'automanage';}
-    static Image() {return 'image';}
+    static VMImage() {return 'vmimage';}
     static Host() {return 'host';}
     static Hostgroup() {return 'hostgroup';}
     static VMWareSolution() {return 'vmwaresolution';}

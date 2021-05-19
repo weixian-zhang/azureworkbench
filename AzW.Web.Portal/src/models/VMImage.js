@@ -1,15 +1,15 @@
 import ResourceType from './ResourceType'
-export default class Image
+export default class VMImage
 {
     constructor (){
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.Image(),
+            ResourceType: ResourceType.VMImage(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.Image(),
+            ResourceType: ResourceType.VMImage(),
             Name: '',
             Location: '',
             ResourceGroupName: ''
