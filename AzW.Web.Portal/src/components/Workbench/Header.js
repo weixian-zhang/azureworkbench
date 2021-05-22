@@ -88,7 +88,7 @@ export default class Header extends Component {
         <OverlayAbout ref={this.overlayAbout} />
         <OverlaySharedDiagramPrompt ref={this.overlaySharedDiagramPrompt} />
         <OverlayProvision ref={this.overlayProvision} OnOverlayProvisionClose={this.onOverlayProvisionClose}/>
-        <AppBar position="static" style={{overflow:'hidden', height:'40px',margin:0,padding:0, background: '#2E3B55' }}>
+        <AppBar position="static" style={{overflow:'hidden', height:'40px',margin:0,padding:0, background: '#000000' }}>
           <Toolbar variant='dense' disableGutters={true}>
               <IconButton
                 color="inherit"
@@ -104,7 +104,7 @@ export default class Header extends Component {
             <section style={this.style.rightToolbar}>
 
               <Popover content=
-               { 
+               {
                    <Menu className={Classes.ELEVATION_1}>
                      <MenuItem  text="Share" onClick={this.shareDiagram} />
                      <MenuDivider />
@@ -132,7 +132,7 @@ export default class Header extends Component {
                   </Badge>
                 </IconButton>
               </Popover>
-              
+
               <IconButton color="inherit" aria-label="Edit" onClick={this.showWorkspace}>
                 <Tooltip title="My Space" position="bottom">
                   <LocalMall  />
@@ -141,7 +141,7 @@ export default class Header extends Component {
 
               {/* quickstart */}
               <Popover content=
-               { 
+               {
                    <Menu className={Classes.ELEVATION_1}>
                      <Typography variant="button" style={{fontSize:11,textAlign:'center'}}>
                        Quickstart Template
@@ -190,10 +190,11 @@ export default class Header extends Component {
               </Popover>
 
               <Tooltip
-                title= {(this.global.currentSubscription == null) ? 'No Subscription Selected' : 'Selected subscription: ' + this.global.currentSubscription.Name}
+                title= "Generate Bicep template"
                 placement="bottom">
-                <IconButton color="inherit" aria-label="Edit" onClick={this.showProvisionOverlay}> 
-                    <Icon icon="delta"  />  
+                <IconButton color="inherit" aria-label="Edit" onClick={this.generateBicep}>
+                    {/* <Icon icon="delta"  />   */}
+                    <img src={require('../../assets/IconCloud/azure/nondeployable/azure-bicep.png')} width="25px" height="25px" alt="" />
                 </IconButton>
               </Tooltip>
 
@@ -205,7 +206,7 @@ export default class Header extends Component {
                 </Tooltip>
               </IconButton>
                 <Popover content=
-               { 
+               {
                    <Menu className={Classes.ELEVATION_1}>
                      {this.state.isLogin== true ? <MenuItem labelElement={<PowerSettingsNewIcon />} text="Logout" onClick={this.logout} /> : ''}
                      {this.state.isLogin  == false ? <MenuItem labelElement={<Icon icon="log-in" />} text="Login" onClick={this.login} /> : '' }
@@ -232,7 +233,7 @@ export default class Header extends Component {
             </Label>
             <Button text="Confirm" icon="delete" onClick={this.deleteDiagramFromrBrowser } />
             <span className="bp3-navbar-divider"></span>
-            <Button text="Cancel" onClick={() => 
+            <Button text="Cancel" onClick={() =>
                 this.setState({ isDeleteConfirmationDialogOpen: false})} />
           </Card>
         </Overlay>
@@ -254,7 +255,7 @@ export default class Header extends Component {
                 this.closeLoginOptionPrompt();
               } } />
             <Label style={{color: "darkblue", marginTop: "8px"}}>
-              *Workbench can only deploy to Azure Subscriptions with consent granted Azure AD Work account. 
+              *Workbench can only deploy to Azure Subscriptions with consent granted Azure AD Work account.
             </Label>
           </Card>
         </Overlay>
@@ -265,7 +266,7 @@ export default class Header extends Component {
   login = async () => {
 
     this.setState({loginOptionPopup: true});
-    
+
     // var userProfile = await this.authService.login();
     // this.setState({isLogin: true, userProfile:  userProfile});
   }
@@ -311,12 +312,12 @@ loadAutoSaveRecoveryPoint = () => {
             var diagramEditor =  thisComp.props.Workbench.current.getDiagramEditor();
             diagramEditor.shareDiagram(diagramName);
        });
-       
+
      } else {
         var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
         diagramEditor.shareDiagram();
      }
-     
+
  }
 
  savetoWorkspace = () => {
@@ -384,18 +385,23 @@ deployDiagramToAzure(subscription) {
   diagramEditor.deployDiagramToAzure(subscription);
 }
 
- clearGraph = () => {
-     var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
-    diagramEditor.clearGraph();
- }
+//  clearGraph = () => {
+//      var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
+//     diagramEditor.clearGraph();
+//  }
 
 showTutorial = () => {
   this.overlayTutorial.current.show();
 }
 
-showProvisionOverlay = () => {
-    this.overlayProvision.current.show(this);
+generateBicep = () => {
+  var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
+  diagramEditor.generateBicep();
 }
+
+//showProvisionOverlay = () => {
+    //this.overlayProvision.current.show(this);
+//}
 
 onOverlayProvisionClose = () => {
   if(this.global.currentSubscription != null)

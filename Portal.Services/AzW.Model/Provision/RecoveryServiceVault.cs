@@ -1,6 +1,6 @@
 namespace AzW.Model
  {
-     public class RecoveryServiceVault
+     public class RecoveryServiceVault : Resource
      {
          public string Name { get; set; }
          public string Location { get; set; }

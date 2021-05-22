@@ -4,18 +4,18 @@ import * as go from 'gojs';
 
 export default class ProvisionHelper
 {
-    ExtractProvisionContexts = (diagram) => {
+    ExtractAzContexts = (diagram) => {
 
         if(Utils.isCanvasEmpty())
             return [];
-        
+
         var provisionContexts = [];
 
         var allNodes = diagram.nodes;
 
         while (allNodes.next()) {
-            
-            var node = allNodes.value; 
+
+            var node = allNodes.value;
 
             if(!(node instanceof go.Link) &&
                 !Utils.isSubnet(node) &&
@@ -45,13 +45,13 @@ export default class ProvisionHelper
 
                 if(this.getFirewallContexts(node, provisionContexts))
                     continue;
-                
+
                 if(this.getASEContexts(node, provisionContexts))
                     continue;
-                
+
                 if(this.getLAWContexts(node, provisionContexts))
                     continue;
-                
+
                 if(this.getASCContext(node, provisionContexts))
                     continue;
 
@@ -64,12 +64,12 @@ export default class ProvisionHelper
         return this.sortProvisionContexts(provisionContexts);
     }
 
-    
+
     sortProvisionContexts(proContexts) {
 
         if(proContexts.length == 0)
             return [];
-        
+
         var sortedContexts = [];
 
         var i = 0;
@@ -79,7 +79,7 @@ export default class ProvisionHelper
 
             while(proContexts.find(p => p.ResourceType == ResourceType.NSG()) != null) {
                 for(var pc of proContexts) {
-        
+
                     if(pc.ResourceType == ResourceType.NSG()) {
 
                         sortedContexts.push(pc);
@@ -120,10 +120,10 @@ export default class ProvisionHelper
         if(proContexts.find(p => p.ResourceType == ResourceType.WindowsVM() ||
                 p.ResourceType == ResourceType.LinuxVM()) != null) {
 
-            while(proContexts.find(p => 
+            while(proContexts.find(p =>
                 p.ResourceType == ResourceType.WindowsVM()||
                 p.ResourceType == ResourceType.LinuxVM()) != null) {
-                    
+
                 for(var pc of proContexts) {
 
                     if(pc.ResourceType == ResourceType.WindowsVM() ||
@@ -172,16 +172,16 @@ export default class ProvisionHelper
     }
 
     getVNetContext = (node, provisionContexts) => {
-        
+
         if(Utils.isVNet(node))
         {
             var vnet = node;
 
             var subnets = this.getSubnetNodes(vnet);
-        
+
             if(subnets.length == 0)
                 return;
-            
+
                 var subnetProContexts = [];
 
                 subnets.map(subNode => {
@@ -305,25 +305,25 @@ export default class ProvisionHelper
             return true;
         }
     }
-    
+
     getNSGs = (node, provisionContexts) => {
 
         if(!Utils.isVNet(node))
             return;
-        
+
         var vnetNode = node;
 
         var subnets = this.getSubnetNodes(vnetNode);
 
         if(subnets.length == 0)
             return;
-        
+
         subnets.map(sub => {
-            
+
             var nsgPart = sub.findObject("NSG");
 
             if(nsgPart.visible == true) {
-                
+
                 var vnetNode = sub.containingGroup;
 
                 nsgPart.nsgazcontext.ProvisionContext.VNetName =
@@ -398,7 +398,7 @@ export default class ProvisionHelper
                 ascContext.LogAnalyticsWorkspaceName = this.getLAWNameConnectedToASC(asc);
                 provisionContexts.push(ascContext);
             }
-            
+
             return true;
         }
     }
@@ -410,14 +410,14 @@ export default class ProvisionHelper
         while (links.next()) {
 
             var link = links.value;
-            
+
             var toNode = link.toNode;
             var fromNode  = link.fromNode ; //could be from instead of to
 
             if(toNode != null && Utils.isLAW(toNode)) {
                 return toNode.data.azcontext.ProvisionContext.Name;
             }
-            
+
             if(fromNode != null && Utils.isLAW(fromNode)) {
                 return fromNode.data.azcontext.ProvisionContext.Name;
             }
@@ -436,14 +436,14 @@ export default class ProvisionHelper
         while (links.next()) { // for each link get the link text and toNode text
 
             var link = links.value;
-            
+
             var toNode = link.toNode;
             var fromNode  = link.fromNode ; //could be from instead of to
 
             if(toNode != null && Utils.IsVM(toNode)) {
                 vmNames.push(toNode.data.azcontext.ProvisionContext.Name);
             }
-            
+
             if(fromNode != null && Utils.IsVM(fromNode)) {
                 vmNames.push(fromNode.data.azcontext.ProvisionContext.Name);
             }
@@ -515,7 +515,7 @@ export default class ProvisionHelper
                 part.svcendazcontext.ProvisionContext.ServiceEndpointTargetServices) {
 
                 if(svcend.isSelected)
-                    svcEndpoints.push(svcend.resourceName); 
+                    svcEndpoints.push(svcend.resourceName);
             }
             return svcEndpoints;
         }
@@ -546,7 +546,7 @@ export default class ProvisionHelper
 
     //helper
     getNodesInSubnets(subnets) {
-        
+
         var nodesInSubnets = [];
 
         subnets.map(sub => {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace AzW.Model
  {
-     public class NSG
+     public class NSG : Resource
      {
           public string Name { get; set; }
           public string Location { get; set; }
@@ -12,6 +12,6 @@ namespace AzW.Model
           public string SubnetName { get; set; }
           public IEnumerable<NSGRule> InboundRules { get; set; } = new List<NSGRule>();
           public IEnumerable<NSGRule> OutboundRules { get; set; } = new List<NSGRule>();
-         
+
      }
  }

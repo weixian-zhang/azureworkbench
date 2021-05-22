@@ -308,6 +308,7 @@ import NICPropPanel from "./PropPanel/NICPropPanel";
 import OverlayPreviewDiagram from "./OverlayPreviewDiagram";
 import ARMService from "../../services/ARMService";
 import AuthService from "../../services/AuthService";
+import BicepService from "../../services/BicepService";
 import ComputeService from "../../services/ComputeService";
 import ProvisionHelper from './Helpers/ProvisionHelper';
 import Toast from './Helpers/Toast';
@@ -324,7 +325,7 @@ import GeometryReshapingTool from './GojsExtensions/GeometryReshapingTool';
 import AzureIcons from './Helpers/AzureIcons';
 
  export default class DiagramEditor extends Component {
- 
+
   constructor(props) {
     super(props);
 
@@ -348,6 +349,7 @@ import AzureIcons from './Helpers/AzureIcons';
 
     this.Index = this.props.Index; //Index component contains progress Comp
 
+    this.bicepsvc = BicepService;
     this.authsvc = AuthService;
     this.armsvc = new ARMService();
     this.comsvc = new ComputeService();
@@ -372,7 +374,7 @@ import AzureIcons from './Helpers/AzureIcons';
     this.diagramService = new DiagramService();
     this.provisionService = new ProvisionService();
     this.provisionHelper = new ProvisionHelper();
-    
+
     this.addKeyPressShortcuts();
     this.PromptSaveBeforeCloseBrowser();
 
@@ -442,7 +444,7 @@ import AzureIcons from './Helpers/AzureIcons';
         <CognitivePropPanel ref={this.cognitivePropPanel} />
         <BotsServicePropPanel ref={this.botsPropPanel} />
         <GenomicsPropPanel ref={this.genomicsPropPanel} />
-        <MLServiceWorkspacePropPanel ref={this.mlsvcworkspacePropPanel} /> 
+        <MLServiceWorkspacePropPanel ref={this.mlsvcworkspacePropPanel} />
         <NatGatewayPropPanel ref={this.natgwPropPanel} />
         <AzureArcPropPanel ref={this.arcPropPanel} />
         <ServiceEndpointPropPanel ref={this.svcendpointPropPanel} />
@@ -551,7 +553,7 @@ import AzureIcons from './Helpers/AzureIcons';
   }
 
   initRef() {
-    
+
     this.communicationservicePropPanel = React.createRef();
     this.deviceprovisioningservicePropPanel = React.createRef();
     this.deviceupdateforiothubPropPanel = React.createRef();
@@ -659,7 +661,7 @@ import AzureIcons from './Helpers/AzureIcons';
     this.sqlelasticpoolPropPanel = React.createRef();
     this.sqlmiPropPanel = React.createRef();
     this.redisPropPanel = React.createRef();
-    this.datalakestoragePropPanel = React.createRef(); 
+    this.datalakestoragePropPanel = React.createRef();
     this.datalakeanalyticsPropPanel = React.createRef();
     this.databricksPropPanel = React.createRef();
     this.datafactoryPropPanel = React.createRef();
@@ -691,11 +693,11 @@ import AzureIcons from './Helpers/AzureIcons';
     this.timeseriesPropPanel = React.createRef();
     this.iotcentralPropPanel = React.createRef();
   }
-  
+
   initDiagramCanvas = (model) => {
 
     this.diagram =
-      this.$(go.Diagram, 'diagramEditor', 
+      this.$(go.Diagram, 'diagramEditor',
       {
           initialContentAlignment: go.Spot.Center,
           initialAutoScale: go.Diagram.Uniform,
@@ -703,12 +705,12 @@ import AzureIcons from './Helpers/AzureIcons';
           'animationManager.isEnabled': true,  // turn off automatic animation
 
           commandHandler: new LocalStorageCommandHandler(this),
-          
+
           autoScrollRegion: new go.Margin(20, 20, 20, 20),
           allowHorizontalScroll: true,
           allowVerticalScroll : true,
 
-          draggingTool: new GuidedDraggingTool(), 
+          draggingTool: new GuidedDraggingTool(),
           "draggingTool.horizontalGuidelineColor": "blue",
           "draggingTool.verticalGuidelineColor": "blue",
           "draggingTool.centerGuidelineColor": "green",
@@ -716,7 +718,7 @@ import AzureIcons from './Helpers/AzureIcons';
 
           // allow Ctrl-G to call groupSelection
           "commandHandler.archetypeGroupData": { text: "Group", isGroup: true, color: "blue" },
-          
+
           "ClipboardPasted": function(e) { e.diagram.commandHandler.copyToClipboard(null); },
 
           isReadOnly: false,
@@ -744,9 +746,9 @@ import AzureIcons from './Helpers/AzureIcons';
                 },
                 new go.Binding("points").makeTwoWay(),
                 this.$(go.Shape, { strokeWidth: 1.5 })
-                
+
               ),
-          "linkingTool.archetypeLinkData": { 
+          "linkingTool.archetypeLinkData": {
             fromArrow: '',
             toArrow: 'Standard',
             adjusting: go.Link.Stretch,
@@ -758,8 +760,8 @@ import AzureIcons from './Helpers/AzureIcons';
             category: 'ortho'
           }
       });
-    
-    
+
+
     this.diagram.layout.isInitial = false;
 
     this.diagram.toolManager.textEditingTool.defaultTextEditor = window.TextEditor;
@@ -772,7 +774,7 @@ import AzureIcons from './Helpers/AzureIcons';
     this.initDiagramBehaviors();
 
     this.initFreehandTool();
-    
+
 
     var model =
       new go.GraphLinksModel(this.nodeDataArray, this.linkDataArray);
@@ -843,7 +845,7 @@ initTemplates() {
   groupTemplateMap.add('', this.createGroupTemplate());
   groupTemplateMap.add('vnet', this.createVNetTemplate());
   groupTemplateMap.add('subnet', this.createSubnetTemplate());
-  
+
   this.initLinkTemplate(linkTemplateMap);
 
   this.diagram.nodeTemplateMap = nodeTemplateMap;
@@ -877,7 +879,7 @@ createTextTemplate() {
         new go.Binding("height").makeTwoWay(),
         new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
         this.$(go.TextBlock,
-          { 
+          {
             name: "TEXT",
             editable: true,
             isMultiline: true,
@@ -901,18 +903,18 @@ createTextTemplate() {
 
 createPictureShapeTemplate() {
 
-  var template =   
+  var template =
 
   this.$(go.Node, "Spot",
-    { 
+    {
       locationSpot: go.Spot.Center
     },
     new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
     new go.Binding("zOrder").makeTwoWay(),
-    { 
+    {
       locationSpot: go.Spot.Center,
       selectable: true,
-      resizable: true, 
+      resizable: true,
       resizeObjectName: "PANEL",
       selectionObjectName: "PANEL",
       selectionChanged: function(p) {
@@ -922,8 +924,8 @@ createPictureShapeTemplate() {
     },
     this.$(go.Panel, "Vertical",
           this.$(go.Panel, "Table",
-            { 
-              name: "PANEL", 
+            {
+              name: "PANEL",
             },
             //bind 2 ways to update model so that shape above can resize according
             //to panel size
@@ -958,7 +960,7 @@ createPictureShapeTemplate() {
     //   new go.Binding("source","source"),
     //   new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify)
     // ),
-    
+
 
         this.makePort("T", go.Spot.Top,  go.Spot.TopSide, true, true),
         this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true),
@@ -977,13 +979,13 @@ tableAddRow() {
 
 }
 tableRemoveRow() {
-  
+
 }
 tableAddColumn() {
-  
+
 }
 tableRemoveColumn() {
-  
+
 }
 
 createVIRBySkuBased(dropContext) {
@@ -1019,7 +1021,7 @@ createVIRBySkuBased(dropContext) {
             azcontext: new NLB()
           });
       break;
-      
+
       case ResourceType.APIM():
 
         if(this.diagram.selection.first() != null)
@@ -1056,12 +1058,12 @@ createVIRBySkuBased(dropContext) {
 
 createNonVIRAzureResourceTemplate() {
   var thisComp = this;
-    var template =   
+    var template =
     this.$(go.Node, "Spot",
-      { 
+      {
         locationSpot: go.Spot.Center,
         selectable: true,
-        resizable: true, 
+        resizable: true,
         resizeObjectName: "PANEL",
         selectionObjectName: "PANEL",
         selectionChanged: function(p) {
@@ -1079,7 +1081,7 @@ createNonVIRAzureResourceTemplate() {
                 if(Utils.isObjPropChange(existingContext, savedContext)) {
                   thisComp.setDiagramModifiedTrue();
                 }
-                
+
             });
         }
       },
@@ -1088,8 +1090,8 @@ createNonVIRAzureResourceTemplate() {
       new go.Binding("zOrder").makeTwoWay(),
       this.$(go.Panel, "Vertical",
           this.$(go.Panel, "Table",
-            { 
-              name: "PANEL", 
+            {
+              name: "PANEL",
             },
             //bind 2 ways to update model so that shape above can resize according
             //to panel size
@@ -1157,7 +1159,7 @@ createShapeTemplate() {
         new go.Binding("desiredSize").makeTwoWay(),
       ),
       this.$(go.TextBlock,
-        { 
+        {
           editable: true,
           isMultiline: true,
           textAlign: "center"
@@ -1171,7 +1173,7 @@ createShapeTemplate() {
         this.makeShapePort("L", go.Spot.Left, go.Spot.Left, go.Spot.LeftSide, true, true),
         this.makeShapePort("R", go.Spot.Right, go.Spot.Right, go.Spot.RightSide, true, true)
       );
-    
+
     return shapeTemplate;
 }
 
@@ -1224,7 +1226,7 @@ makeShapePort(name, align, alignFocus, spot, output, input, figure) {
   var horizontal = align.equals(go.Spot.Top) || align.equals(go.Spot.Bottom);
   // the port is basically just a transparent rectangle that stretches along the side of the node,
   // and becomes colored when the mouse passes over it
-  return this.$(go.Shape, 
+  return this.$(go.Shape,
     {
       fill: "transparent",  // changed to a color in the mouseEnter event handler
       strokeWidth: 0,  // no stroke
@@ -1251,13 +1253,13 @@ makeShapePort(name, align, alignFocus, spot, output, input, figure) {
 }
 
 initLinkTemplate(linkTemplateMap) {
-  
+
   //link overview
   //https://gojs.net/latest/intro/links.html
-  
+
     var straightLink =
         this.$(go.Link,  // the whole link panel
-            { 
+            {
               routing: go.Link.AvoidsNodes,
               curve: go.Link.JumpOver,
               corner: 5, toShortLength: 4,
@@ -1283,8 +1285,8 @@ initLinkTemplate(linkTemplateMap) {
               new go.Binding("strokeWidth").makeTwoWay(),
               new go.Binding("stroke").makeTwoWay(),
             ),
-            this.$(go.Shape, 
-              { isPanelMain: true, opacity: 0, stroke: "white", name: "ANIMATE", strokeDashArray: [10, 10] 
+            this.$(go.Shape,
+              { isPanelMain: true, opacity: 0, stroke: "white", name: "ANIMATE", strokeDashArray: [10, 10]
               },
               new go.Binding("opacity").makeTwoWay(),
               new go.Binding("strokeWidth").makeTwoWay()
@@ -1297,8 +1299,8 @@ initLinkTemplate(linkTemplateMap) {
 
    var bezierLink =
       this.$(go.Link,
-          { 
-            
+          {
+
             corner: 9,
             relinkableFrom: true,
             relinkableTo: true,
@@ -1325,8 +1327,8 @@ initLinkTemplate(linkTemplateMap) {
           ),
         new go.Binding("strokeWidth").makeTwoWay(),
         new go.Binding("stroke").makeTwoWay(),
-        this.$(go.Shape, 
-          { isPanelMain: true, opacity: 0, stroke: "white", name: "ANIMATE", strokeDashArray: [10, 10] 
+        this.$(go.Shape,
+          { isPanelMain: true, opacity: 0, stroke: "white", name: "ANIMATE", strokeDashArray: [10, 10]
           },
           new go.Binding("opacity").makeTwoWay(),
           new go.Binding("strokeWidth").makeTwoWay()
@@ -1362,8 +1364,8 @@ initLinkTemplate(linkTemplateMap) {
             new go.Binding("strokeWidth").makeTwoWay(),
             new go.Binding("stroke").makeTwoWay(),
           ),
-          this.$(go.Shape, 
-            { isPanelMain: true, opacity: 0, stroke: "white", name: "ANIMATE", strokeDashArray: [10, 10] 
+          this.$(go.Shape,
+            { isPanelMain: true, opacity: 0, stroke: "white", name: "ANIMATE", strokeDashArray: [10, 10]
             },
             new go.Binding("opacity").makeTwoWay(),
             new go.Binding("strokeWidth").makeTwoWay()
@@ -1380,7 +1382,7 @@ initLinkTemplate(linkTemplateMap) {
 }
 
 createGroupTemplate() {
-  
+
     var groupTemplate =
       this.$(go.Group, "Auto",
       {
@@ -1408,7 +1410,7 @@ createGroupTemplate() {
       this.makePort("T", go.Spot.Top,  go.Spot.TopSide, true, true),
       this.makePort("B", go.Spot.Bottom, go.Spot.BottomSide, true, true),
       this.makePort("L", go.Spot.Left, go.Spot.LeftSide, true, true),
-      this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true)  
+      this.makePort("R", go.Spot.Right, go.Spot.RightSide, true, true)
     );
 
     return groupTemplate;
@@ -1426,7 +1428,7 @@ initDiagramModifiedEvent(isLoadFromSource) {
   //       thisComp.setDiagramModifiedFalse();
   //       return;
   //     }
-      
+
   //     if(thisComp.diagram.isModified) {
   //       if(thisComp.state.unsavedChanges)
   //         return;
@@ -1458,7 +1460,7 @@ initDiagramModifiedEvent(isLoadFromSource) {
             thisComp.setDiagramModifiedFalse();
             return;
           }
-          
+
           if(thisComp.state.unsavedChanges)
               return;
 
@@ -1479,10 +1481,10 @@ initContextMenu() {
 
       this.$("ContextMenuButton",
         this.$(go.TextBlock, "Add Subnet"),
-            { 
+            {
               click: function(e, obj) {
                 thisComp.createSubnet(obj.part.data.key);
-              } 
+              }
             },
             new go.Binding("visible", "", function(o) {
                 return Utils.isVNet(o.diagram.selection.first());
@@ -1490,64 +1492,64 @@ initContextMenu() {
 
             this.$("ContextMenuButton",
             this.$(go.TextBlock, "Add/Remove NSG"),
-                { 
+                {
                   click: function(e, obj) {
                     if(Utils.isNSG(obj.part)) {
                         if(obj.part.data.nsgVisible == false)
                           thisComp.diagram.model.setDataProperty(obj.part.data, 'nsgVisible', true);
                         else
                           thisComp.diagram.model.setDataProperty(obj.part.data, 'nsgVisible', false);
-                      
+
                         thisComp.setDiagramModifiedTrue();
                     }
-                  } 
+                  }
                 },
                 new go.Binding("visible", "", function(o) {
                     return Utils.isSubnet(o.diagram.selection.first());
                 }).ofObject()
           ),
-  
+
           this.$("ContextMenuButton",
             this.$(go.TextBlock, "Add/Remove UDR"),
-                { 
+                {
                   click: function(e, obj) {
                     if(Utils.isUDR(obj.part)) {
                         if(obj.part.data.udrVisible == false)
                           thisComp.diagram.model.setDataProperty(obj.part.data, 'udrVisible', true);
                         else
                           thisComp.diagram.model.setDataProperty(obj.part.data, 'udrVisible', false);
-                      
+
                         thisComp.setDiagramModifiedTrue();
                     }
-                  } 
+                  }
                 },
                 new go.Binding("visible", "", function(o) {
                     return Utils.isSubnet(o.diagram.selection.first());
                 }).ofObject()
             ),
-          
+
           this.$("ContextMenuButton",
             this.$(go.TextBlock, "Add/Remove Service Endpoint"),
-                { 
+                {
                   click: function(e, obj) {
                     if(Utils.isUDR(obj.part)) {
                         if(obj.part.data.svcendVisible == false)
                           thisComp.diagram.model.setDataProperty(obj.part.data, 'svcendVisible', true);
                         else
                           thisComp.diagram.model.setDataProperty(obj.part.data, 'svcendVisible', false);
-                        
+
                         thisComp.setDiagramModifiedTrue();
                     }
-                  } 
+                  }
                 },
                 new go.Binding("visible", "", function(o) {
                     return Utils.isSubnet(o.diagram.selection.first());
                 }).ofObject()
             ),
-          
+
           this.$("ContextMenuButton",
             this.$(go.TextBlock, "Add/Remove NAT Gateway"),
-                { 
+                {
                   click: function(e, obj) {
                     if(Utils.isNATGW(obj.part)) {
                         if(obj.part.data.natgwVisible == false)
@@ -1555,7 +1557,7 @@ initContextMenu() {
                         else
                           thisComp.diagram.model.setDataProperty(obj.part.data, 'natgwVisible', false);
                     }
-                  } 
+                  }
                 },
                 new go.Binding("visible", "", function(o) {
                     return Utils.isVNet(o.diagram.selection.first());
@@ -1563,16 +1565,16 @@ initContextMenu() {
             ),
 
       this.$(go.Shape, 'LineH', {strokeWidth: 1.5, height: 1, stretch: go.GraphObject.Horizontal}),
-        
+
       this.$("ContextMenuButton",
       this.$(go.TextBlock, "Duplicate"),
-          { 
+          {
             click: function(e, obj) {
               var selectedNode = thisComp.diagram.selection.first();
               var newLoc = new go.Point(selectedNode.actualBounds.x, selectedNode.actualBounds.y + 6 )
               go.CommandHandler.prototype.copySelection.call(thisComp.diagram.commandHandler);
               go.CommandHandler.prototype.pasteSelection.call(thisComp.diagram.commandHandler, newLoc);
-            } 
+            }
           },
           new go.Binding("visible", "", function(o) {
               return o.diagram.selection.first() != null;
@@ -1595,24 +1597,24 @@ initContextMenu() {
 
         this.$("ContextMenuButton",
           this.$(go.TextBlock, "Group"),
-                { 
-                  click: function(e, obj) 
-                  { 
-                    e.diagram.commandHandler.groupSelection(); 
+                {
+                  click: function(e, obj)
+                  {
+                    e.diagram.commandHandler.groupSelection();
                 } },
-                new go.Binding("visible", "", 
+                new go.Binding("visible", "",
                   function(o) {
                     return o.diagram.commandHandler.canGroupSelection();
                   }).ofObject()),
 
         this.$("ContextMenuButton",
           this.$(go.TextBlock, "Ungroup"),
-                  { 
-                    click: function(e, obj) 
-                    { 
-                      e.diagram.commandHandler.ungroupSelection(); 
+                  {
+                    click: function(e, obj)
+                    {
+                      e.diagram.commandHandler.ungroupSelection();
                   } },
-                  new go.Binding("visible", "", 
+                  new go.Binding("visible", "",
                     function(o) {
                       return o.diagram.commandHandler.canUngroupSelection();
                     }).ofObject()),
@@ -1621,9 +1623,9 @@ initContextMenu() {
 
         this.$("ContextMenuButton",
           this.$(go.TextBlock, "Bring to Front"),
-              { 
-                click: function(e, obj) 
-                { 
+              {
+                click: function(e, obj)
+                {
                    var selectedNodes =  e.diagram.selection;
                    var it = selectedNodes.iterator;
                    while(it.next()){
@@ -1635,19 +1637,19 @@ initContextMenu() {
                    }
                 }
               },
-              new go.Binding("visible", "", 
+              new go.Binding("visible", "",
               function(o) {
                   if(o.diagram.selection.count == 0)
                       return false;
                   else
                       return true;
               }).ofObject()),
-        
+
           this.$("ContextMenuButton",
               this.$(go.TextBlock, "Send to Back"),
-                  { 
-                    click: function(e, obj) 
-                    { 
+                  {
+                    click: function(e, obj)
+                    {
                        var selectedNodes =  e.diagram.selection;
                        var it = selectedNodes.iterator;
                        while(it.next()){
@@ -1659,7 +1661,7 @@ initContextMenu() {
                        }
                     }
                   },
-                  new go.Binding("visible", "", 
+                  new go.Binding("visible", "",
                   function(o) {
                       if(o.diagram.selection.count == 0)
                           return false;
@@ -1667,39 +1669,39 @@ initContextMenu() {
                           return true;
                   }).ofObject()),
 
-       
+
 
         this.$("ContextMenuButton",
           this.$(go.TextBlock, "Zoom to Fit"),
-              { 
-                click: function(e, obj) 
-                { 
+              {
+                click: function(e, obj)
+                {
                   e.diagram.commandHandler.zoomToFit();
                 }
               }),
 
           this.$("ContextMenuButton",
               this.$(go.TextBlock, "Style"),
-                  { 
-                    click: function(e, obj) 
-                    { 
+                  {
+                    click: function(e, obj)
+                    {
                       var node = e.diagram.selection.first();
                       thisComp.openStylePanel(node);
                     }
                   },
-                  new go.Binding("visible", "", 
+                  new go.Binding("visible", "",
                     function(o) {
                       return o.diagram.selection.first() != null;
                     }).ofObject()
                 ),
-          
+
           this.$(go.Shape, 'LineH', {strokeWidth: 1.5, height: 1, stretch: go.GraphObject.Horizontal}),
-          
+
           this.$("ContextMenuButton",
               this.$(go.TextBlock, "Animate"),
-                  { 
+                  {
                     click: function(e, obj) {
-                    
+
                       var node =  e.diagram.selection.first();
                       var linkAnimatePart = node.findObject("ANIMATE");
                       if(linkAnimatePart != null) {
@@ -1713,7 +1715,7 @@ initContextMenu() {
                         }
                         thisComp.triggerLinkAnimation();
                       }
-                    } 
+                    }
                   },
                   new go.Binding("visible", "", function(o) {
                       return o.data.nodetype == "link";
@@ -1725,21 +1727,21 @@ initContextMenu() {
               //free hand drawing
               this.$("ContextMenuButton",
                 this.$(go.TextBlock, "Disable Freehand Draw"),
-                    { 
+                    {
                       click: function(e, obj) {
                         thisComp.setFreehandMode();
-                      } 
+                      }
                     },
                     new go.Binding("visible", "", function(o) {
                         return thisComp.state.freehandmode;
                     }).ofObject()),
-          
+
               this.$("ContextMenuButton",
                 this.$(go.TextBlock, "Enable Freehand Draw"),
-                    { 
+                    {
                       click: function(e, obj) {
                         thisComp.setFreehandMode();
-                      } 
+                      }
                     },
                     new go.Binding("visible", "", function(o) {
 
@@ -1752,13 +1754,13 @@ initContextMenu() {
                         return !thisComp.state.freehandmode;
 
                     }).ofObject()),
-              
+
             this.$("ContextMenuButton",
               this.$(go.TextBlock, "Freehand Draw Style"),
-                  { 
+                  {
                     click: function(e, obj) {
                       thisComp.openFreeHandStylePanel();
-                    } 
+                    }
                   },
                   new go.Binding("visible", "", function(o) {
 
@@ -1770,15 +1772,15 @@ initContextMenu() {
 
                       return true;
                   }).ofObject()),
-          
+
             this.$(go.Shape, 'LineH', {strokeWidth: 1.5, height: 1, stretch: go.GraphObject.Horizontal}),
-          
+
             this.$("ContextMenuButton",
               this.$(go.TextBlock, "Clear Freehand Draw"),
-                  { 
+                  {
                     click: function(e, obj) {
                       thisComp.clearFreehandShapes();
-                    } 
+                    }
                   },
                   new go.Binding("visible", "", function(o) {
                     if(o.data.nodetype == "link"
@@ -1789,8 +1791,8 @@ initContextMenu() {
 
                       return true;
                   }).ofObject()),
-          
-                
+
+
     );
 }
 
@@ -1812,7 +1814,7 @@ createVNetTemplate() {
       e.event.stopPropagation();
 
       var result =  thisComp.getSubnetsCidrsAzContextOfVNet(vnet);
-      
+
       var azcontext = vnet.data.azcontext;
       var existingContext = Utils.deepClone(azcontext);
       azcontext.GraphModel.SubnetsAndCidrs = result.SubnetsCidrs;
@@ -1835,8 +1837,8 @@ createVNetTemplate() {
   this.$(go.Shape, "RoundedRectangle",  // the rectangular shape around the members
       {
         name: "VNET",
-        fill: "transparent", 
-        stroke: "deepskyblue", 
+        fill: "transparent",
+        stroke: "deepskyblue",
         strokeWidth: 1.5,
         cursor: "pointer",
         desiredSize: new go.Size(400,300),
@@ -1850,9 +1852,9 @@ createVNetTemplate() {
       new go.Binding("fill").makeTwoWay(),
       new go.Binding("stroke").makeTwoWay()
       ),
-  
+
     this.$(go.TextBlock,
-        { 
+        {
           editable: true,
           isMultiline: false
         },
@@ -1924,7 +1926,7 @@ createSubnetTemplate() {
         var vnet = subnet.containingGroup;
 
         var result =  thisComp.getSubnetsCidrsAzContextOfVNet(vnet);
-        
+
         var azcontext = subnet.data.azcontext;
         var existingContext = Utils.deepClone(azcontext);
 
@@ -1955,7 +1957,7 @@ createSubnetTemplate() {
       new go.Binding("stroke").makeTwoWay()
       ),
     this.$(go.TextBlock,
-      { 
+      {
         editable: true,
         isMultiline: false
       },
@@ -1971,7 +1973,7 @@ createSubnetTemplate() {
         desiredSize: new go.Size(24,24),
         alignment: new go.Spot(0, 0, 6, -15),
         source: require('../../assets/IconCloud/azure/nondeployable/10067-icon-Network Security Groups-Networking.svg'),
-        
+
         doubleClick: function(e, picture) {
           e.handled = true;
           e.event.preventDefault();
@@ -2026,7 +2028,7 @@ createSubnetTemplate() {
       //   desiredSize: new go.Size(25,25),
       //   alignment: go.Spot(0,0)
       //   alignmentFocus: go.Spot.BottomLeft,
-        
+
       //   source: require('../../assets/IconCloud/azure/network/02742-icon-Subnet-menu.svg')
       //}),
       this.$(go.Picture, {
@@ -2034,7 +2036,7 @@ createSubnetTemplate() {
         stretch: go.GraphObject.Fill,
         desiredSize: new go.Size(25,25),
         alignment: new go.Spot(0, 0, 61, -15),
-        isActionable: true,  
+        isActionable: true,
         source: require('../../assets/IconCloud/azure/nondeployable/02578-icon-Service Endpoints-menu.svg'),
         doubleClick: function(e, picture) {
           e.handled = true;
@@ -2124,12 +2126,12 @@ makeSubnetVIRStayInGroup(part, pt, gridpt) {
 
 createVIRAzureResourceTemplate() {
   var thisComp = this;
-    var template =   
+    var template =
     this.$(go.Node, "Spot",
-      { 
+      {
         locationSpot: go.Spot.Center,
         selectable: true,
-        resizable: true, 
+        resizable: true,
         resizeObjectName: "PANEL",
         selectionObjectName: "PANEL",
         selectionChanged: function(p) {
@@ -2158,8 +2160,8 @@ createVIRAzureResourceTemplate() {
       this.$(go.Panel, "Vertical",
           //new go.Binding("desiredSize", "size", go.Size.parse), //follows panel resize below
           this.$(go.Panel, "Table",
-            { 
-              name: "PANEL", 
+            {
+              name: "PANEL",
             },
             //bind 2 ways to update model so that shape above can resize according
             //to panel size
@@ -2211,7 +2213,7 @@ createShape(dropContext) {
       font: '14px Segoe UI',
       strokeDashArray: null,
       nodetype: GoNodeType.Shape(),
-      figure: figure, 
+      figure: figure,
       loc: go.Point.stringify(canvasPoint),
       category: 'shape'});
 }
@@ -2220,11 +2222,11 @@ createVNet(dropContext) {
   var figure = dropContext.figure;
   var label = dropContext.label;
   var canvasPoint = this.diagram.transformViewToDoc(new go.Point(dropContext.x, dropContext.y));
-  
+
   var vnetKey = 'vnet-' + this.shortUID.randomUUID(6);
-  
+
   this.diagram.model.addNodeData
-    ({key: vnetKey, text: 'vnet', 
+    ({key: vnetKey, text: 'vnet',
       azcontext: new VNet(),
       natgwazcontext: new NatGateway(),
       natgwVisible: false,
@@ -2256,7 +2258,7 @@ createSubnet(vnetKey, subnetNodekey = '') {
   var subnetKey = subnetNodekey != '' ? subnetNodekey :  Utils.uniqueId('subnet');
   var subnetLoc = new go.Point(vnet.location.x + 10, vnet.location.y +20);
   var subnetSize = new go.Size((vnet.actualBounds.width - 45), 70);
-  
+
   this.diagram.model.addNodeData
     ({key: subnetKey,
       azcontext: new Subnet(),
@@ -2271,7 +2273,7 @@ createSubnet(vnetKey, subnetNodekey = '') {
       udrVisible: false,
       svcendVisible: false,
       zOrder: -20,
-      text: subnetKey, 
+      text: subnetKey,
 
       group: vnet.key,
       isGroup:true,
@@ -2324,7 +2326,7 @@ createVIROntoSubnet(dropContext) {
             Toast.show('warining', 2500, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
             return;
           }
-          
+
           text = 'spring cloud';
           nodeKey = 'springcloud-' + this.shortUID.randomUUID(6);
           image = require('../../assets/IconCloud/azure/compute/10370-icon-Azure Spring Cloud-Compute.svg');
@@ -2336,7 +2338,7 @@ createVIROntoSubnet(dropContext) {
             Toast.show('warining', 2500, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
             return;
           }
-          
+
           text = 'service fabric cluster';
           nodeKey = 'svcfabriccluster-' + this.shortUID.randomUUID(6);
           image = require('../../assets/IconCloud/azure/compute/10036-icon-Service Fabric Clusters-Compute.svg');
@@ -2348,7 +2350,7 @@ createVIROntoSubnet(dropContext) {
             Toast.show('warining', 2500, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
             return;
           }
-          
+
           text = 'service fabric managed cluster';
           nodeKey = 'svcfabricmanagedcluster-' + this.shortUID.randomUUID(6);
           image = require('../../assets/IconCloud/azure/compute/02370-icon-Managed Service Fabric-New Icons.svg');
@@ -2360,7 +2362,7 @@ createVIROntoSubnet(dropContext) {
             Toast.show('warining', 2500, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
             return;
           }
-          
+
           text = 'hpc cache';
           nodeKey = 'hpccache-' + this.shortUID.randomUUID(6);
           image = require('../../assets/IconCloud/azure/data_storage/00776-icon-Azure HCP Cache-Storage.svg');
@@ -2386,7 +2388,7 @@ createVIROntoSubnet(dropContext) {
           text = 'vm';
           nodeKey = 'vm-' + this.shortUID.randomUUID(6);
           image = require('../../assets/IconCloud/azure/compute/10021-icon-Virtual Machine-Compute.svg');
-          
+
           if(azcontext != null)
             azcontext = azcontext;
           else {
@@ -2405,7 +2407,7 @@ createVIROntoSubnet(dropContext) {
         //   text = 'vm';
         //   nodeKey = 'vmlinux-' + this.shortUID.randomUUID(6);
         //   image = require('../../assets/IconCloud/azure/compute/VM-Linux.png');
-          
+
         //   if(azcontext != null)
         //     azcontext = azcontext;
         //   else {
@@ -2420,7 +2422,7 @@ createVIROntoSubnet(dropContext) {
             Toast.show('warining', 2500, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
             return;
           }
-          
+
           text = 'vm scale sets';
           nodeKey = 'vmss-' + this.shortUID.randomUUID(6);
           image = require('../../assets/IconCloud/azure/compute/10034-icon-VM Scale Sets-Compute.svg');
@@ -2572,7 +2574,7 @@ createVIROntoSubnet(dropContext) {
           text = 'internal lb';
           nodeKey = Utils.uniqueId('internallb');
           image = require('../../assets/IconCloud/azure/network/10062-icon-Load Balancers-Networking.svg');
-          
+
           var nlb = new NLB();
           nlb.ProvisionContext.IsInternalNLB = true;
           azcontext = nlb
@@ -2593,7 +2595,7 @@ createVIROntoSubnet(dropContext) {
               Toast.show('warining', 7000, Messages.ResourceInSubnetTakenByDedicatedSubnetResource());
               return;
             }
-  
+
             text = 'redis premium';
             nodeKey = Utils.uniqueId('redispremium');
             image = require('../../assets/IconCloud/azure/databases/10137-icon-Cache Redis-Databases.svg');
@@ -2613,10 +2615,10 @@ createVIROntoSubnet(dropContext) {
 
     this.diagram.model.addNodeData
       ({key: nodeKey,
-         text: text, 
-         azcontext: azcontext, 
+         text: text,
+         azcontext: azcontext,
          group: subnet.key,
-        source: image, 
+        source: image,
         loc: go.Point.stringify(virLoc),
         size: go.Size.stringify(new go.Size(40,40)),
         zOrder: 50,
@@ -2633,9 +2635,9 @@ createPictureShape(dropContext) {
   var shapeKey = this.shortUID.randomUUID(6);
 
   this.diagram.model.addNodeData
-    ({key: shapeKey, 
-      text: label, 
-      source: image, 
+    ({key: shapeKey,
+      text: label,
+      source: image,
       font: '17px Segoe UI',
       stroke: 'black',
       nodetype: GoNodeType.ImageShape(),
@@ -2652,10 +2654,10 @@ createNonVIRAzureResource(dropContext) {
   var canvasPoint = this.diagram.transformViewToDoc(new go.Point(dropContext.x, dropContext.y));
 
   this.diagram.model.addNodeData
-    ({key: label, 
-      text: label, 
+    ({key: label,
+      text: label,
       azcontext: dropContext.azcontext,
-      source: image, 
+      source: image,
       size: go.Size.stringify(new go.Size(40,40)),
       zOrder: 50,
       font: '17px Segoe UI',
@@ -2671,10 +2673,10 @@ createText(dropContext) {
 
   this.diagram.model.addNodeData
     ({
-      key: shapeKey, 
-      font:'22px Segoe UI', 
+      key: shapeKey,
+      font:'22px Segoe UI',
       text: label != '' ? label : 'text',
-      stroke: 'black', 
+      stroke: 'black',
       textAlign: 'center',
       zOrder: 50,
       loc: go.Point.stringify(canvasPoint),
@@ -2687,13 +2689,13 @@ createLink(dropContext) {
 
   var nonStraightlinkPoints =
   new go.List(go.Point).addAll([dropPt, new go.Point(dropPt.x + 30, dropPt.y), new go.Point(dropPt.x+30, dropPt.y + 40), new go.Point(dropPt.x + 60, dropPt.y + 40)]);
-  
+
   var straightlinkPoints =
   new go.List(go.Point).addAll([dropPt, new go.Point(dropPt.x + 70, dropPt.y)]);
 
   if(routing == go.Link.Normal) {
     this.diagram.model.addLinkData(
-      { 
+      {
         points: straightlinkPoints,
         fromArrow: '',
         toArrow: 'Standard',
@@ -2787,7 +2789,7 @@ addKeyPressShortcuts() {
       if(selectedNode == null) {
         return;
       }
-        
+
       thisComp.openStylePanel(selectedNode);
       return;
     }
@@ -2804,7 +2806,7 @@ addKeyPressShortcuts() {
         });
         animation.runCount = Infinity;
         animation.start();
-      
+
       var linkAnimatePart = selectedNode.findObject("ANIMATE");
       if(linkAnimatePart != null) {
         if(linkAnimatePart.opacity == 0) {
@@ -2817,13 +2819,13 @@ addKeyPressShortcuts() {
         }
         thisComp.triggerLinkAnimation();
       }
-      
+
       return;
     }
 
     if (e.alt && e.key === "A") {
       var selectedNode = thisComp.diagram.selection.first();
-      
+
       if(selectedNode == null || !Utils.isAzContextExist(selectedNode))
         return;
 
@@ -2834,7 +2836,7 @@ addKeyPressShortcuts() {
             });
     }
 
-    if (e.control && e.key === "V") {  
+    if (e.control && e.key === "V") {
         e.bubbles = true; //!important, continue with browser paste event
     }
 
@@ -2898,7 +2900,7 @@ addKeyPressShortcuts() {
             $(go.Shape, { toArrow: "Standard",strokeWidth: 1.5 })
           );
           this.diagram.toolManager.linkingTool.archetypeLinkData =
-          { 
+          {
             fromArrow: '',
             toArrow: 'Standard',
             adjusting: go.Link.Stretch,
@@ -2908,7 +2910,7 @@ addKeyPressShortcuts() {
             nodetype: GoNodeType.Link(),
             opacity: 0,
             category: 'straight'
-          } 
+          }
           Toast.show('primary', 2000, 'Straight connector mode');
           return;
 
@@ -2930,8 +2932,8 @@ addKeyPressShortcuts() {
             new go.Binding("points").makeTwoWay(),
             $(go.Shape, { toArrow: "Standard",strokeWidth: 1.5})
           );
-          this.diagram.toolManager.linkingTool.archetypeLinkData = 
-            { 
+          this.diagram.toolManager.linkingTool.archetypeLinkData =
+            {
                 fromArrow: '',
                 toArrow: 'Standard',
                 adjusting: go.Link.Stretch,
@@ -2945,7 +2947,7 @@ addKeyPressShortcuts() {
             Toast.show('primary', 2000, 'Orthogonal connector mode');
             return;
       }
-      
+
     }
 
     // call base method with no arguments (default functionality)
@@ -2958,8 +2960,8 @@ openStylePanel = (node) => {
   if (node.data != null && node.data.category == "FreehandDrawing") {
       return;
   }
-  
-  this.stylePanel.current.show(node, this.diagram) 
+
+  this.stylePanel.current.show(node, this.diagram)
 }
 
 saveDiagramToBrowser = () => {
@@ -3002,7 +3004,7 @@ loadDraftDiagramFromBrowser = () => {
   }
 
  var jsonStr = LocalStorage.get(LocalStorage.KeyNames.TempLocalDiagram);
- 
+
  this.importJsonDiagram(jsonStr);
 
   this.notifyStatusBarLoadSource('browser');
@@ -3047,7 +3049,7 @@ notifyStatusBarLoadSource(source, collection, diagramName) {
 }
 
 setFreehandMode() {
-  
+
   if(this.state.freehandmode) {
       this.setState({freehandmode: false});
       this.diagram.currentCursor = 'crosshair';
@@ -3069,8 +3071,8 @@ initFreehandTool(){
 
   this.diagram.nodeTemplateMap.add("FreehandDrawing",
         $(go.Node,
-          { 
-            locationSpot: go.Spot.Center, 
+          {
+            locationSpot: go.Spot.Center,
             isLayoutPositioned: false,
             zOrder: 1000
           },
@@ -3086,8 +3088,8 @@ initFreehandTool(){
           { rotatable: true, rotateObjectName: "SHAPE" },
           { reshapable: true },  // GeometryReshapingTool assumes nonexistent Part.reshapeObjectName would be "SHAPE"
           $(go.Shape,
-            { name: "SHAPE", 
-              fill: null, 
+            { name: "SHAPE",
+              fill: null,
               strokeWidth: 1.5
             },
             new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(go.Size.stringify),
@@ -3140,9 +3142,9 @@ openFreeHandStylePanel = () => {
   this.stylePanel.current.showFreehandStyle(freehandStyle, function(newStyle){
     var tool = thisComp.diagram.toolManager.findTool("FreehandDrawing");
     tool.archetypePartData =
-        { stroke:newStyle.freehandStroke, 
+        { stroke:newStyle.freehandStroke,
           strokeWidth: newStyle.freehandStrokeWidth,
-          strokeDashArray: newStyle.freehandStrokeDashArray, 
+          strokeDashArray: newStyle.freehandStrokeDashArray,
           category: "FreehandDrawing" };
 
     // thisComp.setState({
@@ -3150,7 +3152,7 @@ openFreeHandStylePanel = () => {
     //     freehandStrokeWidth: newStyle.freehandStrokeWidth,
     //     freehandStrokeDashArray: newStyle.freehandStrokeDashArray,
     //   });
-  }); 
+  });
 }
 
 //create vertex from browser clipboard image
@@ -3193,7 +3195,7 @@ async pasteImageFromBrowserClipboard() {
         }
       });
 }
- 
+
 
 retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
   if(pasteEvent.clipboardData == false){
@@ -3216,13 +3218,13 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
 
     //handle text paste
     if (items[i].type.indexOf("text/plain") != -1) {
-        
+
         items[i].getAsString((str) => {
         var text = str;
 
         var cursorPt = this.diagram.lastInput.viewPoint;
         this.createText({label: text, x: cursorPt.x, y: cursorPt.y});
-        
+
         callback('IsNewTextBlock'); //is text, can skip image paste
         return;
       });
@@ -3235,7 +3237,7 @@ retrieveImageFromClipboardAsBase64(pasteEvent, callback, imageFormat){
 
       if(blob == null)
           continue;
-      
+
       if(thisComp.checkFileLargerThanLimit(blob.size, 400)) {
           Toast.show('warning',  3500, 'PNG file size cannot be over 400Kb, try compressing it.')
           return;
@@ -3274,7 +3276,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
       }
   };
 
-  img.src = src;  
+  img.src = src;
 }
 
   loadAutoSavedRecoveryPoint() {
@@ -3284,7 +3286,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
         this.setDiagramModifiedFalse();
         this.clearAutosaveDiagram();
-        
+
         Toast.show('primary',  6500, 'Workbench has recovered your unsaved diagram, save it now to browser or My Space');
     }
     else
@@ -3295,7 +3297,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
     try{
       if(LocalStorage.isExist(LocalStorage.KeyNames.AutoSave)) {
         var jsonStr = LocalStorage.get(LocalStorage.KeyNames.AutoSave);
-      
+
         this.importJsonDiagram(jsonStr);
         this.statusbarHelper.resetStatusBar(StatusBarHelper.SourceNone());
       }
@@ -3319,12 +3321,12 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
         if(!this.state.unsavedChanges)
           return;
-      
+
         var diagramJson =  this.getDiagramBase64Json(); //this.diagram.model.toJson();
 
         LocalStorage.set
           (LocalStorage.KeyNames.AutoSave, diagramJson);
-        
+
     }, 5000);
   }
 
@@ -3354,7 +3356,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
           fileReader.onload = function() {
 
           var dataUrl = fileReader.result;
-          
+
           var cursor = thisComp.diagram.lastInput.viewPoint;
 
           thisComp.createPictureShape
@@ -3453,7 +3455,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
           ({source: require('../../assets/IconCloud/fluent/shape/shape-location-2.svg'),
             label: '', x: dropContext.x, y: dropContext.y});
       break;
-      
+
       //*picture
 
       //people
@@ -3499,8 +3501,8 @@ loadPastedImageFromBrowserClipboard(src, callback){
           label: 'users', x: dropContext.x, y: dropContext.y});
       break;
 
-      
-      
+
+
       //devices
       case 'Server Farm':
         this.createPictureShape
@@ -3513,25 +3515,25 @@ loadPastedImageFromBrowserClipboard(src, callback){
         ({source: require('../../assets/IconCloud/fluent/devices/00060-icon-Servers-menu.svg'),
           label: 'server', x: dropContext.x, y: dropContext.y});
       break;
-      
+
       case 'Web Server':
         this.createPictureShape
         ({source: require('../../assets/IconCloud/fluent/devices/IconLightWebServer.svg'),
           label: 'web server', x: dropContext.x, y: dropContext.y});
       break;
-     
+
       case 'Firewall':
         this.createPictureShape
         ({source: require('../../assets/IconCloud/fluent/devices/00059-icon-Firewall-menu.svg'),
           label: 'firewall', x: dropContext.x, y: dropContext.y});
       break;
-      
+
       case 'MacOS':
         this.createPictureShape
         ({source: require('../../assets/IconCloud/fluent/devices/00593-icon-macOS-menu.svg'),
           label: 'macos', x: dropContext.x, y: dropContext.y});
       break;
-      
+
       case 'Windows WSUS':
         this.createPictureShape
         ({source: require('../../assets/IconCloud/fluent/devices/02212-icon-WSUS-menu.svg'),
@@ -3621,7 +3623,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         this.createPictureShape
         ({source: require('../../assets/IconCloud/fluent/devices/IconLightServerDatabase.svg'),
           label: 'db', x: dropContext.x, y: dropContext.y});
-      break; 
+      break;
 
       //software
       case 'File':
@@ -3645,410 +3647,410 @@ loadPastedImageFromBrowserClipboard(src, callback){
       case 'Directory Structure':
       this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/02270-icon-Directory-menu.svg'), label: '', x: dropContext.x, y: dropContext.y});
       break;
-      
+
       case 'Folder Sync':
       this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/sync-folder.svg'), label: 'folder sync', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Sync':
-      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/sync.svg'), label: 'sync', x: dropContext.x, y: dropContext.y}); 
+      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/sync.svg'), label: 'sync', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Search':
-      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/search.svg'), label: 'search', x: dropContext.x, y: dropContext.y}); 
+      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/search.svg'), label: 'search', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Filter':
       this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/filter.svg'),
         label: 'filter', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'SSH Key':
       this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00412-icon-SSH Keys-Other.svg'),
         label: 'ssh key', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'RSA Key':
       this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00787-icon-Keys-Other.svg'),
         label: 'rsa key', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'Antivirus':
       this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00555-icon-Antivirus-menu.svg'),
         label: 'antivirus', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'Diagnostic Tool':
       this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00689-icon-Diagnostic Tools B-menu.svg'),
         label: 'diagnostic tool', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'Data Warehouse':
       this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00760-icon-Data Warehouse-menu.svg'),
         label: 'data warehouse', x: dropContext.x, y: dropContext.y});
         break;
-      
+
       case 'Invoice':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00916-Icon-Invoice-menu.svg'),
         label: 'invoice', x: dropContext.x, y: dropContext.y});
         break;
-    
-    
+
+
         case 'QR Code':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/QRCode.svg'),
         label: 'qrcode', x: dropContext.x, y: dropContext.y});
         break;
-    
-    
+
+
         case 'Drive':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/01026-icon-Drives-menu.svg'),
         label: 'drive', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'Email':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/02271-icon-Email Message-menu.svg'),
         label: 'email', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'Process 1':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/02275-icon-Process-menu.svg'),
         label: 'process', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'Process 2':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/process-2.svg'),
         label: 'process', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'Windows Registry':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/02279-icon-Windows Registry Key-menu.svg'),
         label: 'win registry', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'GPU':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/02492-icon-GPU-menu.svg'),
         label: 'gpu', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'Software-as-a-Service':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10213-icon-Software as a Service-Integration.svg'),
         label: 'SaaS', x: dropContext.x, y: dropContext.y});
         break;
-    
-    
+
+
         case 'Browser':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10783-icon-Browser-General.svg'),
         label: 'browser', x: dropContext.x, y: dropContext.y});
         break;
-    
-    
+
+
         case 'Scheduler':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10833-icon-Scheduler-General.svg'),
         label: 'scheduler', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'Table':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10841-icon-Table-General.svg'),
         label: 'table', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'Workflow':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10852-icon-Workflow-General.svg'),
         label: 'workflow', x: dropContext.x, y: dropContext.y});
         break;
-    
-    
+
+
         case 'Data Copy':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/data-copy.svg'),
         label: 'data copy', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'Data Movement':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/data-movement.svg'),
         label: 'data movement', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'Pipeline':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/pipeline.svg'),
         label: 'pipeline', x: dropContext.x, y: dropContext.y});
         break;
-    
-    
+
+
         case 'Docker':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/docker.svg'),
         label: '', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'Container 1':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/container-1.svg'),
         label: 'container', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'Container 2':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/container-2.svg'),
         label: 'container', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'GitHub':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/Github.svg'),
         label: '', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'GitHub Actions':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/github-actions.svg'),
         label: 'github actions', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'Git':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandGit.svg'),
         label: 'git', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'Hololens':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/hololens.svg'),
         label: 'hololens', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'Internet':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/internet.svg'),
         label: 'Internet', x: dropContext.x, y: dropContext.y});
         break;
-    
+
       case 'Chrome':
         this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandChrome.svg'),
         label: '', x: dropContext.x, y: dropContext.y});
         break;
-  
+
     case 'Google Drive':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/google-drive.svg'),
     label: 'Google Drive', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Edge':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandEdge.svg'),
     label: 'Edge', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Function':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/function.svg'),
     label: 'func', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Powershell':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10825-icon-Powershell-General.svg'),
     label: 'ps', x: dropContext.x, y: dropContext.y});
     break;
-  
-    
+
+
   case 'C#':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightCSFileNode.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case '.Net':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightDotNET.svg'),
     label: '.Net', x: dropContext.x, y: dropContext.y});
     break;
-  
-  
+
+
     case 'Bug':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10784-icon-Bug-General.svg'),
     label: 'bug', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Code 1':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10787-icon-Code-General.svg'),
     label: 'code', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Code 2':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/code-2.svg'),
     label: 'code', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'File Binaries':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/file-binaries.svg'),
     label: 'binaries', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Javascript':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/ic_fluent_javascript_24_regular.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Nuget':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandNuget.svg'),
     label: 'nuget', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'F#':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightFSFileNode.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Python':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightPYProjectNode.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'TypeScript':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightTSFileNode.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Visual Basic':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightVBFileNode.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-   
+
     case 'Java':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/java.svg'),
     label: 'java', x: dropContext.x, y: dropContext.y});
     break;
-    
+
     case 'C++':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightCPPProjectNode.svg'),
     label: 'C++', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Visual Studio':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandVisualStudio.svg'),
     label: 'vs', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Web Api':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightWebAPI.svg'),
     label: 'Web Api', x: dropContext.x, y: dropContext.y});
     break;
-   
+
     case 'Web Service':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightWebService.svg'),
     label: 'Web Service', x: dropContext.x, y: dropContext.y});
     break;
-   
+
     case 'Webhook':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/web-02437-icon-Webhook-menu.svg'),
     label: 'webhook', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Event':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/web-event.svg'),
     label: 'event', x: dropContext.x, y: dropContext.y});
     break;
-  
-  
+
+
     case 'Execute':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightExecute.svg'),
     label: 'execute', x: dropContext.x, y: dropContext.y});
     break;
-  
-  
+
+
     case 'Message':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/message.svg'),
     label: 'message', x: dropContext.x, y: dropContext.y});
     break;
-  
-  
+
+
     case 'Queue':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/60049-Icon-Queued-command.svg'),
     label: 'queue', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Publish':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/publish.svg'),
     label: 'pub', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Subscribe':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/subscribe.svg'),
     label: 'sub', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Report':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/report.svg'),
     label: 'report', x: dropContext.x, y: dropContext.y});
     break;
-  
-  
+
+
     case 'BizTalk':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10779-icon-Biz Talk-General.svg'),
     label: 'BizTalk', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'D365':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/D365.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'office':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandOffice.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-   
+
     case 'Outlook':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandOutlook.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'PowerPoint':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandPowerPoint.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Project':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandProject.svg'),
     label: 'ms project', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Words':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandWord.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'SharePoint':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/sharepoint.svg'),
     label: 'SharePoint', x: dropContext.x, y: dropContext.y});
     break;
-  
-  
+
+
     case 'Jenkins':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/jenkins.svg'),
     label: 'Jenkins', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Linux':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/linux.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Windows':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/windows-logo.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Microsoft':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/microsoft-logo.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'PDF':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/pdf.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Image':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10812-icon-Image-General.svg'),
     label: 'image', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Power BI':
     this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/powerbi.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
 
       //azure nondeployable
-      
+
       case 'Windows Virtual Desktop':
         this.createPictureShape
         ({source: require('../../assets/IconCloud/azure/nondeployable/00327-icon-Windows Virtual Desktop-Other.svg'),
@@ -4072,7 +4074,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         ({source: require('../../assets/IconCloud/azure/nondeployable/10009-icon-Templates-General.svg'),
           label: 'arm', x: dropContext.x, y: dropContext.y});
       break;
-      
+
       case 'Azure LightHouse':
         this.createPictureShape
         ({source: require('../../assets/IconCloud/azure/nondeployable/00471-icon-Azure Lighthouse-Management-Governance.svg'),
@@ -4355,48 +4357,48 @@ loadPastedImageFromBrowserClipboard(src, callback){
           label: 'az migrate', x: dropContext.x, y: dropContext.y});
         break;
 
-        
+
   case 'Custom Role':
     this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/02680-icon-Custom Azure AD Roles-Identity.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Azure AD User License':
     this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/02681-icon-AAD Licenses-Identity.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Group':
     this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/10223-icon-Groups-Identity.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Enterprise App':
     this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/10225-icon-Enterprise Applications-Identity.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'Information Protection':
     this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/10229-icon-Azure Information Protection-Identity.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'App Registration':
     this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/10232-icon-App Registrations-Identity.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
-  
+
+
     case 'Conditional Access':
     this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/10233-icon-Conditional Access-Security.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
     case 'PIM':
     this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/10234-icon-Azure AD Privilege Identity Management-Identity.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
-  
+
 
 
       //*non VIR
@@ -4836,7 +4838,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
           azcontext: new TrafficManager()
         });
         break;
-      
+
       case ResourceType.CDN():
         this.createNonVIRAzureResource({
           source: require('../../assets/IconCloud/azure/network/00056-icon-CDN Profiles-Networking.svg'),
@@ -5073,7 +5075,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
           azcontext: new ContainerRegistry()
         });
         break;
-      
+
 
       case ResourceType.ASB():
         this.createNonVIRAzureResource({
@@ -5138,7 +5140,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
           azcontext: new Relay()
         });
         break;
-  
+
       // case ResourceType.Firewall():
       //   this.addFirewall(dropContext);
       //   break;
@@ -5282,7 +5284,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
     });
   break;
 
-  
+
 
   case ResourceType.CommunicationService():
     this.communicationservicePropPanel.current.show(userObject, function(savedUserObject){
@@ -5307,7 +5309,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         onContextSaveCallback(Utils.deepClone(savedUserObject));
     });
   break;
-  
+
   case ResourceType.TimeSeriesInsightsEventSource():
     this.timeseriesinsightseventsourcePropPanel.current.show(userObject, function(savedUserObject){
         onContextSaveCallback(Utils.deepClone(savedUserObject));
@@ -5343,7 +5345,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         onContextSaveCallback(Utils.deepClone(savedUserObject));
     });
   break;
-      
+
   case ResourceType.PrivateLink():
     this.privatelinkPropPanel.current.show(userObject, function(savedUserObject){
         onContextSaveCallback(Utils.deepClone(savedUserObject));
@@ -5413,7 +5415,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         this.databoxedgePropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
-        break;   
+        break;
   case ResourceType.StorSimpleDataManager():
         this.storsimpledatamanagerPropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
@@ -5428,7 +5430,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         this.purviewaccountPropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
-        break;  
+        break;
   case ResourceType.HPCCache():
         this.hpccachePropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
@@ -5549,7 +5551,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
              onContextSaveCallback(Utils.deepClone(savedUserObject));
           });
           break;
-        
+
       case ResourceType.Cognitive():
         this.cognitivePropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
@@ -5591,7 +5593,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
               onContextSaveCallback(Utils.deepClone(savedUserObject));
           });
       break;
-        
+
       case ResourceType.NSG():
         this.nsgPropPanel.current.show(userObject, function(savedUserObject){
             onContextSaveCallback(Utils.deepClone(savedUserObject));
@@ -5697,7 +5699,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
             onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
       break;
-      
+
       case ResourceType.ISE():
         this.isePropPanel.current.show(userObject, function(savedUserObject){
             onContextSaveCallback(Utils.deepClone(savedUserObject));
@@ -5798,7 +5800,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
               onContextSaveCallback(Utils.deepClone(savedUserObject));
           });
         break;
-        
+
       case ResourceType.MariaDB():
         this.mariadbPropPanel.current.show(userObject, function(savedUserObject){
             onContextSaveCallback(Utils.deepClone(savedUserObject));
@@ -5868,7 +5870,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         this.signalrPropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
-        break; 
+        break;
       case ResourceType.AppServiceCert():
         this.appsvccertPropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
@@ -5883,7 +5885,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         this.vmssPropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
-        break; 
+        break;
       case ResourceType.DevTestLab():
         this.devteslabPropPanel.current.show(userObject, function(savedUserObject){
             onContextSaveCallback(Utils.deepClone(savedUserObject));
@@ -5909,8 +5911,8 @@ loadPastedImageFromBrowserClipboard(src, callback){
             onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
-        
-        
+
+
       case ResourceType.VM():
         this.vmPropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
@@ -5927,7 +5929,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         });
         break;
       case ResourceType.Subnet():
-          
+
           this.subnetPropPanel.current.show(userObject, function(savedUserObject){
               onContextSaveCallback(Utils.deepClone(savedUserObject));
           });
@@ -6003,7 +6005,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         }).show({intent: Intent.WARNING, timeout: 3000, message: Messages.NoCellOnGraph()});
         return;
       }
-    
+
     var thisComp = this;
 
     //if loggedin, save shared diagram to MySpace
@@ -6095,13 +6097,13 @@ loadPastedImageFromBrowserClipboard(src, callback){
     el.select();
     document.execCommand('copy');
     document.body.removeChild(el);
-    
+
     Toaster.create({
       position: Position.TOP,
       autoFocus: false,
       canEscapeKeyClear: true
     }).show({intent: Intent.SUCCESS, timeout: 3000, message: Messages.SharedDiagramLinkCopied()});
-    
+
     return;
   }
 
@@ -6117,14 +6119,14 @@ loadPastedImageFromBrowserClipboard(src, callback){
   importWorkbenchFormat(azwbFile) {
 
     var thisComp = this;
-    
+
     const reader = new FileReader();
     reader.readAsText(azwbFile);
     reader.onload = function() {
       const jsonDiagram = reader.result;
       thisComp.importJsonDiagram(jsonDiagram);
     };
-  
+
     reader.onerror = function() {
       Toast.show('warning',2000, reader.error);
     };
@@ -6177,12 +6179,12 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
       this.diagramService.updateSharedDiagramInMySpace(emailId, diagramUID, diagramJson,
         function onSuccess() {
-  
+
           thisComp.setDiagramModifiedFalse();
           thisComp.clearAutosaveDiagram();
-  
+
           Toast.show('success', 2000, Messages.SavedSuccessfully());
-  
+
           return;
         },
         function onError(error) {
@@ -6228,7 +6230,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
       function onSuccess() {
 
         Toast.show('success', 2000, Messages.SavedSuccessfully());
-        
+
         thisComp.setDiagramModifiedFalse();
         thisComp.clearAutosaveDiagram();
 
@@ -6270,7 +6272,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
   //     }).show({intent: Intent.SUCCESS, timeout: 2000, message: Messages.NoCellOnGraph()});
   //     return;
   //   }
-   
+
   //   var svg = this.diagram.makeSvg({ scale: 1.0,
   //     background: "transparent", showTemporary:true,
   //     maxSize: new go.Size(Infinity, Infinity)});
@@ -6354,7 +6356,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
   }
 
 
-  deployDiagramToAzure = (subscription) => {
+  generateBicep = (subscription) => {
 
       if(Utils.isCanvasEmpty(this.diagram))
       {
@@ -6362,7 +6364,9 @@ loadPastedImageFromBrowserClipboard(src, callback){
         return;
       }
 
-      var contexts = this.provisionHelper.ExtractProvisionContexts(this.diagram);
+
+
+      var contexts = this.provisionHelper.ExtractAzContexts(this.diagram);
 
       if(Utils.IsNullOrUndefine(contexts))
       {
@@ -6370,9 +6374,24 @@ loadPastedImageFromBrowserClipboard(src, callback){
         return;
       }
 
-      this.provisionService.provisionDiagram(subscription.SubscriptionId, contexts,
-        function onSuccess() {
-          Toast.show("success", 2000, 'Diagram successfully deployed');
+      Toast.show('primary', 3000, "Generating Bicep template, please wait...");
+
+       this.bicepsvc.generateBicep(contexts,
+        function onSuccess(bicepTemplate) {
+          const url = window.URL.createObjectURL(new Blob([bicepTemplate]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.target = "iframePdfViewer"; //name of iframe
+          link.setAttribute('download', 'main.bicep');
+          document.body.appendChild(link);
+          link.click();
+
+        Toaster.create({
+          position: Position.TOP,
+          autoFocus: false,
+          canEscapeKeyClear: true
+        }).show({intent: Intent.SUCCESS, timeout: 2000, message:'Bicep template generated'});
+        return;
         },
         function onFailure(error) {
           Toast.show("danger", 6000, error);
@@ -6384,9 +6403,9 @@ loadPastedImageFromBrowserClipboard(src, callback){
   //    this.setGlobal({showSaveBadge: toShow});
   // }
 
-  
+
   setDiagramModifiedFalse(){
-    this.setState({ 
+    this.setState({
       unsavedChanges: false
    });
 
@@ -6394,7 +6413,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
   }
 
   setDiagramModifiedTrue() {
-    this.setState({ 
+    this.setState({
       unsavedChanges: true
    });
 

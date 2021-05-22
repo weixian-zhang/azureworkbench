@@ -1,7 +1,7 @@
 
 namespace AzW.Model
  {
-     public class StorageAccount
+     public class StorageAccount : Resource
      {
          public string Name { get; set; }
          public string Location { get; set; }

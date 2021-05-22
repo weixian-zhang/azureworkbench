@@ -1,0 +1,22 @@
+@using AzW.Model
+
+@foreach (var resource in @Model.Resources)
+{
+    @if(resource.ResourceType == ResourceType.StorageAccount)
+    {
+        var storage = (StorageAccount)resource;
+        string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @storage.Location;
+<text>
+resource @storage.Name 'Microsoft.Storage/storageAccounts@2021-02-01' = {
+    name: '@storage.Name.ToLowerInvariant()'
+    location: '@location'
+    kind: 'Storage'
+    sku: {
+        name: '@storage.SkuName'
+    }
+}
+</text>
+
+    }
+}
+

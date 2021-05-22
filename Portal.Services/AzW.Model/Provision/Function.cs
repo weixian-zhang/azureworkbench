@@ -1,6 +1,6 @@
 namespace AzW.Model
  {
-     public class Function
+     public class Function : Resource
      {
           public string Name { get; set; }
           public string Location { get; set; }

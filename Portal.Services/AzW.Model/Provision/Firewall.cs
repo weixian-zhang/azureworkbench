@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace AzW.Model
 {
-     public class Firewall
+     public class Firewall : Resource
      {
           public string Name { get; set; }
           public string Location { get; set; }

@@ -1,7 +1,7 @@
 
 namespace AzW.Model
  {
-     public class WebApp
+     public class WebApp : Resource
      {
          public string Name { get; set; }
          public string Location { get; set; }
@@ -10,6 +10,6 @@ namespace AzW.Model
          public bool IsLinux { get; set; }
          public string PricingTier { get; set; }
          public string RuntimeStack { get; set; }
-  
+
      }
  }

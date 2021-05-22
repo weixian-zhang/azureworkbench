@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace AzW.Model
  {
-     public class AppGateway
+     public class AppGateway : Resource
      {
           public string Name { get; set; }
           public string Location { get; set; }

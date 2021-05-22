@@ -66,7 +66,7 @@ export default class Workbench extends Component {
           <DiagramEditor ref={this.diagramEditor} queryString={this.state.queryString} />
           <AppBar position="fixed"
             invisible={this.global.diagramSource.source == 'none' ? true : false}
-            style={{bottom:'0px', top: 'auto', height:'18px', textAlign: 'right', background: '#2E3B55', padding:0}}>
+            style={{bottom:'0px', top: 'auto', height:'18px', textAlign: 'right', background: '#000000', padding:0}}>
               {this.renderStatusbarContent()}
           </AppBar>
         </div>
@@ -131,7 +131,7 @@ export default class Workbench extends Component {
     if(this.global.diagramSource.source == 'shareddiagram' ) {
       return (
           <div>
-            <span style={{marginRight:3}}>source: MySpace-Shared Diagram | 
+            <span style={{marginRight:3}}>source: MySpace-Shared Diagram |
             name: {this.global.diagramSource.diagramName}</span>
           <span>
             <Tooltip title="Save to My Space" style={{margin:0,padding:0}}>
@@ -167,20 +167,20 @@ export default class Workbench extends Component {
     var thisComp = this;
 
     $("#diagramEditor").on("dragover", function(event) {
-      event.preventDefault();  
+      event.preventDefault();
       event.stopPropagation();
       $(this).addClass('dragging');
     });
-    
+
     $("#diagramEditor").on("dragleave", function(event) {
-        event.preventDefault();  
+        event.preventDefault();
         event.stopPropagation();
         $(this).removeClass('dragging');
     });
-    
+
     $("#diagramEditor").on("drop", function(event) {
       if(event.target.className == '') {
-          event.preventDefault();  
+          event.preventDefault();
           event.stopPropagation();
           thisComp.diagramEditor.current.onDropPNGAZWBFileHandler(event);
       }

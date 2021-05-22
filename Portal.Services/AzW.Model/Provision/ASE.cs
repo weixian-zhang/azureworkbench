@@ -1,6 +1,6 @@
 namespace AzW.Model
  {
-     public class ASE
+     public class ASE : Resource
      {
           public string Name { get; set; }
           public string Location { get; set; }
