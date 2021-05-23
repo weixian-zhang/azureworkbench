@@ -20,6 +20,7 @@
     <PackageReference Include="Microsoft.Azure.Management.RecoveryServices.Backup" Version="4.0.3-preview"/>
     <PackageReference Include="Microsoft.Azure.Management.RecoveryServices" Version="4.3.0-preview"/>
     <PackageReference Include="RazorEngine.NetCore" Version="3.1.0"/>
+    <PackageReference Include="RandomNameGeneratorLibrary" Version="1.2.2"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AzW.Secret\AzW.Secret.csproj"/>
@@ -29,7 +30,7 @@
     <Content Include="armtemplate\*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="bicep-templates\*.*">
+    <Content Include="bicep-template\*.*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

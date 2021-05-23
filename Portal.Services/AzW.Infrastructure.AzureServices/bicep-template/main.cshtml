@@ -1,13 +1,16 @@
+@using AzW.Infrastructure.AzureServices
 @using AzW.Model
 
 @foreach (var resource in @Model.Resources)
 {
+    @* storage *@
     @if(resource.ResourceType == ResourceType.StorageAccount)
     {
+
         var storage = (StorageAccount)resource;
         string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @storage.Location;
 <text>
-resource @storage.Name 'Microsoft.Storage/storageAccounts@2021-02-01' = {
+resource @TemplateHelper.GetBicepRscName(storage.ResourceType, storage.Name) 'Microsoft.Storage/storageAccounts@2021-02-01' = {
     name: '@storage.Name.ToLowerInvariant()'
     location: '@location'
     kind: 'Storage'
@@ -16,7 +19,58 @@ resource @storage.Name 'Microsoft.Storage/storageAccounts@2021-02-01' = {
     }
 }
 </text>
+    } @*if storage*@
 
+
+    @* VNet *@
+    @if(resource.ResourceType == ResourceType.VNet)
+    {
+         var vnet = (VNet)resource;
+        string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @vnet.Location;
+        string bicepRscName = @TemplateHelper.GetBicepRscName(vnet.ResourceType, vnet.Name);
+
+<text>
+resource @bicepRscName 'Microsoft.Network/virtualNetworks@2020-06-01' = {
+  name: '@vnet.Name'
+  location: '@location'
+  properties: {
+    addressSpace: {
+      addressPrefixes: [
+        '@vnet.AddressSpace'
+      ]
     }
-}
+    subnets: [
+          @{int i = 0;}
+        @foreach(var subnet in vnet.Subnets)
+        {
+    <text>
+    {
+        name: '@subnet.Name'
+        @if(@subnet.NSGName != "")
+        {
+        <text>
+        properties: {
+          addressPrefix: '@subnet.AddressSpace'
+          networkSecurityGroup: {
+            id: @(TemplateHelper.GetBicepRscName(ResourceType.NSG, @subnet.NSGName) + ".id")
+          }
+        }
+        </text>
+        } else
+        {
+        <text>
+        properties: {
+          addressPrefix: '@subnet.AddressSpace'
+        }
+        </text>
+        }
+}</text> i++;
+}@*foreach*@
+    ] @*subnet*@
+  } @*properties*@
+} @*resource*@
+</text>
+    } @*if VNet*@
+
+} @*foreach resources*@
 

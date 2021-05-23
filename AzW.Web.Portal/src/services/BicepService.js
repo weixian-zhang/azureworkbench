@@ -12,7 +12,7 @@ class BicepService
 
     async generateBicep(provisionContexts, onSuccess, onFailure) {
         if(!await this.authService.isUserLogin()) {
-            Toast.show("primary", 2500, "")
+            Toast.show("warning", 2500, "Please login to generate Bicep template")
             return;
         }
 

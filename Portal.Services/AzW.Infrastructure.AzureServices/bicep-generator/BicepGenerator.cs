@@ -1,4 +1,6 @@
 using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RazorEngine;
 using RazorEngine.Configuration;
 using RazorEngine.Templating;
@@ -35,9 +37,14 @@ namespace AzW.Infrastructure.AzureServices
             {
                 var resourceContext = TemplateHelper.CreateResourceContext(azcontexts);
 
-                string multifileTemplate = TemplateHelper.ReadMultiFileMainTemplate(_webrootPath);
+                string multifileTemplate = TemplateHelper.GetMainTemplate(_webrootPath);
 
                 bicep = Engine.Razor.RunCompile(multifileTemplate, "multifile-main", resourceContext.GetType(), resourceContext);
+
+                bicep = TemplateHelper.ReplaceMultiLinBreaksWithSingle(bicep);
+
+                bicep = TemplateHelper.FormatBicep(bicep);
+
                 return bicep;
             }
             catch(Exception ex)

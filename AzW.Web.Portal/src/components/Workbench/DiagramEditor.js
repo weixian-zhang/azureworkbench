@@ -6364,8 +6364,6 @@ loadPastedImageFromBrowserClipboard(src, callback){
         return;
       }
 
-
-
       var contexts = this.provisionHelper.ExtractAzContexts(this.diagram);
 
       if(Utils.IsNullOrUndefine(contexts))
