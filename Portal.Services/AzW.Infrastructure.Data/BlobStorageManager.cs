@@ -13,10 +13,15 @@ namespace AzW.Infrastructure.Data
 {
     public class BlobStorageManager
     {
+        const string ServiceTagFileName = "azure-servicetags.json";
+        const string VMSizeFileName = "azure-vmsizes.json";
+        const string VMImageFileName = "azure-vmimages.json";
+
         const string DiagramContainerName = "diagrams";
         const string SharedDiagramContainerName = "shareddiagrams";
         const string QuickstartContainerName = "quickstarts";
         const string MySpaceSharedDiagrams = "myspace-shareddiagrams";
+        const string System = "system";
 
         public BlobStorageManager(string connString)
         {
@@ -26,7 +31,8 @@ namespace AzW.Infrastructure.Data
             _quickstartContainer = _blobClient.GetBlobContainerClient(QuickstartContainerName);
             _sharedLinkContainer = _blobClient.GetBlobContainerClient(SharedDiagramContainerName);
             _sharedDiagramMySpace = _blobClient.GetBlobContainerClient(MySpaceSharedDiagrams);
-            
+            _systemContainer = _blobClient.GetBlobContainerClient(System);
+
             CreateContainersIfNotExist().GetAwaiter().GetResult();
         }
 
@@ -70,9 +76,9 @@ namespace AzW.Infrastructure.Data
         {
             string fullBlobName =GetBlobNameForMySpaceSharedDiagram(sharelinkId);
 
-            
+
             var bc = _sharedDiagramMySpace.GetBlobClient(fullBlobName);
-            
+
             byte[] byteArray = Encoding.ASCII.GetBytes(diagram);
             using(var ms = new MemoryStream(byteArray))
             {
@@ -167,26 +173,27 @@ namespace AzW.Infrastructure.Data
             return await bc.DeleteIfExistsAsync(DeleteSnapshotsOption.None);
         }
 
-        public async Task<double> GetBlobSizeInMB(string emailId, string collection, string diagramName)
+        public async Task<string> GetServiceTagJson()
         {
-           string blobName = GetBlobName(emailId, collection, diagramName);
+            var blobClient = _systemContainer.GetBlobClient(ServiceTagFileName);
 
-           var blob = _diagContainer.GetBlobClient(blobName);
+            using (var ms = new MemoryStream())
+            {
+                 BlobDownloadInfo download = await blobClient.DownloadAsync();
 
-           var props = await blob.GetPropertiesAsync();
-
-           double sizeBytes = props.Value.ContentLength;
-
-           var size = new ByteSize(sizeBytes);
-
-           return Math.Round(size.MegaBytes, 2);
+                using (var sr = new StreamReader(download.Content))
+                {
+                    string json = await sr.ReadToEndAsync();
+                    return json;
+                }
+            }
         }
 
         private async Task<string> GetDiagramFromBlobStream(BlobClient blob)
         {
             if(!await blob.ExistsAsync())
                 return "";
-            
+
 
             using (var ms = new MemoryStream())
             {
@@ -243,8 +250,8 @@ namespace AzW.Infrastructure.Data
         BlobContainerClient _diagContainer;
         BlobContainerClient _sharedLinkContainer;
         BlobContainerClient _quickstartContainer;
-
         BlobContainerClient _sharedDiagramMySpace;
+        BlobContainerClient _systemContainer;
 
     }
 }

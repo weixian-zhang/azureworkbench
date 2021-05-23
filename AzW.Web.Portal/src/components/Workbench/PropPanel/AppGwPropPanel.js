@@ -17,7 +17,7 @@ export default class AppGwPropPanel extends Component {
       this.state ={
         isOpen: false,
         userObject: new AppGateway(),
-        
+
         value: 'diagram', //tabs
 
         saveCallback: function () {},
@@ -33,7 +33,7 @@ export default class AppGwPropPanel extends Component {
           canOutsideClickClose= {true}
           enforceFocus= {true}
           hasBackdrop= {true}
-          onClose={() => this.drawerClose()} 
+          onClose={() => this.drawerClose()}
           isOpen= {this.state.isOpen}
           position= {POSITION_RIGHT}
           usePortal= {true}
@@ -69,7 +69,7 @@ export default class AppGwPropPanel extends Component {
                               </div>
                         </FormGroup>
                     </Typography> */}
-                    
+
                     {this.renderProvisionTab()}
 
                     {/* {this.renderCalculatorTab()} */}
@@ -82,7 +82,7 @@ export default class AppGwPropPanel extends Component {
   renderProvisionTab() {
     // if(this.state.value != 'provision')
     //   return null;
-    
+
     return (
         <div className="propPanelTabContent">
            <Grid
@@ -97,7 +97,7 @@ export default class AppGwPropPanel extends Component {
                 </Grid>
                 <Grid item>
                   <input id="icon-display-name" type="text" class="bp3-input .modifier"
-                    value={this.state.userObject.ProvisionContext.Name} 
+                    value={this.state.userObject.ProvisionContext.Name}
                     onChange={(e) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.Name = e.target.value
@@ -105,22 +105,7 @@ export default class AppGwPropPanel extends Component {
                     }} />
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
-                <Grid item sm={3}>
-                    <label>Resource Group</label>
-                </Grid>
-                <Grid item>
-                  <SelectResourceGroup
-                   SelectedResourceGroup={this.state.userObject.ProvisionContext.ResourceGroupName}
-                   onValueChange={
-                    (rg) => {
-                      var uo = this.state.userObject;
-                      uo.ProvisionContext.ResourceGroupName = rg
-                      this.setState({userObject:uo});
-                    }
-                  }/>
-                </Grid>
-              </Grid>
+
               <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
                 <Grid item sm={3}>
                     <label>Location</label>
@@ -167,7 +152,7 @@ export default class AppGwPropPanel extends Component {
                 </Grid>
                 <Grid item >
                   <input id="icon-display-name" type="text" class="bp3-input .modifier"
-                    value={this.state.userObject.ProvisionContext.RoutingRuleName} 
+                    value={this.state.userObject.ProvisionContext.RoutingRuleName}
                     onChange={(e) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.RoutingRuleName = e.target.value
@@ -181,7 +166,7 @@ export default class AppGwPropPanel extends Component {
                 </Grid>
                 <Grid item >
                   <input id="icon-display-name" type="text" class="bp3-input .modifier"
-                    value={this.state.userObject.ProvisionContext.FrontendListenerName} 
+                    value={this.state.userObject.ProvisionContext.FrontendListenerName}
                     onChange={(e) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.FrontendListenerName = e.target.value
@@ -195,7 +180,7 @@ export default class AppGwPropPanel extends Component {
                 </Grid>
                 <Grid item >
                   <input id="icon-display-name" type="text" class="bp3-input .modifier"
-                    value={this.state.userObject.ProvisionContext.FrontendPort} 
+                    value={this.state.userObject.ProvisionContext.FrontendPort}
                     onChange={(e) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.FrontendPort = e.target.value
@@ -209,7 +194,7 @@ export default class AppGwPropPanel extends Component {
                 </Grid>
                 <Grid item>
                   <input id="icon-display-name" type="text" class="bp3-input .modifier"
-                    value={this.state.userObject.ProvisionContext.BackendPoolName} 
+                    value={this.state.userObject.ProvisionContext.BackendPoolName}
                     onChange={(e) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.BackendPoolName = e.target.value
@@ -223,7 +208,7 @@ export default class AppGwPropPanel extends Component {
                 </Grid>
                 <Grid item >
                   <input id="icon-display-name" type="text" class="bp3-input .modifier"
-                    value={this.state.userObject.ProvisionContext.BackendPort} 
+                    value={this.state.userObject.ProvisionContext.BackendPort}
                     onChange={(e) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.BackendPort = e.target.value
@@ -258,7 +243,7 @@ export default class AppGwPropPanel extends Component {
       case 'DisplayName':
         userObj.GraphModel.DisplayName = value;
         break;
-    
+
       default:
         break;
     }

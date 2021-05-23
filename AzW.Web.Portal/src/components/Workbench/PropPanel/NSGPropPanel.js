@@ -33,7 +33,7 @@ export default class NSGPropPanel extends Component {
         toggleFromAddrOutboundRows: [],
         toggleToAddrOutboundRows: [],
         userObject: new NSG(),
-        protocols: ["*", "ICMP","TCP","UDP"],
+        protocols: ["*", "Ah","Esp", "Icmp","Tcp","Udp"],
         allowDeny: ["Allow", "Deny"],
         value: 'provision', //tabs
 
@@ -53,7 +53,7 @@ export default class NSGPropPanel extends Component {
           canOutsideClickClose= {true}
           enforceFocus= {true}
           hasBackdrop= {true}
-          onClose={() => this.drawerClose()} 
+          onClose={() => this.drawerClose()}
           isOpen= {this.state.isOpen}
           position= {POSITION_RIGHT}
           usePortal= {true}
@@ -87,28 +87,12 @@ export default class NSGPropPanel extends Component {
               </Grid>
               <Grid item sm={3}>
                 <input id="icon-display-name" type="text" class="bp3-input .modifier"
-                  value={this.state.userObject.ProvisionContext.Name} 
+                  value={this.state.userObject.ProvisionContext.Name}
                   onChange={(e) => {
                     var uo = this.state.userObject;
                     uo.ProvisionContext.Name = e.target.value
                     this.setState({userObject:uo});
                   }} />
-              </Grid>
-            </Grid>
-            <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '5px'}}>
-              <Grid item sm={3}>
-                  <label>Resource Group</label>
-              </Grid>
-              <Grid item>
-                <SelectResourceGroup
-                SelectedResourceGroup={this.state.userObject.ProvisionContext.ResourceGroupName}
-                onValueChange={
-                  (rg) => {
-                    var uo = this.state.userObject;
-                    uo.ProvisionContext.ResourceGroupName = rg
-                    this.setState({userObject:uo});
-                  }
-                }/>
               </Grid>
             </Grid>
             <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '5px'}}>
@@ -134,7 +118,7 @@ export default class NSGPropPanel extends Component {
   renderProvisionTab() {
     if(this.state.value != 'provision')
       return null;
-    
+
     return (
         <div className = "propPanelTabContent">
            <Grid
@@ -176,7 +160,7 @@ export default class NSGPropPanel extends Component {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {this.state.userObject.ProvisionContext.InboundRules.map(rule => 
+                          {this.state.userObject.ProvisionContext.InboundRules.map(rule =>
                             (
                                 <TableRow>
                                   <TableCell>
@@ -205,7 +189,7 @@ export default class NSGPropPanel extends Component {
                                               <MenuItem
                                                 text={protocol}
                                                 onClick={
-                                                    () => 
+                                                    () =>
                                                     {
                                                       rule.Protocol = protocol
                                                       this.forceUpdate();
@@ -220,8 +204,8 @@ export default class NSGPropPanel extends Component {
                                             fill={true} />
                                     </Select>
                                   </TableCell>
-                                  
-                                  <TableCell>         
+
+                                  <TableCell>
                                     <InputGroup
                                       value={rule.FromPorts}
                                       onChange={(e) => {
@@ -229,13 +213,13 @@ export default class NSGPropPanel extends Component {
                                         this.forceUpdate();
                                       }} />
                                   </TableCell>
-                                    
+
                                   <TableCell>
                                     <TableCell padding='none'>
                                       {
- 
+
                                           (!rule.FromAddressIsTag)
-                                          ?  
+                                          ?
                                             <InputGroup
                                               value={rule.FromAddresses}
                                               onChange={(e) => {
@@ -251,8 +235,8 @@ export default class NSGPropPanel extends Component {
                                                     this.forceUpdate();
                                                   }
                                                 }/>
-                                        
-                                      }                                      
+
+                                      }
                                     </TableCell>
                                     <TableCell padding='none'>
                                       <Badge variant="dot" color="primary"
@@ -276,7 +260,7 @@ export default class NSGPropPanel extends Component {
                                     <TableCell padding='none'>
                                       {
                                           (!rule.ToAddressIsTag)
-                                          ?  
+                                          ?
                                             <InputGroup
                                             fill={true}
                                             value={rule.ToAddresses}
@@ -293,7 +277,7 @@ export default class NSGPropPanel extends Component {
                                                 this.forceUpdate();
                                               }
                                             }/>
-                                      }                                      
+                                      }
                                     </TableCell>
                                     <TableCell padding='none'>
                                       <Badge variant="dot" color="primary"
@@ -330,7 +314,7 @@ export default class NSGPropPanel extends Component {
                                   </TableCell>
                                   <TableCell>
                                     <Icon icon='delete' data-rowid={rule.UITableRowID}
-                                      onClick={this.deleteInboundRuleClick} 
+                                      onClick={this.deleteInboundRuleClick}
                                       style={{cursor:'pointer'}}/>
                                   </TableCell>
                                 </TableRow>
@@ -381,7 +365,7 @@ export default class NSGPropPanel extends Component {
                               </TableRow>
                             </TableHead>
                             <TableBody>
-                              {this.state.userObject.ProvisionContext.OutboundRules.map(rule => 
+                              {this.state.userObject.ProvisionContext.OutboundRules.map(rule =>
                                 (
                                     <TableRow>
                                       <TableCell>
@@ -410,7 +394,7 @@ export default class NSGPropPanel extends Component {
                                                   <MenuItem
                                                     text={protocol}
                                                     onClick={
-                                                        () => 
+                                                        () =>
                                                         {
                                                           rule.Protocol = protocol
                                                           this.forceUpdate();
@@ -425,8 +409,8 @@ export default class NSGPropPanel extends Component {
                                                 fill={true} />
                                         </Select>
                                       </TableCell>
-                                      
-                                      <TableCell>         
+
+                                      <TableCell>
                                         <InputGroup
                                           value={rule.FromPorts}
                                           onChange={(e) => {
@@ -434,12 +418,12 @@ export default class NSGPropPanel extends Component {
                                             this.forceUpdate();
                                           }} />
                                       </TableCell>
-                                        
+
                                       <TableCell>
                                         <TableCell padding='none'>
                                           {
                                               (!rule.FromAddressIsTag)//(!this.isOutboundBadgeFromAddrTrue(rule.UITableRowID))
-                                              ?  
+                                              ?
                                                 <InputGroup
                                                 value={rule.FromAddresses}
                                                 onChange={(e) => {
@@ -455,7 +439,7 @@ export default class NSGPropPanel extends Component {
                                                       this.forceUpdate();
                                                     }
                                                   }/>
-                                          }                                      
+                                          }
                                         </TableCell>
                                         <TableCell padding='none'>
                                           <Badge variant="dot" color="primary"
@@ -479,7 +463,7 @@ export default class NSGPropPanel extends Component {
                                         <TableCell padding='none'>
                                           {
                                               (!rule.ToAddressIsTag)
-                                              ?  
+                                              ?
                                                 <InputGroup
                                                 value={rule.ToAddresses}
                                                 onChange={(e) => {
@@ -495,7 +479,7 @@ export default class NSGPropPanel extends Component {
                                                     this.forceUpdate();
                                                   }
                                                 }/>
-                                          }                                      
+                                          }
                                         </TableCell>
                                         <TableCell padding='none'>
                                           <Badge variant="dot" color="primary"
@@ -532,7 +516,7 @@ export default class NSGPropPanel extends Component {
                                       </TableCell>
                                       <TableCell>
                                         <Icon icon='delete' data-rowid={rule.UITableRowID}
-                                          onClick={this.deleteOutboundRuleClick}  
+                                          onClick={this.deleteOutboundRuleClick}
                                           style={{cursor:'pointer'}}/>
                                       </TableCell>
                                     </TableRow>
@@ -543,16 +527,6 @@ export default class NSGPropPanel extends Component {
               </Grid>
             </Grid>
       </div>
-    );
-  }
-
-  renderCalculatorTab() {
-    return (
-      <Typography
-        className = "propPanelTabContent"
-        hidden={this.state.value !== 'calculator'}>
-        Calculator Properties, coming soon...
-      </Typography>
     );
   }
 
@@ -655,7 +629,7 @@ export default class NSGPropPanel extends Component {
     inbRule.UITableRowID = ruleRowId;
 
     var userObj = this.state.userObject;
-    
+
     userObj.ProvisionContext.OutboundRules.push(inbRule);
     this.setState({userObject: userObj});
 
@@ -747,7 +721,7 @@ addOutboundToAddrTogglingState = (rowId, value) => {
       case 'DisplayName':
         userObj.GraphModel.DisplayName = value;
         break;
-    
+
       default:
         break;
     }

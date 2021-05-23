@@ -22,10 +22,10 @@ import ResourceType from '../../models/ResourceType';
 
 
 export default class ResourcePalette extends Component {
- 
+
   constructor(props) {
     super(props);
-    
+
     this.state = {
       graphContainer: null,
       searchText: '',
@@ -44,13 +44,13 @@ export default class ResourcePalette extends Component {
     this.setGlobal({drawResourcePaletteOpen:true});
 
   }
-  
 
-  componentDidMount = () =>  
+
+  componentDidMount = () =>
   {
       this.makeIconsDraggable();
   }
-  
+
   initPaletteResources() {
     var paletteRscs = [
       {
@@ -589,7 +589,7 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
             },
-            
+
             {
               Name: 'browser web',
               Tooltip: 'Browser',
@@ -597,7 +597,7 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
             },
-            
+
             {
               Name: 'scheduler cron',
               Tooltip: 'Scheduler',
@@ -619,7 +619,7 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
             },
-            
+
             {
               Name: 'data copy',
               Tooltip: 'Data Copy',
@@ -641,7 +641,7 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
             },
-            
+
             {
               Name: 'docker container',
               Tooltip: 'Docker',
@@ -816,14 +816,14 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/IconCloud/fluent/software/IconLightVBFileNode.svg'),
               IsPng: false,
               IsVisible:true,
-            }, 
+            },
             {
               Name: 'java',
               Tooltip: 'Java',
               Image: require('../../assets/IconCloud/fluent/software/java.svg'),
               IsPng: false,
               IsVisible:true,
-            },  
+            },
             {
               Name: 'cpp c++',
               Tooltip: 'C++',
@@ -844,14 +844,14 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/IconCloud/fluent/software/IconLightWebAPI.svg'),
               IsPng: false,
               IsVisible:true,
-            }, 
+            },
             {
               Name: 'web service',
               Tooltip: 'Web Service',
               Image: require('../../assets/IconCloud/fluent/software/IconLightWebService.svg'),
               IsPng: false,
               IsVisible:true,
-            }, 
+            },
             {
               Name: 'webhook web',
               Tooltip: 'Webhook',
@@ -866,7 +866,7 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
             },
-            
+
             {
               Name: 'execute run',
               Tooltip: 'Execute',
@@ -932,7 +932,7 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/IconCloud/fluent/software/IconLightBrandOffice.svg'),
               IsPng: false,
               IsVisible:true,
-            }, 
+            },
             {
               Name: 'o365 outlook',
               Tooltip: 'Outlook',
@@ -1018,7 +1018,7 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
             },
-            
+
           ]
         }
       },
@@ -1028,7 +1028,7 @@ export default class ResourcePalette extends Component {
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
-            
+
             {
               Name: 'azure',
               Tooltip: 'Azure',
@@ -1074,7 +1074,7 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true
             },
-            
+
             {
               Name: 'monitor',
               Tooltip: 'Azure Monitor',
@@ -1452,7 +1452,7 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true
             },
-            
+
             {
               Name: 'arc',
               Tooltip: 'Azure Arc',
@@ -1554,9 +1554,9 @@ export default class ResourcePalette extends Component {
             {
                 Name: 'app service',
                 Tooltip: 'App Service',
-                azInfo: ['Private Link supported','Service Endpoint supported','deployable'],
+                azInfo: ['Private Link supported','Service Endpoint supported'],
                 Image: require('../../assets/IconCloud/azure/appservices/10035-icon-App Services-App Services.svg'),
-                Provisionable: true,
+                Provisionable: false,
                 IsPng: false,
                 IsVisible:true,
                 resourceType: ResourceType.AppService()
@@ -1564,9 +1564,9 @@ export default class ResourcePalette extends Component {
             {
               Name: 'app service environment',
               Tooltip: 'App Service Environment',
-              azInfo: ['deployable'],
+              azInfo: [],
               Image: require('../../assets/IconCloud/azure/appservices/10047-icon-App Service Environments-App Services.svg'),
-              Provisionable: true,
+              Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.ASE()
@@ -1574,9 +1574,9 @@ export default class ResourcePalette extends Component {
             {
               Name: 'azure function',
               Tooltip: 'Function',
-              azInfo: ['deployable'],
+              azInfo: [],
               Image: require('../../assets/IconCloud/azure/appservices/10029-icon-Function Apps-IoT.svg'),
-              Provisionable: true,
+              Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.Function()
@@ -1667,29 +1667,19 @@ export default class ResourcePalette extends Component {
             {
                 Name: 'vm virtual machine',
                 Tooltip: 'VM',
-                azInfo: ['deployable'],
+                azInfo: [],
                 Image: require('../../assets/IconCloud/azure/compute/10021-icon-Virtual Machine-Compute.svg'),
-                Provisionable: true,
+                Provisionable: false,
                 IsPng: false,
                 IsVisible:true,
                 resourceType: ResourceType.VM()
             },
-            // {
-            //   Name: 'linux vm',
-            //   Tooltip: 'Linux VM',
-            //   azInfo: ['deployable'],
-            //   Image: require('../../assets/azure_icons/ComputeServiceColor/VM/VM-Linux.png'),
-            //   Provisionable: true,
-            //   IsPng: false,
-            //   IsVisible:true,
-            //   resourceType: ResourceType.LinuxVM()
-            // },
             {
               Name: 'vm scale sets vmss',
               Tooltip: 'VM Scale Sets',
-              azInfo: ['deployable'],
+              azInfo: [],
               Image: require('../../assets/IconCloud/azure/compute/10034-icon-VM Scale Sets-Compute.svg'),
-              Provisionable: true,
+              Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.VMSS()
@@ -1859,7 +1849,7 @@ export default class ResourcePalette extends Component {
             {
                 Name: 'virtual network vnet',
                 Tooltip: 'Virtual Network',
-                azInfo: ['deployable'],
+                azInfo: ['Bicep support'],
                 Image: require('../../assets/IconCloud/azure/network/10061-icon-Virtual Networks-Networking.svg'),
                 Provisionable: true,
                 IsPng: false,
@@ -1869,9 +1859,9 @@ export default class ResourcePalette extends Component {
             {
               Name: 'load balancer nlb slb alb route',
               Tooltip: 'Load Balancer',
-              azInfo: ['deployable'],
+              azInfo: [],
               Image: require('../../assets/IconCloud/azure/network/10062-icon-Load Balancers-Networking.svg'),
-              Provisionable: true,
+              Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.NLB()
@@ -1879,9 +1869,9 @@ export default class ResourcePalette extends Component {
             {
               Name: 'application gatway appgw waf route',
               Tooltip: 'Application Gateway',
-              azInfo: ['deployable'],
+              azInfo: [],
               Image: require('../../assets/IconCloud/azure/network/10076-icon-Application Gateways-Networking.svg'),
-              Provisionable: true,
+              Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.AppGw()
@@ -1997,9 +1987,9 @@ export default class ResourcePalette extends Component {
             {
               Name: 'firewall azfw',
               Tooltip: 'Azure Firewall',
-              azInfo: ['deployable'],
+              azInfo: [],
               Image: require('../../assets/IconCloud/azure/network/10084-icon-Firewalls-Networking.svg'),
-              Provisionable: true,
+              Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.Firewall()
@@ -2156,9 +2146,9 @@ export default class ResourcePalette extends Component {
             {
               Name: 'cosmos mongo cassandra graph documentdb db',
               Tooltip: 'CosmosDB',
-              azInfo: ['Private Link supported','Service Endpoint supported','deployable'],
+              azInfo: ['Private Link supported','Service Endpoint supported'],
               Image: require('../../assets/IconCloud/azure/databases/10121-icon-Azure Cosmos DB-Databases.svg'),
-              Provisionable: true,
+              Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.CosmosDB()
@@ -2213,7 +2203,7 @@ export default class ResourcePalette extends Component {
             {
                 Name: 'blob table queue file storage',
                 Tooltip: 'Azure Storage Account',
-                azInfo: ['Private Link supported','Service Endpoint supported', 'deployable'],
+                azInfo: ['Private Link supported','Service Endpoint supported, Bicep support'],
                 Image: require('../../assets/IconCloud/azure/data_storage/10086-icon-Storage Accounts-Storage.svg'),
                 Provisionable: true,
                 IsPng: false,
@@ -2277,9 +2267,9 @@ export default class ResourcePalette extends Component {
             {
               Name: 'site recovery backup dr',
               Tooltip: 'Site Recovery',
-              azInfo: ['-Purpose: Backup & DR','-Private Link supported','deployable'],
+              azInfo: ['-Purpose: Backup & DR','-Private Link supported'],
               Image: require('../../assets/IconCloud/azure/data_storage/00017-icon-Recovery Services Vaults-Storage.svg'),
-              Provisionable: true,
+              Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.RecoveryServiceVault()
@@ -2384,7 +2374,7 @@ export default class ResourcePalette extends Component {
               Name: 'log analytics monitor',
               Tooltip: 'Log Analytics',
               Image: require('../../assets/IconCloud/azure/data_analytics/00009-icon-Log Analytics Workspaces-Analytics.svg'),
-              Provisionable: true,
+              Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.LogAnalytics()
@@ -2652,7 +2642,7 @@ export default class ResourcePalette extends Component {
               IsVisible:true,
               resourceType: ResourceType.ASG()
             },
-            
+
             {
               Name: 'sentinel',
               Tooltip: 'Azure Sentinel',
@@ -2675,9 +2665,9 @@ export default class ResourcePalette extends Component {
             {
               Name: 'security center asc',
               Tooltip: 'Security Center',
-              azInfo: ['deployable'],
+              azInfo: [],
               Image: require('../../assets/IconCloud/azure/security_identity/10241-icon-Security Center-Security.svg'),
-              Provisionable: true,
+              Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.SecurityCenter()
@@ -2721,9 +2711,9 @@ export default class ResourcePalette extends Component {
             {
               Name: 'app insights apm',
               Tooltip: 'Application Insights',
-              azInfo: ['deployable'],
+              azInfo: [],
               Image: require('../../assets/IconCloud/azure/management/00012-icon-Application Insights-Management-Governance.svg'),
-              Provisionable: true,
+              Provisionable: false,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.AppInsights()
@@ -2879,7 +2869,7 @@ export default class ResourcePalette extends Component {
  }
 
   render() {
-    
+
     return(
         <div className="sidebar"
           style={{display: this.global.drawResourcePaletteOpen ? 'block': 'none' }}>
@@ -2960,20 +2950,20 @@ export default class ResourcePalette extends Component {
             }
           </Container>
         </div>
-      
+
     );
   };
 
   searchResources = (evt) =>  {
     var searchText = evt.target.value;
- 
+
     this.setState({searchText:searchText});
- 
+
     if(searchText == '') {
       this.resetVisibility();
       return;
     }
- 
+
     this.resetVisibility();
     var resourcesToFilter = this.state.filteredResources;
     resourcesToFilter.forEach(function (rsc, index) {
@@ -2986,7 +2976,7 @@ export default class ResourcePalette extends Component {
           else
             isGroupContainsfoundResource.push(true);
       }
- 
+
       if(isGroupContainsfoundResource.length > 0) {
           rsc.resourceGroup.groupSearchVisible = true;
           rsc.resourceGroup.groupExpanded = true;
@@ -2995,12 +2985,12 @@ export default class ResourcePalette extends Component {
           rsc.resourceGroup.groupSearchVisible = false;
           rsc.resourceGroup.groupExpanded = false;
       }
- 
+
     });
- 
+
     this.setState({ filteredResources: resourcesToFilter });
   }
- 
+
   resetVisibility() {
     var allRsc = this.state.filteredResources;
     allRsc.forEach(rsc => {
@@ -3012,7 +3002,7 @@ export default class ResourcePalette extends Component {
     });
     this.setState({filteredResources:allRsc});
   }
- 
+
   toggleExpansionPanelExpandOnClick = (groupName, expandState) => {
      var allRsc = this.state.filteredResources;
      for(var rsc of allRsc) {
@@ -3046,10 +3036,10 @@ export default class ResourcePalette extends Component {
       helper: 'clone',
       zIndex: 10000,
       appendTo: "body"
-    });    
+    });
 
     $("#diagramEditor").droppable({
-      accept: ".tile-item", 
+      accept: ".tile-item",
       drop: function(event, ui) {
         var elt = ui.draggable.first();
         var resourceType = ui.draggable.data('shape'); //data-shape
@@ -3063,7 +3053,7 @@ export default class ResourcePalette extends Component {
               resourceType: resourceType
           });
         }
-        else 
+        else
           thisComp.props.DiagramEditor.current.addResourceToEditorFromPalette({
             resourceType: resourceType,
             x: x,
@@ -3071,6 +3061,6 @@ export default class ResourcePalette extends Component {
           });
       }
     });
-    
+
   }
 }

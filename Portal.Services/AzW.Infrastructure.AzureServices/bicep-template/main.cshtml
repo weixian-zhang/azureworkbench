@@ -72,5 +72,64 @@ resource @bicepRscName 'Microsoft.Network/virtualNetworks@2020-06-01' = {
 </text>
     } @*if VNet*@
 
+  @* NSG *@
+  @if(resource.ResourceType == ResourceType.NSG)
+  {
+      var nsg = (NSG)resource;
+      string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @nsg.Location;
+
+  <text>
+  resource @TemplateHelper.GetBicepRscName(nsg.ResourceType, nsg.Name) 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
+  name: '@nsg.Name'
+  location: '@location'
+  @if(nsg.InboundRules.Count() > 0)
+  {
+  <text>
+  properties: {
+  securityRules: [
+      @foreach(var rule in nsg.InboundRules)
+      {
+      <text>
+      {
+        name: '@rule.Name'
+        properties: {
+        priority: @rule.Priority
+        sourceAddressPrefix: '@rule.FromAddresses'
+        protocol: '@rule.Protocol'
+        destinationPortRange: '@rule.ToPorts'
+        access: '@(rule.Allow ? "Allow" : "Deny")'
+        direction: 'Inbound'
+        sourcePortRange: '@rule.FromPorts'
+        destinationAddressPrefix: '@rule.ToAddresses'
+        }
+      }
+      </text>
+      } @*foreach inbound*@
+      @foreach(var rule in nsg.OutboundRules)
+      {
+      <text>
+      {
+        name: '@rule.Name'
+        properties: {
+        priority: @rule.Priority
+        sourceAddressPrefix: '@rule.FromAddresses'
+        protocol: '@rule.Protocol'
+        destinationPortRange: '@rule.ToPorts'
+        access: '@(rule.Allow ? "Allow" : "Deny")'
+        direction: 'Outbound'
+        sourcePortRange: '@rule.FromPorts'
+        destinationAddressPrefix: '@rule.ToAddresses'
+        }
+      }
+      </text>
+      } @*foreach outbound*@
+    ]
+  } @*properties*@
+  </text>
+  }  @* if nsg.InboundRules*@
+}
+  </text>
+  }  @* if nsg *@
+
 } @*foreach resources*@
 

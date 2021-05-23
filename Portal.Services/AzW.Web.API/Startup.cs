@@ -74,6 +74,9 @@ namespace AzW.Web.API
 
             ConfigureDependencies(services);
 
+            //init cache on HostBoot
+            services.AddHostedService<HostBoot>();
+
             //app insights user tracker
             services.AddApplicationInsightsTelemetry(_secrets.AppInsightsKey);
             services.AddSingleton<ITelemetryInitializer, TelemetryUserNameEnrichment>();
@@ -91,8 +94,6 @@ namespace AzW.Web.API
             }
 
             app.UseCors(AllowAllOriginsPolicy);
-
-            app.ConfigureExceptionHandler(_logger);
 
             app.UseAuthentication();
 

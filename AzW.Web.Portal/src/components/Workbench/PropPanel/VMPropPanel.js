@@ -38,7 +38,7 @@ export default class VMPropPanel extends Component {
           canOutsideClickClose= {true}
           enforceFocus= {true}
           hasBackdrop= {true}
-          onClose={() => this.drawerClose()} 
+          onClose={() => this.drawerClose()}
           isOpen= {this.state.isOpen}
           position= {POSITION_RIGHT}
           usePortal= {true}
@@ -46,34 +46,8 @@ export default class VMPropPanel extends Component {
           className="propPanelDrawer">
               <Grid container  className="propPanelGrid">
                 <Grid item xs={12}>
-                  {/* <AppBar position="static" color = "transparent">
-                    <Tabs value={this.state.value} onChange={this.handleChange} >
-                      <Tab label="Diagram" value="diagram" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'diagram' ? "bold" : "" }}/>
-                      <Tab label="Provision" value="provision" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'provision' ? "bold" : "" }}/>
-                      <Tab label="Calculator" value="calculator" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'calculator' ? "bold" : "" }}/>
-                    </Tabs>
-                  </AppBar>
-                  <Typography
-                      className = "propPanelTabContent"
-                      hidden={this.state.value !== 'diagram'}>
-                        <FormGroup
-                              label="Icon Display Name"
-                              labelFor="icon-display-name"
-                              inline={true}
-                              intent={Intent.PRIMARY}>
-                              <div class="bp3-input-group .modifier">
-                                <input id="icon-display-name" type="text" class="bp3-input .modifier" placeholder="Display name"
-                                prop='DisplayName'
-                                value={this.state.userObject.GraphModel.DisplayName}
-                                onChange={this.onDiagramIconNameChange}
-                                autoFocus ={true} />
-                              </div>
-                        </FormGroup>
-                    </Typography> */}
 
                     {this.renderProvisionTab()}
-                            
-                    {/* {this.renderCalculatorTab()} */}
 
                 </Grid>
               </Grid>
@@ -86,9 +60,7 @@ export default class VMPropPanel extends Component {
   }
 
   renderProvisionTab() {
-    // if(this.state.value != 'provision')
-    //   return null;
-    
+
     return (
         <div className = "propPanelTabContent">
            <Grid
@@ -103,7 +75,7 @@ export default class VMPropPanel extends Component {
                 </Grid>
                 <Grid item>
                   <input id="icon-display-name" type="text" class="bp3-input .modifier"
-                    value={this.state.userObject.ProvisionContext.Name} 
+                    value={this.state.userObject.ProvisionContext.Name}
                     onChange={(e) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.Name = e.target.value
@@ -111,22 +83,7 @@ export default class VMPropPanel extends Component {
                     }} />
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
-                <Grid item sm={3}>
-                    <label>Resource Group</label>
-                </Grid>
-                <Grid item>
-                  <SelectResourceGroup
-                   SelectedResourceGroup={this.state.userObject.ProvisionContext.ResourceGroupName}
-                   onValueChange={
-                    (rg) => {
-                      var uo = this.state.userObject;
-                      uo.ProvisionContext.ResourceGroupName = rg
-                      this.setState({userObject:uo});
-                    }
-                  }/>
-                </Grid>
-              </Grid>
+
               <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
                 <Grid item sm={3}>
                     <label>Location</label>
@@ -226,7 +183,7 @@ export default class VMPropPanel extends Component {
                 </Grid>
                 <Grid item>
                   <input id="icon-display-name" type="text" class="bp3-input .modifier"
-                    value={this.state.userObject.ProvisionContext.AdminUsername} 
+                    value={this.state.userObject.ProvisionContext.AdminUsername}
                     onChange={(e) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.AdminUsername = e.target.value
@@ -287,7 +244,7 @@ export default class VMPropPanel extends Component {
       case 'DisplayName':
         userObj.GraphModel.DisplayName = value;
         break;
-    
+
       default:
         break;
     }

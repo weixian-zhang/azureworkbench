@@ -11,7 +11,7 @@ namespace AzW.Infrastructure.AzureServices
 {
     public class TemplateHelper
     {
-        private static char[] bicepRscNameViolationChars = new char[]{'_', '-', ' ', ','};
+        private static char[] bicepRscNameViolationChars = new char[]{'_', '-', ' ', ',', '@', '~', '`'};
 
         public static bool HasNextItem(int current, int total)
         {
@@ -22,9 +22,9 @@ namespace AzW.Infrastructure.AzureServices
             }
         }
 
-        public static string GetBicepRscName(string rscType, string rscName)
+        public static string GetBicepRscName(string rscType, string rscName, bool randomName = false)
         {
-            if(rscName == "")
+            if(randomName)
             {
                 var placeGenerator = new PlaceNameGenerator();
                 string randName = placeGenerator.GenerateRandomPlaceName();
