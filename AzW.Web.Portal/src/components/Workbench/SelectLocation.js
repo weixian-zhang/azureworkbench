@@ -84,7 +84,11 @@ export default class SelectLocation extends Component {
     initPreviouslySelectedValue = () =>{
         var previouslySelectedValue = this.props.SelectedLocation;
 
-        if(!Utils.IsNullOrUndefine(previouslySelectedValue))
+        if(previouslySelectedValue != '') {
             this.setState({selectedValue:previouslySelectedValue});
+            return;
+        } else {
+            this.setState({selectedValue: 'westus'});
+        }
     }
 }

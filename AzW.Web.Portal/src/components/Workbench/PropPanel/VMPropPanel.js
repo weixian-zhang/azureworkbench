@@ -167,7 +167,7 @@ export default class VMPropPanel extends Component {
                     }/>
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
+              {/* <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
                 <Grid item>
                   <Switch checked={this.state.userObject.ProvisionContext.IsLinux} label="Is Linux"
                     onChange={(e) => {
@@ -176,7 +176,7 @@ export default class VMPropPanel extends Component {
                         this.setState({userObject:uo});
                     }} />
                 </Grid>
-              </Grid>
+              </Grid> */}
               <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
                 <Grid item sm={3}>
                     <label>Admin Username</label>

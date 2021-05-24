@@ -16,6 +16,8 @@ class BicepService
             return;
         }
 
+        Toast.show('primary', 2000, "Generating Bicep template, please wait...");
+
         var user = this.authService.getUserProfile();
 
         var param = {

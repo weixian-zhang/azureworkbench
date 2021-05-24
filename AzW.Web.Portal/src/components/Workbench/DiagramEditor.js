@@ -6372,8 +6372,6 @@ loadPastedImageFromBrowserClipboard(src, callback){
         return;
       }
 
-      Toast.show('primary', 3000, "Generating Bicep template, please wait...");
-
        this.bicepsvc.generateBicep(contexts,
         function onSuccess(bicepTemplate) {
           const url = window.URL.createObjectURL(new Blob([bicepTemplate]));

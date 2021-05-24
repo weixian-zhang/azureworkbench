@@ -26,9 +26,8 @@ namespace AzW.Infrastructure.Data
 
         public async Task<bool> IsVMImageCacheExistAsync()
         {
-           //check first key exist
-           var exist = await _redis.ExistsAsync("microsoft windows 10 desktop Windows-10_19h1-ent");
-           if(exist)
+           var keys = await _redis.SearchKeysAsync("vmimage*");
+           if(keys.Count() > 0)
                 return true;
            else
                 return false;
@@ -36,26 +35,34 @@ namespace AzW.Infrastructure.Data
 
         public async Task<bool> IsVMSizeExistAsync()
         {
-           return await _redis.ExistsAsync("vmsize Basic_A0");
+           var keys = await _redis.SearchKeysAsync("vmsize*");
+           if(keys.Count() > 0)
+                return true;
+           else
+                return false;
         }
 
         public async Task<bool> IsServiceTagExistAsync()
         {
-           return await _redis.ExistsAsync("servicetag ApiManagement");
+           var keys = await _redis.SearchKeysAsync("servicetag*");
+           if(keys.Count() > 0)
+                return true;
+           else
+                return false;
         }
 
         public async Task SetServiceTagAsync(string key, ServiceTag value)
-        {   
+        {
             await _redis.AddAsync<ServiceTag>(key, value, TimeSpan.FromDays(30));
         }
 
         public async Task SetVMImageAsync(string key, VMImage value)
-        {   
+        {
             await _redis.AddAsync<VMImage>(key, value, TimeSpan.FromDays(30));
         }
 
         public async Task SetVMSizeAsync(string key, VMSize value)
-        {   
+        {
             await _redis.AddAsync<VMSize>(key, value, TimeSpan.FromDays(31));
         }
 
@@ -104,7 +111,7 @@ namespace AzW.Infrastructure.Data
                 Database = 0,
                 Ssl = true,
                 Password = _redisPassword,
-                
+
                 ServerEnumerationStrategy = new ServerEnumerationStrategy()
                 {
                     Mode = ServerEnumerationStrategy.ModeOptions.All,
@@ -117,13 +124,13 @@ namespace AzW.Infrastructure.Data
             {
                 Formatting = Formatting.None,
                 NullValueHandling = NullValueHandling.Ignore
-                
+
             };
 
            //ConnectionMultiplexer redisConn = ConnectionMultiplexer.Connect(redisConnString);
             var cache = new RedisCacheClient(new SinglePool(_redisConnString),
                 new NewtonsoftSerializer(jsonOpt), redisConfiguration);
-            
+
             _redis = cache.Db0;
         }
 

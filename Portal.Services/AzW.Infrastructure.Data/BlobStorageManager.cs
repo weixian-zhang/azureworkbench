@@ -175,11 +175,26 @@ namespace AzW.Infrastructure.Data
 
         public async Task<string> GetServiceTagJson()
         {
-            var blobClient = _systemContainer.GetBlobClient(ServiceTagFileName);
+            return await GetBlobString(ServiceTagFileName);
+        }
+
+        public async Task<string> GetVMSizesJson()
+        {
+            return await GetBlobString(VMSizeFileName);
+        }
+
+        public async Task<string> GetVMImagesJson()
+        {
+            return await GetBlobString(VMImageFileName);
+        }
+
+        private async Task<string> GetBlobString(string blobName)
+        {
+            var blobClient = _systemContainer.GetBlobClient(blobName);
 
             using (var ms = new MemoryStream())
             {
-                 BlobDownloadInfo download = await blobClient.DownloadAsync();
+                BlobDownloadInfo download = await blobClient.DownloadAsync();
 
                 using (var sr = new StreamReader(download.Content))
                 {

@@ -10,7 +10,7 @@
         var storage = (StorageAccount)resource;
         string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @storage.Location;
 <text>
-resource @TemplateHelper.GetBicepRscName(storage.ResourceType, storage.Name) 'Microsoft.Storage/storageAccounts@2021-02-01' = {
+resource @TemplateFormatHelper.GetBicepRscName(storage.ResourceType, storage.Name) 'Microsoft.Storage/storageAccounts@2021-02-01' = {
     name: '@storage.Name.ToLowerInvariant()'
     location: '@location'
     kind: 'Storage'
@@ -27,10 +27,8 @@ resource @TemplateHelper.GetBicepRscName(storage.ResourceType, storage.Name) 'Mi
     {
          var vnet = (VNet)resource;
         string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @vnet.Location;
-        string bicepRscName = @TemplateHelper.GetBicepRscName(vnet.ResourceType, vnet.Name);
-
 <text>
-resource @bicepRscName 'Microsoft.Network/virtualNetworks@2020-06-01' = {
+resource @TemplateFormatHelper.GetBicepRscName(vnet.ResourceType, vnet.Name) 'Microsoft.Network/virtualNetworks@2020-06-01' = {
   name: '@vnet.Name'
   location: '@location'
   properties: {
@@ -52,7 +50,7 @@ resource @bicepRscName 'Microsoft.Network/virtualNetworks@2020-06-01' = {
         properties: {
           addressPrefix: '@subnet.AddressSpace'
           networkSecurityGroup: {
-            id: @(TemplateHelper.GetBicepRscName(ResourceType.NSG, @subnet.NSGName) + ".id")
+            id: @(TemplateFormatHelper.GetBicepRscName(ResourceType.NSG, @subnet.NSGName) + ".id")
           }
         }
         </text>
@@ -79,7 +77,7 @@ resource @bicepRscName 'Microsoft.Network/virtualNetworks@2020-06-01' = {
       string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @nsg.Location;
 
   <text>
-  resource @TemplateHelper.GetBicepRscName(nsg.ResourceType, nsg.Name) 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
+  resource @TemplateFormatHelper.GetBicepRscName(nsg.ResourceType, nsg.Name) 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
   name: '@nsg.Name'
   location: '@location'
   @if(nsg.InboundRules.Count() > 0)
@@ -130,6 +128,125 @@ resource @bicepRscName 'Microsoft.Network/virtualNetworks@2020-06-01' = {
 }
   </text>
   }  @* if nsg *@
+
+  @* VM *@
+  @if(resource.ResourceType == ResourceType.VM)
+  {
+      var vm = (VM)resource;
+      string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @vm.Location;
+      string vnetId = @TemplateFormatHelper.GetBicepRscName(ResourceType.VNet, vm.VNetName) + ".id";
+      string subnetName = vm.SubnetName;
+      string nicBicepName = "nic" + TemplateFormatHelper.GetBicepRscName(ResourceType.NIC, vm.Name);
+
+  <text>
+  @if(!string.IsNullOrEmpty(vm.PublicIPName))
+  {
+  <text>
+  resource @TemplateFormatHelper.GetBicepRscName(ResourceType.PublicIp, vm.PublicIPName) 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
+  name: '@vm.PublicIPName'
+  location: '@location'
+  properties: {
+    publicIPAllocationMethod: 'Dynamic'
+    dnsSettings: {
+      domainNameLabel: '@(vm.PublicIPName + "-" + vm.Name + "-" + location)'
+    }
+  }
+}
+  </text>
+  }
+
+  resource @nicBicepName 'Microsoft.Network/networkInterfaces@2020-06-01' = {
+  name: '@("nic-" + TemplateFormatHelper.GetBicepRscName(vm.ResourceType, vm.Name))'
+  location: '@location'
+  properties: {
+    ipConfigurations: [
+      {
+        name: 'ipconfig1'
+        properties: {
+          subnet: {
+            id: '@(vnetId + "/" + "subnets" + "/" + subnetName)'
+          }
+          privateIPAllocationMethod: 'Dynamic'
+          @if(!string.IsNullOrEmpty(vm.PublicIPName))
+          {
+          <text>
+          publicIPAddress: {
+            id: @(TemplateFormatHelper.GetBicepRscName(ResourceType.PublicIp, vm.PublicIPName) + ".id")
+          }
+          </text>
+          }
+        }
+      }
+    ]
+  }
+}
+
+  resource @TemplateFormatHelper.GetBicepRscName(ResourceType.VM, vm.Name) 'Microsoft.Compute/virtualMachines@2020-06-01' = {
+  name: '@vm.Name'
+  location: '@location'
+  properties: {
+    osProfile: {
+      computerName: '@vm.Name'
+      adminUsername: '@vm.AdminUsername'
+      adminPassword: '@vm.AdminPassword'
+      windowsConfiguration: {
+        provisionVMAgent: true
+      }
+    }
+    hardwareProfile: {
+      vmSize: '@vm.SizeName'
+    }
+    storageProfile: {
+      imageReference: {
+        publisher: '@vm.VMPublisher'
+        offer: '@vm.VMOffer'
+        sku: '@vm.VMSKU'
+        version: 'latest'
+      }
+      osDisk: {
+        createOption: 'FromImage'
+      }
+      dataDisks: []
+    }
+    networkProfile: {
+      networkInterfaces: [
+        {
+          properties: {
+            primary: true
+          }
+          id: @(nicBicepName + ".id")
+        }
+      ]
+    }
+    diagnosticsProfile: {
+      bootDiagnostics: {
+        enabled: false
+      }
+    }
+  }
+}
+  </text>
+  } @* if VM *@
+
+    @* Public IP *@
+  @if(resource.ResourceType == ResourceType.PublicIp)
+  {
+      var pip = (PublicIP)resource;
+      string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @pip.Location;
+
+  <text>
+  resource @TemplateFormatHelper.GetBicepRscName(ResourceType.PublicIp, pip.Name) 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
+  name: '@pip.Name'
+  location: '@location'
+  properties: {
+    publicIPAllocationMethod: '@(pip.Static ? "Static" : "Dynamic")'
+    dnsSettings: {
+      domainNameLabel: '@(pip.Name + Guid.NewGuid())'
+    }
+  }
+}
+  </text>
+  }  @* if VM *@
 
 } @*foreach resources*@
 

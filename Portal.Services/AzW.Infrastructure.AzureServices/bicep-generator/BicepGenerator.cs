@@ -35,15 +35,15 @@ namespace AzW.Infrastructure.AzureServices
 
             try
             {
-                var resourceContext = TemplateHelper.CreateResourceContext(azcontexts);
+                var resourceContext = TemplateAzureHelper.CreateResourceContext(azcontexts);
 
-                string multifileTemplate = TemplateHelper.GetMainTemplate(_webrootPath);
+                string multifileTemplate = TemplateAzureHelper.GetMainTemplate(_webrootPath);
 
                 bicep = Engine.Razor.RunCompile(multifileTemplate, "multifile-main", resourceContext.GetType(), resourceContext);
 
-                bicep = TemplateHelper.ReplaceMultiLinBreaksWithSingle(bicep);
+                bicep = TemplateFormatHelper.ReplaceMultiLinBreaksWithSingle(bicep);
 
-                bicep = TemplateHelper.FormatBicep(bicep);
+                bicep = TemplateFormatHelper.FormatBicep(bicep);
 
                 return bicep;
             }
