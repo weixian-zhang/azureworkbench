@@ -15,8 +15,10 @@ export default class AppService
             ResourceGroupName: '',
             PlanName: 'asp-web-dev',
             IsLinux: false,
-            PricingTier: 'Standard1',
-            RuntimeStack: 'NETCore_V2_2'
+            PricingTier: 'S1',
+            NumberOfInstance: 1,
+            AppInsightsName: 'appinsights-webapp',
+            LogAnalyticsWorkspaceName: 'law-appinsights-webapp'
         };
         this.CalculatorContext = {
             IsFree: false,

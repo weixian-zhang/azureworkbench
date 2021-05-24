@@ -5,7 +5,6 @@ namespace AzW.Model
  {
      public class AppGateway : Resource
      {
-          public string Name { get; set; }
           public string Location { get; set; }
           public string ResourceGroupName { get; set; }
           public string VNetName { get; set; }

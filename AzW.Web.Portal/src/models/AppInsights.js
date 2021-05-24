@@ -10,7 +10,8 @@ export default class AppInsights
 
         this.ProvisionContext = {
             ResourceType: ResourceType.AppInsights(),
-            Name: '',
+            Name: 'appinsights-webapp',
+            LogAnalyticsWorkspaceName: 'law-appinsights-webapp',
             Location: '',
             ResourceGroupName: ''
         };

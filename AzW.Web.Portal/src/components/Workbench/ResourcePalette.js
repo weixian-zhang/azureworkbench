@@ -1667,9 +1667,9 @@ export default class ResourcePalette extends Component {
             {
                 Name: 'vm virtual machine',
                 Tooltip: 'VM',
-                azInfo: [],
+                azInfo: ['Bicep support'],
                 Image: require('../../assets/IconCloud/azure/compute/10021-icon-Virtual Machine-Compute.svg'),
-                Provisionable: false,
+                Provisionable: true,
                 IsPng: false,
                 IsVisible:true,
                 resourceType: ResourceType.VM()

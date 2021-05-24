@@ -10,7 +10,7 @@ using RandomNameGeneratorLibrary;
 
 namespace AzW.Infrastructure.AzureServices
 {
-    public class TemplateAzureHelper
+    public class TemplateResourceHelper
     {
 
         public static string GetMainTemplate(string webrootpath)
@@ -128,26 +128,24 @@ namespace AzW.Infrastructure.AzureServices
                 }
             }
 
+            rc.Resources = FillEmptyResouceNames(rc.Resources);
+
             return rc;
         }
 
-        public string GetNSGNameOfSubnet(ResourceContext context, string vnet, string subnet)
+        private static List<Resource> FillEmptyResouceNames(List<Resource> resources)
         {
-            string nsg = "";
+            return resources;
+        }
 
-            var vnets = context.Resources.Where(x => x.ResourceType == ResourceType.VNet);
+        public static bool IsResourceExist(List<Resource> resources, string rscType, string rscName)
+        {
+            var rsc = resources.Where(x => x.ResourceType == rscType && x.Name == rscName);
 
-            var foundVNet = vnets.Cast<VNet>().FirstOrDefault(x => x.Name == vnet);
-
-            if(foundVNet != null)
-            {
-                var foundSubnet = foundVNet.Subnets.FirstOrDefault(x => x.Name == subnet);
-
-                if(foundSubnet != null)
-                    nsg = foundSubnet.NSGName;
-            }
-
-            return nsg;
+            if(rsc.Count() > 0)
+                return true;
+            else
+                return false;
         }
     }
 }

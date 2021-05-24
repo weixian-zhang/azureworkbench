@@ -34,7 +34,7 @@ export default class AppInsightsPropPanel extends Component {
           canOutsideClickClose= {true}
           enforceFocus= {true}
           hasBackdrop= {true}
-          onClose={() => this.drawerClose()} 
+          onClose={() => this.drawerClose()}
           isOpen= {this.state.isOpen}
           position= {POSITION_RIGHT}
           usePortal= {true}
@@ -42,7 +42,7 @@ export default class AppInsightsPropPanel extends Component {
           className="propPanelDrawer">
               <Grid container spacing={12} className="propPanelGrid">
                 <Grid item xs={12}>
-                  
+
                   {this.renderProvisionTab()}
 
                 </Grid>
@@ -52,7 +52,7 @@ export default class AppInsightsPropPanel extends Component {
   }
 
   renderProvisionTab() {
-   
+
     return (
         <div className = "propPanelTabContent">
            <Grid
@@ -67,7 +67,7 @@ export default class AppInsightsPropPanel extends Component {
                 </Grid>
                 <Grid item>
                   <input id="icon-display-name" type="text" class="bp3-input .modifier"
-                    value={this.state.userObject.ProvisionContext.Name} 
+                    value={this.state.userObject.ProvisionContext.Name}
                     onChange={(e) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.Name = e.target.value
@@ -76,6 +76,20 @@ export default class AppInsightsPropPanel extends Component {
                 </Grid>
               </Grid>
               <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+                <Grid item sm={4}>
+                    <label>Log Analytics Workspace Name</label>
+                </Grid>
+                <Grid item>
+                  <input id="icon-display-name" type="text" class="bp3-input .modifier"
+                    value={this.state.userObject.ProvisionContext.LogAnalyticsWorkspaceName}
+                    onChange={(e) => {
+                      var uo = this.state.userObject;
+                      uo.ProvisionContext.LogAnalyticsWorkspaceName = e.target.value
+                      this.setState({userObject:uo});
+                    }} />
+                </Grid>
+              </Grid>
+              {/* <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
                 <Grid item sm={4}>
                     <label>Resource Group</label>
                 </Grid>
@@ -90,7 +104,7 @@ export default class AppInsightsPropPanel extends Component {
                     }
                   }/>
                 </Grid>
-              </Grid>
+              </Grid> */}
               <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
                 <Grid item sm={4}>
                     <label>Location</label>
@@ -134,7 +148,7 @@ export default class AppInsightsPropPanel extends Component {
       case 'DisplayName':
         userObj.GraphModel.DisplayName = value;
         break;
-    
+
       default:
         break;
     }

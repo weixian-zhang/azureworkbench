@@ -11,6 +11,8 @@ namespace AzW.Infrastructure.AzureServices
     //zipoutput stream
     //https://microsoft.github.io/AzureTipsAndTricks/blog/tip141.html
 
+    //bicep function app
+    //https://markheath.net/post/azure-functions-bicep
 
     public class BicepGenerator : ITemplateGenerator
     {
@@ -35,9 +37,9 @@ namespace AzW.Infrastructure.AzureServices
 
             try
             {
-                var resourceContext = TemplateAzureHelper.CreateResourceContext(azcontexts);
+                var resourceContext = TemplateResourceHelper.CreateResourceContext(azcontexts);
 
-                string multifileTemplate = TemplateAzureHelper.GetMainTemplate(_webrootPath);
+                string multifileTemplate = TemplateResourceHelper.GetMainTemplate(_webrootPath);
 
                 bicep = Engine.Razor.RunCompile(multifileTemplate, "multifile-main", resourceContext.GetType(), resourceContext);
 
