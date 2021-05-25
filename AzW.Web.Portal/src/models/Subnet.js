@@ -7,7 +7,7 @@ export default class Subnet
             ResourceType: ResourceType.Subnet(),
             DisplayName: '',
             IsGatewaySubnet: false,
-            VNetAddressSpace: '',
+            VNetAddressSpace: '10.0.0.0/27',
             SubnetsAndCidrs: []
         };
 

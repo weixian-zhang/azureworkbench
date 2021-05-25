@@ -197,8 +197,33 @@ securityRules: [
       computerName: '@vm.Name'
       adminUsername: '@vm.AdminUsername'
       adminPassword: '@vm.AdminPassword'
+      @if(!vm.IsLinux)
+      {
+      <text>
       windowsConfiguration: {
         provisionVMAgent: true
+        enableAutomaticUpdates: true
+        patchSettings: {
+          patchMode: 'AutomaticByPlatform'
+        }
+      }
+      </text>
+      }
+      else
+      {
+      <text>
+      linuxConfiguration: {
+        provisionVMAgent: true
+        ssh: {
+          publicKeys: [
+            {
+              path: '/home/@vm.AdminUsername/.ssh/authorized_keys'
+              keyData: '@vm.SSHPublicKey'
+            }
+          ]
+        }
+      }
+      </text>
       }
     }
     hardwareProfile: {

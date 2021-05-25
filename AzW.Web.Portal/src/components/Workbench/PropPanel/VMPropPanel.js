@@ -1,15 +1,11 @@
 import React, { Component } from "react";
 import VM from '../../../models/VM';
-import { FormGroup, Drawer, Switch, Intent, InputGroup, Tooltip, Button } from "@blueprintjs/core";
+import {  Drawer, Switch, Intent, InputGroup, Tooltip, Button } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import Grid from "@material-ui/core/Grid";
-
-import AppBar from '@material-ui/core/AppBar';
+import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import SelectLocation from '../SelectLocation';
-import SelectResourceGroup from '../SelectResourceGroup';
 import SelectVMImage from '../SelectVMImage';
 import SelectVMSize from '../SelectVMSize';
 
@@ -167,16 +163,6 @@ export default class VMPropPanel extends Component {
                     }/>
                 </Grid>
               </Grid>
-              {/* <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
-                <Grid item>
-                  <Switch checked={this.state.userObject.ProvisionContext.IsLinux} label="Is Linux"
-                    onChange={(e) => {
-                        var uo = this.state.userObject;
-                        uo.ProvisionContext.IsLinux = e.target.checked
-                        this.setState({userObject:uo});
-                    }} />
-                </Grid>
-              </Grid> */}
               <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
                 <Grid item sm={3}>
                     <label>Admin Username</label>
@@ -216,11 +202,40 @@ export default class VMPropPanel extends Component {
                       }
                       type={this.state.showPassword ? "text" : "password"} />
                 </Grid>
-                <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+              </Grid>
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
+                <Grid item>
+                  <Switch checked={this.state.userObject.ProvisionContext.IsLinux} label="Is Linux"
+                    onChange={(e) => {
+                        var uo = this.state.userObject;
+                        uo.ProvisionContext.IsLinux = e.target.checked
+                        this.setState({userObject:uo});
+                    }} />
+                </Grid>
+              </Grid>
+              {
+                (this.state.userObject.ProvisionContext.IsLinux)
+                ?
+                  <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
+                      <Grid item sm={3}>
+                        <label>OpenSSH Public Key</label>
+                    </Grid>
+                      <Grid item>
+                        <TextField multiline={true} variant='filled' size='medium' style={{width: 350}}
+                        value={this.state.userObject.ProvisionContext.SSHPublicKey}
+                        onChange={(event) => {
+                          var uo = this.state.userObject;
+                          uo.ProvisionContext.SSHPublicKey = event.target.value;
+                          this.setState({userObject:uo});
+                        }} />
+                      </Grid>
+                    </Grid>
+                : ''
+              }
+              <Grid container item style={{marginTop: "20px"}} direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
                   <Typography fontSize={6}>(Workbench will NOT persist your username and password,
                   only use them for provisioning)</Typography>
                 </Grid>
-              </Grid>
             </Grid>
       </div>
     );

@@ -11,8 +11,7 @@ export default class VM
         this.ProvisionContext = {
             ResourceType: ResourceType.VM(),
 
-            Name: 'vm-',
-            ResourceGroupName: '',
+            Name: 'vm-webserver',
             Location: 'westus',
 
             HasPublicIP: false,
@@ -30,7 +29,9 @@ export default class VM
             VMVersion: '',
 
             SizeName: 'STANDARD_DS2_V2',
-            IsLinux: false
+            IsLinux: false,
+            SSHPublicKey: ''
+
         };
         this.CalculatorContext = {
             IsFree: false,
