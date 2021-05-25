@@ -11,7 +11,7 @@ export default class Arc
         this.ProvisionContext = {
             ResourceType: ResourceType.Arc(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

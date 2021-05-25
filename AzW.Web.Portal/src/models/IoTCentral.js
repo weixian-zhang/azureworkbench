@@ -12,9 +12,9 @@ export default class IoTCentral
             ResourceType: ResourceType.IoTCentral(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
 
             VNetAddress: '',

@@ -12,9 +12,9 @@ export default class MySQL
             ResourceType: ResourceType.MySQL(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

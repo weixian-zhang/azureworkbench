@@ -10,9 +10,9 @@ export default class PrivateEndpoint
 
         this.ProvisionContext = {
             ResourceType: ResourceType.PrivateEndpoint(),
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
             VNetAddress: '',
             SubnetName: ''

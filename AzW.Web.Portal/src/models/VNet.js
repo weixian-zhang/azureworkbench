@@ -11,13 +11,13 @@ export default class VNet
 
         this.ProvisionContext = {
             ResourceType: ResourceType.VNet(),
-           
+
             Name: 'vnet-internet',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
             AddressSpace: '10.0.0.0/24',
             Subnets: []
-        }; 
+        };
         this.CalculatorContext = {
             IsFree: true,
             Tier: ''

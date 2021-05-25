@@ -12,9 +12,9 @@ export default class SQLElasticPool
             ResourceType: ResourceType.SQLElasticPool(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

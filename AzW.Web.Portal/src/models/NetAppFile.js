@@ -12,9 +12,9 @@ export default class NetAppFile
             ResourceType: ResourceType.NetAppFile(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

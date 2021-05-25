@@ -12,9 +12,9 @@ export default class Maps
             ResourceType: ResourceType.AzureMaps(),
             Deployable: true,
             HighCost: true,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
 
         };

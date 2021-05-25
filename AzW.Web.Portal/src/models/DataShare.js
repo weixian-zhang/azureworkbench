@@ -11,7 +11,7 @@ export default class DataShare
         this.ProvisionContext = {
             ResourceType: ResourceType.DataShare(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

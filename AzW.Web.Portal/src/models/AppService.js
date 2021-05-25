@@ -11,7 +11,7 @@ export default class AppService
         this.ProvisionContext = {
             ResourceType: ResourceType.AppService(),
             Name: 'appsvc-web',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
             PlanName: 'asp-web-dev',
             IsLinux: false,

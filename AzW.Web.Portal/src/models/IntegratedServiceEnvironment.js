@@ -12,9 +12,9 @@ export default class IntegratedServiceEnvironment
             ResourceType: ResourceType.ISE(),
             Deployable: true,
             HighCost: true,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

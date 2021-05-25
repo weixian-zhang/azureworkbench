@@ -11,7 +11,7 @@ export default class LogAnalytics
         this.ProvisionContext = {
             ResourceType: ResourceType.LogAnalytics(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

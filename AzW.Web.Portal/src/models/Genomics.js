@@ -12,9 +12,9 @@ export default class Genomics
             ResourceType: ResourceType.Genomics(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

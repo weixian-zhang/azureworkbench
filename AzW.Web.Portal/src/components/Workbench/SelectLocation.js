@@ -22,30 +22,27 @@ export default class SelectLocation extends Component {
             'ukwest','westcentralus','westus2','koreacentral','koreasouth','francecentral',
             'francesouth','australiacentral','australiacentral2','uaecentral','uaenorth',
             'southafricanorth','southafricawest','switzerlandnorth','switzerlandwest',
-            'germanynorth','germanywestcentral','norwaywest','norwayeast','brazilsoutheast','westus3']
+            'germanynorth','germanywestcentral','norwaywest','norwayeast','brazilsoutheast','westus3'],
+            filteredLocations: []
         }
-
-        if(Utils.IsNullOrUndefine(this.global.locations) ||
-            Utils.IsNullOrUndefine(this.global.filteredLocations))
-            this.setGlobal({locations: [], filteredLocations: []});
-
     }
 
     componentDidMount(){
         this.initPreviouslySelectedValue();
+        this.setState({filteredLocations: this.state.locations});
     }
 
     render = () => {
         return (
             <Select
                 closeOnSelect={true}
-                items={this.state.locations}
+                items={this.state.filteredLocations}
                 itemRenderer={this.renderLocation}
                 filterable={true}
                 query={this.state.searchQuery}
                 onQueryChange={this.searchQueryChange}
                 noResults={<MenuItem disabled={true} text="No Locations" />}>
-                <Button text={this.state.selectedValue == '' ? 'Location' : Utils.limitTextLength(this.state.selectedValue,15)}
+                <Button text={this.state.selectedValue == '' ? 'westus' : this.state.selectedValue}
                     alignText='left' loading={this.state.loading}
                     rightIcon="double-caret-vertical" style={{width: '170px', maxWidth: '170px'}}/>
             </Select>
@@ -64,11 +61,10 @@ export default class SelectLocation extends Component {
 
     searchQueryChange = (newQuery) => {
         if(newQuery === "")
-            this.setGlobal({filteredLocations: this.global.locations});
+            this.setState({filteredLocations: this.state.locations.filter(x => true)});
         else
-        {
-            this.setGlobal({filteredLocations: this.global.locations.filter(x => String(x.DisplayName).toLowerCase().startsWith(newQuery))});
-        }
+            this.setState({filteredLocations:  this.state.locations.filter(x => x.includes(newQuery))});
+
     }
 
     onLocationSelect = (sender) => {
@@ -78,7 +74,7 @@ export default class SelectLocation extends Component {
 
         //reset filteredLocations,
         //if not, other components using SelectLocations will see filtered query
-        this.setGlobal({filteredLocations: this.global.locations});
+        //this.setGlobal({filteredLocations: this.global.locations});
     }
 
     initPreviouslySelectedValue = () =>{

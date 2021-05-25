@@ -11,7 +11,7 @@ export default class PurviewAccount
         this.ProvisionContext = {
             ResourceType: ResourceType.PurviewAccount(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

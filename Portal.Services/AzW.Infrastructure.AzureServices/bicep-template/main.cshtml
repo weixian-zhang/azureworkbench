@@ -1,10 +1,8 @@
 @using AzW.Infrastructure.AzureServices
 @using AzW.Model
 
-<text>
-var lawAppInsightProjectName = uniqueString(resourceGroup().id)
 
-</text>
+var lawAppInsightProjectName = uniqueString(resourceGroup().id)
 
 @foreach (var resource in @Model.Resources)
 {
@@ -265,22 +263,27 @@ securityRules: [
       string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @appsvc.Location;
       string appsvcSiteBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.AppService, appsvc.Name);
       string appsvcplanBicepName = "appsvcplan" + TemplateFormatHelper.GetBicepRscName(ResourceType.AppService, appsvc.Name);
-      string appsvcplanRscName = "appsvcplan-" + TemplateFormatHelper.GetBicepRscName(ResourceType.AppService, appsvc.Name);
+      string appsvcplanRscName = "appsvcplan-" + appsvc.Name;
       bool appinsightsExist = TemplateResourceHelper.IsResourceExist(@Model.Resources, ResourceType.AppInsights, appsvc.AppInsightsName);
 <text>
 
 //app service plan - @appsvc.Name
 resource @appsvcplanBicepName 'Microsoft.Web/serverfarms@2020-12-01' = {
-name: '@appsvcplanRscName'
-location: '@location'
-  sku: {
-      name: '@appsvc.PricingTier'
-      capacity: @appsvc.NumberOfInstance
+  name: '@appsvcplanRscName'
+  location: '@location'
+    sku: {
+        name: '@appsvc.PricingTier'
+        capacity: @appsvc.NumberOfInstance
+    }
+  @if(appsvc.IsLinux)
+  {
+  <text>
+  kind: 'app,linux'
+  properties: {
+    reserved: true
   }
-@if(appsvc.IsLinux)
-{
-@:  kind: 'linux'
-}
+</text>
+  }
 }
 
 resource @appsvcSiteBicepName 'Microsoft.Web/sites@2020-06-01' = {
@@ -325,7 +328,7 @@ resource @aiBicepName 'microsoft.insights/components@2020-02-02-preview' = {
   }
 }
 
-@*Workspace linked AppInsights*@
+@*LA Workspace linked AppInsights*@
 //LA Workspace - @appsvc.LogAnalyticsWorkspaceName
 resource @lawBicepName 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
   name: '@appsvc.LogAnalyticsWorkspaceName'
@@ -387,6 +390,31 @@ resource @lawBicepName 'Microsoft.OperationalInsights/workspaces@2020-03-01-prev
 }
 </text>
   } @*if  appinsights*@
+
+  @*Log Analytics*@
+  @if(resource.ResourceType == ResourceType.LogAnalytics) {
+    var law = (LogAnalytics)resource;
+    string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @law.Location;
+    string lawBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.LogAnalytics, law.Name);
+
+<text>
+//LA Workspace - @law.Name
+resource @lawBicepName 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
+  name: '@law.Name'
+  location: '@location'
+  tags: {
+    displayName: 'Log Analytics'
+    ProjectName: toLower('law-${lawAppInsightProjectName}')
+  }
+  properties: {
+    sku: {
+      name: 'PerGB2018'
+    }
+    retentionInDays: 90
+  }
+}
+</text>
+  } @*if Log Analytics*@
 
 } @*foreach resources*@
 

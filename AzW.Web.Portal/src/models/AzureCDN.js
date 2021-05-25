@@ -11,7 +11,7 @@ export default class AzureCDN
         this.ProvisionContext = {
             ResourceType: ResourceType.CDN(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: ''
         };
         this.CalculatorContext = {

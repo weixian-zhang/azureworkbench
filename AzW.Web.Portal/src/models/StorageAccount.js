@@ -11,7 +11,7 @@ export default class StorageAccount
         this.ProvisionContext = {
             ResourceType: ResourceType.StorageAccount(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
             SkuName: ''
         };

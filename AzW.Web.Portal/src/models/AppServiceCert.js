@@ -11,7 +11,7 @@ export default class AppServiceCert
         this.ProvisionContext = {
             ResourceType: ResourceType.AppServiceCert(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

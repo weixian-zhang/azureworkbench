@@ -11,7 +11,7 @@ export default class ASG
         this.ProvisionContext = {
             ResourceType: ResourceType.ASG(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

@@ -12,9 +12,9 @@ export default class Host
             ResourceType: ResourceType.Host(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

@@ -12,9 +12,9 @@ export default class ContainerRegistry
             ResourceType: ResourceType.ContainerRegistry(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

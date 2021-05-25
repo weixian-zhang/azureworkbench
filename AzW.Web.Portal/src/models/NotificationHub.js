@@ -10,9 +10,9 @@ export default class NotificationHub
 
         this.ProvisionContext = {
             ResourceType: ResourceType.NotificationHub(),
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

@@ -12,9 +12,9 @@ export default class Automanage
             ResourceType: ResourceType.Automanage(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

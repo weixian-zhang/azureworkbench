@@ -11,7 +11,7 @@ export default class CommunicationService
         this.ProvisionContext = {
             ResourceType: ResourceType.CommunicationService(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

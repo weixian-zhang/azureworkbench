@@ -11,7 +11,7 @@ export default class AnalysisService
         this.ProvisionContext = {
             ResourceType: ResourceType.AnalysisService(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: ''
         };
         this.CalculatorContext = {

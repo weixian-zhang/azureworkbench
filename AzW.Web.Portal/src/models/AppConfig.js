@@ -11,7 +11,7 @@ export default class AppConfig
         this.ProvisionContext = {
             ResourceType: ResourceType.AppConfig(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: ''
         };
         this.CalculatorContext = {

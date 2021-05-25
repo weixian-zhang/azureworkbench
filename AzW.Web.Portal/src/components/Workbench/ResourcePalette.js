@@ -1554,9 +1554,9 @@ export default class ResourcePalette extends Component {
             {
                 Name: 'app service',
                 Tooltip: 'App Service',
-                azInfo: ['Private Link supported','Service Endpoint supported'],
+                azInfo: ['Private Link supported','Service Endpoint supported','Bicep support'],
                 Image: require('../../assets/IconCloud/azure/appservices/10035-icon-App Services-App Services.svg'),
-                Provisionable: false,
+                Provisionable: true,
                 IsPng: false,
                 IsVisible:true,
                 resourceType: ResourceType.AppService()
@@ -2374,7 +2374,7 @@ export default class ResourcePalette extends Component {
               Name: 'log analytics monitor',
               Tooltip: 'Log Analytics',
               Image: require('../../assets/IconCloud/azure/data_analytics/00009-icon-Log Analytics Workspaces-Analytics.svg'),
-              Provisionable: false,
+              Provisionable: true,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.LogAnalytics()
@@ -2709,11 +2709,11 @@ export default class ResourcePalette extends Component {
           groupSearchVisible: true,
           resources: [
             {
-              Name: 'app insights apm',
+              Name: 'application insights app apm',
               Tooltip: 'Application Insights',
-              azInfo: [],
+              azInfo: ['Bicep support'],
               Image: require('../../assets/IconCloud/azure/management/00012-icon-Application Insights-Management-Governance.svg'),
-              Provisionable: false,
+              Provisionable: true,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.AppInsights()

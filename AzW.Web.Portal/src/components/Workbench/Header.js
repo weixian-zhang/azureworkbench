@@ -135,7 +135,7 @@ export default class Header extends Component {
 
               <IconButton color="inherit" aria-label="Edit" onClick={this.showWorkspace}>
                 <Tooltip title="My Space" position="bottom">
-                  <LocalMall  />
+                  <LocalMall />
                 </Tooltip>
               </IconButton>
 
@@ -193,7 +193,6 @@ export default class Header extends Component {
                 title= "Generate Bicep template"
                 placement="bottom">
                 <IconButton color="inherit" aria-label="Edit" onClick={this.generateBicep}>
-                    {/* <Icon icon="delta"  />   */}
                     <img src={require('../../assets/IconCloud/azure/nondeployable/azure-bicep.png')} width="25px" height="25px" alt="" />
                 </IconButton>
               </Tooltip>

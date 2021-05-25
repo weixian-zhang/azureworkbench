@@ -12,9 +12,9 @@ export default class Redis
             ResourceType: ResourceType.Redis(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

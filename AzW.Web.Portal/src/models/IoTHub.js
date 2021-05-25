@@ -12,9 +12,9 @@ export default class IoTHub
             ResourceType: ResourceType.IoTHub(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

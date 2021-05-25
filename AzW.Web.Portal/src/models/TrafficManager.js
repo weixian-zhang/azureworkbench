@@ -12,9 +12,9 @@ export default class TrafficManager
             ResourceType: ResourceType.TrafficManager(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

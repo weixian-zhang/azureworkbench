@@ -10,9 +10,9 @@ export default class NSG
 
         this.ProvisionContext = {
             ResourceType: ResourceType.NSG(),
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
             VNetName: '',
             SubnetName: '',

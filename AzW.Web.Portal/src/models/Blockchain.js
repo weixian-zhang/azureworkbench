@@ -11,7 +11,7 @@ export default class Blockchain
         this.ProvisionContext = {
             ResourceType: ResourceType.Blockchain(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

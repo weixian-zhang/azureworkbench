@@ -11,7 +11,7 @@ export default class Automation
         this.ProvisionContext = {
             ResourceType: ResourceType.Automation(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

@@ -12,9 +12,9 @@ export default class HdInsight
             ResourceType: ResourceType.HdInsight(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

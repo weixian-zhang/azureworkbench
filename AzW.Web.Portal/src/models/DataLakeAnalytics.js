@@ -12,9 +12,9 @@ export default class DataLakeAnalytics
             ResourceType: ResourceType.DataLakeAnalytics(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

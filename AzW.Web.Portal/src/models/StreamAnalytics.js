@@ -12,9 +12,9 @@ export default class StreamAnalytics
             ResourceType: ResourceType.StreamAnalytics(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

@@ -12,9 +12,9 @@ export default class FrontDoor
             ResourceType: ResourceType.FrontDoor(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
 
             VNetAddress: '',

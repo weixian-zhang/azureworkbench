@@ -12,9 +12,9 @@ export default class SQLDB
             ResourceType: ResourceType.SQLDB(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

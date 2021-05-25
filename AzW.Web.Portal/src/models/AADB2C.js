@@ -11,7 +11,7 @@ export default class AADB2C
         this.ProvisionContext = {
             ResourceType: ResourceType.AADB2C(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: ''
         };
         this.CalculatorContext = {

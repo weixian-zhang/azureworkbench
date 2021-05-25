@@ -11,7 +11,7 @@ export default class OnPremiseDataGateway
         this.ProvisionContext = {
             ResourceType: ResourceType.OnPremDataGateway(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

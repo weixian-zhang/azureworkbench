@@ -12,7 +12,7 @@ export default class AppInsights
             ResourceType: ResourceType.AppInsights(),
             Name: 'appinsights-webapp',
             LogAnalyticsWorkspaceName: 'law-appinsights-webapp',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: ''
         };
         this.CalculatorContext = {

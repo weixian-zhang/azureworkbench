@@ -11,7 +11,7 @@ export default class AzureADDomainService
         this.ProvisionContext = {
             ResourceType: ResourceType.AADDomainService(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

@@ -11,7 +11,7 @@ export default class ASE
         this.ProvisionContext = {
             ResourceType: ResourceType.ASE(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
             VNetName: '',
             SubnetName: '',

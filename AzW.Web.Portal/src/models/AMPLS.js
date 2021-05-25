@@ -11,7 +11,7 @@ export default class AMPLS
         this.ProvisionContext = {
             ResourceType: ResourceType.AMPLS(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
             VNetName: '',
             SubnetName: '',

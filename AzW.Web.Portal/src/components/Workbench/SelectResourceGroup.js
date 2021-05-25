@@ -28,30 +28,30 @@ export default class SelectResourceGroup extends Component {
 
     componentDidMount(){
         this.getRGs();
-        
+
         this.initPreviouslySelectedValue();
     }
 
     render = () => {
-        return (
-            <Select
-                items={this.state.filteredRGs}
-                itemRenderer={this.renderRGs}
-                filterable={true}
-                query={this.state.searchQuery}
-                onQueryChange={this.searchQueryChange}
-                popoverProps={true}
-                noResults={<MenuItem disabled={true} text="No Resource Group" />}>
-                <Button text={this.state.selectedValue == '' ? 'Resource Group' : Utils.limitTextLength(this.state.selectedValue, 15)}
-                     loading={this.state.loading} alignText='left' rightIcon="double-caret-vertical" style={{width: '170px', maxWidth: '170px'}}/>
-                {
-                    (!this.state.isSubscriptionSelected) ?
-                        <Typography style={{fontSize:10,color:'red',display:'block', marginTop:'3px'}} variant="body2">
-                            please select subscription before resource group can be retrieved
-                        </Typography>
-                    :   null
-                }
-            </Select>
+        return ( ''
+            // <Select
+            //     items={this.state.filteredRGs}
+            //     itemRenderer={this.renderRGs}
+            //     filterable={true}
+            //     query={this.state.searchQuery}
+            //     onQueryChange={this.searchQueryChange}
+            //     popoverProps={true}
+            //     noResults={<MenuItem disabled={true} text="No Resource Group" />}>
+            //     <Button text={this.state.selectedValue == '' ? 'Resource Group' : Utils.limitTextLength(this.state.selectedValue, 15)}
+            //          loading={this.state.loading} alignText='left' rightIcon="double-caret-vertical" style={{width: '170px', maxWidth: '170px'}}/>
+            //     {
+            //         (!this.state.isSubscriptionSelected) ?
+            //             <Typography style={{fontSize:10,color:'red',display:'block', marginTop:'3px'}} variant="body2">
+            //                 please select subscription before resource group can be retrieved
+            //             </Typography>
+            //         :   null
+            //     }
+            // </Select>
         );
     }
 
@@ -62,7 +62,7 @@ export default class SelectResourceGroup extends Component {
         this.setState({loading: true});
         var thisComp = this;
         var subscriptionId = this.global.currentSubscription.SubscriptionId;
-        
+
         if(this.state.rgs.length == 0)
             this.armService.getResourceGroups(
                 subscriptionId,
@@ -119,6 +119,6 @@ export default class SelectResourceGroup extends Component {
         {
             this.setState({isSubscriptionSelected: true});
             return true;
-        } 
+        }
     }
 }

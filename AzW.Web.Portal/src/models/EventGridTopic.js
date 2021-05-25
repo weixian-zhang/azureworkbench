@@ -12,9 +12,9 @@ export default class EventGridTopic
             ResourceType: ResourceType.EventGridTopic(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

@@ -12,9 +12,9 @@ export default class NatGateway
             ResourceType: ResourceType.NatGateway(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

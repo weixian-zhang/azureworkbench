@@ -12,9 +12,9 @@ export default class DeviceProvisioningService
             ResourceType: ResourceType.DeviceProvisioningService(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

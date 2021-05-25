@@ -10,20 +10,20 @@ export default class VM
 
         this.ProvisionContext = {
             ResourceType: ResourceType.VM(),
-            
+
             Name: 'vm-',
             ResourceGroupName: '',
-            Location: '',
+            Location: 'westus',
 
             HasPublicIP: false,
             PublicIPName: '',
-            
+
             VNetName: '',
             SubnetName: '',
 
             AdminUsername: 'AzureUser',
             AdminPassword: '',
-            
+
             VMPublisher: '',
             VMOffer: '',
             VMSKU: '',

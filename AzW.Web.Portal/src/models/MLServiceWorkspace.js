@@ -12,9 +12,9 @@ export default class MLServiceWorkspace
             ResourceType: ResourceType.MLServiceWorkspace(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

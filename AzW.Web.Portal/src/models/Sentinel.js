@@ -12,9 +12,9 @@ export default class Sentinel
             ResourceType: ResourceType.Sentinel(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
 
             VNetAddress: '',

@@ -12,9 +12,9 @@ export default class BackupVault
             ResourceType: ResourceType.BackupVault(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

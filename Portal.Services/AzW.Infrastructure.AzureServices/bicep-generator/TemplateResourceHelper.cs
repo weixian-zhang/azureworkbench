@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using AzW.Model;
 using Newtonsoft.Json.Linq;
 using RandomNameGeneratorLibrary;
+using GenFu;
 
 namespace AzW.Infrastructure.AzureServices
 {
@@ -133,11 +134,6 @@ namespace AzW.Infrastructure.AzureServices
             return rc;
         }
 
-        private static List<Resource> FillEmptyResouceNames(List<Resource> resources)
-        {
-            return resources;
-        }
-
         public static bool IsResourceExist(List<Resource> resources, string rscType, string rscName)
         {
             var rsc = resources.Where(x => x.ResourceType == rscType && x.Name == rscName);
@@ -146,6 +142,52 @@ namespace AzW.Infrastructure.AzureServices
                 return true;
             else
                 return false;
+        }
+
+        //fill empty resource name
+        private static List<Resource> FillEmptyResouceNames(List<Resource> resources)
+        {
+            var result = new List<Resource>();
+
+            A.Configure<RandName>()
+                .Fill(x => x.Title)
+                .AsCity();
+
+            foreach(var resource in resources)
+            {
+                if(string.IsNullOrEmpty(resource.Name))
+                {
+                    if(resource.ResourceType == ResourceType.StorageAccount)
+                        resource.Name = SetStorageName();
+                    else
+                        resource.Name = SetGeneralResourceName(resource.ResourceType);
+                }
+
+                result.Add(resource);
+            }
+
+            return resources;
+        }
+
+
+        private static string SetStorageName()
+        {
+            return "strg" + GenName();
+        }
+
+        private static string SetGeneralResourceName(string resourceType)
+        {
+            return resourceType + GenName();
+        }
+
+        public class RandName { public string Title { get; set; }}
+
+        private static string GenName()
+        {
+            string name = A.New<RandName>().Title.ToLower();
+            if(name.Length > 10)
+                name = name.Substring(0,9);
+            return name;
         }
     }
 }

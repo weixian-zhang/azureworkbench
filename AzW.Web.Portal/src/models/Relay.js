@@ -12,9 +12,9 @@ export default class Relay
             ResourceType: ResourceType.Relay(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

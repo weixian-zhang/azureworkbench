@@ -11,7 +11,7 @@ export default class DiskSnapshot
         this.ProvisionContext = {
             ResourceType: ResourceType.DiskSnapshot(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

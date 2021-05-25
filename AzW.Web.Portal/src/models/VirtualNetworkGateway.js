@@ -12,9 +12,9 @@ export default class VirtualNetworkGateway
             ResourceType: ResourceType.VirtualNetworkGateway(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
 
             VNetAddress: '',

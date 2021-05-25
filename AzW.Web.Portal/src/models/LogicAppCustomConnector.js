@@ -11,7 +11,7 @@ export default class LogicAppCustomConnector
         this.ProvisionContext = {
             ResourceType: ResourceType.LogicAppCustomConnector(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

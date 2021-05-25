@@ -12,9 +12,9 @@ export default class TimeSeriesInsights
             ResourceType: ResourceType.TimeSeriesInsights(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

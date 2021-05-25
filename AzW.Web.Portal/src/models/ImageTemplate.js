@@ -11,7 +11,7 @@ export default class ImageTemplate
         this.ProvisionContext = {
             ResourceType: ResourceType.ImageTemplate(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: ''
         };
         this.CalculatorContext = {

@@ -11,7 +11,7 @@ export default class AppGateway
         this.ProvisionContext = {
             ResourceType: ResourceType.AppGw(),
             Name: 'appgw-web',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
             VNetName: '',
             SubnetName: '',

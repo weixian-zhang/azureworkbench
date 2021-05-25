@@ -11,7 +11,7 @@ export default class ElasticJobAgent
         this.ProvisionContext = {
             ResourceType: ResourceType.ElasticJobAgent(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: ''
         };
         this.CalculatorContext = {

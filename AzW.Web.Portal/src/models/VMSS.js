@@ -12,17 +12,17 @@ export default class VMSS
             ResourceType: ResourceType.VMSS(),
             Name: 'vmss-',
             ResourceGroupName: '',
-            Location: '',
+            Location: 'westus',
             Instances: 2,
             HasPublicIP: false,
             PublicIPName: '',
-            
+
             VNetName: '',
             SubnetName: '',
 
             AdminUsername: 'AzureUser',
             AdminPassword: '',
-            
+
             VMPublisher: '',
             VMOffer: '',
             VMSKU: '',

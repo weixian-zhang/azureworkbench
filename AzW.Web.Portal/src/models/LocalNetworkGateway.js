@@ -11,7 +11,7 @@ export default class LocalNetworkGateway
         this.ProvisionContext = {
             ResourceType: ResourceType.LocalNetworkGateway(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

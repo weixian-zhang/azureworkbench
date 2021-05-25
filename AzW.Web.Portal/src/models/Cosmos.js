@@ -11,7 +11,7 @@ export default class Cosmos
         this.ProvisionContext = {
             ResourceType: ResourceType.CosmosDB(),
             Name: 'cosmosdb-app',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
             CosmosDBType: 'SQL'
         };

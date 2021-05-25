@@ -11,7 +11,7 @@ export default class DataBoxEdge
         this.ProvisionContext = {
             ResourceType: ResourceType.DataboxEdge(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {
