@@ -12,9 +12,9 @@ export default class Utils
             ResourceType.Kubernetes(),ResourceType.NetAppFile(), ResourceType.VirtualNetworkGateway(),
             ResourceType.ASE(),ResourceType.AppGw(),ResourceType.Firewall(),ResourceType.Bastion(),
             ResourceType.VMSS(), ResourceType.SQLMI(), ResourceType.ISE(),
-            ResourceType.PrivateEndpoint(), ResourceType.ServiceFabricCluster(),
+            ResourceType.PrivateEndpoint(), ResourceType.ServiceFabricCluster(), ResourceType.HPCCache(),
             ResourceType.ServiceFabricManagedCluster()];
-            
+
         for(var x of VIR) {
             if(x == resourceType)
                 return true;
@@ -22,10 +22,38 @@ export default class Utils
         return false;
     }
 
+    static isResourceSubnetSharable(resourceType) {
+        var VIR = [ResourceType.VM(), ResourceType.VMSS(),
+            ResourceType.PrivateEndpoint(), ResourceType.NLB()];
+
+        for(var x of VIR) {
+            if(x == resourceType)
+                return true;
+        }
+        return false;
+    }
+
+    static GetVNetNames(diagram) {
+
+        var vnetAzContexts = [];
+
+        if(diagram.nodes != null && diagram.nodes.count == 0) {
+            return vnetAzContexts;
+        }
+
+        diagram.nodes.each((node) => {
+            if(Utils.isVNet(node)) {
+                vnetAzContexts.push(Utils.AzContext(node));
+            }
+        });
+
+        return vnetAzContexts;
+    }
+
     static isPartVIR(part) {
         if(!Utils.isAzContextExist(part))
             return false;
-        
+
         if(Utils.isResourceTypeVIR(Utils.getAzContextResourceType(part)))
             return true;
         else
@@ -41,9 +69,9 @@ export default class Utils
             ResourceType.Firewall(),ResourceType.Bastion(), ResourceType.VirtualNetworkGateway(),
             ResourceType.SQLMI(), ResourceType.NetAppFile(), ResourceType.ServiceFabricCluster(),
             ResourceType.ServiceFabricManagedCluster(), ResourceType.SpringCloud()];
-        
+
         var resourceType = node.data.azcontext.ProvisionContext.ResourceType;
-            
+
         for(var x of VIR) {
             if(x == resourceType)
                 return true;
@@ -66,7 +94,7 @@ export default class Utils
     }
 
     static isVIRinDedicatedSubnet(subnetNode) {
-        
+
         if(subnetNode.memberParts.count > 0)
             return false;
         else
@@ -74,7 +102,7 @@ export default class Utils
     }
 
     static isSubnetTakenByDedicatedSubnetVIR(subnet) {
-        
+
         var it = subnet.memberParts.iterator;
         while(it.next()) {
            var node =  it.value;
@@ -89,14 +117,14 @@ export default class Utils
     static isAzContextExist(node) {
         if(node == null)
             return false;
-        
+
         if(node.data === undefined)
             return false;
         if(node.data.azcontext === undefined)
             return false;
         if( node.data.azcontext.ProvisionContext === undefined)
             return false;
-            
+
         return true;
     }
 
@@ -110,7 +138,7 @@ export default class Utils
     static getAzContextResourceType(node) {
         if(!Utils.isAzContextExist(node))
             return null;
-        
+
         return node.data.azcontext.ProvisionContext.ResourceType;
     }
 
@@ -124,8 +152,18 @@ export default class Utils
     static isVNet(node) {
         if(!Utils.isAzContextExist(node))
             return false;
-        
+
         if(Utils.getAzContextResourceType(node) == ResourceType.VNet())
+            return true;
+        else
+            return false;
+    }
+
+    static isVNetPeering(node) {
+        if(!Utils.isAzContextExist(node))
+            return false;
+
+        if(Utils.getAzContextResourceType(node) == ResourceType.VNetPeering())
             return true;
         else
             return false;
@@ -134,7 +172,7 @@ export default class Utils
     static isSubnet(node) {
         if(!Utils.isAzContextExist(node))
             return false;
-        
+
         if(Utils.getAzContextResourceType(node) == ResourceType.Subnet())
             return true;
         else
@@ -144,7 +182,7 @@ export default class Utils
     static isNLB(node) {
         if(!Utils.isAzContextExist(node))
             return false;
-        
+
         if(Utils.getAzContextResourceType(node) == ResourceType.NLB())
             return true;
         else
@@ -154,9 +192,9 @@ export default class Utils
     static isInternalNLB(node) {
         if(!Utils.isAzContextExist(node))
             return false;
-        
+
         var pc = node.data.azcontext.ProvisionContext;
-        
+
         if(Utils.getAzContextResourceType(node) == ResourceType.NLB() &&
             pc.IsInternalNLB == true)
             return true;
@@ -167,7 +205,7 @@ export default class Utils
     static isAppGw(node) {
         if(!Utils.isAzContextExist(node))
             return false;
-        
+
         if(Utils.getAzContextResourceType(node) == ResourceType.AppGw())
             return true;
         else
@@ -177,7 +215,7 @@ export default class Utils
     static isFirewall(node) {
         if(!Utils.isAzContextExist(node))
             return false;
-        
+
         if(Utils.getAzContextResourceType(node) == ResourceType.Firewall())
             return true;
         else
@@ -187,17 +225,17 @@ export default class Utils
     static isASE(node) {
         if(!Utils.isAzContextExist(node))
             return false;
-        
+
         if(Utils.getAzContextResourceType(node) == ResourceType.ASE())
             return true;
         else
             return false;
     }
 
-    static ProContext(node) {
+    static AzContext(node) {
         if(!Utils.isAzContextExist(node))
             return null;
-        
+
         return node.data.azcontext.ProvisionContext;
     }
 
@@ -231,7 +269,7 @@ export default class Utils
         return false;
 
         var pc = node.data.azcontext.ProvisionContext;
-    
+
         if(pc.ResourceType == ResourceType.VM() ||
             pc.ResourceType == ResourceType.WindowsVM() ||
             pc.ResourceType == ResourceType.LinuxVM())
@@ -245,7 +283,7 @@ export default class Utils
         return false;
 
         var pc = node.data.azcontext.ProvisionContext;
-    
+
         if(pc.ResourceType == ResourceType.VMSS())
             return true;
         else
@@ -255,7 +293,7 @@ export default class Utils
     static isNSG(part) {
         if(!Utils.isAzContextExist(part))
             return false;
-        
+
         if(part.data.nsgazcontext.ProvisionContext.ResourceType == ResourceType.NSG())
             return true;
         else
@@ -265,7 +303,7 @@ export default class Utils
     static isLAW(part) {
         if(!Utils.isAzContextExist(part))
             return false;
-        
+
         if(part.data.azcontext.ProvisionContext.ResourceType == ResourceType.LogAnalytics())
             return true;
         else
@@ -275,8 +313,18 @@ export default class Utils
     static isUDR(part) {
         if(!Utils.isAzContextExist(part))
             return false;
-        
+
         if(part.data.udrazcontext.ProvisionContext.ResourceType == ResourceType.RouteTable())
+            return true;
+        else
+            return false;
+    }
+
+    static isPrivateEndpoint(part) {
+        if(!Utils.isAzContextExist(part))
+            return false;
+
+        if(part.data.azcontext.ProvisionContext.ResourceType == ResourceType.PrivateEndpoint())
             return true;
         else
             return false;
@@ -285,7 +333,7 @@ export default class Utils
     static isNATGW(part) {
         if(!Utils.isAzContextExist(part))
             return false;
-        
+
         if(part.data.natgwazcontext.ProvisionContext.ResourceType == ResourceType.NatGateway())
             return true;
         else
@@ -295,7 +343,7 @@ export default class Utils
     static isASC(part) {
         if(!Utils.isAzContextExist(part))
             return false;
-        
+
         if(part.data.azcontext.ProvisionContext.ResourceType == ResourceType.SecurityCenter())
             return true;
         else
@@ -306,10 +354,10 @@ export default class Utils
 
         if(typeof obj === 'undefined' || obj == null)
             return true;
-        
+
         if(Array.isArray(obj) && obj.length <= 0)
             return true;
-        
+
         return false;
     }
 
@@ -320,7 +368,7 @@ export default class Utils
             return false;
     }
 
-    
+
     static getCellCenterPoint(cell){
         var geo = cell.geometry;
         var x = (geo.width / 2) - 20;
@@ -331,7 +379,7 @@ export default class Utils
         };
     }
 
-    static limitTextLength(text, lengthToLimit) { 
+    static limitTextLength(text, lengthToLimit) {
         if(text)
         {
             var limitedText = String(text).substring(0, lengthToLimit);
@@ -346,19 +394,19 @@ export default class Utils
 
     convertUTCDateToLocalDate(date) {
         var newDate = new Date(date.getTime()+date.getTimezoneOffset()*60*1000);
-    
+
         var offset = date.getTimezoneOffset() / 60;
         var hours = date.getHours();
-    
+
         newDate.setHours(hours - offset);
-    
-        return newDate;   
+
+        return newDate;
     }
 
     static getIPCountFromCidr(cidr) {
         if(Utils.IsNullOrUndefine(cidr) ** Utils.isCidr(cidr))
             return 0;
-        
+
         var addrCount = 0;
         var cidrArr = cidr.split('/');
         if(cidrArr.length == 2)
@@ -381,8 +429,8 @@ export default class Utils
 
         var vms = [];
         while (allNodes.next()) {
-            
-            var node = allNodes.value; 
+
+            var node = allNodes.value;
 
             if(node instanceof go.Link)
                 continue;
@@ -406,7 +454,7 @@ export default class Utils
     static getCidrPrefix(cidr) {
         if(Utils.IsNullOrUndefine(cidr))
             return 0;
-        
+
         var addrCount = 0;
         var cidrArr = cidr.split('/');
         if(cidrArr.length == 2)
@@ -418,7 +466,7 @@ export default class Utils
         {
             return 0
         }
-        
+
     }
 
     static pngDataUrl(base64Image) {
@@ -442,14 +490,14 @@ export default class Utils
     // static vnetGetSubnetsAndCidrs = (graph, vnetCell, subnetName) => {
     //     if(Utils.IsNullOrUndefine(vnetCell))
     //       return [];
-        
+
     //     var subnetNamesAndCidrs = [];
-  
+
     //     var childs = graph.getChildVertices(vnetCell);
-  
+
     //     childs.map(x => {
     //         var result = Utils.TryParseUserObject(x);
-  
+
     //         if(result.isUserObject == true &&
     //            result.userObject.ProvisionContext.ResourceType == ResourceType.Subnet())
     //         {
@@ -458,7 +506,7 @@ export default class Utils
     //             var usableAddresses = 0;
     //             if(addressCount != 0)
     //               usableAddresses = addressCount - 5;
-                
+
     //             var snc = new SubnetsCidrs();
     //             snc.subnetName = context.Name;
     //             snc.cidr = context.AddressSpace;
@@ -470,12 +518,12 @@ export default class Utils
     //                 subnetNamesAndCidrs.push(snc);
     //           else
     //           {
-    //             if(result.userObject.ProvisionContext.Name != subnetName)               
+    //             if(result.userObject.ProvisionContext.Name != subnetName)
     //                 subnetNamesAndCidrs.push(snc);
     //           }
     //         }
     //     });
-  
+
     //     return subnetNamesAndCidrs;
     // }
 }

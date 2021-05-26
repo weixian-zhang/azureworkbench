@@ -11,6 +11,7 @@ export default class ResourceType
     static ASE() {return 'ase'; }
     static Function() {return 'func'; }
     static VNet() {return 'vnet'; }
+    static VNetPeering() {return 'vnetpeering'; }
     static PrivateEndpoint() {return 'privateendpoint'; }
     static PrivateLink() {return 'privatelink'; }
     static IPGroup() {return 'ipgroups'; }
@@ -20,7 +21,7 @@ export default class ResourceType
     static WAF() {return 'waf'; }
     static ProximityPlacementGroup() {return 'proximityplacementgroup'; }
     static AvailabilitySet() {return 'availabilityset'; }
-    
+
     static NetworkWatcher() {return 'networkwatcher'; }
     static Subnet() {return 'subnet'; }
     static NLB() {return 'nlb'; }
@@ -97,7 +98,7 @@ export default class ResourceType
     static EventGridSubscription() {return 'egsubscription'; }
     static EventGridDomain() {return 'egdomain'; }
     static CommunicationService() {return 'communicationservice'; }
-    
+
     static EventHub() {return 'eventhub'; }
     static EventHubCluster() {return 'eventhubcluster'; }
     static StreamAnalytics() {return 'streamanalytics'; }
@@ -112,7 +113,7 @@ export default class ResourceType
     static SecurityCenter() {return 'asc'; }
     static DDoSStandard() {return 'ddosstandard'; }
     static Bastion() {return 'bastion'; }
-    
+
     static StorSimpleDataManager() {return 'storsimpledatamanager'; }
     static OnPremDataGateway() {return 'onpremdatagateway'; }
     static PurviewAccount() {return 'purviewaccount'; }

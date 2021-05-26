@@ -23,7 +23,7 @@ namespace AzW.Infrastructure.AzureServices
             }
         }
 
-        public static ResourceContext CreateResourceContext(dynamic[] azcontexts)
+        public static ResourceContext GatherAzContexts(dynamic[] azcontexts)
         {
             var rc = new ResourceContext();
 
@@ -49,6 +49,11 @@ namespace AzW.Infrastructure.AzureServices
                                 VNet vnet = jObj.ToObject<VNet>();
                                 vnet.ResourceType = ResourceType.VNet;
                                 resources.Add(vnet);
+                            break;
+                            case ResourceType.VNetPeering:
+                                VNetPeering vnetpeer = jObj.ToObject<VNetPeering>();
+                                vnetpeer.ResourceType = ResourceType.VNetPeering;
+                                resources.Add(vnetpeer);
                             break;
                             case ResourceType.VM:
                                 VM vm = jObj.ToObject<VM>();

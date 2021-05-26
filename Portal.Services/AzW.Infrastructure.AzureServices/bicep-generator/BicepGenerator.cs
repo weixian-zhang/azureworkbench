@@ -37,7 +37,7 @@ namespace AzW.Infrastructure.AzureServices
 
             try
             {
-                var resourceContext = TemplateResourceHelper.CreateResourceContext(azcontexts);
+                var resourceContext = TemplateResourceHelper.GatherAzContexts(azcontexts);
 
                 string multifileTemplate = TemplateResourceHelper.GetMainTemplate(_webrootPath);
 

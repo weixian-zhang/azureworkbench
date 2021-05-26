@@ -101,7 +101,16 @@ export default class Header extends Component {
               <img src ={require('../../assets/IconCloud/azworkbench/azworkbench-logo.png')} alt="" style={{width : 25, height : 25, marginRight: 3}} />
               Azure Workbench
             </Typography>
+
             <section style={this.style.rightToolbar}>
+
+              <Tooltip
+                title= "Generate Bicep template"
+                placement="bottom">
+                <IconButton color="inherit" aria-label="Edit" onClick={this.generateBicep}>
+                    <img src={require('../../assets/IconCloud/azure/nondeployable/azure-bicep.png')} width="25px" height="25px" alt="" />
+                </IconButton>
+              </Tooltip>
 
               <Popover content=
                {
@@ -188,14 +197,6 @@ export default class Header extends Component {
                   <QuickStart  />
                 </IconButton>
               </Popover>
-
-              <Tooltip
-                title= "Generate Bicep template"
-                placement="bottom">
-                <IconButton color="inherit" aria-label="Edit" onClick={this.generateBicep}>
-                    <img src={require('../../assets/IconCloud/azure/nondeployable/azure-bicep.png')} width="25px" height="25px" alt="" />
-                </IconButton>
-              </Tooltip>
 
               <IconButton color="inherit" aria-label="Edit">
                 <Tooltip title="Tutorial" position="bottom">

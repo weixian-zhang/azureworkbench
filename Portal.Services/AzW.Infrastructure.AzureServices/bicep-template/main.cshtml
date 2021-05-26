@@ -74,6 +74,28 @@ resource @TemplateFormatHelper.GetBicepRscName(vnet.ResourceType, vnet.Name) 'Mi
 </text>
     } @*if VNet*@
 
+      @* VNet Peering *@
+    @if(resource.ResourceType == ResourceType.VNetPeering)
+    {
+      var vnetpeer = (VNetPeering)resource;
+      string bicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.VNetPeering, vnetpeer.LocalVNetName + vnetpeer.RemoteVNetName + vnetpeer.RemoteVnetRGName);
+<text>
+//VNet Peering - @vnetpeer.LocalVNetName / @vnetpeer.RemoteVNetName
+resource @bicepName 'microsoft.network/virtualNetworks/virtualNetworkPeerings@2020-05-01' = {
+  name: '@vnetpeer.LocalVNetName/peering-to-remote-vnet'
+  properties: {
+    allowVirtualNetworkAccess: true
+    allowForwardedTraffic: false
+    allowGatewayTransit: false
+    useRemoteGateways: false
+    remoteVirtualNetwork: {
+      id: resourceId(@vnetpeer.RemoteVnetRGName, 'Microsoft.Network/virtualNetworks', @vnetpeer.RemoteVNetName)
+    }
+  }
+}
+</text>
+    } @* if VNet Peering *@
+
   @* NSG *@
   @if(resource.ResourceType == ResourceType.NSG)
   {

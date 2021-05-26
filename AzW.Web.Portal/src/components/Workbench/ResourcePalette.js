@@ -1857,6 +1857,16 @@ export default class ResourcePalette extends Component {
                 resourceType: ResourceType.VNet()
             },
             {
+              Name: 'virtual network peering vnet',
+              Tooltip: 'Virtual Network Peering',
+              azInfo: ['Bicep support'],
+              Image: require('../../assets/IconCloud/azure/network/00973-icon-Peering Service prefix-menu.svg'),
+              Provisionable: true,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.VNetPeering()
+          },
+            {
               Name: 'load balancer nlb slb alb route',
               Tooltip: 'Load Balancer',
               azInfo: [],

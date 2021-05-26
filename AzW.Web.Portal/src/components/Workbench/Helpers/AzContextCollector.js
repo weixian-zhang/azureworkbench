@@ -2,7 +2,7 @@ import Utils from "./Utils";
 import ResourceType from '../../../models/ResourceType';
 import * as go from 'gojs';
 
-export default class ProvisionHelper
+export default class AzContextCollector
 {
     ExtractAzContexts = (diagram) => {
 
@@ -26,6 +26,10 @@ export default class ProvisionHelper
                     continue;
 
                 if(this.getVNetContext(node, provisionContexts))
+                    continue;
+
+                //ordering is important!
+                if(this.getVNetPeering(node, provisionContexts))
                     continue;
 
                 if(this.getVMContexts(node, provisionContexts))
@@ -188,7 +192,7 @@ export default class ProvisionHelper
 
                     if(Utils.isSubnet(subNode)) {
 
-                        var subnetProContext = Utils.ProContext(subNode);
+                        var subnetProContext = Utils.AzContext(subNode);
 
                         //get NSG name for subnet
                         var nsgName = this.getNSGNameForSubnet(subNode);
@@ -203,7 +207,7 @@ export default class ProvisionHelper
                     }
                 });
 
-            var vnetProContext = Utils.ProContext(vnet);
+            var vnetProContext = Utils.AzContext(vnet);
 
             vnetProContext.Subnets = subnetProContexts; //set subnets
 
@@ -213,13 +217,24 @@ export default class ProvisionHelper
         }
     }
 
+    getVNetPeering = (node, provisionContexts) => {
+        if(Utils.isVNetPeering(node))
+        {
+            var vnet = node;
+
+            var azcontext = Utils.AzContext(node);
+
+            provisionContexts.push(azcontext);
+        }
+    }
+
     getInternalNLBContexts = (node, provisionContexts) => {
 
         if(Utils.isInternalNLB(node))
         {
             var nlb = node;
 
-            var nlbProContext = Utils.ProContext(nlb);
+            var nlbProContext = Utils.AzContext(nlb);
 
             nlbProContext.VNetName = this.getResourceVNetName(nlb);
 
@@ -238,7 +253,7 @@ export default class ProvisionHelper
 
         if(Utils.isNLB(node) && !Utils.isInternalNLB(node))
         {
-            var nlbProContext = Utils.ProContext(node);
+            var nlbProContext = Utils.AzContext(node);
 
             var vmNames = this.getLinkConnectedVMs(node);
 
@@ -256,7 +271,7 @@ export default class ProvisionHelper
         {
             var appgw = node;
 
-            var appgwProContext = Utils.ProContext(node);
+            var appgwProContext = Utils.AzContext(node);
 
             appgwProContext.VNetName = this.getResourceVNetName(appgw);
 
@@ -277,7 +292,7 @@ export default class ProvisionHelper
         {
             var vm = node;
 
-            var vmProContext = Utils.ProContext(vm);
+            var vmProContext = Utils.AzContext(vm);
 
             vmProContext.VNetName = this.getResourceVNetName(vm);
 
@@ -294,7 +309,7 @@ export default class ProvisionHelper
         {
             var vmss = node;
 
-            var vmssProContext = Utils.ProContext(vmss);
+            var vmssProContext = Utils.AzContext(vmss);
 
             vmssProContext.VNetName = this.getResourceVNetName(vmss);
 
@@ -345,7 +360,7 @@ export default class ProvisionHelper
         {
             var azfw = node;
 
-            var azfwProContext = Utils.ProContext(azfw);
+            var azfwProContext = Utils.AzContext(azfw);
 
             azfwProContext.VNetName = this.getResourceVNetName(azfw);
 
@@ -362,7 +377,7 @@ export default class ProvisionHelper
         {
             var ase = node;
 
-            var aseProContext = Utils.ProContext(ase);
+            var aseProContext = Utils.AzContext(ase);
 
             aseProContext.VNetName = this.getResourceVNetName(ase);
 
@@ -379,7 +394,7 @@ export default class ProvisionHelper
         {
             var ase = node;
 
-            var aseProContext = Utils.ProContext(ase);
+            var aseProContext = Utils.AzContext(ase);
 
             provisionContexts.push(aseProContext);
 
@@ -392,7 +407,7 @@ export default class ProvisionHelper
         {
             var asc = node;
 
-            var ascContext = Utils.ProContext(asc);
+            var ascContext = Utils.AzContext(asc);
 
             if(ascContext.IsStandardTier) {
                 ascContext.LogAnalyticsWorkspaceName = this.getLAWNameConnectedToASC(asc);
@@ -456,7 +471,7 @@ export default class ProvisionHelper
 
         if(!Utils.isPartVIR(node) && !Utils.isLAW(node))
         {
-            var proContext = Utils.ProContext(node);
+            var proContext = Utils.AzContext(node);
             provisionContexts.push(proContext);
             return true;
         }
