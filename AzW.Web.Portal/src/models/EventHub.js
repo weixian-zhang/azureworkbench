@@ -12,9 +12,9 @@ export default class EventHub
             ResourceType: ResourceType.EventHub(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

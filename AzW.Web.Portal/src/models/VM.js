@@ -10,27 +10,28 @@ export default class VM
 
         this.ProvisionContext = {
             ResourceType: ResourceType.VM(),
-            
-            Name: 'vm-',
-            ResourceGroupName: '',
-            Location: '',
+
+            Name: 'vm-webserver',
+            Location: 'westus',
 
             HasPublicIP: false,
             PublicIPName: '',
-            
+
             VNetName: '',
             SubnetName: '',
 
             AdminUsername: 'AzureUser',
             AdminPassword: '',
-            
+
             VMPublisher: '',
             VMOffer: '',
             VMSKU: '',
             VMVersion: '',
 
             SizeName: 'STANDARD_DS2_V2',
-            IsLinux: false
+            IsLinux: false,
+            SSHPublicKey: ''
+
         };
         this.CalculatorContext = {
             IsFree: false,

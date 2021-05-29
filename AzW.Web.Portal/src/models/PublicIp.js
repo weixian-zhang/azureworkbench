@@ -12,9 +12,9 @@ export default class PublicIp
             ResourceType: ResourceType.PublicIp(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
 
             VNetAddress: '',

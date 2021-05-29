@@ -3,9 +3,8 @@ using System.Collections.Generic;
 
 namespace AzW.Model
  {
-     public class NSGRule
+     public class NSGRule: Resource
      {
-          public string Name { get; set; }
           public string Direction { get; set; } //"in", "out"
           public bool Allow { get; set; }
           public string FromAddresses { get; set; }

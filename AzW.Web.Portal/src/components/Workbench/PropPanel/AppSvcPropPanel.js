@@ -1,11 +1,8 @@
 import React, { Component } from "react";
 import AppService from '../../../models/AppService';
-import { FormGroup, MenuItem, Drawer, Intent, Button, Switch } from "@blueprintjs/core";
+import {  MenuItem, Drawer, NumericInput, Button, Switch } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import Grid from "@material-ui/core/Grid";
-import AppBar from '@material-ui/core/AppBar';
 import SelectLocation from '../SelectLocation';
 import SelectResourceGroup from '../SelectResourceGroup';
 import {Select } from "@blueprintjs/select";
@@ -41,7 +38,7 @@ export default class AppServicePropPanel extends Component {
           canOutsideClickClose= {true}
           enforceFocus= {true}
           hasBackdrop= {true}
-          onClose={() => this.drawerClose()} 
+          onClose={() => this.drawerClose()}
           isOpen= {this.state.isOpen}
           position= {POSITION_RIGHT}
           usePortal= {true}
@@ -49,9 +46,9 @@ export default class AppServicePropPanel extends Component {
           className="propPanelDrawer">
               <Grid container spacing={12} className="propPanelGrid">
                 <Grid item xs={12}>
-                  
+
                   {this.renderProvisionTab()}
-                    
+
                 </Grid>
               </Grid>
       </Drawer>
@@ -59,9 +56,6 @@ export default class AppServicePropPanel extends Component {
   }
 
   renderProvisionTab() {
-    // if(this.state.value != 'provision')
-    //   return null;
-    
     return (
         <div className = "propPanelTabContent">
            <Grid
@@ -76,7 +70,7 @@ export default class AppServicePropPanel extends Component {
                 </Grid>
                 <Grid item>
                   <input id="icon-display-name" type="text" class="bp3-input .modifier"
-                    value={this.state.userObject.ProvisionContext.Name} 
+                    value={this.state.userObject.ProvisionContext.Name}
                     onChange={(e) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.Name = e.target.value
@@ -84,7 +78,7 @@ export default class AppServicePropPanel extends Component {
                     }} />
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" justify="flex-start" alignItems="center">
+              {/* <Grid container item direction="row" xs="12" justify="flex-start" alignItems="center">
                 <Grid item sm={4}>
                     <label>Resource Group</label>
                 </Grid>
@@ -99,7 +93,7 @@ export default class AppServicePropPanel extends Component {
                     }
                   }/>
                 </Grid>
-              </Grid>
+              </Grid> */}
               <Grid container item direction="row" xs="12"  justify="flex-start" alignItems="center">
                 <Grid item sm={4}>
                     <label>Location</label>
@@ -122,7 +116,7 @@ export default class AppServicePropPanel extends Component {
                 </Grid>
                 <Grid item>
                   <input id="icon-display-name" type="text" class="bp3-input .modifier"
-                    value={this.state.userObject.ProvisionContext.PlanName} 
+                    value={this.state.userObject.ProvisionContext.PlanName}
                     onChange={(e) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.PlanName = e.target.value
@@ -162,42 +156,70 @@ export default class AppServicePropPanel extends Component {
                             }
                           } />);
                       }
-                      
+
                     }>
                     <Button text={this.state.selectedPricingTier == '' ? 'Pricing Tier' : Utils.limitTextLength(this.state.selectedPricingTier,15)}
                         alignText='left'
                         rightIcon="double-caret-vertical" style={{width: '170px', maxWidth: '170px'}}/>
                   </Select>
                 </Grid>
-              <Grid container item direction="row" xs="12"  justify="flex-start" alignItems="center">
+
+              <Grid container item direction="row" xs="12" style={{marginTop: '15px', width: '100%'}} justify="flex-start" alignItems="center">
                 <Grid item sm={4}>
-                    <label>Runtime Stack</label>
+                    <label>Number of Instances</label>
                 </Grid>
                 <Grid item>
-                  <Select
-                    closeOnSelect={true}
-                    filterable={false}
-                    items={this.state.runtimeStack}
-                    itemRenderer={
-                      (runtime, { handleClick, modifiers }) => {
-                        return (<MenuItem
-                          text={runtime}
-                          onClick={
-                            (e) => {
-                              this.setState({selectedRuntime:runtime});
+                  <NumericInput placeholder="Stroke Width"
+                        max={100}
+                        allowNumericCharactersOnly ={true}
+                        clampValueOnBlur={true}
+                        value={this.state.userObject.ProvisionContext.NumberOfInstance}
+                        onValueChange={
+                          (value) => {
                               var uo = this.state.userObject;
-                              uo.ProvisionContext.RuntimeStack = runtime; //e.target.value
+                              uo.ProvisionContext.NumberOfInstance = value;
                               this.setState({userObject:uo});
-                            }
-                          } />);
-                      }
-                    }>
-                    <Button text={this.state.selectedRuntime == '' ? 'Runtime' : Utils.limitTextLength(this.state.selectedRuntime,15)}
-                        alignText='left'
-                        rightIcon="double-caret-vertical" style={{width: '170px', maxWidth: '170px'}}/>
-                  </Select>
+                          }
+                        } />
                 </Grid>
               </Grid>
+
+              <Grid container item direction="row" xs="12" style={{marginTop: '15px', width: '100%'}} justify="flex-start" alignItems="center">
+                <Grid item sm={4}>
+                    <label>Application Insights Name</label>
+                </Grid>
+                <Grid item>
+                <input id="icon-display-name" type="text" class="bp3-input .modifier"
+                    value={this.state.userObject.ProvisionContext.AppInsightsName}
+                    onChange={(e) => {
+                      var uo = this.state.userObject;
+                      uo.ProvisionContext.AppInsightsName = e.target.value
+                      this.setState({userObject:uo});
+                    }} />
+                </Grid>
+                <Grid item>
+                  <label class="az-proppanel-label-info">*Not included in Bicep template if name is empty</label>
+                </Grid>
+              </Grid>
+
+              <Grid container item direction="row" xs="12" style={{marginTop: '15px', width: '100%'}} justify="flex-start" alignItems="center">
+                <Grid item sm={4}>
+                    <label>Log Analytics Workspace Name</label>
+                </Grid>
+                <Grid item>
+                <input id="icon-display-name" type="text" class="bp3-input .modifier"
+                    value={this.state.userObject.ProvisionContext.LogAnalyticsWorkspaceName}
+                    onChange={(e) => {
+                      var uo = this.state.userObject;
+                      uo.ProvisionContext.LogAnalyticsWorkspaceName = e.target.value
+                      this.setState({userObject:uo});
+                    }} />
+                </Grid>
+                <Grid item>
+                  <label class="az-proppanel-label-info">App Insights 'linked' workspace, if App Insights name is empty workspace will be ignored</label>
+                </Grid>
+              </Grid>
+
             </Grid>
           </Grid>
       </div>
@@ -226,7 +248,7 @@ export default class AppServicePropPanel extends Component {
       case 'DisplayName':
         userObj.GraphModel.DisplayName = value;
         break;
-    
+
       default:
         break;
     }
@@ -234,21 +256,22 @@ export default class AppServicePropPanel extends Component {
   }
 
   initPricingTierRuntimeStack() {
-     this.setState({pricingTier: ['FreeF1','BasicB1','BasicB2','BasicB3',
-      'StandardS1','StandardS2','StandardS3','PremiumP1','PremiumP1v2',
-      'PremiumP2','PremiumP2v2','PremiumP3','PremiumP3v2']});
+     this.setState({pricingTier: ['F1','D1','B1','B2','B3',
+      'S1','S2','S3','P1','P1v2','P2v2','P3v2','P1v3','P2v3', 'P3v3']});
 
-      this.setState({runtimeStack: ['Java_11_Java11','Java_8_Jre8','NETCore_V1_0','NETCore_V1_1',
-      'NETCore_V2_0','NETCore_V2_1','NETCore_V2_2','NodeJS_10_1','NodeJS_10_12',
-      'NodeJS_10_14','NodeJS_10_LTS','NodeJS_4_4','NodeJS_4_5',
-      'NodeJS_6_10','NodeJS_6_11','NodeJS_6_2','NodeJS_6_6',
-      'NodeJS_6_9','NodeJS_6_LTS','NodeJS_8_0','NodeJS_8_1',
-      'NodeJS_8_11','NodeJS_8_12','NodeJS_8_2','NodeJS_8_8',
-      'NodeJS_8_9','NodeJS_8_LTS','NodeJS_9_4','NodeJS_LTS',
-      'PHP_5_6','PHP_7_0','PHP_7_2','PHP_7_3',
-      'Python_2_7','Python_3_6','Python_3_7','Ruby_2_3',
-      'Ruby_2_4','Ruby_2_5','Ruby_2_6','Tomcat_8_5_JAVA11',
-      'Tomcat_8_5_JRE8','Tomcat_9_0_JAVA11','Tomcat_9_0_JRE8']});
+    this.setState({workerSize: ['Small', 'Medium']});
+
+      // this.setState({runtimeStack: ['Java_11_Java11','Java_8_Jre8','NETCore_V1_0','NETCore_V1_1',
+      // 'NETCore_V2_0','NETCore_V2_1','NETCore_V2_2','NodeJS_10_1','NodeJS_10_12',
+      // 'NodeJS_10_14','NodeJS_10_LTS','NodeJS_4_4','NodeJS_4_5',
+      // 'NodeJS_6_10','NodeJS_6_11','NodeJS_6_2','NodeJS_6_6',
+      // 'NodeJS_6_9','NodeJS_6_LTS','NodeJS_8_0','NodeJS_8_1',
+      // 'NodeJS_8_11','NodeJS_8_12','NodeJS_8_2','NodeJS_8_8',
+      // 'NodeJS_8_9','NodeJS_8_LTS','NodeJS_9_4','NodeJS_LTS',
+      // 'PHP_5_6','PHP_7_0','PHP_7_2','PHP_7_3',
+      // 'Python_2_7','Python_3_6','Python_3_7','Ruby_2_3',
+      // 'Ruby_2_4','Ruby_2_5','Ruby_2_6','Tomcat_8_5_JAVA11',
+      // 'Tomcat_8_5_JRE8','Tomcat_9_0_JAVA11','Tomcat_9_0_JRE8']});
   }
 
   saveForm = () => {

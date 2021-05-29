@@ -11,7 +11,7 @@ export default class DiskEncryptionSet
         this.ProvisionContext = {
             ResourceType: ResourceType.DiskEncryptionSet(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

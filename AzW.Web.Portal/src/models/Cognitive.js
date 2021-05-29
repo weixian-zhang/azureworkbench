@@ -12,9 +12,9 @@ export default class Cognitive
             ResourceType: ResourceType.Cognitive(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

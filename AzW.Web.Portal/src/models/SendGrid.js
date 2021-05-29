@@ -11,7 +11,7 @@ export default class SendGrid
         this.ProvisionContext = {
             ResourceType: ResourceType.SendGrid(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: ''
         };
         this.CalculatorContext = {

@@ -1,14 +1,10 @@
 import React, { Component } from "react";
 import AzureFirewall from '../../../models/AzureFirewall';
-import { FormGroup, Drawer, Switch, Intent, Button } from "@blueprintjs/core";
+import { InputGroup, Drawer } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import Grid from "@material-ui/core/Grid";
-import AppBar from '@material-ui/core/AppBar';
 import Typography from '@material-ui/core/Typography';
 import SelectLocation from '../SelectLocation';
-import SelectResourceGroup from '../SelectResourceGroup';
 
 export default class FirewallPropPanel extends Component {
   constructor(props) {
@@ -17,7 +13,7 @@ export default class FirewallPropPanel extends Component {
       this.state ={
         isOpen: false,
         userObject: new AzureFirewall(),
-        
+
         value: 'diagram', //tabs
 
         saveCallback: function () {},
@@ -33,7 +29,7 @@ export default class FirewallPropPanel extends Component {
           canOutsideClickClose= {true}
           enforceFocus= {true}
           hasBackdrop= {true}
-          onClose={() => this.drawerClose()} 
+          onClose={() => this.drawerClose()}
           isOpen= {this.state.isOpen}
           position= {POSITION_RIGHT}
           usePortal= {true}
@@ -41,7 +37,7 @@ export default class FirewallPropPanel extends Component {
           className="propPanelDrawer">
               <Grid container spacing={12} className="propPanelGrid">
                 <Grid item xs={12}>
-                    
+
                     {this.renderProvisionTab()}
 
                 </Grid>
@@ -51,7 +47,7 @@ export default class FirewallPropPanel extends Component {
   }
 
   renderProvisionTab() {
-    
+
     return (
         <div className="propPanelTabContent">
            <Grid
@@ -66,7 +62,7 @@ export default class FirewallPropPanel extends Component {
                 </Grid>
                 <Grid item>
                   <input id="icon-display-name" type="text" class="bp3-input .modifier"
-                    value={this.state.userObject.ProvisionContext.Name} 
+                    value={this.state.userObject.ProvisionContext.Name}
                     onChange={(e) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.Name = e.target.value
@@ -74,22 +70,7 @@ export default class FirewallPropPanel extends Component {
                     }} />
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
-                <Grid item sm={3}>
-                    <label>Resource Group</label>
-                </Grid>
-                <Grid item>
-                  <SelectResourceGroup
-                   SelectedResourceGroup={this.state.userObject.ProvisionContext.ResourceGroupName}
-                   onValueChange={
-                    (rg) => {
-                      var uo = this.state.userObject;
-                      uo.ProvisionContext.ResourceGroupName = rg
-                      this.setState({userObject:uo});
-                    }
-                  }/>
-                </Grid>
-              </Grid>
+
               <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
                 <Grid item sm={3}>
                     <label>Location</label>
@@ -104,6 +85,23 @@ export default class FirewallPropPanel extends Component {
                       this.setState({userObject:uo});
                     }
                   }/>
+                </Grid>
+              </Grid>
+
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
+                <Grid item sm={3}>
+                    <label>Public IP Name</label>
+                </Grid>
+                <Grid item>
+                  <InputGroup
+                  value={this.state.userObject.ProvisionContext.PublicIPName}
+                  onChange={(e) => {
+                    var uo = this.state.userObject;
+                    uo.ProvisionContext.PublicIPName = e.target.value
+                    this.setState({userObject:uo});
+                  }}
+                  placeholder="Public IP name"
+                  />
                 </Grid>
               </Grid>
             </Grid>
@@ -133,7 +131,7 @@ export default class FirewallPropPanel extends Component {
       case 'DisplayName':
         userObj.GraphModel.DisplayName = value;
         break;
-    
+
       default:
         break;
     }

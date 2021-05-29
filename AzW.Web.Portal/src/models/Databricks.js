@@ -12,9 +12,9 @@ export default class Databricks
             ResourceType: ResourceType.Databricks(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
             InVNet: false,
             PublicSubnetName: '',

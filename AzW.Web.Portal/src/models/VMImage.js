@@ -11,7 +11,7 @@ export default class VMImage
         this.ProvisionContext = {
             ResourceType: ResourceType.VMImage(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: ''
         };
         this.CalculatorContext = {

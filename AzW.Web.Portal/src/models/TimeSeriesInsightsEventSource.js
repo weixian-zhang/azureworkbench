@@ -12,9 +12,9 @@ export default class TimeSeriesInsightsEventSource
             ResourceType: ResourceType.TimeSeriesInsightsEventSource(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

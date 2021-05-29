@@ -12,9 +12,9 @@ export default class NetworkManager
             ResourceType: ResourceType.NetworkManager(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

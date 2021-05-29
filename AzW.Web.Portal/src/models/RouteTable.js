@@ -10,10 +10,10 @@ export default class RouteTable
 
         this.ProvisionContext = {
             ResourceType: ResourceType.RouteTable(),
-            
+
             Name: '',
             ResourceGroupName: '',
-            Location: '',
+            Location: 'westus',
         };
         this.CalculatorContext = {
             IsFree: false,

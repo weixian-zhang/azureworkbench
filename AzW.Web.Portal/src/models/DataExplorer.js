@@ -12,9 +12,9 @@ export default class DataExplorer
             ResourceType: ResourceType.DataExplorer(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

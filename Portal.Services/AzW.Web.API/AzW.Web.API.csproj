@@ -30,5 +30,6 @@
     <PackageReference Include="Serilog.Sinks.MongoDB" Version="4.0.0"/>
     <PackageReference Include="iTextSharp" Version="5.5.13.1"/>
     <PackageReference Include="shortid" Version="2.0.3"/>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.8.4"/>
   </ItemGroup>
 </Project>

@@ -11,7 +11,7 @@ export default class AvailabilitySet
         this.ProvisionContext = {
             ResourceType: ResourceType.AvailabilitySet(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
             VNetName: '',
             SubnetName: '',

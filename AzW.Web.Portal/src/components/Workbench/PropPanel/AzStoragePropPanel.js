@@ -26,8 +26,9 @@ export default class AzStoragePropPanel extends Component {
   }
 
   componentDidMount () {
-    this.setState({storageSku: ['Premium_LRS','Standard_GRS','Standard_LRS',
-        'Standard_RAGRS', 'Standard_ZRS']});
+    this.setState({storageSku: ['Premium_LRS','Premium_ZRS', 'Standard_GRS',
+        'Standard_GZRS', 'Standard_LRS',
+        'Standard_RAGRS', 'Standard_RAGZRS', 'Standard_ZRS']});
   }
 
   render = () => {
@@ -39,7 +40,7 @@ export default class AzStoragePropPanel extends Component {
           canOutsideClickClose= {true}
           enforceFocus= {true}
           hasBackdrop= {true}
-          onClose={() => this.drawerClose()} 
+          onClose={() => this.drawerClose()}
           isOpen= {this.state.isOpen}
           position= {POSITION_RIGHT}
           usePortal= {true}
@@ -79,7 +80,7 @@ export default class AzStoragePropPanel extends Component {
                   {this.renderProvisionTab()}
 
                   {/* {this.renderCalculatorTab()} */}
-                    
+
                 </Grid>
               </Grid>
       </Drawer>
@@ -89,7 +90,7 @@ export default class AzStoragePropPanel extends Component {
   renderProvisionTab() {
     // if(this.state.value != 'provision')
     //   return null;
-    
+
     return (
         <div className = "propPanelTabContent">
            <Grid
@@ -104,7 +105,7 @@ export default class AzStoragePropPanel extends Component {
                 </Grid>
                 <Grid item>
                   <input id="icon-display-name" type="text" class="bp3-input .modifier"
-                    value={this.state.userObject.ProvisionContext.Name} 
+                    value={this.state.userObject.ProvisionContext.Name}
                     onChange={(e) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.Name = e.target.value
@@ -112,7 +113,7 @@ export default class AzStoragePropPanel extends Component {
                     }} />
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+              {/* <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
                 <Grid item sm={4}>
                     <label>Resource Group</label>
                 </Grid>
@@ -127,7 +128,7 @@ export default class AzStoragePropPanel extends Component {
                     }
                   }/>
                 </Grid>
-              </Grid>
+              </Grid> */}
               <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
                 <Grid item sm={4}>
                     <label>Location</label>
@@ -165,7 +166,7 @@ export default class AzStoragePropPanel extends Component {
                             }
                           } />);
                       }
-                      
+
                     }>
                     <Button text={this.state.userObject.ProvisionContext.SkuName == '' ? 'Sku' :
                         Utils.limitTextLength(this.state.userObject.ProvisionContext.SkuName ,15)}
@@ -201,7 +202,7 @@ export default class AzStoragePropPanel extends Component {
       case 'DisplayName':
         userObj.GraphModel.DisplayName = value;
         break;
-    
+
       default:
         break;
     }

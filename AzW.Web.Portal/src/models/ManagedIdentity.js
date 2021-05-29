@@ -11,7 +11,7 @@ export default class ManagedIdentity
         this.ProvisionContext = {
             ResourceType: ResourceType.ManagedIdentity(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

@@ -11,7 +11,7 @@ export default class DeviceUpdateForIoTHub
         this.ProvisionContext = {
             ResourceType: ResourceType.DeviceUpdateForIoTHub(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

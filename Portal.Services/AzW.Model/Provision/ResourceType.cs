@@ -4,14 +4,15 @@ namespace AzW.Model
      public static class ResourceType
      {
             public const string PrivateEndpoint = "privateendpoint";
-        	public const string WindowsVM = "vmWindows";
-            public const string LinuxVM = "vmLinux";
+        	// public const string WindowsVM = "vmWindows";
+            // public const string LinuxVM = "vmLinux";
             public const string VM = "vm";
             public const string VMSS = "vmss";
             public const string AppService = "appsvc";
             public const string ASE = "ase";
             public const string Function = "func";
             public const string VNet = "vnet";
+            public const string VNetPeering = "vnetpeering";
             public const string NSG = "nsg";
             public const string Subnet = "subnet";
             public const string NLB = "nlb";

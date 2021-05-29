@@ -12,9 +12,9 @@ export default class FileSync
             ResourceType: ResourceType.AzFileSync(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

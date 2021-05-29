@@ -27,6 +27,7 @@ using Serilog.Events;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.ApplicationInsights.Extensibility;
 using AzW.Model;
+using AzW.Infrastructure.AzureServices;
 
 namespace AzW.Web.API
 {
@@ -73,6 +74,9 @@ namespace AzW.Web.API
 
             ConfigureDependencies(services);
 
+            //init cache on HostBoot
+            services.AddHostedService<HostBoot>();
+
             //app insights user tracker
             services.AddApplicationInsightsTelemetry(_secrets.AppInsightsKey);
             services.AddSingleton<ITelemetryInitializer, TelemetryUserNameEnrichment>();
@@ -82,6 +86,7 @@ namespace AzW.Web.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            _webenv = env;
 
             if (env.IsDevelopment())
             {
@@ -90,8 +95,6 @@ namespace AzW.Web.API
 
             app.UseCors(AllowAllOriginsPolicy);
 
-            app.ConfigureExceptionHandler(_logger);
-            
             app.UseAuthentication();
 
             app.UseSwagger();
@@ -103,8 +106,8 @@ namespace AzW.Web.API
             app.UseExceptionHandler(handler => {
 
                 handler.Run(async context =>
-                {   
-                    var exceptionHandlerPathFeature = 
+                {
+                    var exceptionHandlerPathFeature =
                         context.Features.Get<IExceptionHandlerPathFeature>();
 
                     _logger.Error
@@ -125,21 +128,21 @@ namespace AzW.Web.API
             services
                 .AddAuthentication(AzureADDefaults.BearerAuthenticationScheme)
                 .AddAzureADBearer(options => {
-                    
+
                     //https://docs.microsoft.com/bs-latn-ba/azure/active-directory/develop/scenario-protected-web-api-app-configuration
                     options.Instance = "https://login.microsoftonline.com";
                     options.TenantId = "common";
                     options.ClientId = "4a2a5dad-0bdd-453a-84b1-b83d50878ba9";
                     Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
                 });
-            
+
             services.Configure<JwtBearerOptions>
                 (AzureADDefaults.JwtBearerAuthenticationScheme, options =>
                     {
                         // This is a Microsoft identity platform web API.
                         options.Authority += "/v2.0";
                         //options.Audience = "16afdc21-ffd3-4cf8-aeae-63bebf9e327e";
-                    
+
                         // The web API accepts as audiences both the Client ID (options.Audience) and api://{ClientID}.
                         options.TokenValidationParameters.ValidAudiences = new []
                         {
@@ -161,7 +164,7 @@ namespace AzW.Web.API
 
                                 return jwt;
                             };
-                        
+
                         options.Events = new JwtBearerEvents
                         {
                             OnMessageReceived= context => {
@@ -176,25 +179,27 @@ namespace AzW.Web.API
                             OnTokenValidated = context =>
                             {
                                 var jwtToken = context.SecurityToken as JwtSecurityToken;
-                                
+
                                 var ui = CreateUserIdentityFromJwt(jwtToken);
 
                                 context.Principal.AddIdentity(ui);
-                                
+
                                 return Task.CompletedTask;
                             }
                         };
                     });
     }
-        
+
 
         private void ConfigureDependencies(IServiceCollection services)
-        {          
+        {
             services.AddSingleton<WorkbenchSecret>(sp => {return _secrets ;} );
 
             services.AddSingleton<BlobStorageManager>(sp => {
                 return new BlobStorageManager(_secrets.AzBlobConnString);
             });
+
+            services.AddSingleton<ITemplateGenerator, BicepGenerator>();
 
             services.AddSingleton<Logger>(sp => {return _logger ;} );
             services.AddTransient<IDiagramRepository, DiagramRepository>();
@@ -221,7 +226,7 @@ namespace AzW.Web.API
 
                 if(claim.Type == "newUser") //b2c
                     ui.IsNewSignedUpUser = Convert.ToBoolean(claim.Value);
-                
+
                 if(claim.Type == "extension_Organization") //b2c
                     ui.Organization = claim.Value;
 
@@ -229,7 +234,7 @@ namespace AzW.Web.API
                     ui.Name = claim.Value;
                     ui.GivenName = claim.Value;
                 }
-                    
+
                 if(claim.Type == "family_name") {
                     ui.FamilyName = claim.Value;
                 }
@@ -249,7 +254,7 @@ namespace AzW.Web.API
 
                 if(claim.Type == "tfp")
                     ui.B2CUserFlowName = claim.Value;
-                    
+
                 if(claim.Type == "name")
                     ui.Name = claim.Value;
 
@@ -285,7 +290,7 @@ namespace AzW.Web.API
                 .WriteTo
                 .MongoDB(
                     CosmosDbHelper.GetDatabase(_secrets),
-                    LogEventLevel.Debug, 
+                    LogEventLevel.Debug,
                     collectionName: "Log-API",
                     period: TimeSpan.Zero)
                 .CreateLogger();
@@ -293,5 +298,6 @@ namespace AzW.Web.API
 
         private WorkbenchSecret _secrets;
         private Logger _logger;
+        private IWebHostEnvironment _webenv;
     }
 }

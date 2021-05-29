@@ -12,9 +12,9 @@ export default class NLB
             ResourceType: ResourceType.NLB(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: 'nlb-web',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
             IsInternalNLB: false,
             PublicIPName: '',
@@ -25,7 +25,7 @@ export default class NLB
             BackendpoolName: 'backend-web',
             LoadBalancingRuleName: 'lbrule-web',
             LoadBalanceToExistingVMNames: []
-        }; 
+        };
         this.CalculatorContext = {
             IsFree: false,
             Tier: ''

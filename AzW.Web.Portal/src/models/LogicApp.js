@@ -11,7 +11,7 @@ export default class LogicApp
         this.ProvisionContext = {
             ResourceType: ResourceType.LogicApp(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

@@ -11,7 +11,7 @@ export default class SpringCloud
         this.ProvisionContext = {
             ResourceType: ResourceType.SpringCloud(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

@@ -11,7 +11,7 @@ export default class PublicIpPrefixes
         this.ProvisionContext = {
             ResourceType: ResourceType.PublicIpPrefixes(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

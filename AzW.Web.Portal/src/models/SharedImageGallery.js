@@ -12,9 +12,9 @@ export default class SharedImageGallery
             ResourceType: ResourceType.SharedImageGallery(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

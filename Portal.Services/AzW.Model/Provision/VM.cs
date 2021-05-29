@@ -3,9 +3,8 @@ using System.Collections.Generic;
 
 namespace AzW.Model
  {
-     public class VM
+     public class VM : Resource
      {
-          public string Name { get; set; }
           public string Location { get; set; }
           public string ResourceGroupName { get; set; }
           public string AddressSpace { get; set; }
@@ -22,5 +21,6 @@ namespace AzW.Model
           public string AdminPassword { get; set; }
           public string SizeName { get; set; }
           public bool IsLinux { get; set; }
+          public string SSHPublicKey { get; set; }
      }
  }

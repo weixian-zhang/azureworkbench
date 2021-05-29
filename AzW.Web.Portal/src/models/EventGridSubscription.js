@@ -12,9 +12,9 @@ export default class EventGridSubscription
             ResourceType: ResourceType.EventGridSubscription(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

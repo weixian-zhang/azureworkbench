@@ -12,9 +12,9 @@ export default class HPCCache
             ResourceType: ResourceType.HPCCache(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

@@ -12,9 +12,9 @@ export default class PostgreSQL
             ResourceType: ResourceType.PostgreSQL(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
 
             VNetAddress: '',

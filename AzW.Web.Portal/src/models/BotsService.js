@@ -12,9 +12,9 @@ export default class BotsService
             ResourceType: ResourceType.BotsService(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

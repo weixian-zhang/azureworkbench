@@ -12,9 +12,9 @@ export default class WorkspaceWVD
             ResourceType: ResourceType.WorkspaceWVD(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

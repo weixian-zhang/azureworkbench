@@ -11,7 +11,7 @@ export default class DigitalTwins
         this.ProvisionContext = {
             ResourceType: ResourceType.DigitalTwins(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

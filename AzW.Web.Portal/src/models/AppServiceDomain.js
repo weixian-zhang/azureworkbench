@@ -11,7 +11,7 @@ export default class AppServiceDomain
         this.ProvisionContext = {
             ResourceType: ResourceType.AppServiceDomain(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

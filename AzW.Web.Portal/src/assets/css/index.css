@@ -1,3 +1,7 @@
+.az-proppanel-label-info {
+  color: blue
+}
+
 .animateTrafficFlowLeft2Right {
   stroke-dasharray: 8;
   animation: dash 0.5s linear;

@@ -11,7 +11,7 @@ export default class MediaService
         this.ProvisionContext = {
             ResourceType: ResourceType.MediaService(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

@@ -11,7 +11,7 @@ export default class Databox
         this.ProvisionContext = {
             ResourceType: ResourceType.Databox(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: ''
         };
         this.CalculatorContext = {

@@ -11,7 +11,7 @@ export default class AzureBatch
         this.ProvisionContext = {
             ResourceType: ResourceType.Batch(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

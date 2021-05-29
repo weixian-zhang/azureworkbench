@@ -11,7 +11,7 @@ export default class DedicatedHost
         this.ProvisionContext = {
             ResourceType: ResourceType.DedicatedHost(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

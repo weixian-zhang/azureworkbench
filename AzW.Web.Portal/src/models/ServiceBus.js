@@ -12,9 +12,9 @@ export default class ServiceBus
             ResourceType: ResourceType.ASB(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

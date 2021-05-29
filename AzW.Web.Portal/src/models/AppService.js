@@ -11,12 +11,14 @@ export default class AppService
         this.ProvisionContext = {
             ResourceType: ResourceType.AppService(),
             Name: 'appsvc-web',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
             PlanName: 'asp-web-dev',
             IsLinux: false,
-            PricingTier: 'Standard1',
-            RuntimeStack: 'NETCore_V2_2'
+            PricingTier: 'S1',
+            NumberOfInstance: 1,
+            AppInsightsName: 'appinsights-webapp',
+            LogAnalyticsWorkspaceName: 'law-appinsights-webapp'
         };
         this.CalculatorContext = {
             IsFree: false,

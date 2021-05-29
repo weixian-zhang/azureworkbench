@@ -10,8 +10,9 @@ export default class AppInsights
 
         this.ProvisionContext = {
             ResourceType: ResourceType.AppInsights(),
-            Name: '',
-            Location: '',
+            Name: 'appinsights-webapp',
+            LogAnalyticsWorkspaceName: 'law-appinsights-webapp',
+            Location: 'westus',
             ResourceGroupName: ''
         };
         this.CalculatorContext = {

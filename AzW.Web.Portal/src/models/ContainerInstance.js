@@ -12,9 +12,9 @@ export default class ContainerInstance
             ResourceType: ResourceType.ContainerInstance(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

@@ -11,7 +11,7 @@ export default class ProximityPlacementGroup
         this.ProvisionContext = {
             ResourceType: ResourceType.ProximityPlacementGroup(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
             VNetName: '',
             SubnetName: '',

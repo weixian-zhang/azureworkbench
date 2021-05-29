@@ -11,7 +11,7 @@ export default class AADDomainService
         this.ProvisionContext = {
             ResourceType: ResourceType.AADDomainService(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: ''
         };
         this.CalculatorContext = {

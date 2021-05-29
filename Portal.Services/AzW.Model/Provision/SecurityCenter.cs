@@ -1,6 +1,6 @@
 namespace AzW.Model
  {
-    public class SecurityCenter
+    public class SecurityCenter : Resource
     {
         public string LogAnalyticsWorkspaceName { get; set; }
     }

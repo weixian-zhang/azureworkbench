@@ -12,9 +12,9 @@ export default class DDoSStandard
             ResourceType: ResourceType.DDoSStandard(),
             Deployable: true,
             HighCost: true,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

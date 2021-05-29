@@ -11,7 +11,7 @@ export default class VirtualWAN
         this.ProvisionContext = {
             ResourceType: ResourceType.VirtualWAN(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

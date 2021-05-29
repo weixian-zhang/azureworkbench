@@ -11,7 +11,7 @@ namespace AzW.Infrastructure.Data
         Task<bool> IsVMSizeExistAsync();
 
         Task<bool> IsServiceTagExistAsync();
-        
+
         Task SetVMImageAsync(string key, VMImage value);
 
         Task SetVMSizeAsync(string key, VMSize value);
@@ -19,6 +19,7 @@ namespace AzW.Infrastructure.Data
         Task SetServiceTagAsync(string key, ServiceTag value);
 
         Task<IEnumerable<VMImage>> SearchVMImagesAsync(string keyPattern);
+        Task<IEnumerable<VMImage>> GetAllVMImagesAsync();
 
         Task<IEnumerable<VMSize>> GetVMSizeAsync();
 

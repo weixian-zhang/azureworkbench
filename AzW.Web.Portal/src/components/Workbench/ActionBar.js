@@ -10,7 +10,6 @@ import AuthService from '../../services/AuthService';
 export default class ActionBar extends Component {
 
     constructor(props) {
-      super(props);
 
       this.state = {
         subscriptions: [],
@@ -45,11 +44,11 @@ export default class ActionBar extends Component {
                                 </Menu>
                             } position={Position.RIGHT}>
                             <Button icon="share" text="File" />
-                        </Popover>                     
+                        </Popover>
                     </div>
                 </div>
             </nav>
         );
     };
-   
+
 }

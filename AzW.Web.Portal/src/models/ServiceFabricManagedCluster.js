@@ -11,7 +11,7 @@ export default class ServiceFabricManagedCluster
         this.ProvisionContext = {
             ResourceType: ResourceType.ServiceFabricManagedCluster(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

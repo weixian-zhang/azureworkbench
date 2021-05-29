@@ -11,7 +11,7 @@ export default class RecoveryServiceVault
         this.ProvisionContext = {
             ResourceType: ResourceType.RecoveryServiceVault(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
             VMNamesToBackup: []
 

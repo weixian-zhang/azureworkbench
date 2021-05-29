@@ -12,9 +12,9 @@ export default class AppServicePlan
             ResourceType: ResourceType.AppServicePlan(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

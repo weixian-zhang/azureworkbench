@@ -11,7 +11,7 @@ export default class APIM
         this.ProvisionContext = {
             ResourceType: ResourceType.APIM(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
 
             VNetName: '',

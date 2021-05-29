@@ -11,7 +11,7 @@ export default class RouteFilters
         this.ProvisionContext = {
             ResourceType: ResourceType.RouteFilters(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
             VNetName: '',
             SubnetName: '',

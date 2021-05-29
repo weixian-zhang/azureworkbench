@@ -11,7 +11,7 @@ export default class NetworkWatcher
         this.ProvisionContext = {
             ResourceType: ResourceType.NetworkWatcher(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

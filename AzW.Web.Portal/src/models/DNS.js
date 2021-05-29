@@ -10,9 +10,9 @@ export default class DNS
 
         this.ProvisionContext = {
             ResourceType: ResourceType.DNS(),
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

@@ -11,7 +11,7 @@ export default class AppGateway
         this.ProvisionContext = {
             ResourceType: ResourceType.Bastion(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
 
             VNetAddress: '',

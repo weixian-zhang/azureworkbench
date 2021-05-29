@@ -17,7 +17,7 @@ export default class NLBPropPanel extends Component {
       this.state ={
         isOpen: false,
         userObject: new NLB(),
-        
+
         value: 'diagram', //tabs
 
         saveCallback: function () {},
@@ -33,7 +33,7 @@ export default class NLBPropPanel extends Component {
           canOutsideClickClose= {true}
           enforceFocus= {true}
           hasBackdrop= {true}
-          onClose={() => this.drawerClose()} 
+          onClose={() => this.drawerClose()}
           isOpen= {this.state.isOpen}
           position= {POSITION_RIGHT}
           usePortal= {true}
@@ -75,7 +75,7 @@ export default class NLBPropPanel extends Component {
                     {/* {this.renderCalculatorTab()} */}
                 </Grid>
               </Grid>
-        
+
       </Drawer>
     );
   }
@@ -83,7 +83,7 @@ export default class NLBPropPanel extends Component {
   renderProvisionTab() {
     // if(this.state.value != 'provision')
     //   return null;
-    
+
     return (
         <div className="propPanelTabContent">
            <Grid
@@ -98,7 +98,7 @@ export default class NLBPropPanel extends Component {
                 </Grid>
                 <Grid item>
                   <input id="icon-display-name" type="text" class="bp3-input .modifier"
-                    value={this.state.userObject.ProvisionContext.Name} 
+                    value={this.state.userObject.ProvisionContext.Name}
                     onChange={(e) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.Name = e.target.value
@@ -106,22 +106,7 @@ export default class NLBPropPanel extends Component {
                     }} />
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
-                <Grid item sm={3}>
-                    <label>Resource Group</label>
-                </Grid>
-                <Grid item>
-                  <SelectResourceGroup
-                   SelectedResourceGroup={this.state.userObject.ProvisionContext.ResourceGroupName}
-                   onValueChange={
-                    (rg) => {
-                      var uo = this.state.userObject;
-                      uo.ProvisionContext.ResourceGroupName = rg
-                      this.setState({userObject:uo});
-                    }
-                  }/>
-                </Grid>
-              </Grid>
+
               <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
                 <Grid item sm={3}>
                     <label>Location</label>
@@ -152,7 +137,7 @@ export default class NLBPropPanel extends Component {
                 <Grid item>
                   <input id="icon-display-name" type="text" class="bp3-input .modifier"
                     disabled={this.state.userObject.ProvisionContext.IsInternalNLB}
-                    value={this.state.userObject.ProvisionContext.PublicIPName} 
+                    value={this.state.userObject.ProvisionContext.PublicIPName}
                     onChange={(e) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.PublicIPName = e.target.value
@@ -176,7 +161,7 @@ export default class NLBPropPanel extends Component {
                 </Grid>
                 <Grid item >
                   <input id="icon-display-name" type="text" class="bp3-input .modifier"
-                    value={this.state.userObject.ProvisionContext.FrontendPort} 
+                    value={this.state.userObject.ProvisionContext.FrontendPort}
                     onChange={(e) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.FrontendPort = e.target.value
@@ -190,7 +175,7 @@ export default class NLBPropPanel extends Component {
                 </Grid>
                 <Grid item>
                   <input id="icon-display-name" type="text" class="bp3-input .modifier"
-                    value={this.state.userObject.ProvisionContext.BackendpoolName} 
+                    value={this.state.userObject.ProvisionContext.BackendpoolName}
                     onChange={(e) => {
                       var uo = this.state.userObject;
                       uo.ProvisionContext.BackendpoolName = e.target.value
@@ -239,7 +224,7 @@ export default class NLBPropPanel extends Component {
       case 'DisplayName':
         userObj.GraphModel.DisplayName = value;
         break;
-    
+
       default:
         break;
     }

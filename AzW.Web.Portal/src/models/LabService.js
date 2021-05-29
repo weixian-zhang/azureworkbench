@@ -11,7 +11,7 @@ export default class LabService
         this.ProvisionContext = {
             ResourceType: ResourceType.LabService(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

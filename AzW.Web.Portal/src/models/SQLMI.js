@@ -12,9 +12,9 @@ export default class SQLMI
             ResourceType: ResourceType.SQLMI(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

@@ -12,9 +12,9 @@ export default class DevTestLab
             ResourceType: ResourceType.DevTestLab(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

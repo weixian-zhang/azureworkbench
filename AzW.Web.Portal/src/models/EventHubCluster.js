@@ -11,7 +11,7 @@ export default class EventHubCluster
         this.ProvisionContext = {
             ResourceType: ResourceType.EventHubCluster(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: ''
         };
         this.CalculatorContext = {

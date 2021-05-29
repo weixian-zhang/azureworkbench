@@ -11,7 +11,7 @@ export default class IPGroups
         this.ProvisionContext = {
             ResourceType: ResourceType.IPGroup(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: ''
         };
         this.CalculatorContext = {

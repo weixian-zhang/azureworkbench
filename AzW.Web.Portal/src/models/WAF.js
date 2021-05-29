@@ -12,9 +12,9 @@ export default class WAF
             ResourceType: ResourceType.WAF(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

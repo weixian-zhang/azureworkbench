@@ -12,9 +12,9 @@ export default class MariaDB
             ResourceType: ResourceType.MariaDB(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
 
             VNetAddress: '',

@@ -1,8 +1,6 @@
 import React, { Component } from "reactn";
 import {Toaster, MenuItem, Position, Button, Intent, Alignment} from "@blueprintjs/core";
 import "../../assets/css/blueprint-override.css";
-import AuthService from '../../services/AuthService';
-import ARMService from '../../services/ARMService';
 
 import Messages from './Helpers/Messages';
 import Utils from './Helpers/Utils';
@@ -13,73 +11,49 @@ export default class SelectLocation extends Component {
     constructor(props) {
         super(props);
 
-        this.authService = AuthService;
-        this.armService = new ARMService();
-
         this.state = {
             searchQuery: '',
             selectedValue: '',
-            loading: false
+            loading: false,
+            locations: ['eastasia','southeastasia','centralus','eastus','eastus2',
+            'westus','northcentralus','southcentralus','northeurope','westeurope',
+            'japanwest','japaneast','brazilsouth','australiaeast','australiasoutheast',
+            'southindia','centralindia','westindia','canadacentral','canadaeast','uksouth',
+            'ukwest','westcentralus','westus2','koreacentral','koreasouth','francecentral',
+            'francesouth','australiacentral','australiacentral2','uaecentral','uaenorth',
+            'southafricanorth','southafricawest','switzerlandnorth','switzerlandwest',
+            'germanynorth','germanywestcentral','norwaywest','norwayeast','brazilsoutheast','westus3'],
+            filteredLocations: []
         }
-
-        if(Utils.IsNullOrUndefine(this.global.locations) ||
-            Utils.IsNullOrUndefine(this.global.filteredLocations))
-            this.setGlobal({locations: [], filteredLocations: []});
-
     }
 
     componentDidMount(){
-        this.getLocations();
-
         this.initPreviouslySelectedValue();
+        this.setState({filteredLocations: this.state.locations});
     }
 
     render = () => {
         return (
             <Select
                 closeOnSelect={true}
-                items={this.global.filteredLocations}
+                items={this.state.filteredLocations}
                 itemRenderer={this.renderLocation}
                 filterable={true}
                 query={this.state.searchQuery}
                 onQueryChange={this.searchQueryChange}
                 noResults={<MenuItem disabled={true} text="No Locations" />}>
-                <Button text={this.state.selectedValue == '' ? 'Location' : Utils.limitTextLength(this.state.selectedValue,15)}
+                <Button text={this.state.selectedValue == '' ? 'westus' : this.state.selectedValue}
                     alignText='left' loading={this.state.loading}
                     rightIcon="double-caret-vertical" style={{width: '170px', maxWidth: '170px'}}/>
             </Select>
         );
     }
 
-    getLocations() {
-    
-        var thisComp = this;
-
-        if(Utils.IsNullOrUndefine(this.global.locations))
-
-            this.setState({loading:true});
-
-            this.armService.getRegions(
-                function onSuccess(regions){
-                    thisComp.setState({loading:false});
-                    thisComp.setGlobal({locations: regions, filteredLocations: regions});
-                },
-                function onFailure(error) {
-                   thisComp.setState({loading:false});
-                //    Toaster.create({
-                //         position: Position.TOP,
-                //         autoFocus: false,
-                //         canEscapeKeyClear: true
-                //       }).show({intent: Intent.DANGER, timeout: 6000, message: error});
-                }
-            );
-    }
-
     renderLocation = (location, { handleClick, modifiers }) => {
         return (
             <MenuItem
-                text={location.DisplayName}
-                data-location={location.ProvisionName}
+                text={location}
+                data-location={location}
                 onClick={this.onLocationSelect}
             />
         );
@@ -87,11 +61,10 @@ export default class SelectLocation extends Component {
 
     searchQueryChange = (newQuery) => {
         if(newQuery === "")
-            this.setGlobal({filteredLocations: this.global.locations});
+            this.setState({filteredLocations: this.state.locations.filter(x => true)});
         else
-        {
-            this.setGlobal({filteredLocations: this.global.locations.filter(x => String(x.DisplayName).toLowerCase().startsWith(newQuery))});
-        }
+            this.setState({filteredLocations:  this.state.locations.filter(x => x.includes(newQuery))});
+
     }
 
     onLocationSelect = (sender) => {
@@ -101,13 +74,17 @@ export default class SelectLocation extends Component {
 
         //reset filteredLocations,
         //if not, other components using SelectLocations will see filtered query
-        this.setGlobal({filteredLocations: this.global.locations}); 
+        //this.setGlobal({filteredLocations: this.global.locations});
     }
 
     initPreviouslySelectedValue = () =>{
         var previouslySelectedValue = this.props.SelectedLocation;
 
-        if(!Utils.IsNullOrUndefine(previouslySelectedValue))
+        if(previouslySelectedValue != '') {
             this.setState({selectedValue:previouslySelectedValue});
+            return;
+        } else {
+            this.setState({selectedValue: 'westus'});
+        }
     }
 }

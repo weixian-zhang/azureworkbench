@@ -11,7 +11,7 @@ export default class AzureStackEdge
         this.ProvisionContext = {
             ResourceType: ResourceType.AzureStackEdge(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: ''
         };
         this.CalculatorContext = {

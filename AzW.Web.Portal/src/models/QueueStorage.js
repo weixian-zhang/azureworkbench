@@ -11,7 +11,7 @@ export default class QueueStorage
         this.ProvisionContext = {
             ResourceType: ResourceType.QueueStorage(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
             SkuName: ''
         };

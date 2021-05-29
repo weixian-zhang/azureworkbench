@@ -12,9 +12,9 @@ export default class SynapseAnalytics
             ResourceType: ResourceType.Synapse(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

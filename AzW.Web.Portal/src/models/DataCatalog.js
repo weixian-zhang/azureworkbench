@@ -11,7 +11,7 @@ export default class DataCatalog
         this.ProvisionContext = {
             ResourceType: ResourceType.DataCatalog(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {

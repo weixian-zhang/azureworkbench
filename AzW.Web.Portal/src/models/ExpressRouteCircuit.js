@@ -12,9 +12,9 @@ export default class ExpressRouteCircuit
             ResourceType: ResourceType.ExpressRouteCircuit(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

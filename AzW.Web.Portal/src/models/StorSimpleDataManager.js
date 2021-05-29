@@ -12,9 +12,9 @@ export default class StorSimpleDataManager
             ResourceType: ResourceType.StorSimpleDataManager(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

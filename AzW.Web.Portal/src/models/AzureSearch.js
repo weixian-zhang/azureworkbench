@@ -11,7 +11,7 @@ export default class AzureSearch
         this.ProvisionContext = {
             ResourceType: ResourceType.AzureSearch(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: ''
         };
         this.CalculatorContext = {

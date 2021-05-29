@@ -11,10 +11,12 @@ export default class AzureFirewall
         this.ProvisionContext = {
             ResourceType: ResourceType.Firewall(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
+            PublicIPName: '',
             VNetName: '',
             SubnetName: '',
+            SubnetAddressSpace: ''
         };
         this.CalculatorContext = {
             IsFree: false,

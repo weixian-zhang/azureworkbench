@@ -12,9 +12,9 @@ export default class SignalR
             ResourceType: ResourceType.SignalR(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

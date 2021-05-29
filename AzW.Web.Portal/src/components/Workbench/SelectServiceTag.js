@@ -55,22 +55,25 @@ export default class SelectServiceTag extends Component {
     }
 
     getServiceTags = () => {
-    
+
         var thisComp = this;
 
-        if(Utils.IsNullOrUndefine(this.global.svcTags))
+        if(this.global.cacheServiceTags.length == 0) {
 
             this.setState({loading:true});
 
             this.computeSvc.getServiceTags(
                 function onSuccess(tags){
                     thisComp.setState({loading:false});
-                    thisComp.setGlobal({svcTags: tags, filteredSvcTags: tags});
+                    thisComp.setGlobal({cacheServiceTags: tags, filteredSvcTags: tags});
                 },
                 function onFailure(error) {
                     thisComp.setState({loading:false,errorOnGetTag:true});
                 }
             );
+        } else {
+            this.setState({filteredSvcTags: this.global.cacheServiceTags});
+        }
     }
 
     renderSvcTags = (svcTag, { handleClick, modifiers }) => {
@@ -85,9 +88,9 @@ export default class SelectServiceTag extends Component {
 
     searchQueryChange = (newQuery) => {
         if(newQuery === "")
-            this.setGlobal({filteredSvcTags: this.global.svcTags});
+            this.setGlobal({filteredSvcTags: this.global.cacheServiceTags});
         else
-            this.setGlobal({filteredSvcTags: this.global.svcTags.filter(x => String(x.Name).toLowerCase().includes(newQuery))});
+            this.setGlobal({filteredSvcTags: this.global.cacheServiceTags.filter(x => String(x.Name).toLowerCase().includes(String(newQuery).toLowerCase()))});
     }
 
     onSvcTagSelect = (sender) => {
@@ -97,7 +100,7 @@ export default class SelectServiceTag extends Component {
 
         //reset filteredLocations, if not, other components using SelectLocations will see
         //filtered query
-        this.setGlobal({filteredLocations: this.global.svcTags}); 
+        this.setGlobal({filteredLocations: this.global.svcTags});
     }
 
     initPreviouslySelectedValue = () =>{

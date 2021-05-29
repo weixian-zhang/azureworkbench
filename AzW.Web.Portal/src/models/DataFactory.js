@@ -12,9 +12,9 @@ export default class DataFactory
             ResourceType: ResourceType.DataFactory(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

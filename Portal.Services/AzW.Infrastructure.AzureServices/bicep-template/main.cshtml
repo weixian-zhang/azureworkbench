@@ -1,0 +1,559 @@
+@using AzW.Infrastructure.AzureServices
+@using AzW.Model
+
+
+var lawAppInsightProjectName = uniqueString(resourceGroup().id)
+var azureFirewallSubnetName = 'AzureFirewallSubnet'
+
+@foreach (var resource in @Model.Resources)
+{
+    @* storage *@
+    @if(resource.ResourceType == ResourceType.StorageAccount)
+    {
+
+        var storage = (StorageAccount)resource;
+        string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @storage.Location;
+<text>
+//Storage - @storage.Name
+resource @TemplateFormatHelper.GetBicepRscName(storage.ResourceType, storage.Name) 'Microsoft.Storage/storageAccounts@2021-02-01' = {
+    name: '@storage.Name.ToLowerInvariant()'
+    location: '@location'
+    kind: 'Storage'
+    sku: {
+        name: '@storage.SkuName'
+    }
+}
+</text>
+    } @*if storage*@
+
+    @* VNet *@
+    @if(resource.ResourceType == ResourceType.VNet)
+    {
+         var vnet = (VNet)resource;
+        string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @vnet.Location;
+        int i = 0;
+<text>
+//VNet - @vnet.Name
+resource @TemplateFormatHelper.GetBicepRscName(vnet.ResourceType, vnet.Name) 'Microsoft.Network/virtualNetworks@2020-06-01' = {
+  name: '@vnet.Name'
+  location: '@location'
+  properties: {
+    addressSpace: {
+      addressPrefixes: [
+        '@vnet.AddressSpace'
+      ]
+    }
+  subnets: [
+@foreach(var subnet in vnet.Subnets)
+{
+    @if(@subnet.NSGName != "")
+    {
+    <text>
+    {
+      name: '@subnet.Name'
+      properties: {
+        addressPrefix: '@subnet.AddressSpace'
+        networkSecurityGroup: {
+          id: @(TemplateFormatHelper.GetBicepRscName(ResourceType.NSG, @subnet.NSGName) + ".id")
+        }
+      }
+    }
+    </text>
+    } else
+    {
+    <text>
+    {
+      name: '@subnet.Name'
+      properties: {
+        addressPrefix: '@subnet.AddressSpace'
+      }
+    }
+    </text>
+    }
+  i++;
+}@*foreach*@
+] @*subnet*@
+  } @*properties*@
+} @*resource*@
+</text>
+    } @*if VNet*@
+
+      @* VNet Peering *@
+    @if(resource.ResourceType == ResourceType.VNetPeering)
+    {
+      var vnetpeer = (VNetPeering)resource;
+      string rscName = "local-" + vnetpeer.LocalVNetName + "/" + "remote-" + vnetpeer.RemoteVNetName;
+      string localRemotebicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.VNetPeering, vnetpeer.LocalVNetName + vnetpeer.RemoteVNetName);
+      string remoteLocalbicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.VNetPeering, vnetpeer.RemoteVNetName + vnetpeer.LocalVNetName);
+      string localVNetBicepName = @TemplateFormatHelper.GetBicepRscName(ResourceType.VNetPeering, vnetpeer.LocalVNetName);
+      string remoteVNetBicepName = @TemplateFormatHelper.GetBicepRscName(ResourceType.VNetPeering, vnetpeer.RemoteVNetName);
+
+      string localVNetBicepPropName = localVNetBicepName + ".name";
+      string remoteVNetBicepPropName = remoteVNetBicepName + ".name";
+<text>
+//VNet Peering - @remoteVNetBicepPropName / @localVNetBicepPropName
+resource @remoteLocalbicepName 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2020-06-01' = {
+  name: '${@remoteVNetBicepPropName}/${@remoteVNetBicepPropName}-${@localVNetBicepPropName}'
+  dependsOn: [
+    @localVNetBicepName
+    @remoteVNetBicepName
+  ]
+  properties: {
+    allowVirtualNetworkAccess: true
+    allowForwardedTraffic: false
+    allowGatewayTransit: false
+    useRemoteGateways: false
+    remoteVirtualNetwork: {
+      id: @(localVNetBicepName + ".id")
+    }
+  }
+}
+//VNet Peering - @localVNetBicepPropName / @remoteVNetBicepPropName
+resource @localRemotebicepName 'microsoft.network/virtualNetworks/virtualNetworkPeerings@2020-05-01' = {
+  name: '${@localVNetBicepPropName}/${@localVNetBicepPropName}-${@remoteVNetBicepPropName}'
+  dependsOn: [
+    @localVNetBicepName
+    @remoteVNetBicepName
+  ]
+  properties: {
+    allowVirtualNetworkAccess: true
+    allowForwardedTraffic: false
+    allowGatewayTransit: false
+    useRemoteGateways: false
+    remoteVirtualNetwork: {
+      id: @(remoteVNetBicepName + ".id")
+    }
+  }
+}
+</text>
+    } @* if VNet Peering *@
+
+  @* NSG *@
+  @if(resource.ResourceType == ResourceType.NSG)
+  {
+      var nsg = (NSG)resource;
+      string nsgBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.NSG, nsg.Name);
+      string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @nsg.Location;
+
+<text>
+//NSG - @nsg.Name
+resource @nsgBicepName 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
+name: '@nsg.Name'
+location: '@location'
+@if(nsg.InboundRules.Count() > 0)
+{
+<text>
+properties: {
+securityRules: [
+    @foreach(var rule in nsg.InboundRules)
+    {
+    <text>
+    {
+      name: '@rule.Name'
+      properties: {
+      priority: @rule.Priority
+      sourceAddressPrefix: '@rule.FromAddresses'
+      protocol: '@rule.Protocol'
+      destinationPortRange: '@rule.ToPorts'
+      access: '@(rule.Allow ? "Allow" : "Deny")'
+      direction: 'Inbound'
+      sourcePortRange: '@rule.FromPorts'
+      destinationAddressPrefix: '@rule.ToAddresses'
+      }
+    }
+    </text>
+    } @*foreach inbound*@
+    @foreach(var rule in nsg.OutboundRules)
+    {
+    <text>
+    {
+      name: '@rule.Name'
+      properties: {
+      priority: @rule.Priority
+      sourceAddressPrefix: '@rule.FromAddresses'
+      protocol: '@rule.Protocol'
+      destinationPortRange: '@rule.ToPorts'
+      access: '@(rule.Allow ? "Allow" : "Deny")'
+      direction: 'Outbound'
+      sourcePortRange: '@rule.FromPorts'
+      destinationAddressPrefix: '@rule.ToAddresses'
+      }
+    }
+    </text>
+    } @*foreach outbound*@
+  ]
+} @*properties*@
+</text>
+  }  @* if nsg.InboundRules*@
+}
+  </text>
+  }  @* if nsg *@
+
+  @* VM *@
+  @if(resource.ResourceType == ResourceType.VM)
+  {
+      var vm = (VM)resource;
+      string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @vm.Location;
+      string vnetId = @TemplateFormatHelper.GetBicepRscName(ResourceType.VNet, vm.VNetName) + ".id";
+      string subnetName = vm.SubnetName;
+      string nicBicepName = "nic" + TemplateFormatHelper.GetBicepRscName(ResourceType.NIC, vm.Name);
+
+  <text>
+  @*VM Public IP*@
+  @if(!string.IsNullOrEmpty(vm.PublicIPName))
+  {
+  <text>
+  //Public IP - @vm.PublicIPName
+  resource @TemplateFormatHelper.GetBicepRscName(ResourceType.PublicIp, vm.PublicIPName) 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
+  name: '@vm.PublicIPName'
+  location: '@location'
+  properties: {
+    publicIPAllocationMethod: 'Dynamic'
+    dnsSettings: {
+      domainNameLabel: '@(vm.PublicIPName + "-" + vm.Name + "-" + location)'
+    }
+  }
+}
+  </text>
+  }
+  @*VM NIC*@
+  //VM NIC - @("nic-" + TemplateFormatHelper.GetBicepRscName(vm.ResourceType, vm.Name))
+  resource @nicBicepName 'Microsoft.Network/networkInterfaces@2020-06-01' = {
+  name: '@("nic-" + TemplateFormatHelper.GetBicepRscName(vm.ResourceType, vm.Name))'
+  location: '@location'
+  properties: {
+    ipConfigurations: [
+      {
+        name: 'ipconfig1'
+        properties: {
+          subnet: {
+            id: '@( "${" + vnetId + "}/" + "subnets" + "/" + subnetName)'
+          }
+          privateIPAllocationMethod: 'Dynamic'
+          @if(!string.IsNullOrEmpty(vm.PublicIPName))
+          {
+          <text>
+          publicIPAddress: {
+            id: @(TemplateFormatHelper.GetBicepRscName(ResourceType.PublicIp, vm.PublicIPName) + ".id")
+          }
+          </text>
+          }
+    }
+      }
+    ]
+  }
+}
+  //VM - @vm.Name
+  resource @TemplateFormatHelper.GetBicepRscName(ResourceType.VM, vm.Name) 'Microsoft.Compute/virtualMachines@2020-06-01' = {
+  name: '@vm.Name'
+  location: '@location'
+  properties: {
+    osProfile: {
+      computerName: '@vm.Name'
+      adminUsername: '@vm.AdminUsername'
+      adminPassword: '@vm.AdminPassword'
+      @if(!vm.IsLinux)
+      {
+      <text>
+      windowsConfiguration: {
+        provisionVMAgent: true
+        enableAutomaticUpdates: true
+        patchSettings: {
+          patchMode: 'AutomaticByPlatform'
+        }
+      }
+      </text>
+      }
+      else
+      {
+      <text>
+      linuxConfiguration: {
+        provisionVMAgent: true
+        ssh: {
+          publicKeys: [
+            {
+              path: '/home/@vm.AdminUsername/.ssh/authorized_keys'
+              keyData: '@vm.SSHPublicKey'
+            }
+          ]
+        }
+      }
+      </text>
+      }
+    }
+    hardwareProfile: {
+      vmSize: '@vm.SizeName'
+    }
+    storageProfile: {
+      imageReference: {
+        publisher: '@vm.VMPublisher'
+        offer: '@vm.VMOffer'
+        sku: '@vm.VMSKU'
+        version: 'latest'
+      }
+      osDisk: {
+        createOption: 'FromImage'
+      }
+      dataDisks: []
+    }
+    networkProfile: {
+      networkInterfaces: [
+        {
+          properties: {
+            primary: true
+          }
+          id: @(nicBicepName + ".id")
+        }
+      ]
+    }
+    diagnosticsProfile: {
+      bootDiagnostics: {
+        enabled: false
+      }
+    }
+  }
+}
+  </text>
+  } @* if VM *@
+
+  @* Public IP *@
+  @if(resource.ResourceType == ResourceType.PublicIp)
+  {
+      var pip = (PublicIP)resource;
+      string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @pip.Location;
+
+  <text>
+  //Public IP - @pip.Name
+  resource @TemplateFormatHelper.GetBicepRscName(ResourceType.PublicIp, pip.Name) 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
+  name: '@pip.Name'
+  location: '@location'
+  properties: {
+    publicIPAllocationMethod: '@(pip.Static ? "Static" : "Dynamic")'
+    dnsSettings: {
+      domainNameLabel: '@(pip.Name + Guid.NewGuid())'
+    }
+  }
+}
+  </text>
+  }  @* if VM *@
+
+  @* app service*@
+  @if(resource.ResourceType == ResourceType.AppService) {
+      var appsvc = (WebApp)resource;
+      string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @appsvc.Location;
+      string appsvcSiteBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.AppService, appsvc.Name);
+      string appsvcplanBicepName = "appsvcplan" + TemplateFormatHelper.GetBicepRscName(ResourceType.AppService, appsvc.Name);
+      string appsvcplanRscName = "appsvcplan-" + appsvc.Name;
+      bool appinsightsExist = TemplateResourceHelper.IsResourceExist(@Model.Resources, ResourceType.AppInsights, appsvc.AppInsightsName);
+<text>
+
+//app service plan - @appsvc.Name
+resource @appsvcplanBicepName 'Microsoft.Web/serverfarms@2020-12-01' = {
+  name: '@appsvcplanRscName'
+  location: '@location'
+    sku: {
+        name: '@appsvc.PricingTier'
+        capacity: @appsvc.NumberOfInstance
+    }
+  @if(appsvc.IsLinux)
+  {
+  <text>
+  kind: 'app,linux'
+  properties: {
+    reserved: true
+  }
+</text>
+  }
+}
+
+resource @appsvcSiteBicepName 'Microsoft.Web/sites@2020-06-01' = {
+  name: '@appsvc.Name'
+  location: '@location'
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    serverFarmId: @(appsvcplanBicepName + ".id")
+    httpsOnly: true
+    siteConfig: {
+      minTlsVersion: '1.2'
+      @if(appsvc.IsLinux)
+      {
+      @:linuxFxVersion: 'php|7.4'
+      }
+    }
+  }
+}
+</text>
+
+@*App Service linked AppInsights*@
+@if(!appinsightsExist && !string.IsNullOrEmpty(appsvc.AppInsightsName))
+{
+string aiBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.AppInsights, appsvc.AppInsightsName);
+string lawBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.LogAnalytics, appsvc.LogAnalyticsWorkspaceName);
+
+<text>
+//AppInsights - @appsvc.AppInsightsName
+resource @aiBicepName 'microsoft.insights/components@2020-02-02-preview' = {
+  name: '@appsvc.AppInsightsName'
+  location: '@location'
+  kind: 'string'
+  tags: {
+    displayName: 'AppInsight'
+    ProjectName: toLower('appinsight-${lawAppInsightProjectName}')
+  }
+  properties: {
+    Application_Type: 'web'
+    WorkspaceResourceId: @(lawBicepName + ".id")
+  }
+}
+
+@*LA Workspace linked AppInsights*@
+//LA Workspace - @appsvc.LogAnalyticsWorkspaceName
+resource @lawBicepName 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
+  name: '@appsvc.LogAnalyticsWorkspaceName'
+  location: '@location'
+  tags: {
+    displayName: 'Log Analytics'
+    ProjectName: toLower('law-${lawAppInsightProjectName}')
+  }
+  properties: {
+    sku: {
+      name: 'PerGB2018'
+    }
+    retentionInDays: 90
+  }
+}
+</text>
+} @* if appinsightsExist*@
+
+  } @* if AppService*@
+
+@* app insights*@
+@if(resource.ResourceType == ResourceType.AppInsights) {
+    var appinsights = (AppInsights)resource;
+    string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @appinsights.Location;
+    string aiBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.AppInsights, appinsights.Name);
+    string lawBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.LogAnalytics, appinsights.LogAnalyticsWorkspaceName);
+
+<text>
+//AppInsights - @appinsights.Name
+resource @aiBicepName 'microsoft.insights/components@2020-02-02-preview' = {
+  name: '@appinsights.Name'
+  location: '@location'
+  kind: 'string'
+  tags: {
+    displayName: 'AppInsight'
+    ProjectName: toLower('appinsight-${lawAppInsightProjectName}')
+  }
+  properties: {
+    Application_Type: 'web'
+    WorkspaceResourceId: @(lawBicepName + ".id")
+  }
+}
+
+@*LA Workspace linked AppInsights*@
+//LA Workspace - @appinsights.LogAnalyticsWorkspaceName
+resource @lawBicepName 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
+  name: '@appinsights.LogAnalyticsWorkspaceName'
+  location: '@location'
+  tags: {
+    displayName: 'Log Analytics'
+    ProjectName: toLower('law-${lawAppInsightProjectName}')
+  }
+  properties: {
+    sku: {
+      name: 'PerGB2018'
+    }
+    retentionInDays: 90
+  }
+}
+</text>
+  } @*if  appinsights*@
+
+  @*Log Analytics*@
+  @if(resource.ResourceType == ResourceType.LogAnalytics) {
+    var law = (LogAnalytics)resource;
+    string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @law.Location;
+    string lawBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.LogAnalytics, law.Name);
+
+<text>
+//LA Workspace - @law.Name
+resource @lawBicepName 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
+  name: '@law.Name'
+  location: '@location'
+  tags: {
+    displayName: 'Log Analytics'
+    ProjectName: toLower('law-${lawAppInsightProjectName}')
+  }
+  properties: {
+    sku: {
+      name: 'PerGB2018'
+    }
+    retentionInDays: 90
+  }
+}
+</text>
+  } @*if Log Analytics*@
+
+    @*Firewall*@
+  @if(resource.ResourceType == ResourceType.Firewall) {
+    var azfw = (Firewall)resource;
+    string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @azfw.Location;
+    string azfwBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.Firewall, azfw.Name);
+    string pipBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.PublicIp, azfw.PublicIPName);
+    string subnetBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.Subnet, azfw.SubnetName);
+    string vnetBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.VNet, azfw.VNetName);
+    string vnetBicepPropName = vnetBicepName + ".name";
+<text>
+
+resource @subnetBicepName 'Microsoft.Network/virtualNetworks/subnets@2020-06-01' = {
+  name: '${@vnetBicepPropName}/${azureFirewallSubnetName}'
+  properties: {
+    addressPrefix: '@azfw.SubnetAddressSpace'
+  }
+}
+
+resource @pipBicepName 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
+  name: '@azfw.PublicIPName'
+  location: '@location'
+  sku: {
+    name: 'Standard'
+  }
+  properties: {
+    publicIPAllocationMethod: 'Static'
+    publicIPAddressVersion: 'IPv4'
+  }
+}
+
+resource @azfwBicepName 'Microsoft.Network/azureFirewalls@2020-06-01' = {
+  name: '@azfw.Name'
+  location: '@location'
+  zones: [
+  '1'
+  '2'
+  '3'
+  ]
+  properties: {
+    ipConfigurations: [
+      {
+        name: 'IpConf1'
+        properties: {
+          subnet: {
+            id: @(subnetBicepName + ".id")
+          }
+          publicIPAddress: {
+            id: @(@pipBicepName + ".id")
+          }
+        }
+      }
+    ]
+    applicationRuleCollections: []
+    networkRuleCollections: []
+  }
+}
+</text>
+  }
+
+} @*foreach resources*@
+

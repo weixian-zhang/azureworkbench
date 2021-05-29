@@ -11,7 +11,7 @@ export default class VMWareSolution
         this.ProvisionContext = {
             ResourceType: ResourceType.VMWareSolution(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: ''
         };
         this.CalculatorContext = {

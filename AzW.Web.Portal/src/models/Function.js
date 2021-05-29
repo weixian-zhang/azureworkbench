@@ -11,7 +11,7 @@ export default class Function
         this.ProvisionContext = {
             ResourceType: ResourceType.Function(),
             Name: 'func-web',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
             IsConsumptionPlan: true,
             IsLinux: false,

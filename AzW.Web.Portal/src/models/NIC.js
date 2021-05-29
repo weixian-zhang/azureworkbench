@@ -12,9 +12,9 @@ export default class NIC
             ResourceType: ResourceType.NIC(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: []
         };
         this.CalculatorContext = {

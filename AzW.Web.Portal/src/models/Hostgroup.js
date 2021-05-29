@@ -12,9 +12,9 @@ export default class Hostgroup
             ResourceType: ResourceType.Hostgroup(),
             Deployable: true,
             HighCost: false,
-            
+
             Name: '',
-            Location: '',
+            Location: 'westus',
             Tags: [],
         };
         this.CalculatorContext = {

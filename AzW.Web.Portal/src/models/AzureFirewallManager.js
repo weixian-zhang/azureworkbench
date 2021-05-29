@@ -11,7 +11,7 @@ export default class AzureFirewallManager
         this.ProvisionContext = {
             ResourceType: ResourceType.FirewallManager(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
             VNetName: '',
             SubnetName: '',

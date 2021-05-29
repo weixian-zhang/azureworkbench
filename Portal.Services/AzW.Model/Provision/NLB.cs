@@ -3,9 +3,8 @@ using System.Collections.Generic;
 
 namespace AzW.Model
  {
-     public class NLB
+     public class NLB : Resource
      {
-          public string Name { get; set; }
           public string Location { get; set; }
           public string ResourceGroupName { get; set; }
           public bool IsInternalNLB { get; set; }

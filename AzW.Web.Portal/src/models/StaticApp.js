@@ -11,7 +11,7 @@ export default class StaticApp
         this.ProvisionContext = {
             ResourceType: ResourceType.StaticApp(),
             Name: '',
-            Location: '',
+            Location: 'westus',
             ResourceGroupName: '',
         };
         this.CalculatorContext = {
