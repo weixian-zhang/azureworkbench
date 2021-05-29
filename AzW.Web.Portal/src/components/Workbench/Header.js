@@ -8,8 +8,12 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import LocalMall from '@material-ui/icons/LocalMall';
+import ShopIcon from '@material-ui/icons/Shop';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import FolderIcon from '@material-ui/icons/Folder';
+import BusinessCenterIcon from '@material-ui/icons/BusinessCenter';
+import SaveIcon from '@material-ui/icons/Save';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import HelpIcon from '@material-ui/icons/Help';
 import MenuIcon from '@material-ui/icons/Menu';
 import QuickStart from '@material-ui/icons/FlashOn';
@@ -105,48 +109,95 @@ export default class Header extends Component {
             <section style={this.style.rightToolbar}>
 
               <Tooltip
-                title= "Generate Bicep template"
-                placement="bottom">
+                title= ""
+                placement="bottom"
+                html={(
+                  <div>
+                    <strong>Generate Bicep</strong>
+                  </div>
+                )}>
                 <IconButton color="inherit" aria-label="Edit" onClick={this.generateBicep}>
                     <img src={require('../../assets/IconCloud/azure/nondeployable/azure-bicep.png')} width="25px" height="25px" alt="" />
                 </IconButton>
               </Tooltip>
+
+              <Tooltip
+                title= "Browser Save"
+                placement="bottom"
+                html={(
+                  <div>
+                    <strong>Browser Save</strong>
+                    <div style={{fontSize: "10px", textAlign: "left"}}>
+                      One copy only, new save overrides existing
+                    </div>
+                  </div>
+                )}>
+                  <IconButton color="inherit" aria-label="Edit" onClick={this.saveToLocal}>
+                    <Badge color="secondary" variant="dot" invisible={(!this.global.showSaveBadge) ? true : false}>
+                      <SaveIcon />
+                    </Badge>
+                  </IconButton>
+              </Tooltip>
+
+              <Tooltip
+                title= "Browser Load"
+                placement="bottom"
+                html={(
+                  <div>
+                    <strong>Browser Load</strong>
+                  </div>
+                )}>
+                <IconButton color="inherit" aria-label="Edit" onClick={this.loadDiagramFromrBrowser}>
+                    <GetAppIcon />
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip
+                title= "Save to MySpace"
+                placement="bottom"
+                html={(
+                  <div>
+                    <strong>Save to My Space</strong>
+                  </div>
+                )}>
+                  <IconButton color="inherit" aria-label="Edit" onClick={this.savetoWorkspace}>
+                    <Badge color="secondary" variant="dot" invisible={(!this.global.showSaveBadge) ? true : false}>
+                      <ShopIcon />
+                    </Badge>
+                  </IconButton>
+              </Tooltip>
+
+              <IconButton color="inherit" aria-label="Edit" onClick={this.showWorkspace}>
+                <Tooltip title="My Space" position="bottom"
+                html={(
+                  <div>
+                    <strong>My Space</strong>
+                  </div>
+                )}>
+                  <BusinessCenterIcon />
+                </Tooltip>
+              </IconButton>
 
               <Popover content=
                {
                    <Menu className={Classes.ELEVATION_1}>
                      <MenuItem  text="Share" onClick={this.shareDiagram} />
                      <MenuDivider />
-                      <Badge color="secondary" badgeContent='unsave changes' invisible={(!this.global.showSaveBadge) ? true : false}>
-                        <MenuItem  text="Save to Browser" onClick={this.saveToLocal} />
-                        <MenuItem  text="Save to My Space" onClick={this.savetoWorkspace} />
-                      </Badge>
-                     <MenuDivider />
-                     <MenuItem  text="Load Draft from Browser" onClick={this.loadDiagramFromrBrowser} />
                      <MenuItem  text="Delete Draft from Browser" onClick={this.openDeleteConfirmDialog} />
                      <MenuDivider />
                      <MenuItem  text="Load Auto-Saved Recovery Point" onClick={this.loadAutoSaveRecoveryPoint} />
                      <MenuDivider />
                      <MenuItem  text="Import Workbench file(.azwb)" onClick={this.importWorkbenchFormat} />
                      <MenuDivider />
-                     {/* <MenuItem  text="Export as SVG" onClick={this.exportDiagramAsSVG} /> */}
                      <MenuItem  text="Export as PNG"  onClick={this.exportDiagramAsPNG}/>
                      <MenuItem  text="Export as PDF" onClick={this.exportDiagramAsPDF} />
                      <MenuItem  text="Export as Workbench file(.azwb)" onClick={this.exportWorkbenchFormat} />
                    </Menu>
                } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.HOVER}>
                 <IconButton color="inherit" aria-label="Edit">
-                  <Badge color="secondary" variant="dot" overlap='circle' invisible={(!this.global.showSaveBadge) ? true : false}>
-                    <FolderIcon  />
-                  </Badge>
+                  <FolderIcon  />
                 </IconButton>
               </Popover>
-
-              <IconButton color="inherit" aria-label="Edit" onClick={this.showWorkspace}>
-                <Tooltip title="My Space" position="bottom">
-                  <LocalMall />
-                </Tooltip>
-              </IconButton>
 
               {/* quickstart */}
               <Popover content=
@@ -198,14 +249,38 @@ export default class Header extends Component {
                 </IconButton>
               </Popover>
 
-              <IconButton color="inherit" aria-label="Edit">
-                <Tooltip title="Tutorial" position="bottom">
-                  <HelpIcon onClick= {() => {
+              {/* <Popover content=
+               {
+                   <Menu>
+                     <MenuItem  text="Tutorial" onClick= {() => {
                       window.open("https://github.com/weixian-zhang/Azure-Workbench",'_blank');
-                    }} />
-                </Tooltip>
+                      }} />
+                     <MenuDivider />
+                     <MenuItem  text="Shortcut Keys" onClick= {() => {
+                      window.open("https://github.com/weixian-zhang/Azure-Workbench/blob/master/tutorials/ShortcutKeys.md",'_blank');
+                      }} />
+                   </Menu>
+               } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.HOVER}>
+                <HelpIcon />
+              </Popover> */}
+              <Popover content=
+               {
+                   <Menu>
+                     <MenuItem  text="Tutorial" onClick= {() => {
+                      window.open("https://github.com/weixian-zhang/Azure-Workbench",'_blank');
+                      }} />
+                     <MenuDivider />
+                     <MenuItem  text="Shortcut Keys" onClick= {() => {
+                      window.open("https://github.com/weixian-zhang/Azure-Workbench/blob/master/tutorials/ShortcutKeys.md",'_blank');
+                      }} />
+                   </Menu>
+               } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.HOVER}>
+              <IconButton color="inherit" aria-label="Edit">
+                <HelpIcon />
               </IconButton>
-                <Popover content=
+              </Popover>
+
+              <Popover content=
                {
                    <Menu className={Classes.ELEVATION_1}>
                      {this.state.isLogin== true ? <MenuItem labelElement={<PowerSettingsNewIcon />} text="Logout" onClick={this.logout} /> : ''}
@@ -241,22 +316,18 @@ export default class Header extends Component {
         {/* login */}
         <Overlay isOpen={this.state.loginOptionPopup}  onClose={() => {this.closeLoginOptionPrompt(); }}>
           <Card className='workspace-loginoptionprompt-overlay-box'  elevation={Elevation.TWO}>
-            <Button text="Local or Social Account Login and SignUp" icon="social-media"
-              onClick={() => {
-                this.authService.initB2CMsalApp();
-                this.authService.login();
-                this.closeLoginOptionPrompt();
-              } } />
-            <span className="bp3-navbar-divider"></span>
             <Button text="Azure AD Work Account Login" icon="user"
               onClick={() => {
                 this.authService.initAADWorkAccountMsalApp();
                 this.authService.login();
                 this.closeLoginOptionPrompt();
               } } />
-            <Label style={{color: "darkblue", marginTop: "8px"}}>
-              *Workbench can only deploy to Azure Subscriptions with consent granted Azure AD Work account.
-            </Label>
+            <Button text="Local or Social Account Login and SignUp" icon="social-media"  style={{marginTop:"10px"}}
+              onClick={() => {
+                this.authService.initB2CMsalApp();
+                this.authService.login();
+                this.closeLoginOptionPrompt();
+              } } />
           </Card>
         </Overlay>
       </div>
@@ -266,9 +337,6 @@ export default class Header extends Component {
   login = async () => {
 
     this.setState({loginOptionPopup: true});
-
-    // var userProfile = await this.authService.login();
-    // this.setState({isLogin: true, userProfile:  userProfile});
   }
 
   logout = () => {

@@ -5,7 +5,6 @@ import MainWorkbench from "./components/Workbench"
 import { msalLoginAsync } from "./redux/actions";
 import { Route, BrowserRouter as Router } from 'react-router-dom'
 
-
 class App extends Component {
 
   constructor(props) {

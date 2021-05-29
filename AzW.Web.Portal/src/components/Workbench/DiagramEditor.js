@@ -27,6 +27,7 @@ import WorkspaceDiagramContext from "../../models/services/WorkspaceDiagramConte
 import StatusBarHelper from './StatusBarHelper'
 
 //models
+import ImportExportJob from "../../models/ImportExportJob";
 import VNetPeering from "../../models/VNetPeering";
 import CommunicationService from "../../models/CommunicationService";
 import DeviceProvisioningService from "../../models/DeviceProvisioningService";
@@ -171,6 +172,8 @@ import ElasticJobAgent from "../../models/ElasticJobAgent";
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
 
 //property panels
+import ImportExportJobPropPanel from './PropPanel/ImportExportJobPropPanel';
+import AzureFirewallManagerPropPanel from './PropPanel/AzureFirewallManagerPropPanel';
 import VNetPeeringPropPanel from './PropPanel/VNetPeeringPropPanel';
 import DeviceProvisioningServicePropPanel from './PropPanel/DeviceProvisioningServicePropPanel';
 import DeviceUpdateForIoTHubPropPanel from './PropPanel/DeviceUpdateForIoTHubPropPanel';
@@ -390,7 +393,8 @@ import AzureIcons from './Helpers/AzureIcons';
   render() {
     return (
       <div id="diagramEditor" className="diagramEditor">
-
+        <ImportExportJobPropPanel ref={this.importexportjobPropPanel} />
+        <AzureFirewallManagerPropPanel ref={this.azfwmanagerPropPanel} />
         <VNetPeeringPropPanel ref={this.vnetpeeringPropPanel} />
         <CommunicationServicePropPanel ref={this.communicationservicePropPanel} />
         <DeviceProvisioningServicePropPanel ref={this.deviceprovisioningservicePropPanel} />
@@ -556,7 +560,8 @@ import AzureIcons from './Helpers/AzureIcons';
   }
 
   initRef() {
-
+    this.importexportjobPropPanel =  React.createRef();
+    this.azfwmanagerPropPanel =  React.createRef();
     this.vnetpeeringPropPanel =  React.createRef();
     this.communicationservicePropPanel = React.createRef();
     this.deviceprovisioningservicePropPanel = React.createRef();
@@ -1576,7 +1581,7 @@ initContextMenu() {
             click: function(e, obj) {
               var selectedNode = thisComp.diagram.selection.first();
 
-              if(Utils.isResourceTypeVIR(Utils.AzContext(selectedNode).ResourceType)) {
+              if(Utils.isSubnet(selectedNode) || Utils.isResourceTypeVIR(Utils.AzContext(selectedNode).ResourceType)) {
                 thisComp.handleDuplicateNode(selectedNode);
               } else {
                 var newLoc = new go.Point(selectedNode.actualBounds.x, selectedNode.actualBounds.y + 6 )
@@ -2324,7 +2329,7 @@ createVIROntoSubnet(dropContext) {
     var nodeKey =  '';
     var subnet = selectedNode;
     var text = '';
-    var virLoc = new go.Point(subnet.location.x + 60, subnet.location.y +40);
+    var virLoc = new go.Point(subnet.location.x + Utils.randomNum(50), subnet.location.y + Utils.randomNum(10));
 
     switch(dropContext.resourceType) {
 
@@ -2782,18 +2787,32 @@ handleDuplicateNode(selectedNode) {
     return;
   }
 
-  var newLoc = go.Point.stringify(new go.Point(selectedNode.actualBounds.x + 6, selectedNode.actualBounds.y));
-  var newAzContext = Utils.deepClone(selectedNode.data.azcontext)
-  newAzContext.Name = azcontext.Name + "01";
+  var newLoc =
+    go.Point.stringify(
+        new go.Point(selectedNode.actualBounds.x + Utils.randomNum(50), selectedNode.actualBounds.y));
 
-  if(Utils.IsVM(selectedNode)) {
+  if(Utils.isSubnet(selectedNode)) {
 
-    this.diagram.model.addNodeData
-      ({key: 'vm-' + this.shortUID.randomUUID(6),
-          text: newAzContext.Name,
-          azcontext: newAzContext,
-          group: selectedNode.data.group, // subnet.key,
-        source: require('../../assets/IconCloud/azure/compute/10021-icon-Virtual Machine-Compute.svg'),
+     var vnetKey = selectedNode.data.group;
+
+     var newSubnetKey = Utils.uniqueId('subnet');
+
+    this.createSubnet(vnetKey, newSubnetKey);
+
+    var thisComp = this;
+
+    var childVIRs = selectedNode.memberParts;
+    childVIRs.each(function(part) {
+
+    var azcontext = Utils.deepClone(part.data.azcontext);
+    var text = Utils.getResourceType(part);
+
+    thisComp.diagram.model.addNodeData
+    ({key: thisComp.shortUID.randomUUID(6),
+        text: text,
+        azcontext: azcontext,
+        group: newSubnetKey,
+        source: part.data.source,
         loc: newLoc,
         size: go.Size.stringify(new go.Size(40,40)),
         zOrder: 50,
@@ -2801,39 +2820,22 @@ handleDuplicateNode(selectedNode) {
         stroke: 'black',
         nodetype: GoNodeType.ImageShape(),
         category: 'virresource'});
-
-  } else if(Utils.isPrivateEndpoint(selectedNode)) {
-
+    });
+  } else {
     this.diagram.model.addNodeData
-      ({key: 'vm-' + this.shortUID.randomUUID(6),
-          text: newAzContext.Name,
-          azcontext: newAzContext,
-          group: selectedNode.data.group, // subnet.key,
-        source: require('../../assets/IconCloud/azure/network/02579-icon-Private Endpoints-menu.svg'),
-        loc: newLoc,
-        size: go.Size.stringify(new go.Size(40,40)),
-        zOrder: 50,
-        font: '14px Segoe UI',
-        stroke: 'black',
-        nodetype: GoNodeType.ImageShape(),
-        category: 'virresource'});
-
-  } else if(Utils.isNLB(selectedNode)) {
-
-    this.diagram.model.addNodeData
-      ({key: 'vm-' + this.shortUID.randomUUID(6),
-          text: newAzContext.Name,
-          azcontext: newAzContext,
-          group: selectedNode.data.group, // subnet.key,
-        source: require('../../assets/IconCloud/azure/network/10062-icon-Load Balancers-Networking.svg'),
-        loc: newLoc,
-        size: go.Size.stringify(new go.Size(40,40)),
-        zOrder: 50,
-        font: '14px Segoe UI',
-        stroke: 'black',
-        nodetype: GoNodeType.ImageShape(),
-        category: 'virresource'});
-  }
+        ({key: this.shortUID.randomUUID(6),
+            text: Utils.getResourceType(selectedNode),
+            azcontext: Utils.deepClone(selectedNode.data.azcontext),
+            group: selectedNode.data.group,
+            source: selectedNode.data.source,
+            loc: newLoc,
+            size: go.Size.stringify(new go.Size(40,40)),
+            zOrder: 50,
+            font: '14px Segoe UI',
+            stroke: 'black',
+            nodetype: GoNodeType.ImageShape(),
+            category: 'virresource'});
+    }
 }
 
 addKeyPressShortcuts() {
@@ -4485,11 +4487,21 @@ loadPastedImageFromBrowserClipboard(src, callback){
     break;
 
       //*non VIR
+      case ResourceType.ImportExportJob():
+        var rsc = new ImportExportJob();
+        rsc.ProvisionContext.ResourceType = ResourceType.ImportExportJob();
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/data_storage/10100-icon-Import Export Jobs-Storage.svg'),
+          label: 'import/export job', x: dropContext.x, y: dropContext.y,
+          azcontext: rsc
+        });
+      break;
+
       case ResourceType.VNetPeering():
         var rsc = new VNetPeering();
         rsc.ProvisionContext.ResourceType = ResourceType.VNetPeering();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/00973-icon-Peering Service prefix-menu.svg'),
+          source: require('../../assets/IconCloud/azure/network/02743-icon-Peerings-menu.svg'),
           label: 'vnet peer', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -5429,6 +5441,13 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
     switch (userObject.GraphModel.ResourceType) {
 
+      case ResourceType.ImportExportJob():
+        this.importexportjobPropPanel.current.show(userObject, function(savedUserObject){
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+      break;
+
+
   case ResourceType.VNetPeering():
     this.vnetpeeringPropPanel.current.show(userObject, this.diagram, function(savedUserObject){
         onContextSaveCallback(Utils.deepClone(savedUserObject));
@@ -5839,6 +5858,11 @@ loadPastedImageFromBrowserClipboard(src, callback){
            onContextSaveCallback(Utils.deepClone(savedUserObject));
         });
         break;
+        case ResourceType.FirewallManager():
+          this.azfwmanagerPropPanel.current.show(userObject, function(savedUserObject){
+             onContextSaveCallback(Utils.deepClone(savedUserObject));
+          });
+          break;
       case ResourceType.AppConfig():
         this.appconfigPropPanel.current.show(userObject, function(savedUserObject){
            onContextSaveCallback(Utils.deepClone(savedUserObject));

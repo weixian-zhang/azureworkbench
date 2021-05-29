@@ -3,7 +3,7 @@ import NSG from '../../../models/NSG';
 import NSGRule from '../../../models/NSGRule';
 import SelectLocation from '../SelectLocation';
 import SelectServiceTag from '../SelectServiceTag';
-import SelectResourceGroup from '../SelectResourceGroup';
+import Utils from '../Helpers/Utils';
 import ShortUniqueId from 'short-unique-id';
 import {Select } from "@blueprintjs/select";
 import { Drawer, NumericInput, InputGroup, Button, MenuItem, Icon } from "@blueprintjs/core";
@@ -110,7 +110,10 @@ export default class NSGPropPanel extends Component {
                   }
                 }/>
               </Grid>
-          </Grid>
+            </Grid>
+            <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '5px'}}>
+              <label style={{color: "blue"}}>*Rule names has to be unique in both Inbound and Outbound</label>
+            </Grid>
         </div>
       );
   }
@@ -156,6 +159,7 @@ export default class NSGPropPanel extends Component {
                               <TableCell size='medium'>Dest Port(s)</TableCell>
                               <TableCell size='medium'>Dest IPs/Tags</TableCell>
                               <TableCell size='small'>Allow/Deny</TableCell>
+                              <TableCell size='small'></TableCell>
                               <TableCell size='small'></TableCell>
                           </TableRow>
                         </TableHead>
@@ -313,6 +317,11 @@ export default class NSGPropPanel extends Component {
                                     </Select>
                                   </TableCell>
                                   <TableCell>
+                                    <Icon icon='duplicate' data-rowid={rule.UITableRowID}
+                                      onClick={this.copyInboundRuleClick}
+                                      style={{cursor:'pointer'}}/>
+                                  </TableCell>
+                                  <TableCell>
                                     <Icon icon='delete' data-rowid={rule.UITableRowID}
                                       onClick={this.deleteInboundRuleClick}
                                       style={{cursor:'pointer'}}/>
@@ -422,7 +431,7 @@ export default class NSGPropPanel extends Component {
                                       <TableCell>
                                         <TableCell padding='none'>
                                           {
-                                              (!rule.FromAddressIsTag)//(!this.isOutboundBadgeFromAddrTrue(rule.UITableRowID))
+                                              (!rule.FromAddressIsTag)
                                               ?
                                                 <InputGroup
                                                 value={rule.FromAddresses}
@@ -513,6 +522,11 @@ export default class NSGPropPanel extends Component {
                                                 rightIcon="double-caret-vertical"
                                                 fill={true} />
                                         </Select>
+                                      </TableCell>
+                                      <TableCell>
+                                        <Icon icon='duplicate' data-rowid={rule.UITableRowID}
+                                          onClick={this.copyOutboundRuleClick}
+                                          style={{cursor:'pointer'}}/>
                                       </TableCell>
                                       <TableCell>
                                         <Icon icon='delete' data-rowid={rule.UITableRowID}
@@ -650,6 +664,62 @@ addOutboundToAddrTogglingState = (rowId, value) => {
     this.setState({toggleToAddrOutboundRows: outbrToRowToggle});
 }
 
+copyInboundRuleClick = (sender) => {
+  var tableRowID = sender.currentTarget.dataset.rowid;
+
+  var userObj = this.state.userObject;
+
+  var rule = null;
+
+  for (var i = 0; i < userObj.ProvisionContext.InboundRules.length; i++) {
+    var r = userObj.ProvisionContext.InboundRules[i];
+    if(r.UITableRowID == tableRowID) {
+      rule = Utils.deepClone(r);
+      break;
+    }
+  }
+
+  //set new prop values
+  rule.UITableRowID = this.shortUID.randomUUID(6);
+  rule.Priority += 20;
+
+  if(rule != null) {
+      var lastIndex = userObj.ProvisionContext.InboundRules.length - 1;
+
+      userObj.ProvisionContext.InboundRules.splice(lastIndex + 1, 0, rule);
+
+      this.setState({userObject: userObj});
+  }
+}
+
+copyOutboundRuleClick = (sender) => {
+  var tableRowID = sender.currentTarget.dataset.rowid;
+
+  var userObj = this.state.userObject;
+
+  var rule = null;
+
+  for (var i = 0; i < userObj.ProvisionContext.OutboundRules.length; i++) {
+    var r = userObj.ProvisionContext.OutboundRules[i];
+    if(r.UITableRowID == tableRowID) {
+      rule = Utils.deepClone(r);
+      break;
+    }
+  }
+
+  //set new prop values
+  rule.UITableRowID = this.shortUID.randomUUID(6);
+  rule.Priority += 20;
+
+  if(rule != null) {
+      var lastIndex = userObj.ProvisionContext.OutboundRules.length - 1;
+
+      userObj.ProvisionContext.OutboundRules.splice(lastIndex + 1, 0, rule);
+
+      this.setState({userObject: userObj});
+  }
+}
+
   deleteInboundRuleClick = (sender) => {
     var tableRowID = sender.currentTarget.dataset.rowid;
 
@@ -657,7 +727,8 @@ addOutboundToAddrTogglingState = (rowId, value) => {
 
     var ruleToDelIndex =
       userObj.ProvisionContext.InboundRules.findIndex(x => x.UITableRowID == tableRowID);
-      userObj.ProvisionContext.InboundRules.splice(ruleToDelIndex, 1);
+
+    userObj.ProvisionContext.InboundRules.splice(ruleToDelIndex, 1);
     this.setState({userObject: userObj});
 
     var inbrFromRowToggle = this.state.toggleFromAddrInboundRows;

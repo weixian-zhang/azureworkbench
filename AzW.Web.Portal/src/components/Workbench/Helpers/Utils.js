@@ -1,5 +1,7 @@
 import ResourceType from '../../../models/ResourceType';
-import SubnetsCidrs from '../../../models/services/SubnetsCidrs';
+import NSG from '../../../models/NSG';
+import RouteTable from '../../../models/RouteTable';
+import ServiceEndpoint from '../../../models/ServiceEndpoint';
 import ShortUniqueId from 'short-unique-id';
 import * as go from 'gojs';
 
@@ -24,7 +26,7 @@ export default class Utils
 
     static isResourceSubnetSharable(resourceType) {
         var VIR = [ResourceType.VM(), ResourceType.VMSS(),
-            ResourceType.PrivateEndpoint(), ResourceType.NLB()];
+            ResourceType.PrivateEndpoint(), ResourceType.NLB(), ResourceType.Subnet()];
 
         for(var x of VIR) {
             if(x == resourceType)
@@ -264,6 +266,15 @@ export default class Utils
         return obj !== undefined && obj !== null && obj.constructor == Object;
     }
 
+    static getResourceType(node)
+    {
+        if(!Utils.isAzContextExist(node))
+        return '';
+
+        var azcontext = Utils.AzContext(node);
+        return azcontext.ResourceType;
+    }
+
     static IsVM(node) {
         if(!Utils.isAzContextExist(node))
         return false;
@@ -288,6 +299,27 @@ export default class Utils
             return true;
         else
             return false;
+    }
+
+    static NSGAzContext(part) {
+        if(part.data.nsgazcontext == null)
+            return NSG();
+        else
+            return part.data.nsgazcontext;
+    }
+
+    static UDRAzContext(part) {
+        if(part.data.udrazcontext == null)
+            return RouteTable();
+        else
+            return part.data.udrazcontext;
+    }
+
+    static ServiceEndpointAzContext(part) {
+        if(part.data.svcendazcontext == null)
+            return new ServiceEndpoint();
+        else
+            return part.data.svcendazcontext;
     }
 
     static isNSG(part) {
@@ -486,6 +518,11 @@ export default class Utils
         else
             return false;
     }
+
+    static randomNum(max) {
+        return Math.floor(Math.random() * max);
+    }
+
 
     // static vnetGetSubnetsAndCidrs = (graph, vnetCell, subnetName) => {
     //     if(Utils.IsNullOrUndefine(vnetCell))

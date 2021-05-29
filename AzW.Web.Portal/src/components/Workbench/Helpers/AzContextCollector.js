@@ -28,14 +28,13 @@ export default class AzContextCollector
                 if(this.getVNetContext(node, provisionContexts))
                     continue;
 
-                //ordering is important!
-                if(this.getVNetPeering(node, provisionContexts))
-                    continue;
-
                 if(this.getVMContexts(node, provisionContexts))
                     continue;
 
                 if(this.getVMSSContexts(node, provisionContexts))
+                    continue;
+
+                if(this.getVNetPeering(node, provisionContexts))
                     continue;
 
                 if(this.getInternalNLBContexts(node, provisionContexts))
@@ -220,11 +219,15 @@ export default class AzContextCollector
     getVNetPeering = (node, provisionContexts) => {
         if(Utils.isVNetPeering(node))
         {
-            var vnet = node;
-
             var azcontext = Utils.AzContext(node);
 
+            if(azcontext.LocalVNetName == '' || azcontext.RemoteVNetName == '') {
+                   return true;
+            }
+
             provisionContexts.push(azcontext);
+
+            return true;
         }
     }
 
@@ -366,6 +369,8 @@ export default class AzContextCollector
 
             azfwProContext.SubnetName = this.getResourceSubnetName(azfw);
 
+            azfwProContext.SubnetAddressSpace = this.getResourceSubnetIPAddressSpace(azfw);
+
             provisionContexts.push(azfwProContext);
 
             return true;
@@ -491,6 +496,14 @@ export default class AzContextCollector
         var subnet = node.containingGroup;
         if(Utils.isSubnet(subnet))
             return subnet.data.azcontext.ProvisionContext.Name;
+        else
+            return "";
+    }
+
+    getResourceSubnetIPAddressSpace(node) {
+        var subnet = node.containingGroup;
+        if(Utils.isSubnet(subnet))
+            return subnet.data.azcontext.ProvisionContext.AddressSpace;
         else
             return "";
     }

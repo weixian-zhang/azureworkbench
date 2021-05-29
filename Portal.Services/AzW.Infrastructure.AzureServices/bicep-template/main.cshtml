@@ -3,6 +3,7 @@
 
 
 var lawAppInsightProjectName = uniqueString(resourceGroup().id)
+var azureFirewallSubnetName = 'AzureFirewallSubnet'
 
 @foreach (var resource in @Model.Resources)
 {
@@ -30,6 +31,7 @@ resource @TemplateFormatHelper.GetBicepRscName(storage.ResourceType, storage.Nam
     {
          var vnet = (VNet)resource;
         string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @vnet.Location;
+        int i = 0;
 <text>
 //VNet - @vnet.Name
 resource @TemplateFormatHelper.GetBicepRscName(vnet.ResourceType, vnet.Name) 'Microsoft.Network/virtualNetworks@2020-06-01' = {
@@ -41,34 +43,36 @@ resource @TemplateFormatHelper.GetBicepRscName(vnet.ResourceType, vnet.Name) 'Mi
         '@vnet.AddressSpace'
       ]
     }
-    subnets: [
-          @{int i = 0;}
-        @foreach(var subnet in vnet.Subnets)
-        {
+  subnets: [
+@foreach(var subnet in vnet.Subnets)
+{
+    @if(@subnet.NSGName != "")
+    {
     <text>
     {
-        name: '@subnet.Name'
-        @if(@subnet.NSGName != "")
-        {
-        <text>
-        properties: {
-          addressPrefix: '@subnet.AddressSpace'
-          networkSecurityGroup: {
-            id: @(TemplateFormatHelper.GetBicepRscName(ResourceType.NSG, @subnet.NSGName) + ".id")
-          }
+      name: '@subnet.Name'
+      properties: {
+        addressPrefix: '@subnet.AddressSpace'
+        networkSecurityGroup: {
+          id: @(TemplateFormatHelper.GetBicepRscName(ResourceType.NSG, @subnet.NSGName) + ".id")
         }
-        </text>
-        } else
-        {
-        <text>
-        properties: {
-          addressPrefix: '@subnet.AddressSpace'
-        }
-        </text>
-        }
-}</text> i++;
+      }
+    }
+    </text>
+    } else
+    {
+    <text>
+    {
+      name: '@subnet.Name'
+      properties: {
+        addressPrefix: '@subnet.AddressSpace'
+      }
+    }
+    </text>
+    }
+  i++;
 }@*foreach*@
-    ] @*subnet*@
+] @*subnet*@
   } @*properties*@
 } @*resource*@
 </text>
@@ -78,18 +82,46 @@ resource @TemplateFormatHelper.GetBicepRscName(vnet.ResourceType, vnet.Name) 'Mi
     @if(resource.ResourceType == ResourceType.VNetPeering)
     {
       var vnetpeer = (VNetPeering)resource;
-      string bicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.VNetPeering, vnetpeer.LocalVNetName + vnetpeer.RemoteVNetName + vnetpeer.RemoteVnetRGName);
+      string rscName = "local-" + vnetpeer.LocalVNetName + "/" + "remote-" + vnetpeer.RemoteVNetName;
+      string localRemotebicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.VNetPeering, vnetpeer.LocalVNetName + vnetpeer.RemoteVNetName);
+      string remoteLocalbicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.VNetPeering, vnetpeer.RemoteVNetName + vnetpeer.LocalVNetName);
+      string localVNetBicepName = @TemplateFormatHelper.GetBicepRscName(ResourceType.VNetPeering, vnetpeer.LocalVNetName);
+      string remoteVNetBicepName = @TemplateFormatHelper.GetBicepRscName(ResourceType.VNetPeering, vnetpeer.RemoteVNetName);
+
+      string localVNetBicepPropName = localVNetBicepName + ".name";
+      string remoteVNetBicepPropName = remoteVNetBicepName + ".name";
 <text>
-//VNet Peering - @vnetpeer.LocalVNetName / @vnetpeer.RemoteVNetName
-resource @bicepName 'microsoft.network/virtualNetworks/virtualNetworkPeerings@2020-05-01' = {
-  name: '@vnetpeer.LocalVNetName/peering-to-remote-vnet'
+//VNet Peering - @remoteVNetBicepPropName / @localVNetBicepPropName
+resource @remoteLocalbicepName 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2020-06-01' = {
+  name: '${@remoteVNetBicepPropName}/${@remoteVNetBicepPropName}-${@localVNetBicepPropName}'
+  dependsOn: [
+    @localVNetBicepName
+    @remoteVNetBicepName
+  ]
   properties: {
     allowVirtualNetworkAccess: true
     allowForwardedTraffic: false
     allowGatewayTransit: false
     useRemoteGateways: false
     remoteVirtualNetwork: {
-      id: resourceId(@vnetpeer.RemoteVnetRGName, 'Microsoft.Network/virtualNetworks', @vnetpeer.RemoteVNetName)
+      id: @(localVNetBicepName + ".id")
+    }
+  }
+}
+//VNet Peering - @localVNetBicepPropName / @remoteVNetBicepPropName
+resource @localRemotebicepName 'microsoft.network/virtualNetworks/virtualNetworkPeerings@2020-05-01' = {
+  name: '${@localVNetBicepPropName}/${@localVNetBicepPropName}-${@remoteVNetBicepPropName}'
+  dependsOn: [
+    @localVNetBicepName
+    @remoteVNetBicepName
+  ]
+  properties: {
+    allowVirtualNetworkAccess: true
+    allowForwardedTraffic: false
+    allowGatewayTransit: false
+    useRemoteGateways: false
+    remoteVirtualNetwork: {
+      id: @(remoteVNetBicepName + ".id")
     }
   }
 }
@@ -100,11 +132,12 @@ resource @bicepName 'microsoft.network/virtualNetworks/virtualNetworkPeerings@20
   @if(resource.ResourceType == ResourceType.NSG)
   {
       var nsg = (NSG)resource;
+      string nsgBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.NSG, nsg.Name);
       string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @nsg.Location;
 
 <text>
 //NSG - @nsg.Name
-resource @TemplateFormatHelper.GetBicepRscName(nsg.ResourceType, nsg.Name) 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
+resource @nsgBicepName 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
 name: '@nsg.Name'
 location: '@location'
 @if(nsg.InboundRules.Count() > 0)
@@ -462,6 +495,65 @@ resource @lawBicepName 'Microsoft.OperationalInsights/workspaces@2020-03-01-prev
 }
 </text>
   } @*if Log Analytics*@
+
+    @*Firewall*@
+  @if(resource.ResourceType == ResourceType.Firewall) {
+    var azfw = (Firewall)resource;
+    string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @azfw.Location;
+    string azfwBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.Firewall, azfw.Name);
+    string pipBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.PublicIp, azfw.PublicIPName);
+    string subnetBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.Subnet, azfw.SubnetName);
+    string vnetBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.VNet, azfw.VNetName);
+    string vnetBicepPropName = vnetBicepName + ".name";
+<text>
+
+resource @subnetBicepName 'Microsoft.Network/virtualNetworks/subnets@2020-06-01' = {
+  name: '${@vnetBicepPropName}/${azureFirewallSubnetName}'
+  properties: {
+    addressPrefix: '@azfw.SubnetAddressSpace'
+  }
+}
+
+resource @pipBicepName 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
+  name: '@azfw.PublicIPName'
+  location: '@location'
+  sku: {
+    name: 'Standard'
+  }
+  properties: {
+    publicIPAllocationMethod: 'Static'
+    publicIPAddressVersion: 'IPv4'
+  }
+}
+
+resource @azfwBicepName 'Microsoft.Network/azureFirewalls@2020-06-01' = {
+  name: '@azfw.Name'
+  location: '@location'
+  zones: [
+  '1'
+  '2'
+  '3'
+  ]
+  properties: {
+    ipConfigurations: [
+      {
+        name: 'IpConf1'
+        properties: {
+          subnet: {
+            id: @(subnetBicepName + ".id")
+          }
+          publicIPAddress: {
+            id: @(@pipBicepName + ".id")
+          }
+        }
+      }
+    ]
+    applicationRuleCollections: []
+    networkRuleCollections: []
+  }
+}
+</text>
+  }
 
 } @*foreach resources*@
 

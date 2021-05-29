@@ -12,9 +12,7 @@ export default class SelectVMSize extends Component {
         super(props);
 
         this.state = {
-            vmSizes: [],
             filteredVMSizes: [],
-            //searchQuery: '',
             inputValue: '',
             isLoading: false,
             selectedValue: '',
@@ -53,10 +51,10 @@ export default class SelectVMSize extends Component {
 
     searchQueryChange = (newQuery) => {
         if(newQuery === "")
-            this.setState({filteredVMSizes: this.state.vmSizes});
+            this.setState({filteredVMSizes: this.global.cacheVMSizes});
         else
         {
-            this.setState({filteredVMSizes: this.state.vmSizes.filter(x => String(x.Name).toLowerCase().includes(newQuery))});
+            this.setState({filteredVMSizes: this.global.cacheVMSizes.filter(x => String(x.QueryName).toLowerCase().startsWith(newQuery))});
         }
     }
 
@@ -69,19 +67,24 @@ export default class SelectVMSize extends Component {
 
     getVMSizes = () => {
 
-        this.setState({isLoading: true});
-        var thisComp = this;
+        if(this.global.cacheVMSizes.length == 0) {
 
-        this.computeSvc.getVMSizes(
-            function onSuccess(vmSizes) {
-                thisComp.setState({isLoading: false});
+            this.setState({isLoading: true});
+            var thisComp = this;
 
-                thisComp.setState({vmSizes: vmSizes, filteredVMSizes: vmSizes});
-            },
-            function onFailure() {
-                thisComp.setState({isLoading: false});
-            }
-        );
+            this.computeSvc.getVMSizes(
+                function onSuccess(vmSizes) {
+                    thisComp.setState({isLoading: false});
+                    thisComp.setGlobal({cacheVMSizes: vmSizes});
+                    thisComp.setState({filteredVMSizes: vmSizes});
+                },
+                function onFailure() {
+                    thisComp.setState({isLoading: false});
+                }
+            );
+        } else {
+            this.setState({filteredVMSizes: this.global.cacheVMSizes});
+        }
     }
 
     renderSizes = (size, {handleClick}) => {
@@ -91,24 +94,24 @@ export default class SelectVMSize extends Component {
                     {size.Name}
                 </Typography>
                 <Typography style={{fontSize:11}}>
-                    MemoryInGB: { Math.ceil(size.MemoryInMB / 1000) }                
+                    MemoryInGB: { Math.ceil(size.MemoryInMB / 1000) }
                 </Typography>
                 <Typography style={{fontSize:11}}>
-                    NoOfCores: {size.NumberOfCores}                
+                    NoOfCores: {size.NumberOfCores}
                 </Typography>
                 <Typography style={{fontSize:11}}>
-                    MaxNoOfDataDisks: {size.MaxNoOfDataDisks}                
+                    MaxNoOfDataDisks: {size.MaxNoOfDataDisks}
                 </Typography>
                 <MenuDivider />
             </div>
-            
+
         );
     }
 
     onSizeSelected = (item, event) => {
 
         var sizeName = item.currentTarget.dataset.sizename;
-        
+
         this.setState({selectedValue: sizeName});
 
         this.props.onValueChange(sizeName);

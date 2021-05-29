@@ -14,6 +14,8 @@ namespace AzW.Infrastructure.Data
 {
     public class CacheRepository : ICacheRepository
     {
+        const int CacheItemExpiryDays = 30;
+
         public CacheRepository
             (string redisConnString, string redisHost, string redisPassword)
         {
@@ -53,17 +55,24 @@ namespace AzW.Infrastructure.Data
 
         public async Task SetServiceTagAsync(string key, ServiceTag value)
         {
-            await _redis.AddAsync<ServiceTag>(key, value, TimeSpan.FromDays(30));
+            await _redis.AddAsync<ServiceTag>(key, value, TimeSpan.FromDays(CacheItemExpiryDays));
         }
 
         public async Task SetVMImageAsync(string key, VMImage value)
         {
-            await _redis.AddAsync<VMImage>(key, value, TimeSpan.FromDays(30));
+            await _redis.AddAsync<VMImage>(key, value, TimeSpan.FromDays(CacheItemExpiryDays));
         }
 
         public async Task SetVMSizeAsync(string key, VMSize value)
         {
-            await _redis.AddAsync<VMSize>(key, value, TimeSpan.FromDays(31));
+            await _redis.AddAsync<VMSize>(key, value, TimeSpan.FromDays(CacheItemExpiryDays));
+        }
+
+        public async Task<IEnumerable<VMImage>> GetAllVMImagesAsync()
+        {
+            IEnumerable<string> keys = await _redis.SearchKeysAsync("vmimage*");
+            var vmImagesKV = await _redis.GetAllAsync<VMImage>(keys);
+            return vmImagesKV.Values;
         }
 
         public async Task<IEnumerable<VMImage>> SearchVMImagesAsync(string skuNamePattern)
@@ -133,6 +142,8 @@ namespace AzW.Infrastructure.Data
 
             _redis = cache.Db0;
         }
+
+
 
         private string _redisHost;
         private string _redisConnString;

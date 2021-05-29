@@ -1,5 +1,6 @@
 export default class ResourceType
 {
+    static ImportExportJob() {return 'importexportjob'; }
     static ServiceEndpoint() {return 'serviceendpoint'; }
     static WindowsVM() {return 'vmWindows'; }
     static LinuxVM() {return 'vmLinux'; }

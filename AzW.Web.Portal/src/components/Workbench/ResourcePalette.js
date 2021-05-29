@@ -1860,7 +1860,7 @@ export default class ResourcePalette extends Component {
               Name: 'virtual network peering vnet',
               Tooltip: 'Virtual Network Peering',
               azInfo: ['Bicep support'],
-              Image: require('../../assets/IconCloud/azure/network/00973-icon-Peering Service prefix-menu.svg'),
+              Image: require('../../assets/IconCloud/azure/network/02743-icon-Peerings-menu.svg'),
               Provisionable: true,
               IsPng: false,
               IsVisible:true,
@@ -1999,7 +1999,7 @@ export default class ResourcePalette extends Component {
               Tooltip: 'Azure Firewall',
               azInfo: [],
               Image: require('../../assets/IconCloud/azure/network/10084-icon-Firewalls-Networking.svg'),
-              Provisionable: false,
+              Provisionable: true,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.Firewall()
@@ -2359,7 +2359,8 @@ export default class ResourcePalette extends Component {
               Image: require('../../assets/IconCloud/azure/data_storage/10100-icon-Import Export Jobs-Storage.svg'),
               Provisionable: false,
               IsPng: false,
-              IsVisible:true
+              IsVisible:true,
+              resourceType: ResourceType.ImportExportJob()
             },
             {
               Name: 'data box edge',

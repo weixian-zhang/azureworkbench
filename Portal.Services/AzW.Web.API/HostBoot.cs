@@ -95,6 +95,7 @@ namespace AzW.Web.API
                 var vmSize = new VMSize()
                 {
                     Name = size.Name,
+                    QueryName = size.QueryName,
                     MemoryInMB = size.MemoryInMB,
                     NumberOfCores =  size.NumberOfCores,
                     MaxNoOfDataDisks = size.MaxNoOfDataDisks

@@ -30,7 +30,7 @@ export default class SelectVNet extends Component {
                 itemRenderer={this.renderVNets}
                 filterable={true}
                 noResults={<MenuItem disabled={true} text="No VNets detected" />}>
-                <Button text={this.state.selectedValue == '' ? 'VNet' : Utils.limitTextLength(this.state.selectedValue,12)}
+                <Button text={this.state.selectedValue == '' ? 'Not Selected' : Utils.limitTextLength(this.state.selectedValue,12)}
                     alignText='left' loading={this.state.loading}
                     rightIcon="double-caret-vertical" style={{width: '135px', maxWidth: '135px'}}/>
                                 {
@@ -47,10 +47,14 @@ export default class SelectVNet extends Component {
     loadVNets = () => {
         var vnetNames = [];
         var vnetAzContexts = Utils.GetVNetNames(this.props.Diagram);
+
+        //allow select empty
+        vnetNames.push('');
+
         for(var vnet of vnetAzContexts)
         {
             if(vnet.Name != '')
-            vnetNames.push(vnet.Name);
+                vnetNames.push(vnet.Name);
         }
 
         this.setState({vnetNames: vnetNames});

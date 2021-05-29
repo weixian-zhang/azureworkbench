@@ -11,7 +11,7 @@ export default class Messages {
     static SharedDiagramLoadError() {return "Unable to load shared diagram";}
     static GetSubscriptionError() {return "Error getting subscription, please clear browser cookie and re-login again.";}
     static NoCellOnGraph() {return "There is no resource on canvas";}
-    static NoResourceToProvision() {return "The stencils on canvas cannot be provisioned on Azure";}
+    static NoResourceToProvision() {return "Icons on canvas not deployable";}
     static ShareLinkLoadedSuccess() {return "Shared link is loaded successfully";}
     static ShareLinkLoadedError() {return "Error occured while loading shared link";}
     static SharedDiagramLinkCopied() {return "Link copied";}

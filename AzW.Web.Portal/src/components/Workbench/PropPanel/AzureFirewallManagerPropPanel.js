@@ -1,20 +1,23 @@
 import React, { Component } from "react";
-import VNetPeering from '../../../models/VNetPeering';
+import AzureFirewallManager from '../../../models/AzureFirewallManager';
 import { FormGroup, Drawer, Intent, Button, Switch } from "@blueprintjs/core";
 import { POSITION_RIGHT } from "@blueprintjs/core/lib/esm/common/classes";
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import Grid from "@material-ui/core/Grid";
-import SelectVNet from '../SelectVNet';
+import AppBar from '@material-ui/core/AppBar';
+import SelectLocation from '../SelectLocation';
+import SelectResourceGroup from '../SelectResourceGroup';
 import Utils from '../Helpers/Utils';
 
-export default class VNetPeeringPropPanel extends Component {
+export default class AzureFirewallManagerPropPanel extends Component {
   constructor(props) {
       super(props);
 
       this.state ={
         isOpen: false,
-        userObject: new VNetPeering(),
-        diagram: null,
-        vnetAzContexts: [],
+        userObject: new AzureFirewallManager(),
+
         saveCallback: function () {},
       }
   }
@@ -25,7 +28,7 @@ export default class VNetPeeringPropPanel extends Component {
   render = () => {
     return (
       <Drawer
-          title="VNet Peering Properties"
+          title="Firewall Manager Properties"
           autoFocus= {true}
           canEscapeKeyClose= {true}
           canOutsideClickClose= {true}
@@ -60,46 +63,50 @@ export default class VNetPeeringPropPanel extends Component {
               spacing={1} style={{marginTop: '15px', width: '100%'}}>
               <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
                 <Grid item sm={4}>
-                    <label>Local VNet Name</label>
+                    <label>Name</label>
                 </Grid>
                 <Grid item>
-                  <SelectVNet
-                  Diagram= {this.state.diagram}
-                  SelectedValue={this.state.userObject.ProvisionContext.LocalVNetName}
-                  onValueChange={
-                    (vnetName) => {
+                  <input id="icon-display-name" type="text" class="bp3-input .modifier"
+                    value={this.state.userObject.ProvisionContext.Name}
+                    onChange={(e) => {
                       var uo = this.state.userObject;
-                      uo.ProvisionContext.LocalVNetName = vnetName
+                      uo.ProvisionContext.Name = e.target.value
                       this.setState({userObject:uo});
-                    }
-                  }/>
+                    }} />
                 </Grid>
               </Grid>
-
               <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
                 <Grid item sm={4}>
-                    <label>Remote VNet Name</label>
+                    <label>Resource Group</label>
                 </Grid>
                 <Grid item>
-                  <SelectVNet
-                  Diagram= {this.state.diagram}
-                  SelectedValue={this.state.userObject.ProvisionContext.RemoteVNetName}
-                  onValueChange={
-                    (vnetName) => {
+                  <SelectResourceGroup
+                   SelectedResourceGroup={this.state.userObject.ProvisionContext.ResourceGroupName}
+                   onValueChange={
+                    (rg) => {
                       var uo = this.state.userObject;
-                      uo.ProvisionContext.RemoteVNetName = vnetName
+                      uo.ProvisionContext.ResourceGroupName = rg
                       this.setState({userObject:uo});
                     }
                   }/>
                 </Grid>
               </Grid>
-
-              <Grid container item style={{marginTop: "15px"}} direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
-                  <label style={{color: "blue"}}>
-                    *VNet Azure property name has to be set for VNet names to appear here
-                  </label>
+              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
+                <Grid item sm={4}>
+                    <label>Location</label>
+                </Grid>
+                <Grid item>
+                  <SelectLocation
+                  SelectedLocation={this.state.userObject.ProvisionContext.Location}
+                  onValueChange={
+                    (location) => {
+                      var uo = this.state.userObject;
+                      uo.ProvisionContext.Location = location
+                      this.setState({userObject:uo});
+                    }
+                  }/>
+                </Grid>
               </Grid>
-
           </Grid>
       </div>
     );
@@ -115,14 +122,8 @@ export default class VNetPeeringPropPanel extends Component {
     );
   }
 
-  show = (userObject, diagram, saveCallback) => {
-    this.setState({ isOpen: true, diagram: diagram,
-        userObject: userObject, saveCallback: saveCallback });
-  }
-
-  loadVNetAzContexts(diagram) {
-      var vnetAzContexts = Utils.GetVNetNames(diagram);
-      this.setState({vnetAzContexts: vnetAzContexts});
+  show = (userObject, saveCallback) => {
+    this.setState({ isOpen: true, userObject: userObject, saveCallback: saveCallback });
   }
 
   onDiagramIconNameChange = (e) => {

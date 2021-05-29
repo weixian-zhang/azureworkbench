@@ -13,8 +13,7 @@ export default class VNetPeering
             ResourceType: ResourceType.VNetPeering(),
 
             LocalVNetName: '',
-            RemoteVNetName: '',
-            RemoteVnetRGName: ''
+            RemoteVNetName: ''
         };
         this.CalculatorContext = {
             IsFree: true,

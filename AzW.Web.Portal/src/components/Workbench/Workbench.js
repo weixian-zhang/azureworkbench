@@ -28,6 +28,11 @@ export default class Workbench extends Component {
       queryString: this.props.queryString
     }
 
+    //init global variables
+    this.setGlobal({cacheVMSizes : []})
+    this.setGlobal({cacheServiceTags : []})
+    this.setGlobal({cacheVMImages : []})
+
     this.statusbar = new StatusBarHelper();
     this.statusbar.initStatusBar();
 

@@ -7,6 +7,5 @@ namespace AzW.Model
      {
           public string LocalVNetName { get; set; }
           public string RemoteVNetName { get; set; }
-          public string RemoteVnetRGName { get; set; }
      }
  }

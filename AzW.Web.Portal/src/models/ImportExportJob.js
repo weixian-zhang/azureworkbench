@@ -1,22 +1,22 @@
 import ResourceType from './ResourceType'
-export default class AzureFirewall
+export default class ImportExportJob
 {
     constructor (){
+
         this.GraphModel = {
             Id: '',
-            ResourceType: ResourceType.Firewall(),
+            ResourceType: ResourceType.ImportExportJob(),
             DisplayName: ''
         };
 
         this.ProvisionContext = {
-            ResourceType: ResourceType.Firewall(),
+            ResourceType: ResourceType.ImportExportJob(),
+            Deployable: true,
+            HighCost: false,
+
             Name: '',
             Location: 'westus',
-            ResourceGroupName: '',
-            PublicIPName: '',
-            VNetName: '',
-            SubnetName: '',
-            SubnetAddressSpace: ''
+            Tags: []
         };
         this.CalculatorContext = {
             IsFree: false,

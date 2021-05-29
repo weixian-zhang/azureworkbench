@@ -1,7 +1,7 @@
 import React, { Component } from "reactn";
 import {MenuItem, MenuDivider} from "@blueprintjs/core";
 import ComputeService from '../../services/ComputeService';
-
+import LocalStorage from '../../services/LocalStorage';
 import Utils from './Helpers/Utils';
 import {Suggest} from "@blueprintjs/select";
 import VMimage from "../../models/services/VMimage";
@@ -11,7 +11,7 @@ export default class SelectVMImage extends Component {
         super(props);
 
         this.state = {
-            vmImages: [],
+            filteredImages: [],
             searchQuery: '',
             inputValue: '',
             isLoading: false,
@@ -22,13 +22,14 @@ export default class SelectVMImage extends Component {
     }
 
     componentDidMount() {
+        this.getVMImages();
         this.initPreviouslySelectedValue();
     }
 
     render = () => {
         return (
             <Suggest
-                items={this.state.vmImages}
+                items={this.state.filteredImages}
                 itemRenderer={this.renderImages}
                 inputValueRenderer={this.searchboxValueRenderer}
                 noResults={<MenuItem disabled={true} text="No images" />}
@@ -38,30 +39,19 @@ export default class SelectVMImage extends Component {
                 closeOnSelect={true}
                 fill={true}
                 inputProps={{type:"search", placeholder:"Search VM images...", leftIcon:'search'}}>
-    
+
             </Suggest>
         );
     }
 
     onSearchTextChange = (searchText, event) => {
-
-        var thisComp = this;
-
-        if(!Utils.IsNullOrUndefine(searchText) && String(searchText).length >= 3)
-            {
-                this.setState({isLoading: true});
-
-                this.setState({vmImages: []}, () => { //get new images after setstate takes effect
-                    this.computeSvc.searchVMImages(searchText,
-                        function onSuccess(vmImgs){
-                            //thisComp.setState({isLoading: false});
-                            thisComp.setState({vmImages: vmImgs});
-                        },
-                        function onFailure(error) {
-                            //thisComp.setState({isLoading: false});
-                        })
-                });
-            }
+        if(searchText === "") {
+            this.setState({filteredImages: this.global.cacheVMImages});
+        }
+        else
+        {
+            this.setState({filteredImages: this.global.cacheVMImages.filter(x => String(x.DisplayName).toLowerCase().indexOf(searchText.toLowerCase()) !== -1)}); //.includes(String(searchText).toLowerCase()))});
+        }
     }
 
     searchboxValueRenderer = (vmImg) => {
@@ -71,7 +61,7 @@ export default class SelectVMImage extends Component {
     renderImages = (img, {handleClick}) => {
         return (
             <div>
-                <MenuItem 
+                <MenuItem
                     text={img.DisplayName }
                     data-displayname={img.DisplayName}
                     data-publisher={img.Publisher}
@@ -82,7 +72,7 @@ export default class SelectVMImage extends Component {
                 </MenuItem>
                 <MenuDivider />
             </div>
-            
+
         );
     }
 
@@ -95,11 +85,47 @@ export default class SelectVMImage extends Component {
         vmImg.Offer = item.currentTarget.dataset.offer;
         vmImg.Sku = item.currentTarget.dataset.sku;
         vmImg.Version = item.currentTarget.dataset.version;
-        
+
         this.setState({
             searchQuery: displayName});
 
         this.props.onValueChange(vmImg);
+    }
+
+    getVMImages = () => {
+
+        //broswer cache 1st tier
+        //global cache is 2nd tier cache
+        if(this.global.cacheVMImages.length == 0) {
+
+            var vmimageinBrowser = LocalStorage.getWithExpiry(LocalStorage.KeyNames.VMImage);
+
+            if(vmimageinBrowser != null) {
+                this.setGlobal({cacheVMImages: vmimageinBrowser});
+                this.setState({filteredImages: vmimageinBrowser});
+
+                this.setState({isLoading: true});
+            } else {
+                var thisComp = this;
+                //browser cache empty, get from API Redis
+                this.computeSvc.getAllVMImages(
+                    function onSuccess(images) {
+                        thisComp.setState({isLoading: false});
+                        thisComp.setGlobal({cacheVMImages: images});
+                        thisComp.setState({filteredImages: images});
+                        thisComp.setState({isLoading: true});
+
+                        LocalStorage.setWithExpiry(LocalStorage.KeyNames.VMImage, images, 3);
+                    },
+                    function onFailure() {
+                        thisComp.setState({isLoading: false});
+                    }
+                );
+            }
+
+        } else {
+            this.setState({filteredImages: this.global.cacheVMImages});
+        }
     }
 
     initPreviouslySelectedValue = () =>{

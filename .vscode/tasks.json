@@ -130,6 +130,7 @@
             "options": {
                 "cwd": "${workspaceFolder}/AzW.Web.Portal"
             },
+
             "problemMatcher": []
         },
         {
