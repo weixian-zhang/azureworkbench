@@ -4,20 +4,19 @@
 
 var lawAppInsightProjectName = uniqueString(resourceGroup().id)
 var azureFirewallSubnetName = 'AzureFirewallSubnet'
+var location = resourceGroup().location
 
 @foreach (var resource in @Model.Resources)
 {
     @* storage *@
     @if(resource.ResourceType == ResourceType.StorageAccount)
     {
-
         var storage = (StorageAccount)resource;
-        string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @storage.Location;
 <text>
 //Storage - @storage.Name
 resource @TemplateFormatHelper.GetBicepRscName(storage.ResourceType, storage.Name) 'Microsoft.Storage/storageAccounts@2021-02-01' = {
     name: '@storage.Name.ToLowerInvariant()'
-    location: '@location'
+    location: location
     kind: 'Storage'
     sku: {
         name: '@storage.SkuName'
@@ -30,13 +29,12 @@ resource @TemplateFormatHelper.GetBicepRscName(storage.ResourceType, storage.Nam
     @if(resource.ResourceType == ResourceType.VNet)
     {
          var vnet = (VNet)resource;
-        string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @vnet.Location;
         int i = 0;
 <text>
 //VNet - @vnet.Name
 resource @TemplateFormatHelper.GetBicepRscName(vnet.ResourceType, vnet.Name) 'Microsoft.Network/virtualNetworks@2020-06-01' = {
   name: '@vnet.Name'
-  location: '@location'
+  location: location
   properties: {
     addressSpace: {
       addressPrefixes: [
@@ -133,13 +131,12 @@ resource @localRemotebicepName 'microsoft.network/virtualNetworks/virtualNetwork
   {
       var nsg = (NSG)resource;
       string nsgBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.NSG, nsg.Name);
-      string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @nsg.Location;
 
 <text>
 //NSG - @nsg.Name
 resource @nsgBicepName 'Microsoft.Network/networkSecurityGroups@2020-06-01' = {
 name: '@nsg.Name'
-location: '@location'
+location: location
 @if(nsg.InboundRules.Count() > 0)
 {
 <text>
@@ -193,10 +190,9 @@ securityRules: [
   @if(resource.ResourceType == ResourceType.VM)
   {
       var vm = (VM)resource;
-      string location =  @Model.UseResourceGroupLocation ? "resourceGroup().location" : @vm.Location;
       string vnetId = @TemplateFormatHelper.GetBicepRscName(ResourceType.VNet, vm.VNetName) + ".id";
       string subnetName = vm.SubnetName;
-      string nicBicepName = "nic" + TemplateFormatHelper.GetBicepRscName(ResourceType.NIC, vm.Name);
+      string nicBicepName = TemplateFormatHelper.GetVMNICBicepName(vm.Name);
 
   <text>
   @*VM Public IP*@
@@ -206,21 +202,22 @@ securityRules: [
   //Public IP - @vm.PublicIPName
   resource @TemplateFormatHelper.GetBicepRscName(ResourceType.PublicIp, vm.PublicIPName) 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
   name: '@vm.PublicIPName'
-  location: '@location'
+  location: location
   properties: {
     publicIPAllocationMethod: 'Dynamic'
     dnsSettings: {
-      domainNameLabel: '@(vm.PublicIPName + "-" + vm.Name + "-" + location)'
+      domainNameLabel: '@vm.PublicIPName'
     }
   }
 }
   </text>
   }
   @*VM NIC*@
+
   //VM NIC - @("nic-" + TemplateFormatHelper.GetBicepRscName(vm.ResourceType, vm.Name))
   resource @nicBicepName 'Microsoft.Network/networkInterfaces@2020-06-01' = {
   name: '@("nic-" + TemplateFormatHelper.GetBicepRscName(vm.ResourceType, vm.Name))'
-  location: '@location'
+  location: location
   properties: {
     ipConfigurations: [
       {
@@ -246,7 +243,7 @@ securityRules: [
   //VM - @vm.Name
   resource @TemplateFormatHelper.GetBicepRscName(ResourceType.VM, vm.Name) 'Microsoft.Compute/virtualMachines@2020-06-01' = {
   name: '@vm.Name'
-  location: '@location'
+  location: location
   properties: {
     osProfile: {
       computerName: '@vm.Name'
@@ -257,10 +254,6 @@ securityRules: [
       <text>
       windowsConfiguration: {
         provisionVMAgent: true
-        enableAutomaticUpdates: true
-        patchSettings: {
-          patchMode: 'AutomaticByPlatform'
-        }
       }
       </text>
       }
@@ -316,6 +309,152 @@ securityRules: [
   </text>
   } @* if VM *@
 
+    @* Load Balancer *@
+  @if(resource.ResourceType == ResourceType.NLB)
+  {
+      var nlb = (NLB)resource;
+      string nlbBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.NLB, @nlb.Name);
+      string sku = nlb.IsStandardSku ? "Standard" : "Basic";
+      string pipBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.PublicIp, nlb.PublicIPName);
+      string vnetBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.VNet, nlb.VNetName);
+<text>
+@if(!nlb.IsInternalNLB) {
+<text>
+//Public IP - @nlb.PublicIPName
+resource @pipBicepName 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
+  name: '@nlb.PublicIPName'
+  location: location
+  sku: {
+    name: 'Standard'
+  }
+  properties: {
+    publicIPAllocationMethod: 'Static'
+  }
+}
+</text>
+}
+//Load Balancer - @nlb.Name
+resource @nlbBicepName 'Microsoft.Network/loadBalancers@2020-05-01' = {
+  name: '@nlb.Name'
+  location: location
+  sku: {
+    name: '@sku'
+  }
+  properties: {
+    frontendIPConfigurations: [
+      {
+        name: 'NLBFrontEnd'
+        properties: {
+          @if(nlb.IsInternalNLB)
+          {
+          <text>
+          privateIPAllocationMethod: 'Dynamic'
+          subnet: {
+            id: concat(resourceId('Microsoft.Network/virtualNetworks/subnets', '@nlb.VNetName', '@nlb.SubnetName'))
+          }
+          privateIPAddressVersion: 'IPv4'
+          </text>
+          } else {
+          <text>
+          publicIPAddress: {
+              id:  @(pipBicepName + ".id")
+          }
+          </text>
+          }
+        }
+      }
+    ]
+    @if(nlb.IsInternalNLB) {
+    <text>
+    backendAddressPools: [
+      {
+        name: 'lbBackendPoolName1'
+        properties: {
+          @if(nlb.LoadBalanceToExistingVMNames.Length > 0)
+          {
+          <text>
+          loadBalancerBackendAddresses: [
+          @foreach (var vm in nlb.LoadBalanceToExistingVMNames)
+          {
+          <text>
+          {
+            name: '@TemplateFormatHelper.RandomName()'
+            properties: {
+              ipAddress: @TemplateFormatHelper.GetVMPrivateIP(vm)
+              virtualNetwork: {
+                id: @(vnetBicepName + ".id")
+              }
+            }
+          }
+          </text>
+          }
+  ]
+          </text>
+          } else {
+          @:loadBalancerBackendAddresses:[]
+          }
+
+        }
+      }
+    ]
+    </text>
+    } else {
+    <text>
+    backendAddressPools: [
+      {
+        name: 'lbBackendPoolName1'
+        properties: {
+          loadBalancerBackendAddresses:[]
+        }
+      }
+    ]
+    </text>
+    }
+    loadBalancingRules: [
+      {
+        name: 'lbRuleName1'
+        properties: {
+          frontendIPConfiguration: {
+            id: concat(resourceId('Microsoft.Network/loadBalancers', '@nlb.Name'), '/frontendIPConfigurations/NLBFrontEnd')
+          }
+          frontendPort: @nlb.FrontendPort
+          backendPort: 443
+          enableFloatingIP: false
+          idleTimeoutInMinutes: 4
+          protocol: 'Tcp'
+          enableTcpReset: false
+          loadDistribution: 'SourceIP'
+          backendAddressPool: {
+            //converts on it's own from JSON. what about internalLB.properties.backendAddressPools?
+            id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', '@nlb.Name', 'lbBackendPoolName1')
+          }
+          probe: {
+            //id: '${internalLB.id}/probes/${lbProbeName1}' Error BCP079: This expression is referencing its own declaration, which is not allowed.
+            id: concat(resourceId('Microsoft.Network/loadBalancers', '@nlb.Name'), '/probes/', 'lbProbeName1')
+          }
+        }
+      }
+    ]
+    probes: [
+      {
+        name: 'lbProbeName1'
+        properties: {
+          protocol: 'Tcp'
+          port: 443
+          intervalInSeconds: 5
+          numberOfProbes: 2
+        }
+      }
+    ]
+    inboundNatRules: []
+    outboundRules: []
+    inboundNatPools: []
+  }
+  dependsOn: []
+}
+</text>
+  }
+
   @* Public IP *@
   @if(resource.ResourceType == ResourceType.PublicIp)
   {
@@ -326,7 +465,7 @@ securityRules: [
   //Public IP - @pip.Name
   resource @TemplateFormatHelper.GetBicepRscName(ResourceType.PublicIp, pip.Name) 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
   name: '@pip.Name'
-  location: '@location'
+  location: location
   properties: {
     publicIPAllocationMethod: '@(pip.Static ? "Static" : "Dynamic")'
     dnsSettings: {
@@ -350,7 +489,7 @@ securityRules: [
 //app service plan - @appsvc.Name
 resource @appsvcplanBicepName 'Microsoft.Web/serverfarms@2020-12-01' = {
   name: '@appsvcplanRscName'
-  location: '@location'
+  location: location
     sku: {
         name: '@appsvc.PricingTier'
         capacity: @appsvc.NumberOfInstance
@@ -368,7 +507,7 @@ resource @appsvcplanBicepName 'Microsoft.Web/serverfarms@2020-12-01' = {
 
 resource @appsvcSiteBicepName 'Microsoft.Web/sites@2020-06-01' = {
   name: '@appsvc.Name'
-  location: '@location'
+  location: location
   identity: {
     type: 'SystemAssigned'
   }
@@ -396,7 +535,7 @@ string lawBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.LogAnaly
 //AppInsights - @appsvc.AppInsightsName
 resource @aiBicepName 'microsoft.insights/components@2020-02-02-preview' = {
   name: '@appsvc.AppInsightsName'
-  location: '@location'
+  location: location
   kind: 'string'
   tags: {
     displayName: 'AppInsight'
@@ -412,7 +551,7 @@ resource @aiBicepName 'microsoft.insights/components@2020-02-02-preview' = {
 //LA Workspace - @appsvc.LogAnalyticsWorkspaceName
 resource @lawBicepName 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
   name: '@appsvc.LogAnalyticsWorkspaceName'
-  location: '@location'
+  location: location
   tags: {
     displayName: 'Log Analytics'
     ProjectName: toLower('law-${lawAppInsightProjectName}')
@@ -440,7 +579,7 @@ resource @lawBicepName 'Microsoft.OperationalInsights/workspaces@2020-03-01-prev
 //AppInsights - @appinsights.Name
 resource @aiBicepName 'microsoft.insights/components@2020-02-02-preview' = {
   name: '@appinsights.Name'
-  location: '@location'
+  location: location
   kind: 'string'
   tags: {
     displayName: 'AppInsight'
@@ -456,7 +595,7 @@ resource @aiBicepName 'microsoft.insights/components@2020-02-02-preview' = {
 //LA Workspace - @appinsights.LogAnalyticsWorkspaceName
 resource @lawBicepName 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
   name: '@appinsights.LogAnalyticsWorkspaceName'
-  location: '@location'
+  location: location
   tags: {
     displayName: 'Log Analytics'
     ProjectName: toLower('law-${lawAppInsightProjectName}')
@@ -481,7 +620,7 @@ resource @lawBicepName 'Microsoft.OperationalInsights/workspaces@2020-03-01-prev
 //LA Workspace - @law.Name
 resource @lawBicepName 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
   name: '@law.Name'
-  location: '@location'
+  location: location
   tags: {
     displayName: 'Log Analytics'
     ProjectName: toLower('law-${lawAppInsightProjectName}')
@@ -516,7 +655,7 @@ resource @subnetBicepName 'Microsoft.Network/virtualNetworks/subnets@2020-06-01'
 
 resource @pipBicepName 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
   name: '@azfw.PublicIPName'
-  location: '@location'
+  location: location
   sku: {
     name: 'Standard'
   }
@@ -528,7 +667,7 @@ resource @pipBicepName 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
 
 resource @azfwBicepName 'Microsoft.Network/azureFirewalls@2020-06-01' = {
   name: '@azfw.Name'
-  location: '@location'
+  location: location
   zones: [
   '1'
   '2'

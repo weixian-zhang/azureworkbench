@@ -1542,6 +1542,14 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true
             },
+            {
+              Name: 'application group',
+              Tooltip: 'App Group(WVD)',
+              Image: require('../../assets/IconCloud/azure/nondeployable/wvd-appgroup.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true
+            },
           ]
         }
      },
@@ -1795,7 +1803,7 @@ export default class ResourcePalette extends Component {
             {
               Name: 'wvd workspace',
               Tooltip: 'Workspace(WVD)',
-              Image: require('../../assets/IconCloud/azure/compute/00400-icon-Workspaces-Compute.svg'),
+              Image: require('../../assets/IconCloud/azure/compute/00330-icon-Workspaces-menu.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -1869,9 +1877,9 @@ export default class ResourcePalette extends Component {
             {
               Name: 'load balancer nlb slb alb route',
               Tooltip: 'Load Balancer',
-              azInfo: [],
+              azInfo: ['Bicep support'],
               Image: require('../../assets/IconCloud/azure/network/10062-icon-Load Balancers-Networking.svg'),
-              Provisionable: false,
+              Provisionable: true,
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.NLB()

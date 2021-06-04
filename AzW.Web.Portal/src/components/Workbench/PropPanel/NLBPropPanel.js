@@ -41,38 +41,7 @@ export default class NLBPropPanel extends Component {
           className="propPanelDrawer">
               <Grid container spacing={12} className="propPanelGrid">
                 <Grid item xs={12}>
-                  {/* <AppBar position="static" color = "transparent">
-                    <Tabs  value={this.state.value}  onChange={this.handleChange} >
-                      <Tab label="Diagram" value="diagram" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'diagram' ? "bold" : "" }}/>
-                      <Tab label="Provision" value="provision" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'provision' ? "bold" : "" }}/>
-                      <Tab label="Calculator" value="calculator" style={{ textTransform: "none", fontSize: 16, fontWeight: this.state.value === 'calculator' ? "bold" : "" }}/>
-                    </Tabs>
-                  </AppBar>
-                  <div
-                      className = "propPanelTabContent"
-                      hidden={this.state.value !== 'diagram'}>
-                        <FormGroup
-                              label="Icon Display Name"
-                              labelFor="icon-display-name"
-                              inline={true}
-                              intent={Intent.PRIMARY}>
-                              <div class="bp3-input-group .modifier">
-                                                                     <textarea class="bp3-input .modifier bp3-large bp3-fill"
-                                        style={{'max-width':'250px', 'max-height':'200px'}}
-                                        maxlength="80"
-                                        dir="auto"
-                                        prop='DisplayName'
-                                        value={this.state.userObject.GraphModel.DisplayName}
-                                        onChange={this.onDiagramIconNameChange}
-                                        autoFocus ={true}
-                                        />
-                              </div>
-                        </FormGroup>
-                  </div> */}
-
                     {this.renderProvisionTab()}
-
-                    {/* {this.renderCalculatorTab()} */}
                 </Grid>
               </Grid>
 
@@ -169,7 +138,7 @@ export default class NLBPropPanel extends Component {
                     }} />
                 </Grid>
               </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
+              {/* <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
                 <Grid item sm={3}>
                     <label>Backendpool Name</label>
                 </Grid>
@@ -182,8 +151,8 @@ export default class NLBPropPanel extends Component {
                       this.setState({userObject:uo});
                     }} />
                 </Grid>
-              </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
+              </Grid> */}
+              {/* <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
                 <Grid item sm={3}>
                     <label>Load Balancing Rule Name</label>
                 </Grid>
@@ -196,7 +165,7 @@ export default class NLBPropPanel extends Component {
                         this.setState({userObject:uo});
                       }} />
                 </Grid>
-              </Grid>
+              </Grid> */}
             </Grid>
       </div>
     );

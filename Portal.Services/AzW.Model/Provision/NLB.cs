@@ -13,8 +13,8 @@ namespace AzW.Model
           public string VNetName { get; set; }
           public string SubnetName { get; set; }
           public int FrontendPort { get; set; }
-          public string BackendpoolName { get; set; }
-          public string LoadBalancingRuleName { get; set; }
+        //   public string BackendpoolName { get; set; }
+        //   public string LoadBalancingRuleName { get; set; }
           public string[] LoadBalanceToExistingVMNames { get; set; }
      }
  }

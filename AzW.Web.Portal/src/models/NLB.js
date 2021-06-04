@@ -22,8 +22,8 @@ export default class NLB
             VNetName: '',
             SubnetName: '',
             FrontendPort: 443,
-            BackendpoolName: 'backend-web',
-            LoadBalancingRuleName: 'lbrule-web',
+            // BackendpoolName: 'backend-web',
+            // LoadBalancingRuleName: 'lbrule-web',
             LoadBalanceToExistingVMNames: []
         };
         this.CalculatorContext = {

@@ -4138,6 +4138,12 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
       //*nondeployable
 
+      case 'App Group(WVD)':
+        this.createPictureShape
+        ({source: require('../../assets/IconCloud/azure/nondeployable/wvd-appgroup.svg'),
+          label: 'appgroup', x: dropContext.x, y: dropContext.y});
+      break;
+
       case 'Windows Virtual Desktop':
         this.createPictureShape
         ({source: require('../../assets/IconCloud/azure/nondeployable/00327-icon-Windows Virtual Desktop-Other.svg'),
@@ -4711,7 +4717,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new WorkspaceWVD();
         rsc.ProvisionContext.ResourceType = ResourceType.WorkspaceWVD();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/compute/00400-icon-Workspaces-Compute.svg'),
+          source: require('../../assets/IconCloud/azure/compute/00330-icon-Workspaces-menu.svg'),
           label: 'workspace', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
