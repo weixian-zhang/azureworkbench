@@ -267,3 +267,4 @@ __pycache__/
 
 # Mac
 .DS_Store
+.vscode/settings.json

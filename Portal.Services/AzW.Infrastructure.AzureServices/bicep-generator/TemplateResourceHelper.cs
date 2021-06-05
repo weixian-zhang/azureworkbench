@@ -177,22 +177,14 @@ namespace AzW.Infrastructure.AzureServices
 
         private static string SetStorageName()
         {
-            return "strg" + GenName();
+            return "strg" + TemplateFormatHelper.RandomName();
         }
 
         private static string SetGeneralResourceName(string resourceType)
         {
-            return resourceType + GenName();
+            return resourceType + TemplateFormatHelper.RandomName();
         }
 
         public class RandName { public string Title { get; set; }}
-
-        private static string GenName()
-        {
-            string name = A.New<RandName>().Title.ToLower();
-            if(name.Length > 10)
-                name = name.Substring(0,9);
-            return name;
-        }
     }
 }

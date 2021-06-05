@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using AzW.Model;
+using GenFu;
 using Newtonsoft.Json.Linq;
 using RandomNameGeneratorLibrary;
 
@@ -50,6 +51,30 @@ namespace AzW.Infrastructure.AzureServices
             bicepTemplate = bicepTemplate.Replace("%MARKER_TAB%", "\t").Trim();
 
             return bicepTemplate;
+        }
+
+        public static string GetVMNICBicepName(string vmName)
+        {
+            string vmBicepName = TemplateFormatHelper.GetBicepRscName(ResourceType.NIC, vmName);
+            return "nic" + vmBicepName;
+        }
+
+        public static string GetVMPrivateIP(string vmName)
+        {
+            //
+            string nicBicep =  TemplateFormatHelper.GetVMNICBicepName(vmName);
+            nicBicep = nicBicep + ".properties.ipConfigurations[0].properties.privateIPAddress";
+            return nicBicep;
+        }
+
+        public class RandName { public string Title { get; set; }}
+        public static string RandomName()
+        {
+            string name = A.New<RandName>().Title.ToLower();
+            name = name.Trim().Replace(" ", "");
+            if(name.Length > 10)
+                name = name.Substring(0,9);
+            return name;
         }
     }
 }
