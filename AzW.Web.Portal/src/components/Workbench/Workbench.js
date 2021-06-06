@@ -31,6 +31,7 @@ export default class Workbench extends Component {
     //init global variables
     this.setGlobal({cacheVMSizes : []})
     this.setGlobal({cacheServiceTags : []})
+    this.setGlobal({cacheVMImagePublishers : []})
     this.setGlobal({cacheVMImages : []})
 
     this.statusbar = new StatusBarHelper();

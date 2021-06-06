@@ -12,14 +12,21 @@ namespace AzW.Infrastructure.Data
 
         Task<bool> IsServiceTagExistAsync();
 
+        Task<bool> IsVMImagePublisherExistAsync();
+
+
         Task SetVMImageAsync(string key, VMImage value);
 
         Task SetVMSizeAsync(string key, VMSize value);
 
         Task SetServiceTagAsync(string key, ServiceTag value);
 
-        Task<IEnumerable<VMImage>> SearchVMImagesAsync(string keyPattern);
-        Task<IEnumerable<VMImage>> GetAllVMImagesAsync();
+        Task SetItem<T>(string key, T value);
+
+        Task<IEnumerable<VMImagePublisher>> GetAllVMImagePublishersAsync();
+
+        Task<IEnumerable<VMImage>> GetVMImageOfferSkuAsync(string publisher);
+        //Task<IEnumerable<VMImage>> GetAllVMImagesAsync();
 
         Task<IEnumerable<VMSize>> GetVMSizeAsync();
 

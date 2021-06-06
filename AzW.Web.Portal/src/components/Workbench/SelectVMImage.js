@@ -11,7 +11,9 @@ export default class SelectVMImage extends Component {
         super(props);
 
         this.state = {
+            filteredPublishers: [],
             filteredImages: [],
+            publisherSearchableName: '',
             searchQuery: '',
             inputValue: '',
             isLoading: false,
@@ -22,40 +24,99 @@ export default class SelectVMImage extends Component {
     }
 
     componentDidMount() {
-        this.getVMImages();
+        this.getVMImagePublisher();
         this.initPreviouslySelectedValue();
     }
 
     render = () => {
         return (
-            <Suggest
-                items={this.state.filteredImages}
-                itemRenderer={this.renderImages}
-                inputValueRenderer={this.searchboxValueRenderer}
-                noResults={<MenuItem disabled={true} text="No images" />}
-                query={this.state.searchQuery}
-                onQueryChange={this.onSearchTextChange}
-                onItemSelect={this.onImageSelected}
-                closeOnSelect={true}
-                fill={true}
-                inputProps={{type:"search", placeholder:"Search VM images...", leftIcon:'search'}}>
-
-            </Suggest>
+            <div>
+                <div>
+                    <Suggest
+                        items={this.state.filteredPublishers}
+                        itemRenderer={this.renderPublishers}
+                        inputValueRenderer={this.publisherSearchboxValueRenderer}
+                        noResults={<MenuItem disabled={true} text="No publishers" />}
+                        query={this.state.publisherSearchableName}
+                        onQueryChange={this.onPublisherTextChange}
+                        onItemSelect={this.onPublisherSelected}
+                        closeOnSelect={true}
+                        fill={true}
+                        inputProps={{type:"search", placeholder:"images publishers...", leftIcon:'search'}}>
+                    </Suggest>
+                </div>
+                <div style={{marginTop:'5px'}}>
+                    <Suggest
+                        items={this.state.filteredImages}
+                        itemRenderer={this.renderImages}
+                        inputValueRenderer={this.searchboxValueRenderer}
+                        noResults={<MenuItem disabled={true} text="No images" />}
+                        query={this.state.searchQuery}
+                        onQueryChange={this.onSearchTextChange}
+                        onItemSelect={this.onImageSelected}
+                        closeOnSelect={true}
+                        fill={true}
+                        inputProps={{type:"search", placeholder:"VM images...", leftIcon:'search'}}>
+                    </Suggest>
+                </div>
+            </div>
         );
     }
 
+    onPublisherTextChange = (searchText, event) => {
+
+        if(searchText.length < 3)
+            return;
+
+        if(searchText === "") {
+            this.setState({filteredPublishers: this.global.cacheVMImagePublishers});
+        }
+        else {
+            this.setState({filteredPublishers: this.global.cacheVMImagePublishers.filter(x => String(x.SearchableName).toLowerCase().includes(String(searchText).toLowerCase()))});
+        }
+    }
+
     onSearchTextChange = (searchText, event) => {
+
+        if(searchText.length < 3)
+            return;
+
         if(searchText === "") {
             this.setState({filteredImages: this.global.cacheVMImages});
         }
         else
         {
-            this.setState({filteredImages: this.global.cacheVMImages.filter(x => String(x.DisplayName).toLowerCase().indexOf(searchText.toLowerCase()) !== -1)}); //.includes(String(searchText).toLowerCase()))});
+            var regex = '/' + String(searchText).toLowerCase() + '/';
+            this.setState({
+                filteredImages: this.global.cacheVMImages.filter(x => {
+                    return String(x.SearcheableName).toLowerCase().includes(String(searchText).toLowerCase())
+                })
+            });
+            //this.setState({filteredImages: this.global.cacheVMImages.filter(x => String(x.DisplayName).toLowerCase().indexOf(searchText.toLowerCase()) !== -1)}); //.includes(String(searchText).toLowerCase()))});
         }
+    }
+
+    publisherSearchboxValueRenderer = (publisher) => {
+        return publisher.SearchableName;
     }
 
     searchboxValueRenderer = (vmImg) => {
         return vmImg.Sku;
+    }
+
+    renderPublishers = (pub, {handleClick}) => {
+        return (
+            <div>
+                <MenuItem
+                    text={pub.SearchableName}
+                    data-searchableName={pub.SearchableName}
+                    data-publisher={pub.Publisher}
+                    onClick={this.onPublisherSelected}>
+                </MenuItem>
+                <MenuDivider />
+            </div>
+
+        );
     }
 
     renderImages = (img, {handleClick}) => {
@@ -76,6 +137,32 @@ export default class SelectVMImage extends Component {
         );
     }
 
+    onPublisherSelected = (item, event) => {
+        var thisComp = this;
+
+        var searchableName = item.currentTarget.dataset.searchablename;
+        var publisher = item.currentTarget.dataset.publisher;
+
+        this.setState({publisherSearchableName: searchableName});
+        thisComp.setState({
+            filteredImages: [],
+            searchQuery: ''
+        });
+
+        this.computeSvc.getAllVMImages(publisher,
+            function onSuccess(images) {
+                thisComp.setState({isLoading: false});
+
+                thisComp.setState({filteredImages: images});
+
+                thisComp.setState({isLoading: true});
+            },
+            function onFailure() {
+                thisComp.setState({isLoading: false});
+            }
+        );
+    }
+
     onImageSelected = (item, event) => {
 
         var vmImg = new VMimage()
@@ -85,6 +172,7 @@ export default class SelectVMImage extends Component {
         vmImg.Offer = item.currentTarget.dataset.offer;
         vmImg.Sku = item.currentTarget.dataset.sku;
         vmImg.Version = item.currentTarget.dataset.version;
+        vmImg.PublisherSearchableName = this.state.publisherSearchableName;
 
         this.setState({
             searchQuery: displayName});
@@ -92,41 +180,37 @@ export default class SelectVMImage extends Component {
         this.props.onValueChange(vmImg);
     }
 
-    getVMImages = () => {
+    getVMImagePublisher = () => {
 
-        //broswer cache 1st tier
-        //global cache is 2nd tier cache
-        if(this.global.cacheVMImages.length == 0) {
+        var thisComp = this;
 
-            var vmimageinBrowser = LocalStorage.getWithExpiry(LocalStorage.KeyNames.VMImage);
+        if(this.global.cacheVMImagePublishers.length == 0) {
 
-            if(vmimageinBrowser != null) {
-                this.setGlobal({cacheVMImages: vmimageinBrowser});
-                this.setState({filteredImages: vmimageinBrowser});
-
-                this.setState({isLoading: true});
-            } else {
-                var thisComp = this;
-                //browser cache empty, get from API Redis
-                this.computeSvc.getAllVMImages(
-                    function onSuccess(images) {
-                        thisComp.setState({isLoading: false});
-                        thisComp.setGlobal({cacheVMImages: images});
-                        thisComp.setState({filteredImages: images});
-                        thisComp.setState({isLoading: true});
-
-                        LocalStorage.setWithExpiry(LocalStorage.KeyNames.VMImage, images, 3);
-                    },
-                    function onFailure() {
-                        thisComp.setState({isLoading: false});
-                    }
-                );
+            var publishersInBrowser = LocalStorage.getWithExpiry(LocalStorage.KeyNames.VMImagePublishers);
+            if(publishersInBrowser != null) {
+                this.setGlobal({cacheVMImagePublishers: publishersInBrowser});
+                this.setState({filteredPublishers: publishersInBrowser});
+                this.setState({isLoading: false});
+                return;
             }
 
-        } else {
-            this.setState({filteredImages: this.global.cacheVMImages});
+            this.computeSvc.getAllVMImagePublishers(
+                function onSuccess(publishers) {
+                    thisComp.setState({isLoading: false});
+                    thisComp.setGlobal({cacheVMImagePublishers: publishers});
+                    thisComp.setState({filteredPublishers: publishers});
+                    thisComp.setState({isLoading: true});
+
+                    LocalStorage.setWithExpiry(LocalStorage.KeyNames.VMImagePublishers, publishers, 3);
+                },
+                function onFailure() {
+                    thisComp.setState({isLoading: false});
+                }
+            );
+
         }
     }
+
 
     initPreviouslySelectedValue = () =>{
         var previouslySelectedValue = this.props.SelectedImage;
@@ -135,6 +219,9 @@ export default class SelectVMImage extends Component {
             previouslySelectedValue.VMOffer + ', ' + previouslySelectedValue.VMSKU;
 
         if(!Utils.IsNullOrUndefine(previouslySelectedValue))
-            this.setState({searchQuery: imageDisplayName});
+            this.setState({
+                searchQuery: imageDisplayName,
+                publisherSearchableName: previouslySelectedValue.VMPublisherSearchableName
+            });
     }
 }

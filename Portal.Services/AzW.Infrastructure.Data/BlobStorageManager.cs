@@ -16,6 +16,7 @@ namespace AzW.Infrastructure.Data
         const string ServiceTagFileName = "azure-servicetags.json";
         const string VMSizeFileName = "azure-vmsizes.json";
         const string VMImageFileName = "azure-vmimages.json";
+        const string VMImagePublisherFileName = "azure-vmimage-publisher.json";
 
         const string DiagramContainerName = "diagrams";
         const string SharedDiagramContainerName = "shareddiagrams";
@@ -186,6 +187,11 @@ namespace AzW.Infrastructure.Data
         public async Task<string> GetVMImagesJson()
         {
             return await GetBlobString(VMImageFileName);
+        }
+
+        public async Task<string> GetVMImagePublishersJson()
+        {
+            return await GetBlobString(VMImagePublisherFileName);
         }
 
         private async Task<string> GetBlobString(string blobName)

@@ -23,6 +23,8 @@ namespace AzW.Web.API
 
             await InitVMSizes();
 
+            await InitVMImagePublishers();
+
             await InitVMImages();
 
         }
@@ -106,6 +108,21 @@ namespace AzW.Web.API
             }
         }
 
+        private async Task InitVMImagePublishers()
+        {
+             if (await _cache.IsVMImagePublisherExistAsync()) return;
+
+             string json = await _blob.GetVMImagePublishersJson();
+
+             var publishers = JsonConvert.DeserializeObject<IEnumerable<VMImagePublisher>>(json);
+
+            foreach(var pub in publishers)
+            {
+                string searchKey = $"vmimage-publisher-{pub.SearchableName}";
+                await _cache.SetItem<VMImagePublisher>(searchKey, pub);
+            }
+        }
+
         private async Task InitVMImages()
         {
             if (await _cache.IsVMImageCacheExistAsync()) return;
@@ -116,26 +133,9 @@ namespace AzW.Web.API
 
             foreach(var image in vmImages)
             {
-                //using space and remove "-" and underscores from sku name for easy searching
-                string publisher = image.Publisher.Replace('-', ' ').Replace('_', ' ');
-                string offer = image.Offer.Replace('-', ' ').Replace('_', ' ');
-                string sku = "";
+                string searchKey = $"vmimage-offersku-{image.Publisher}-" + image.SearcheableName;
 
-                if(!string.IsNullOrEmpty(image.Sku))
-                {
-                    sku = image.Sku.Replace('-', ' ').Replace('_', ' ');
-                }
-
-                var newImg = new VMImage()
-                {
-                    DisplayName = offer + " " + sku,
-                    SearchPattern = "vmimage" + " " + offer + " " + sku,
-                    Publisher = publisher,
-                    Offer = offer,
-                    Sku = sku
-                };
-
-                await _cache.SetVMImageAsync(newImg.SearchPattern, newImg);
+                await _cache.SetItem<VMImage>(searchKey, image);
             }
         }
 

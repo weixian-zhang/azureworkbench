@@ -79,6 +79,6 @@ export default class LocalStorage
     static KeyNames = {
         TempLocalDiagram: '__temp-anonymousdiagram__',
         AutoSave: '__azwb-temp-autosave__',
-        VMImage: '__VMImage__'
+        VMImagePublishers: '__VMImagePublishers__'
     }
 }

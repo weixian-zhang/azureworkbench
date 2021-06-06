@@ -28,7 +28,7 @@ namespace AzW.Infrastructure.Data
 
         public async Task<bool> IsVMImageCacheExistAsync()
         {
-           var keys = await _redis.SearchKeysAsync("vmimage*");
+           var keys = await _redis.SearchKeysAsync("vmimage-offersku-publisher-*");
            if(keys.Count() > 0)
                 return true;
            else
@@ -38,6 +38,15 @@ namespace AzW.Infrastructure.Data
         public async Task<bool> IsVMSizeExistAsync()
         {
            var keys = await _redis.SearchKeysAsync("vmsize*");
+           if(keys.Count() > 0)
+                return true;
+           else
+                return false;
+        }
+
+        public async Task<bool> IsVMImagePublisherExistAsync()
+        {
+           var keys = await _redis.SearchKeysAsync("vmimage-publisher*");
            if(keys.Count() > 0)
                 return true;
            else
@@ -55,36 +64,72 @@ namespace AzW.Infrastructure.Data
 
         public async Task SetServiceTagAsync(string key, ServiceTag value)
         {
-            await _redis.AddAsync<ServiceTag>(key, value, TimeSpan.FromDays(CacheItemExpiryDays));
+            await SetItem<ServiceTag>(key, value);
+            //await _redis.AddAsync<ServiceTag>(key, value, TimeSpan.FromDays(CacheItemExpiryDays));
         }
 
         public async Task SetVMImageAsync(string key, VMImage value)
         {
-            await _redis.AddAsync<VMImage>(key, value, TimeSpan.FromDays(CacheItemExpiryDays));
+            await SetItem<VMImage>(key, value);
+            //await _redis.AddAsync<VMImage>(key, value, TimeSpan.FromDays(CacheItemExpiryDays));
         }
 
         public async Task SetVMSizeAsync(string key, VMSize value)
         {
-            await _redis.AddAsync<VMSize>(key, value, TimeSpan.FromDays(CacheItemExpiryDays));
+            await SetItem<VMSize>(key, value);
+            //await _redis.AddAsync<VMSize>(key, value, TimeSpan.FromDays(CacheItemExpiryDays));
         }
 
-        public async Task<IEnumerable<VMImage>> GetAllVMImagesAsync()
+        public async Task SetItem<T>(string key, T value)
         {
-            IEnumerable<string> keys = await _redis.SearchKeysAsync("vmimage*");
-            var vmImagesKV = await _redis.GetAllAsync<VMImage>(keys);
-            return vmImagesKV.Values;
+             await _redis.AddAsync<T>(key, value, TimeSpan.FromDays(CacheItemExpiryDays));
         }
 
-        public async Task<IEnumerable<VMImage>> SearchVMImagesAsync(string skuNamePattern)
-        {
-            IEnumerable<string> keys = await _redis.SearchKeysAsync(skuNamePattern + "*");
+        // public async Task<IEnumerable<VMImage>> GetAllVMImagesAsync()
+        // {
+        //     IEnumerable<string> keys = await _redis.SearchKeysAsync("vmimage-offersku-*");
+        //     var vmImagesKV = await _redis.GetAllAsync<VMImage>(keys);
+        //     var vmimages = vmImagesKV.Values;
+        //     var result = new List<VMImage>();
 
-            if(keys.Count() == 0)
-                keys = await _redis.SearchKeysAsync("*" + skuNamePattern + "*");
+        //     foreach(var img in vmimages)
+        //     {
+        //         string newSku = img.Sku.Replace("-", " ").Replace("_"," ");
+        //         result.Add(new VMImage
+        //             {
+        //                 DisplayName = img.Publisher + " " + img.Offer + " " + newSku,
+        //                 Publisher = img.Publisher,
+        //                 Offer = img.Offer,
+        //                 Sku = img.Sku
+        //             });
+        //     }
+
+        //     return result;
+        // }
+
+        public async Task<IEnumerable<VMImagePublisher>> GetAllVMImagePublishersAsync()
+        {
+             string searchQuery = $"vmimage-publisher-*";
+
+             IEnumerable<string> keys = await _redis.SearchKeysAsync(searchQuery);
+
+            var kvs = await _redis.GetAllAsync<VMImagePublisher>(keys);
+
+            return kvs.Values;
+        }
+
+        public async Task<IEnumerable<VMImage>> GetVMImageOfferSkuAsync(string publisher)
+        {
+            string searchQuery = $"vmimage-offersku-{publisher}-*";
+
+            IEnumerable<string> keys = await _redis.SearchKeysAsync(searchQuery);
 
             var vmImagesKV = await _redis.GetAllAsync<VMImage>(keys);
 
             return vmImagesKV.Values;
+
+            // if(keys.Count() == 0)
+            //     keys = await _redis.SearchKeysAsync("*" + skuNamePattern + "*");
         }
 
         public async Task<IEnumerable<VMSize>> GetVMSizeAsync()

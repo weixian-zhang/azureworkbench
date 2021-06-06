@@ -1,33 +1,65 @@
 ﻿$loc="southeastasia"
 
+$msPublishers = @(
+'MicrosoftAzureSiteRecovery'
+'MicrosoftBizTalkServer'
+'microsoftcmotest'
+'MicrosoftDynamicsAX'
+'MicrosoftDynamicsGP'
+'MicrosoftDynamicsNAV'
+'microsoftfarmbeats'
+'MicrosoftHybridCloudStorage'
+'MicrosoftOSTC'
+'MicrosoftPowerBI'
+'MicrosoftRServer'
+'MicrosoftSharePoint'
+'MicrosoftSQLServer'
+'MicrosoftTestLinuxPPS'
+'MicrosoftVisualStudio'
+'MicrosoftWindowsDesktop'
+'MicrosoftWindowsServer'
+'MicrosoftWindowsServerHPCPack'
+)
+
 $vmImgs = @()
 
+$images = az vm image list --all --output json | ConvertFrom-Json
 
+foreach($img in $images) {
 
-$publishers = Get-AzVMImagePublisher -Location $loc | Select PublisherName -First 3
+    #windows only
+    if($msPublishers.Contains($img.publisher)) {
 
-foreach ($pub in $publishers) {
+        #split by camelcase
+        $newOffer = $img.offer -csplit '(?=[A-Z])' -ne '' -join ' '
+        $newOffer = $newOffer -csplit '[-_]' -ne '' -join ' '
+        $newSku = $img.sku -csplit '[-_]' -ne '' -join ' '
+        $vmImg = @{
+            DisplayName = $newOffer + ' ' + $newSku
+            SearcheableName = $newOffer + ' ' + $newSku
+            Publisher = $img.publisher
+            Offer = $img.offer
+            Sku = $img.sku
+            Version = $img.version
+            }
 
-    $offers = Get-AzVMImageOffer -Location $loc -PublisherName $pub.PublisherName | Select Offer -First 3
+       $vmImgs = $vmImgs + $vmImg
+    } else {
 
-    foreach($offer in $offers) {
+        $newurn = $img.urn -csplit '[-_:]' -ne '' -join ' '
 
-        $skus = Get-AzVMImageSku -Location $loc -PublisherName $pub.PublisherName -Offer $offer.Offer | Select Sku -First 3
-
-        foreach($sku in $skus) {
-
-                $vmImg = @{
-                    DisplayName = $pub.PublisherName
-                    Publisher = $pub.PublisherName
-                    Offer = $offer.Offer
-                    Sku = $sku.Sku
-                }
-
-            $vmImgs = $vmImgs + $vmImg
-        }
+        $vmimg = @{
+                    displayname = $newurn
+                    searcheablename = $newurn
+                    publisher = $img.publisher
+                    offer = $img.offer
+                    sku = $img.sku
+                    Version = $img.version
+                  }
+   
+        $vmimgs = $vmimgs + $vmimg
 
     }
-
 }
 
-$vmImgs | ConvertTo-Json | Out-File 'C:\Users\adadmin\Desktop\azure-vmimages.json'
+$vmImgs | ConvertTo-Json | Out-File 'C:\Users\weixzha\Desktop\azure-vmimages.json'
