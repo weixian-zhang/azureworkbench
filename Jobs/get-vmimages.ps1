@@ -13,7 +13,7 @@ $msPublishers = @(
 'MicrosoftPowerBI'
 'MicrosoftRServer'
 'MicrosoftSharePoint'
-'MicrosoftSQLServer'
+#'MicrosoftSQLServer'
 'MicrosoftTestLinuxPPS'
 'MicrosoftVisualStudio'
 'MicrosoftWindowsDesktop'
@@ -49,14 +49,14 @@ foreach($img in $images) {
         $newurn = $img.urn -csplit '[-_:]' -ne '' -join ' '
 
         $vmimg = @{
-                    displayname = $newurn
-                    searcheablename = $newurn
-                    publisher = $img.publisher
-                    offer = $img.offer
-                    sku = $img.sku
+                    DisplayName = $newurn
+                    SearcheableName = $newurn
+                    Publisher = $img.publisher
+                    Offer = $img.offer
+                    Sku = $img.sku
                     Version = $img.version
                   }
-   
+
         $vmimgs = $vmimgs + $vmimg
 
     }

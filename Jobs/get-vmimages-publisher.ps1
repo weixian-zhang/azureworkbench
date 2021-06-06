@@ -14,7 +14,7 @@ $msPublishers = @(
 'MicrosoftPowerBI'
 'MicrosoftRServer'
 'MicrosoftSharePoint'
-'MicrosoftSQLServer'
+#'MicrosoftSQLServer'
 'MicrosoftTestLinuxPPS'
 'MicrosoftVisualStudio'
 'MicrosoftWindowsDesktop'

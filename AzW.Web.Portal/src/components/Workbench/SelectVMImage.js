@@ -12,6 +12,7 @@ export default class SelectVMImage extends Component {
 
         this.state = {
             filteredPublishers: [],
+            fetchedImage: [],
             filteredImages: [],
             publisherSearchableName: '',
             searchQuery: '',
@@ -65,9 +66,6 @@ export default class SelectVMImage extends Component {
 
     onPublisherTextChange = (searchText, event) => {
 
-        if(searchText.length < 3)
-            return;
-
         if(searchText === "") {
             this.setState({filteredPublishers: this.global.cacheVMImagePublishers});
         }
@@ -78,21 +76,12 @@ export default class SelectVMImage extends Component {
 
     onSearchTextChange = (searchText, event) => {
 
-        if(searchText.length < 3)
-            return;
-
         if(searchText === "") {
-            this.setState({filteredImages: this.global.cacheVMImages});
+            this.setState({filteredImages: this.state.fetchedImage});
         }
         else
         {
-            var regex = '/' + String(searchText).toLowerCase() + '/';
-            this.setState({
-                filteredImages: this.global.cacheVMImages.filter(x => {
-                    return String(x.SearcheableName).toLowerCase().includes(String(searchText).toLowerCase())
-                })
-            });
-            //this.setState({filteredImages: this.global.cacheVMImages.filter(x => String(x.DisplayName).toLowerCase().indexOf(searchText.toLowerCase()) !== -1)}); //.includes(String(searchText).toLowerCase()))});
+            this.setState({filteredImages: this.state.fetchedImage.filter(x => x.SearcheableName.toLowerCase().includes(searchText.toLowerCase()))});
         }
     }
 
@@ -146,6 +135,7 @@ export default class SelectVMImage extends Component {
         this.setState({publisherSearchableName: searchableName});
         thisComp.setState({
             filteredImages: [],
+            fetchedImage: [],
             searchQuery: ''
         });
 
@@ -153,7 +143,10 @@ export default class SelectVMImage extends Component {
             function onSuccess(images) {
                 thisComp.setState({isLoading: false});
 
-                thisComp.setState({filteredImages: images});
+                thisComp.setState({
+                    fetchedImage: images,
+                    filteredImages: images
+                });
 
                 thisComp.setState({isLoading: true});
             },

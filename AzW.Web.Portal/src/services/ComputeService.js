@@ -151,6 +151,7 @@ export default class ComputeService
 
               var vmImage = new VMimage();
               vmImage.DisplayName = vmimg.displayName;
+              vmImage.SearcheableName = vmimg.searcheableName;
               vmImage.Publisher = vmimg.publisher;
               vmImage.Offer = vmimg.offer;
               vmImage.Sku = vmimg.sku;

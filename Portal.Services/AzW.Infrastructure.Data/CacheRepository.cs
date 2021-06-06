@@ -28,7 +28,7 @@ namespace AzW.Infrastructure.Data
 
         public async Task<bool> IsVMImageCacheExistAsync()
         {
-           var keys = await _redis.SearchKeysAsync("vmimage-offersku-publisher-*");
+           var keys = await _redis.SearchKeysAsync("vmimage-offersku-*");
            if(keys.Count() > 0)
                 return true;
            else
