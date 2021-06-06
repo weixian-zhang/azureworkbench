@@ -134,6 +134,7 @@ export default class VMPropPanel extends Component {
                           uo.ProvisionContext.VMOffer = vm.Offer;
                           uo.ProvisionContext.VMSKU = vm.Sku;
                           uo.ProvisionContext.VMVersion = vm.Version;
+                          uo.ProvisionContext.VMPublisherSearchableName = vm.PublisherSearchableName;
                           this.setState({userObject:uo});
                         }
                         else {
@@ -141,6 +142,7 @@ export default class VMPropPanel extends Component {
                           uo.ProvisionContext.VMOffer = '';
                           uo.ProvisionContext.VMSKU = '';
                           uo.ProvisionContext.VMVersion = '';
+                          uo.ProvisionContext.VMPublisherSearchableName = '';
                           this.setState({userObject:uo});
                         }
                       }

@@ -1,6 +1,7 @@
 import ServiceTag from "../models/services/ServiceTag";
 import VMSize from "../models/services/VMSize";
 import VMimage from "../models/services/VMimage";
+import VMImagePublisher from "../models/services/VMImagePublisher";
 import axios from "axios";
 import AuthService from './AuthService';
 import Toast from '../components/Workbench/Helpers/Toast';
@@ -90,14 +91,52 @@ export default class ComputeService
 
     }
 
-    async getAllVMImages(onSuccess, onFailure) {
+    async getAllVMImagePublishers(onSuccess, onFailure) {
+      if(! await this.authService.checkLoginStateAndNotify())
+        return;
+
+      var user = this.authService.getUserProfile();
+
+      axios.get('api/compute/image/publishers',
+        {
+          headers: {
+
+            'Authorization': 'Bearer ' + user.AccessToken,
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(function (response) {
+          if(response.data != null)
+          {
+            var publishers= [];
+            response.data.map(pub => {
+
+              var publisher = new VMImagePublisher();
+              publisher.Publisher = pub.publisher;
+              publisher.SearchableName = pub.searchableName;
+              publishers.push(publisher)
+
+            })
+            onSuccess(publishers);
+          }
+        })
+        .catch(function (error) {
+          Toast.show("warning", 4000, Messages.GeneralHttpError());
+          onFailure(error)
+        })
+    }
+
+    async getAllVMImages(publisher, onSuccess, onFailure) {
         if(! await this.authService.checkLoginStateAndNotify())
         return;
 
         var user = this.authService.getUserProfile();
 
-        axios.get('api/compute/vm/images',
+        axios.get('api/compute/images',
         {
+          params: {
+            publisher: publisher
+          },
           headers: {
 
             'Authorization': 'Bearer ' + user.AccessToken,
@@ -112,6 +151,7 @@ export default class ComputeService
 
               var vmImage = new VMimage();
               vmImage.DisplayName = vmimg.displayName;
+              vmImage.SearcheableName = vmimg.searcheableName;
               vmImage.Publisher = vmimg.publisher;
               vmImage.Offer = vmimg.offer;
               vmImage.Sku = vmimg.sku;

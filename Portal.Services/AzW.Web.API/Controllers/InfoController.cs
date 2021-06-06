@@ -23,22 +23,29 @@ namespace AzW.Web.API
             _secret = secret;
         }
 
-        //Deprecated by GetAllVMImages
-        [HttpGet("search/images")]
-        public async Task<IEnumerable<VMImage>> SearchVMImages(string searchPattern)
+        [HttpGet("image/publishers")]
+        public async Task<IEnumerable<VMImagePublisher>> GetVMImagePublisherAsync(string publisher)
         {
-           var vmImages = await _cache.SearchVMImagesAsync(searchPattern);
+           var pubs = await _cache.GetAllVMImagePublishersAsync();
+
+           return pubs;
+        }
+
+        [HttpGet("images")]
+        public async Task<IEnumerable<VMImage>> GetVMImageOfferSkuAsync(string publisher)
+        {
+           var vmImages = await _cache.GetVMImageOfferSkuAsync(publisher);
 
            return vmImages;
         }
 
-        [HttpGet("vm/images")]
-        public async Task<IEnumerable<VMImage>> GetAllVMImages()
-        {
-           var vmImages = await _cache.GetAllVMImagesAsync();
+      //   [HttpGet("vm/images")]
+      //   public async Task<IEnumerable<VMImage>> GetAllVMImages()
+      //   {
+      //      var vmImages = await _cache.GetAllVMImagesAsync();
 
-           return vmImages;
-        }
+      //      return vmImages;
+      //   }
 
         [HttpGet("vmsize")]
         public async Task<IEnumerable<VMSize>> SearchVMSizes()

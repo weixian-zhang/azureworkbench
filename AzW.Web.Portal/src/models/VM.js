@@ -27,6 +27,7 @@ export default class VM
             VMOffer: '',
             VMSKU: '',
             VMVersion: '',
+            VMPublisherSearchableName: '',
 
             SizeName: 'STANDARD_DS2_V2',
             IsLinux: false,

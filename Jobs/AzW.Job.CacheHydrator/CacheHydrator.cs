@@ -34,13 +34,13 @@ namespace AzW.Job.CacheHydrator
 
             // sdkCred =
             //     new ServiceClientCredential(_secret.TenantId, _secret.ClientId, _secret.ClientSecret);
-            
+
             // azureCreds = new AzureCredentials
             //     (sdkCred, null, _secret.TenantId, AzureEnvironment.AzureGlobalCloud);
 
-           
 
-            
+
+
         }
 
         [FunctionName("CacheHydrator")]
@@ -53,7 +53,7 @@ namespace AzW.Job.CacheHydrator
 
             var azCred = new AzureCredentials
                 (new TokenCredentials(accessToken), null, _secret.TenantId, AzureEnvironment.AzureGlobalCloud);
-            
+
 
            _azure = Microsoft.Azure.Management.Fluent.Azure
                 .Configure()
@@ -70,7 +70,7 @@ namespace AzW.Job.CacheHydrator
 
             _logger.Information("CacheHydrator completed");
         }
-        public async Task HydrateVMSizes() 
+        public async Task HydrateVMSizes()
         {
             try
             {
@@ -78,14 +78,14 @@ namespace AzW.Job.CacheHydrator
                     return;
 
                 _logger.Information("CacheHydrator-VMSize cache empty, start hydrating");
-                
+
                 //var azure = Microsoft.Azure.Management.Fluent.Azure.Configure().Authenticate(azureCreds);
 
                 var vmSizes = await _azure.VirtualMachines.Sizes.ListByRegionAsync("southeastasia");
-                        
+
                 foreach(var size in vmSizes)
                 {
-                    var vmSize = new VMSize() 
+                    var vmSize = new VMSize()
                     {
                         Name = size.Name,
                         MemoryInMB = size.MemoryInMB,
@@ -111,7 +111,7 @@ namespace AzW.Job.CacheHydrator
             {
                 if(await _cache.IsServiceTagExistAsync())
                     return;
-                
+
                 _logger.Information("CacheHydrator-ServiceTag cache empty, start hydrating");
 
                 string jsonSvcTags =
@@ -151,7 +151,7 @@ namespace AzW.Job.CacheHydrator
                         Name = "AzurePlatformLKM"
                     });
 
-                    
+
                     await _cache.SetServiceTagAsync
                         ("servicetag" + " " +  "ActionGroup", new ServiceTag()
                     {
@@ -299,8 +299,8 @@ namespace AzW.Job.CacheHydrator
                         Id = "HDInsight",
                         Name = "HDInsight"
                     });
-                    
-                    
+
+
                     await _cache.SetServiceTagAsync
                     ("servicetag" + " " +  "AzureKeyVault", new ServiceTag()
                     {
@@ -426,14 +426,14 @@ namespace AzW.Job.CacheHydrator
                         Id = "AzurePortal",
                         Name = "AzurePortal"
                     });
-                    
+
                     await _cache.SetServiceTagAsync
                     ("servicetag" + " " +  "WindowsVirtualDesktop", new ServiceTag()
                     {
                         Id = "WindowsVirtualDesktop",
                         Name = "WindowsVirtualDesktop"
                     });
-            
+
                 _logger.Information("CacheHydrator-ServiceTag cache hydration completed");
             }
             catch(Exception ex)
@@ -454,7 +454,7 @@ namespace AzW.Job.CacheHydrator
                     {
                         try
                         {
-                            await _cache.SetVMImageAsync(vmImg.SearchPattern, vmImg);
+                            //await _cache.SetVMImageAsync(vmImg.SearchPattern, vmImg);
                         }
                         catch(Exception ex)
                         {
@@ -477,9 +477,9 @@ namespace AzW.Job.CacheHydrator
             IEnumerable<IVirtualMachinePublisher> publishers = null;
 
             try
-            {     
+            {
                 //var _azure = Microsoft.Azure.Management.Fluent.Azure.Configure().Authenticate(azureCreds);
-                        
+
                 publishers = _azure.VirtualMachineImages.Publishers.ListByRegion(Region.AsiaSouthEast);
             }
             catch(Exception ex)
@@ -494,16 +494,16 @@ namespace AzW.Job.CacheHydrator
 
             foreach (var publisher in publishers)
             {
-                if(StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "Canonical") || 
+                if(StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "Canonical") ||
                    StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "SUSE") ||
                    StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "RedHat") ||
                    StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "Debian") ||
                    StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "MicrosoftWindowsServer") ||
-                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "MicrosoftWindowsDesktop") || 
-                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "Oracle") || 
-                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "MicrosoftSharePoint") || 
-                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "MicrosoftVisualStudio") || 
-                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "MicrosoftDynamicsAX") || 
+                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "MicrosoftWindowsDesktop") ||
+                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "Oracle") ||
+                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "MicrosoftSharePoint") ||
+                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "MicrosoftVisualStudio") ||
+                   StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "MicrosoftDynamicsAX") ||
                    StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "MicrosoftSQLServer") ||
                    StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "center-for-internet-security-inc") ||
                    StringComparer.OrdinalIgnoreCase.Equals(publisher.Name, "paloaltonetworks") ||
@@ -531,7 +531,7 @@ namespace AzW.Job.CacheHydrator
                                     string offerWithoutHyphenUnderScore = offerWithoutHyphen.Replace('_', ' ');
                                     string skuNameWithoutHyphen = sku.Name.Replace('-', ' ');
                                     string skuNameWithoutHyphenUnderScore = skuNameWithoutHyphen.Replace('_', ' ');
-                                    
+
                                     string searchPattern = "";
 
                                     if(publisher.Name == "Canonical")
@@ -566,18 +566,17 @@ namespace AzW.Job.CacheHydrator
                                         searchPattern = "check checkpoint";
                                     else if(publisher.Name == "barracudanetworks")
                                         searchPattern = "barracuda";
-                                            
+
                                     string displayName =
                                         offerWithoutHyphenUnderScore + " " + skuNameWithoutHyphenUnderScore;
 
                                     yield return new VMImage()
                                         {
                                             DisplayName = displayName,
-                                            SearchPattern = searchPattern + " " + offer.Name + "_" + sku.Name,
+                                            SearcheableName = searchPattern + " " + offer.Name + "_" + sku.Name,
                                             Publisher = publisher.Name,
                                             Offer = offer.Name,
-                                            Sku = sku.Name,
-                                            Version = image.Version
+                                            Sku = sku.Name
                                         };
                                 }
                             }
@@ -599,7 +598,7 @@ namespace AzW.Job.CacheHydrator
         //                     "https://login.microsoftonline.com/",
         //                     "microsoft.onmicrosoft.com"));
 
-           
+
         //     //Ask the logged in user to authenticate, so that this client app can get a token on his behalf
         //     var result = await authenticationContext.AcquireTokenAsync
         //         ("https://management.azure.com", new ClientCredential(_secret.ClientId, _secret.ClientSecret));
@@ -611,7 +610,7 @@ namespace AzW.Job.CacheHydrator
         //                 "subscriptions",
         //                 _secret.SubscriptionId,
         //                 "providers/Microsoft.Commerce/RateCard?api-version=2016-08-31-preview&$filter=OfferDurableId eq 'MS-AZR-0003P' and Currency eq 'USD' and Locale eq 'en-US' and RegionInfo eq 'US'");
-                
+
         //         HttpWebRequest request = (HttpWebRequest)WebRequest.Create(requestURL);
 
         //         // Add the OAuth Authorization header, and Content Type header
@@ -619,16 +618,16 @@ namespace AzW.Job.CacheHydrator
         //         request.ContentType = "application/json";
 
         //         HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                
+
         //         Stream receiveStream = response.GetResponseStream();
 
         //         StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8);
         //         string rateCardJson = readStream.ReadToEnd();
-                
+
         //         File.WriteAllText(@"C:\Users\weixzha\Desktop\ratecard.json", rateCardJson);
 
-        //         // Convert the Stream to a strongly typed RateCardPayload object.  
-        //         // You can also walk through this object to manipulate the individuals member objects. 
+        //         // Convert the Stream to a strongly typed RateCardPayload object.
+        //         // You can also walk through this object to manipulate the individuals member objects.
         //         RateCardPayload payload =
         //             JsonConvert.DeserializeObject<RateCardPayload>(rateCardJson);
 
@@ -641,9 +640,9 @@ namespace AzW.Job.CacheHydrator
         //                 meter.MeterRegion.Contains("Azure Stack") ||
         //                 meter.MeterRegion.StartsWith("Zone"))
         //                 continue;
-                        
+
         //             double rate = Math.Round(meter.MeterRates.FirstOrDefault().Value, 2);
-                    
+
         //             string unitName = "";
         //             double unitVal = 0;
 
@@ -673,7 +672,7 @@ namespace AzW.Job.CacheHydrator
         //         throw ex;
         //     }
         // }
-        
+
         private Microsoft.Azure.Management.Fluent.IAzure _azure;
 
         private BlobManager _blobManager;
