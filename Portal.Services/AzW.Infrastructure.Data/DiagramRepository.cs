@@ -5,15 +5,17 @@ using System.Threading.Tasks;
 using AzW.Model;
 using AzW.Secret;
 using MongoDB.Driver;
+using Serilog.Core;
 
 namespace AzW.Infrastructure.Data
 {
     public class DiagramRepository : IDiagramRepository
     {
-        public DiagramRepository(WorkbenchSecret secret, BlobStorageManager blobStorageManager)
+        public DiagramRepository(WorkbenchSecret secret, BlobStorageManager blobStorageManager, Logger logger)
         {
             _secret =secret;
             _blob = blobStorageManager;
+            _logger = logger;
         }
 
         #region Anonymous diagram
@@ -26,7 +28,7 @@ namespace AzW.Infrastructure.Data
 
                 var coll =
                     db.GetCollection<AnonyDiagramShareContext>(CollectionName.AnonyDiagram);
-                
+
                 //diagram now stores in blob storage
                 await _blob.SaveSharedLinkDiagram(context.UID, context.DiagramXml);
                 context.DiagramXml = string.Empty;
@@ -35,29 +37,15 @@ namespace AzW.Infrastructure.Data
 
                 return new DiagramSaveResult() { IsSuccess = true };
             }
-            catch(MongoWriteException mwex)
+            catch(MongoConnectionException mce)
             {
-                if(mwex.Message.ToLowerInvariant().Contains("request size is too large"))
-                    return new DiagramSaveResult()
-                    {
-                        IsSuccess = false,
-                        ErrorCode = "diagram-to-large"
-                    };
-                throw mwex;
-            }
-            catch(MongoCommandException mex)
-            {
-                if(mex.Message.ToLowerInvariant().Contains("request size is too large"))
-                    return new DiagramSaveResult()
-                    {
-                        IsSuccess = false,
-                        ErrorCode = "diagram-to-large"
-                    };
-                throw mex;
+                _logger.Error(mce.ToString());
+                return new DiagramSaveResult() { IsSuccess = false };
             }
             catch(Exception ex)
             {
-                throw ex;
+               _logger.Error(ex.ToString());
+               return new DiagramSaveResult() { IsSuccess = false };
             }
         }
 
@@ -72,15 +60,15 @@ namespace AzW.Infrastructure.Data
 
                 var coll =
                     db.GetCollection<SharedDiagramMySpaceInfo>(CollectionName.MySpaceSharedDiagram);
-                
+
                  var sharedDiagram =
                         (await coll.FindAsync(x => x.UID == anonyDiagramId)).SingleOrDefault();
-                    
+
                 if(sharedDiagram != null)
                     diagram = await _blob.GetSharedDiagramFromMySpace(anonyDiagramId);
                 else
                     diagram = await _blob.GetSharedLinkDiagram(anonyDiagramId);
-                               
+
                 return new AnonyDiagramShareContext() {DiagramXml = diagram};
             }
             catch(Exception ex)
@@ -101,7 +89,7 @@ namespace AzW.Infrastructure.Data
 
             var coll =
                 db.GetCollection<SharedDiagramMySpaceInfo>(CollectionName.MySpaceSharedDiagram);
-        
+
             using (IAsyncCursor<SharedDiagramMySpaceInfo> cursor =
                 await coll.FindAsync(x => x.EmailId == emailId))
             {
@@ -123,7 +111,7 @@ namespace AzW.Infrastructure.Data
         {
             string diagram =
                 await _blob.GetSharedDiagramFromMySpace(diagramUID);
-            
+
             return diagram;
         }
 
@@ -134,10 +122,10 @@ namespace AzW.Infrastructure.Data
             var coll = db.GetCollection<SharedDiagramMySpaceInfo>(CollectionName.MySpaceSharedDiagram);
             var filter =
                 Builders<WorkspaceDiagramContext>.Filter.Eq(x => x.EmailId, emailId);
-            
+
             var sharedDiagramsList =
                 (await coll.FindAsync(x => x.EmailId == emailId)).ToList<SharedDiagramMySpaceInfo>();
-            
+
             return sharedDiagramsList;
         }
 
@@ -149,7 +137,7 @@ namespace AzW.Infrastructure.Data
 
                 var coll =
                     db.GetCollection<SharedDiagramMySpaceContext>(CollectionName.MySpaceSharedDiagram);
-                
+
                 //diagram now stores in blob storage
                 await _blob.SaveSharedDiagramInMySpace(context.EmailId, context.UID, context.DiagramXml);
                 //don't save diagramJson to Cosmos
@@ -191,12 +179,12 @@ namespace AzW.Infrastructure.Data
 
             var coll =
                 db.GetCollection<SharedDiagramMySpaceContext>(CollectionName.MySpaceSharedDiagram);
-            
+
             var existingSharedDiagram = coll.FindSync(x =>
                     x.EmailId == emailId &&
                     x.UID == diagramUID
                 ).SingleOrDefault();
-            
+
             if(existingSharedDiagram == null)
                 throw new Exception("Existing shared diagram not found when performing DiagramRepository.UpdateSharedDiagramInMySpace");
 
@@ -222,14 +210,14 @@ namespace AzW.Infrastructure.Data
             {
                 var result =
                     await coll.DeleteOneAsync<SharedDiagramMySpaceInfo>(x => x.EmailId == emailId && x.UID ==  diagramUID);
-            
+
                 if(result.DeletedCount != 1)
                 {
                     //log record not found, not deleted
                     return false;
                 }
             }
-            
+
             return true;
         }
 
@@ -249,8 +237,8 @@ namespace AzW.Infrastructure.Data
                 var db = CosmosDbHelper.GetDatabase(_secret);
 
                 var coll = db.GetCollection<WorkspaceDiagramContext>(CollectionName.MySpace);
-               
-                var existingDiagram = coll.FindSync(x => 
+
+                var existingDiagram = coll.FindSync(x =>
                     x.EmailId == context.EmailId &&
                     x.CollectionName == context.CollectionName &&
                     x.DiagramName == context.DiagramName
@@ -261,7 +249,7 @@ namespace AzW.Infrastructure.Data
                     //save diagram to blob
                     await _blob.SaveDiagramToMySpace
                         (context.DiagramXml,context.EmailId,context.CollectionName,context.DiagramName);
-                    
+
                     context.DiagramXml = string.Empty; //dont save to cosmos anymore
                     context.DateTimeSaved = DateTime.Now;
 
@@ -314,7 +302,7 @@ namespace AzW.Infrastructure.Data
             var contextResult = new List<WorkspaceDiagramContextResult>();
 
             var coll = db.GetCollection<WorkspaceDiagramContext>(CollectionName.MySpace);
-            
+
               using (IAsyncCursor<WorkspaceDiagramContext> cursor =
                 await coll.FindAsync(x => x.EmailId == emailId))
             {
@@ -334,12 +322,12 @@ namespace AzW.Infrastructure.Data
                            DiagramName = context.DiagramName,
                            DateTimeSaved = context.DateTimeSaved
                         //    SizeInMB = size
-                           
+
                        });
                     }
                 }
             }
-            
+
             return contextResult;
         }
 
@@ -350,20 +338,20 @@ namespace AzW.Infrastructure.Data
             var coll = db.GetCollection<WorkspaceDiagramContext>(CollectionName.MySpace);
             var filter =
                 Builders<WorkspaceDiagramContext>.Filter.Eq(x => x.EmailId, emailId);
-            
+
             var collectionNames = await coll.Find(filter)
                 .Project(x => x.CollectionName).ToListAsync();
-            
+
             return collectionNames;
         }
 
-        
+
         public async Task<string> LoadDiagramFromWorkspace
             (string emailId, string collectionName, string diagramName)
         {
             string diagram =
                 await _blob.GetDiagramFromMySpace(emailId, collectionName, diagramName);
-            
+
             return diagram;
         }
 
@@ -380,14 +368,14 @@ namespace AzW.Infrastructure.Data
             {
                 var result = await coll.DeleteOneAsync<WorkspaceDiagramContext>
                     (x => x.EmailId == emailId && x.CollectionName == collectionName && x.DiagramName ==  diagramName);
-            
+
                 if(result.DeletedCount != 1)
                 {
                     //log record not found, not deleted
                     return false;
                 }
             }
-            
+
             return true;
         }
 
@@ -401,6 +389,7 @@ namespace AzW.Infrastructure.Data
             };
         }
 
+        private Logger _logger;
         private WorkbenchSecret _secret;
         private BlobStorageManager _blob;
     }

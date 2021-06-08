@@ -268,3 +268,6 @@ __pycache__/
 # Mac
 .DS_Store
 .vscode/settings.json
+.vscode/settings.json
+.vscode/redis-xplorer.redis
+.vscode/settings.json

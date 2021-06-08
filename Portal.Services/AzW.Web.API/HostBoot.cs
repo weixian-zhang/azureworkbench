@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -5,28 +6,35 @@ using AzW.Infrastructure.Data;
 using AzW.Model;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using Serilog.Core;
 
 namespace AzW.Web.API
 {
     internal sealed class HostBoot : IHostedService
     {
-        public HostBoot(ICacheRepository cache, BlobStorageManager blob)
+        public HostBoot(ICacheRepository cache, BlobStorageManager blob, Logger logger)
         {
             _cache = cache;
             _blob = blob;
+            _logger = logger;
         }
 
         public async Task StartAsync(CancellationToken token)
         {
+            try
+            {
+                await InitServiceTags();
 
-            await InitServiceTags();
+                await InitVMSizes();
 
-            await InitVMSizes();
+                await InitVMImagePublishers();
 
-            await InitVMImagePublishers();
-
-            await InitVMImages();
-
+                await InitVMImages();
+            }
+            catch(Exception ex)
+            {
+                _logger.Error(ex.ToString());
+            }
         }
 
         private async Task InitServiceTags()
@@ -145,6 +153,7 @@ namespace AzW.Web.API
             return Task.FromResult(true);
         }
 
+        private Logger _logger;
         private BlobStorageManager _blob;
         private ICacheRepository _cache;
     }
