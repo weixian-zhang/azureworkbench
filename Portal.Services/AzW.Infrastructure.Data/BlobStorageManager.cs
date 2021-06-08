@@ -46,7 +46,7 @@ namespace AzW.Infrastructure.Data
             byte[] byteArray = Encoding.ASCII.GetBytes(diagram);
             using(var ms = new MemoryStream(byteArray))
             {
-                await bc.UploadAsync(ms);
+                await bc.UploadAsync(ms, true);
             }
         }
 

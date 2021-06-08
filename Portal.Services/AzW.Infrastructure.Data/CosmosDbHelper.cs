@@ -6,7 +6,7 @@ using MongoDB.Driver;
 
 namespace AzW.Infrastructure.Data
 {
-    public class CosmosDbHelper
+    public static class CosmosDbHelper
     {
         public static IMongoDatabase GetDatabase(WorkbenchSecret secret)
         {
@@ -20,8 +20,13 @@ namespace AzW.Infrastructure.Data
                 MongoClientSettings settings = MongoClientSettings.FromUrl(
                 new MongoUrl(secret.AzCosmonMongoConnectionString)
                 );
-                settings.SslSettings = 
+                settings.SslSettings =
                 new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
+
+                settings.RetryReads = true;
+                settings.RetryWrites = true;
+                settings.MaxConnectionIdleTime = TimeSpan.FromMinutes(5);
+
                 var mongoClient = new MongoClient(settings);
 
                 return mongoClient.GetDatabase("azworkbench");

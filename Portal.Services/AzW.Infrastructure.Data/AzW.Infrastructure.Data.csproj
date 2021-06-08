@@ -2,8 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
-  <ItemGroup>&#xD;
-&#xD;
+  <ItemGroup>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AzW.Model\AzW.Model.csproj"/>
@@ -16,5 +15,6 @@
     <PackageReference Include="ByteSize" Version="2.0.0"/>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.5.1"/>
     <PackageReference Include="shortid" Version="2.0.3"/>
+    <PackageReference Include="Serilog" Version="2.10.0"/>
   </ItemGroup>
 </Project>
