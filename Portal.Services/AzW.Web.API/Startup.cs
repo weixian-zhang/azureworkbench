@@ -99,7 +99,7 @@ namespace AzW.Web.API
 
             app.UseSwagger();
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
@@ -293,6 +293,10 @@ namespace AzW.Web.API
                     LogEventLevel.Debug,
                     collectionName: "Log-API",
                     period: TimeSpan.Zero)
+                    .WriteTo
+                        .ApplicationInsights(new TelemetryConfiguration(){
+                            InstrumentationKey = _secrets.AppInsightsKey
+                        }, new TraceTelemetryConverter())
                 .CreateLogger();
         }
 

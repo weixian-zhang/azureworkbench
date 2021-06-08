@@ -154,14 +154,14 @@ namespace AzW.Infrastructure.Data
         {
             var redisConfiguration = new RedisConfiguration()
             {
-                AbortOnConnectFail = true,
+                AbortOnConnectFail = false,
                 KeyPrefix = VMImageKeyPrefix,
                 Hosts = new RedisHost[]
                 {
                     new RedisHost(){Host = _redisHost, Port = 6380},
                 },
                 AllowAdmin = false,
-                ConnectTimeout = 3000,
+                ConnectTimeout = 30000,
                 Database = 0,
                 Ssl = true,
                 Password = _redisPassword,
