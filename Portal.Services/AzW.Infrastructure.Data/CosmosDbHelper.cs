@@ -24,7 +24,7 @@ namespace AzW.Infrastructure.Data
                 new SslSettings() { EnabledSslProtocols = SslProtocols.Tls12 };
 
                 settings.RetryReads = true;
-                settings.RetryWrites = true;
+                settings.RetryWrites = false;
                 settings.MaxConnectionIdleTime = TimeSpan.FromMinutes(5);
 
                 var mongoClient = new MongoClient(settings);
