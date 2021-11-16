@@ -14,8 +14,22 @@ variables:
 
 steps:
 
+- task: CmdLine@2
+  inputs:
+    script: |
+      echo  '$(System.DefaultWorkingDirectory)'
+      dir
+      dir subfoldername
+
 - script:
-  workingDirectory: /Portal.Services/AzW.Web.API/
+  workingDirectory: Portal.Services/AzW.Web.API/
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      echo  '$(System.DefaultWorkingDirectory)'
+      dir
+      dir subfoldername
 
 # - script: dotnet build --configuration $(buildConfiguration)
 #   displayName: 'dotnet build $(buildConfiguration)'
