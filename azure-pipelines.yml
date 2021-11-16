@@ -13,13 +13,11 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: CmdLine@2
-  name: changeDirectoryToAPIs
-  inputs:
-    script: |
-      cd /Portal.Services/AzW.Web.API/
 
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+- script:
+  workingDirectory: /Portal.Services/AzW.Web.API/
+
+# - script: dotnet build --configuration $(buildConfiguration)
+#   displayName: 'dotnet build $(buildConfiguration)'
 
   
