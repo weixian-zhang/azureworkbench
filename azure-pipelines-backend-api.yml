@@ -17,6 +17,11 @@ variables:
 
 steps:
 
+- task: CredScan@3
+  displayName: scan code for creds
+  inputs:
+    scanFolder: ${{ variables.apiWorkingDir }}
+
 - task: UseDotNet@2
   displayName: set use DotNet 5.0
   inputs:
@@ -38,6 +43,13 @@ steps:
 
 - script: dotnet publish ${{ variables.apiWorkingDir }} -o ${{ variables.apiPublishPath }}
   displayName: 'dotnet publish'
+
+- task: BinSkim@4
+  inputs:
+    InputType: 'Basic'
+    Function: 'analyze'
+    TargetPattern: 'guardianGlob'
+    AnalyzeTargetGlob: '{{ variables.apiPublishPath }}\**.dll;{{ variables.apiPublishPath }}\**.exe;'
 
 - task: PublishBuildArtifacts@1
   name: publish_build_artifact
