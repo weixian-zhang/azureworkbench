@@ -20,16 +20,23 @@ steps:
     version: '5.0.x'
     includePreviewVersions: true # Required for preview versions
 
-- task: DotNetCoreCLI@2
-  displayName: dotnet restore
-  inputs:
-    command: 'restore'
-    feedsToUse: 'select'
+- script: |
+    echo build in directory Portal.Services/AzW.Web.API
 
-- script: dotnet build --configuration $(buildConfiguration)
+- script: dotnet restore Portal.Services/AzW.Web.API
+  name: restore
+  displayName: 'dotnet restore'
+
+- script: dotnet build Portal.Services/AzW.Web.API --configuration $(buildConfiguration)
   name: dotnet_build
-  displayName: 'dotnet build $(buildConfiguration)'
-  workingDirectory: Portal.Services/AzW.Web.API
+  displayName: 'dotnet build'
+
+- script: |
+    echo publishing Backend.API to directory: $(Build.ArtifactStagingDirectory)/api/publish
+
+- script: dotnet publish Portal.Services/AzW.Web.API -o $(Build.ArtifactStagingDirectory)/api/publish
+  name: dotnet_build
+  displayName: 'dotnet build'
 
 - task: DotNetCoreCLI@2
   name: dotnet_publish
