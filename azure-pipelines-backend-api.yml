@@ -15,19 +15,19 @@ variables:
 steps:
 
 - task: DotNetCoreCLI@2
-  name: dotnet-restore
+  name: dotnet_restore
   inputs:
     command: 'restore'
     feedsToUse: 'select'
     restoreDirectory: 'Portal.Services/AzW.Web.API'
 
 - script: dotnet build --configuration $(buildConfiguration)
-  name: dotnet-build
+  name: dotnet_build
   displayName: 'dotnet build $(buildConfiguration)'
   workingDirectory: Portal.Services/AzW.Web.API
 
 - task: DotNetCoreCLI@2
-  name: dotnet-publish
+  name: dotnet_publish
   inputs:
     command: 'publish'
     publishWebProjects: true
@@ -35,6 +35,7 @@ steps:
 
 
 - task: PublishBuildArtifacts@1
+  name: publish_build_artifact
   inputs:
      PathtoPublish: '$(Build.ArtifactStagingDirectory)/api/publish'
      ArtifactName: 'drop'
