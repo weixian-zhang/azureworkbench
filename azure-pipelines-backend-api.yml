@@ -3,6 +3,7 @@
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
+
 trigger:
 - master
 
@@ -11,6 +12,8 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
+  apiWorkingDir: 'Portal.Services/AzW.Web.API'
+  apiPublishPath: $(Build.ArtifactStagingDirectory)/api/publish
 
 steps:
 
@@ -27,19 +30,19 @@ steps:
   name: restore
   displayName: 'dotnet restore'
 
-- script: dotnet build Portal.Services/AzW.Web.API --configuration $(buildConfiguration)
+- script: dotnet build ${{ variables.apiWorkingDir }} --configuration $(buildConfiguration)
   displayName: 'dotnet build'
 
 - script: |
-    echo publishing Backend.API to directory: $(Build.ArtifactStagingDirectory)/api/publish
+    echo publishing Backend.API to directory: ${{ variables.apiPublishPath }}
 
-- script: dotnet publish Portal.Services/AzW.Web.API -o $(Build.ArtifactStagingDirectory)/api/publish
-  displayName: 'dotnet build'
+- script: dotnet publish ${{ variables.apiWorkingDir }} -o ${{ variables.apiPublishPath }}
+  displayName: 'dotnet publish'
 
 - task: PublishBuildArtifacts@1
   name: publish_build_artifact
   inputs:
-     PathtoPublish: '$(Build.ArtifactStagingDirectory)/api/publish'
+     PathtoPublish: '${{ variables.apiPublishPath }}'
      ArtifactName: 'drop'
      publishLocation: 'Container'
 
