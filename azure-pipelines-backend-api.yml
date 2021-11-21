@@ -21,7 +21,7 @@ steps:
   displayName: scan code for creds
   inputs:
     toolVersion: Latest
-    scanFolder: ${Build.SourcesDirectory}
+    scanFolder: ${Build.SourcesDirectory}/Portal.Services/AzW.Web.API
 
 # - task: UseDotNet@2
 #   displayName: set use DotNet 5.0
