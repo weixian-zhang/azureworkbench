@@ -20,7 +20,8 @@ steps:
 - task: CredScan@3
   displayName: scan code for creds
   inputs:
-    scanFolder: ${Build.SourcesDirectory}/Portal.Services/AzW.Web.API
+    toolVersion: Latest
+    scanFolder: ${Build.SourcesDirectory}
 
 # - task: UseDotNet@2
 #   displayName: set use DotNet 5.0
