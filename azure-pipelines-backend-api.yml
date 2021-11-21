@@ -17,7 +17,7 @@ stages:
   pool:
     vmImage: ubuntu-latest
   jobs:
-    - job: Build Backend API
+    - job: CI
 
       steps:
        - task: CredScan@3
@@ -61,3 +61,23 @@ stages:
             ArtifactName: 'drop'
             publishLocation: 'Container'
   
+    - job: CD
+
+      steps:
+        
+      - task: DownloadBuildArtifacts@1
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          downloadPath: '$(System.ArtifactsDirectory)/api/publish'
+          artifactName: 'drop'
+    
+      - task: AzureRmWebAppDeployment@4
+        inputs:
+          ConnectionType: 'AzureRM'
+          azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
+          appType: 'webApp'
+          WebAppName: 'webapp-api-dev'
+          packageForLinux: '$(System.DefaultWorkingDirectory)/*'
+
+      
