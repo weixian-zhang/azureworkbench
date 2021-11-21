@@ -7,27 +7,29 @@
 trigger:
 - master
 
-pool:
-  vmImage: ubuntu-latest
-
 variables:
   buildConfiguration: 'Release'
   apiWorkingDir: 'Portal.Services/AzW.Web.API'
   apiPublishPath: $(Build.ArtifactStagingDirectory)/api/publish
 
-steps:
+stages:
+- stage: Build
+  pool:
+    vmImage: ubuntu-latest
+  jobs:
+    - job: Build Backend API
 
-- task: CredScan@3
-  displayName: scan code for creds
-  inputs:
-    toolVersion: Latest
-    scanFolder: ${Build.SourcesDirectory}/Portal.Services/AzW.Web.API
-
-- task: UseDotNet@2
-  displayName: set use DotNet 5.0
-  inputs:
-    version: '5.0.x'
-    includePreviewVersions: true # Required for preview versions
+      steps:
+       - task: CredScan@3
+         displayName: scan code for creds
+         inputs:
+           toolVersion: Latest
+           scanFolder: ${Build.SourcesDirectory}/Portal.Services/AzW.Web.API
+       - task: UseDotNet@2
+         displayName: set use DotNet 5.0
+         inputs:
+           version: '5.0.x'
+           includePreviewVersions: true # Required for preview versions
 
 - script: |
     echo build in directory Portal.Services/AzW.Web.API
