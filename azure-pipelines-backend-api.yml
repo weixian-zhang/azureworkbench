@@ -61,6 +61,7 @@ stages:
             PathtoPublish: '${{ variables.apiPublishPath }}'
             ArtifactName: 'drop'
             publishLocation: 'Container'
+
     - job: CD
     
       steps:
@@ -71,7 +72,7 @@ stages:
                 downloadType: 'single'
                 downloadPath: '$(System.ArtifactsDirectory)/api/publish'
                 artifactName: 'drop'
-	          
+                  
        - task: AzureRmWebAppDeployment@4
          inputs:
                 ConnectionType: 'AzureRM'
