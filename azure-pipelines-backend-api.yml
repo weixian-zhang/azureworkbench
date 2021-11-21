@@ -61,24 +61,19 @@ stages:
             PathtoPublish: '${{ variables.apiPublishPath }}'
             ArtifactName: 'drop'
             publishLocation: 'Container'
+    - job: CD
+    
+      steps:
   
-    - deployment: 
-      environment: Dev
-      pool:
-        vmImage: ubuntu-latest
-      strategy:
-        runOnce:
-          deploy:
-            steps:
-            - task: DownloadBuildArtifacts@1
-              inputs:
+       - task: DownloadBuildArtifacts@1
+         inputs:
                 buildType: 'current'
                 downloadType: 'single'
                 downloadPath: '$(System.ArtifactsDirectory)/api/publish'
                 artifactName: 'drop'
 	          
-            - task: AzureRmWebAppDeployment@4
-              inputs:
+       - task: AzureRmWebAppDeployment@4
+         inputs:
                 ConnectionType: 'AzureRM'
                 azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                 appType: 'webApp'
