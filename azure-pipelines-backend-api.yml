@@ -79,6 +79,6 @@ stages:
                 azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                 appType: 'webApp'
                 WebAppName: 'webapp-api-dev'
-                packageForLinux: '$(System.ArtifactsDirectory)/api/publish/**'
+                packageForLinux: '$(System.ArtifactsDirectory)/api/publish'
 
       
