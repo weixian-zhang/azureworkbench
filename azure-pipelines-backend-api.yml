@@ -92,7 +92,7 @@ stages:
              deploymentMethod: 'auto'
   
        - task: InvokeRESTAPI@1
-         displayName: Verify Backend.API Running - calling https://beta-api.azureworkbench.com/healthz
+         displayName: Verify Backend.API Running
          inputs:
            connectionType: 'connectedServiceName'
            method: 'GET'
