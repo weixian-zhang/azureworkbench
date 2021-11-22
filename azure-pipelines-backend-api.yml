@@ -45,8 +45,15 @@ stages:
        - script: |
            echo publishing Backend.API to directory: ${{ variables.apiPublishPath }}
 
-       - script: dotnet publish ${{ variables.apiWorkingDir }} -o ${{ variables.apiPublishPath }}
-         displayName: 'dotnet publish'
+       - task: DotNetCoreCLI@2
+         inputs:
+           command: 'publish'
+           publishWebProjects: true
+           modifyOutputPath: true
+           zipAfterPublish: true
+           arguments: -o ${{ variables.apiPublishPath }}
+      #  - script: dotnet publish ${{ variables.apiWorkingDir }} -o ${{ variables.apiPublishPath }}
+      #    displayName: 'dotnet publish'
 
        - task: BinSkim@4
          inputs:
@@ -80,5 +87,6 @@ stages:
                 appType: 'webApp'
                 WebAppName: 'webapp-api-dev'
                 packageForLinux: '$(System.ArtifactsDirectory)/api/publish'
+
 
       
