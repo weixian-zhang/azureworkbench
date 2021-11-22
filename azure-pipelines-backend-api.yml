@@ -8,6 +8,7 @@ trigger:
 - master
 
 variables:
+  webappCurlStatus: false
   buildConfiguration: 'Release'
   apiWorkingDir: 'Portal.Services/AzW.Web.API'
   apiPublishPath: $(Build.ArtifactStagingDirectory)/api/publish
@@ -70,6 +71,7 @@ stages:
             publishLocation: 'Container'
 
     - job: CD
+      dependsOn: CI
     
       steps:
   
@@ -87,6 +89,15 @@ stages:
              appName: 'webapp-api-dev'
              package: '$(System.ArtifactsDirectory)/**/*.zip'
              deploymentMethod: 'auto'
+  
+       - script: |
+           result = $(curl https://beta-api.azureworkbench.com/healthz)
+           if [ “$result” == “200” ]
+           then
+           $(webappCurlStatus)=true
+           else
+           $(webappCurlStatus)=false
+         condition: eq(variables.webappCurlStatus, true)
       #  - task: AzureRmWebAppDeployment@4
       #    inputs:
       #           ConnectionType: 'AzureRM'
