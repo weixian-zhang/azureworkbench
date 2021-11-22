@@ -90,6 +90,7 @@ stages:
              package: '$(System.ArtifactsDirectory)/**/*.zip'
              deploymentMethod: 'auto'
   
+       
        - script: |
            result = $(curl https://beta-api.azureworkbench.com/healthz)
            if [ “$result” == “200” ]
@@ -97,14 +98,4 @@ stages:
            $(webappCurlStatus)=true
            else
            $(webappCurlStatus)=false
-         condition: eq(variables.webappCurlStatus, true)
-      #  - task: AzureRmWebAppDeployment@4
-      #    inputs:
-      #           ConnectionType: 'AzureRM'
-      #           azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
-      #           appType: 'webApp'
-      #           WebAppName: 'webapp-api-dev'
-      #           packageForLinux: '$(System.ArtifactsDirectory)/api/publish/**/*.zip'
-
-
-      
+         condition: eq(variables.webappCurlStatus, true)  
