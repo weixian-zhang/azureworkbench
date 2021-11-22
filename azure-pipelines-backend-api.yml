@@ -83,6 +83,7 @@ stages:
                 artifactName: 'drop'
          
        - task: AzureWebApp@1
+         displayName: Deploy to Azure App Service
          inputs:
              azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
              appType: 'webApp'
@@ -90,12 +91,21 @@ stages:
              package: '$(System.ArtifactsDirectory)/**/*.zip'
              deploymentMethod: 'auto'
   
+       - task: InvokeRESTAPI@1
+         displayName: Verify Backend.API Running - calling https://beta-api.azureworkbench.com/healthz
+         inputs:
+           connectionType: 'connectedServiceName'
+           method: 'GET'
+           headers: 
+           urlSuffix: 'https://beta-api.azureworkbench.com/healthz'
+           waitForCompletion: 'true'
+           successCriteria: '200'
        
-       - script: |
-           result = $(curl -s -o /dev/null -w “%{http_code}” https://beta-api.azureworkbench.com/healthz)
-           if [ $result == “200” ]
-           then
-           echo "##vso[task.setvariable variable=webappCurlStatus;]'true'"
-           else
-           echo "##vso[task.setvariable variable=webappCurlStatus;]'false'"
-         condition: eq(variables.webappCurlStatus, 'true')  
+      #  - script: |
+      #      result = $(curl -s -o /dev/null -w “%{http_code}” https://beta-api.azureworkbench.com/healthz)
+      #      if [ $result == “200” ]
+      #      then
+      #      echo "##vso[task.setvariable variable=webappCurlStatus;]'true'"
+      #      else
+      #      echo "##vso[task.setvariable variable=webappCurlStatus;]'false'"
+      #    condition: eq(variables.webappCurlStatus, 'true')  
