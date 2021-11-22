@@ -91,21 +91,14 @@ stages:
              package: '$(System.ArtifactsDirectory)/**/*.zip'
              deploymentMethod: 'auto'
   
-       - task: InvokeRESTAPI@1
-         displayName: Verify Backend.API Running
-         inputs:
-           connectionType: 'connectedServiceName'
-           method: 'GET'
-           headers: 
-           urlSuffix: 'https://beta-api.azureworkbench.com/healthz'
-           waitForCompletion: 'true'
-           successCriteria: '200'
        
-      #  - script: |
-      #      result = $(curl -s -o /dev/null -w “%{http_code}” https://beta-api.azureworkbench.com/healthz)
-      #      if [ $result == “200” ]
-      #      then
-      #      echo "##vso[task.setvariable variable=webappCurlStatus;]'true'"
-      #      else
-      #      echo "##vso[task.setvariable variable=webappCurlStatus;]'false'"
-      #    condition: eq(variables.webappCurlStatus, 'true')  
+       - script: |
+           result = $(curl -s -o /dev/null -w “%{http_code}” https://beta-api.azureworkbench.com/healthz)
+           if [ $result == “200” ]
+           then
+           echo 200
+           echo "##vso[task.setvariable variable=webappCurlStatus;]'true'"
+           else
+           2cho not 200
+           echo "##vso[task.setvariable variable=webappCurlStatus;]'false'"
+         #condition: eq(variables.webappCurlStatus, 'true')  
