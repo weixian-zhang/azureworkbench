@@ -79,14 +79,21 @@ stages:
                 downloadType: 'single'
                 downloadPath: '$(System.ArtifactsDirectory)/api/publish'
                 artifactName: 'drop'
-                  
-       - task: AzureRmWebAppDeployment@4
+         
+       - task: AzureWebApp@1
          inputs:
-                ConnectionType: 'AzureRM'
-                azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
-                appType: 'webApp'
-                WebAppName: 'webapp-api-dev'
-                packageForLinux: '$(System.ArtifactsDirectory)/api/publish/**/*.zip'
+             azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
+             appType: 'webApp'
+             appName: 'webapp-api-dev'
+             package: '$(System.ArtifactsDirectory)/**/*.zip'
+             deploymentMethod: 'auto'
+      #  - task: AzureRmWebAppDeployment@4
+      #    inputs:
+      #           ConnectionType: 'AzureRM'
+      #           azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
+      #           appType: 'webApp'
+      #           WebAppName: 'webapp-api-dev'
+      #           packageForLinux: '$(System.ArtifactsDirectory)/api/publish/**/*.zip'
 
 
       
