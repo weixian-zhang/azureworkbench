@@ -92,7 +92,7 @@ stages:
   
        
        - script: |
-           result = $(curl https://beta-api.azureworkbench.com/healthz)
+           result = $(curl -s -o /dev/null -w “%{http_code}” https://beta-api.azureworkbench.com/healthz)
            if [ “$result” == “200” ]
            then
            echo "##vso[task.setvariable variable=webappCurlStatus;]'true'"
