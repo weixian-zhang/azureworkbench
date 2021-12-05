@@ -2873,13 +2873,12 @@ export default class ResourcePalette extends Component {
             },
             {
               Name: 'iot edge field gateway',
-              Tooltip: 'Iot Edge',
+              Tooltip: 'IoT Edge',
               azInfo: [],
               Image: require('../../assets/IconCloud/azure/iot/10186-icon-IoT Edge-IoT.svg'),
               Provisionable: false,
               IsPng: false,
-              IsVisible:true,
-              resourceType: ResourceType.IoTEdge()
+              IsVisible:true
             },
           ]
         }
