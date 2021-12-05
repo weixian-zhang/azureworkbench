@@ -19,7 +19,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build API",
-            "program": "${workspaceFolder}/Portal.Services/AzW.Web.API/bin/Debug/netcoreapp3.0/AzW.Web.API.exe",
+            "program": "${workspaceFolder}/Portal.Services/AzW.Web.API/bin/Debug/net5.0/AzW.Web.API.exe",
             "args": [],
             "cwd": "${workspaceRoot}",
             "stopAtEntry": false,

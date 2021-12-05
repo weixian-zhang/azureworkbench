@@ -1,5 +1,7 @@
 export default class ResourceType
 {
+    static IoTEdge() {return 'iotedge'; }
+    static ContainerApps() {return 'containerapps'; }
     static ImportExportJob() {return 'importexportjob'; }
     static ServiceEndpoint() {return 'serviceendpoint'; }
     static WindowsVM() {return 'vmWindows'; }

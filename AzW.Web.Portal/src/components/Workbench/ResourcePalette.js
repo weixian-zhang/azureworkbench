@@ -2518,6 +2518,16 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.ContainerRegistry()
+            },
+            {
+              Name: 'container apps',
+              Tooltip: 'Container Apps',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/container/02884-icon-Worker Container App-Preview.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.ContainerApps()
             }
           ]
         }
@@ -2541,7 +2551,7 @@ export default class ResourcePalette extends Component {
               Name: 'service bus asb',
               Tooltip: 'Azure Service Bus',
               azInfo: ['Private Link supported','Service Endpoint supported'],
-              Image: require('../../assets/IconCloud/azure/integration/10836-icon-Service Bus-General.svg'),
+              Image: require('../../assets/IconCloud/azure/integration/10836-icon-Service Bus-Integration.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true,
@@ -2860,7 +2870,17 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true,
               resourceType: ResourceType.TimeSeriesInsightsEventSource()
-            }
+            },
+            {
+              Name: 'iot edge field gateway',
+              Tooltip: 'Iot Edge',
+              azInfo: [],
+              Image: require('../../assets/IconCloud/azure/iot/10186-icon-IoT Edge-IoT.svg'),
+              Provisionable: false,
+              IsPng: false,
+              IsVisible:true,
+              resourceType: ResourceType.IoTEdge()
+            },
           ]
         }
        },
