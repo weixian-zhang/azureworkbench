@@ -4141,7 +4141,13 @@ loadPastedImageFromBrowserClipboard(src, callback){
     break;
 
 
-      //*nondeployable
+      //*Azure nondeployable
+
+      case 'IoT Edge':
+        this.createPictureShape
+        ({source: require('../../assets/IconCloud/azure/iot/10186-icon-IoT Edge-IoT.svg'),
+          label: 'iot edge', x: dropContext.x, y: dropContext.y});
+      break;
 
       case 'App Group(WVD)':
         this.createPictureShape
