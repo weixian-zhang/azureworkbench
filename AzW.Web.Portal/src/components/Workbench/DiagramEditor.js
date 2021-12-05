@@ -45,6 +45,7 @@ import WAF from "../../models/WAF";
 import AvailabilitySet from "../../models/AvailabilitySet";
 import ProximityPlacementGroup from "../../models/ProximityPlacementGroup";
 
+import ContainerApps from "../../models/ContainerApps";
 import PrivateLink from "../../models/PrivateLink";
 import LocalNetworkGateway from "../../models/LocalNetworkGateway";
 import PublicIpPrefixes from "../../models/PublicIpPrefixes";
@@ -172,6 +173,7 @@ import ElasticJobAgent from "../../models/ElasticJobAgent";
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
 
 //property panels
+import ContainerAppsPropPanel from './PropPanel/ContainerAppsPropPanel';
 import ImportExportJobPropPanel from './PropPanel/ImportExportJobPropPanel';
 import AzureFirewallManagerPropPanel from './PropPanel/AzureFirewallManagerPropPanel';
 import VNetPeeringPropPanel from './PropPanel/VNetPeeringPropPanel';
@@ -393,6 +395,7 @@ import AzureIcons from './Helpers/AzureIcons';
   render() {
     return (
       <div id="diagramEditor" className="diagramEditor">
+        <ContainerAppsPropPanel ref={this.containerappPropPanel} />
         <ImportExportJobPropPanel ref={this.importexportjobPropPanel} />
         <AzureFirewallManagerPropPanel ref={this.azfwmanagerPropPanel} />
         <VNetPeeringPropPanel ref={this.vnetpeeringPropPanel} />
@@ -411,6 +414,8 @@ import AzureIcons from './Helpers/AzureIcons';
         <WAFPropPanel ref={this.wafPropPanel} />
         <AvailabilitySetPropPanel ref={this.availabilitysetPropPanel} />
         <ProximityPlacementGroupPropPanel ref={this.proxpgPropPanel} />
+
+
 
         <PrivateLinkPropPanel ref={this.privatelinkPropPanel} />
         <LocalNetworkGatewayPropPanel  ref={this.localnetworkgwPanel} />
@@ -577,7 +582,7 @@ import AzureIcons from './Helpers/AzureIcons';
     this.availabilitysetPropPanel = React.createRef();
     this.proxpgPropPanel = React.createRef();
     this.wafPropPanel = React.createRef();
-
+    this.containerappPropPanel = React.createRef();
     this.privatelinkPropPanel = React.createRef();
     this.localnetworkgwPanel = React.createRef();
     this.pipprefixesPanel = React.createRef();
@@ -4493,6 +4498,16 @@ loadPastedImageFromBrowserClipboard(src, callback){
     break;
 
       //*non VIR
+      case ResourceType.ContainerApps():
+        var rsc = new ContainerApps();
+        rsc.ProvisionContext.ResourceType = ResourceType.ContainerApps();
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/container/02884-icon-Worker Container App-Preview.svg'),
+          label: 'container apps', x: dropContext.x, y: dropContext.y,
+          azcontext: rsc
+        });
+      break;
+
       case ResourceType.ImportExportJob():
         var rsc = new ImportExportJob();
         rsc.ProvisionContext.ResourceType = ResourceType.ImportExportJob();
@@ -5268,7 +5283,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
       case ResourceType.ASB():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/integration/10836-icon-Service Bus-General.svg'),
+          source: require('../../assets/IconCloud/azure/integration/10836-icon-Service Bus-Integration.svg'),
           label: 'service bus', x: dropContext.x, y: dropContext.y,
           azcontext: new ServiceBus()
         });
@@ -5453,6 +5468,12 @@ loadPastedImageFromBrowserClipboard(src, callback){
         });
       break;
 
+
+      case ResourceType.ContainerApps():
+        this.containerappPropPanel.current.show(userObject, function(savedUserObject){
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+      break;
 
   case ResourceType.VNetPeering():
     this.vnetpeeringPropPanel.current.show(userObject, this.diagram, function(savedUserObject){
