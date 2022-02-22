@@ -7,7 +7,7 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/Jobs/SharedLinkHouseKeeper/src",
+                "cwd": "${workspaceFolder}/src/Jobs/SharedLinkHouseKeeper/src",
                 "env": {
                     "env": "dev"
                 }
@@ -20,7 +20,7 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/Portal.Services/AzW.Infrastructure.AzureServices",
+                "cwd": "${workspaceFolder}/src/ApiServer/AzW.Infrastructure.AzureServices",
                 "env": {
                     "ASPNETCORE_ENVIRONMENT": "Development"
                 }
@@ -33,7 +33,7 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/Portal.Services/AzW.Model",
+                "cwd": "${workspaceFolder}/src/ApiServer/AzW.Model",
                 "env": {
                     "ASPNETCORE_ENVIRONMENT": "Development"
                 }
@@ -46,7 +46,7 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/Portal.Services/AzW.Secret",
+                "cwd": "${workspaceFolder}/src/ApiServer/AzW.Secret",
                 "env": {
                     "ASPNETCORE_ENVIRONMENT": "Development"
                 }
@@ -59,7 +59,7 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/Portal.Services/AzW.Web.API",
+                "cwd": "${workspaceFolder}/src/ApiServer/AzW.Web.API",
                 "env": {
                     "ASPNETCORE_ENVIRONMENT": "Development"
                 }
@@ -72,7 +72,7 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/Portal.Services/AzW.Web.API"
+                "cwd": "${workspaceFolder}/src/ApiServer/AzW.Web.API"
             },
             "problemMatcher": []
         },
@@ -82,7 +82,7 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/Portal.Services/AzW.Web.API"
+                "cwd": "${workspaceFolder}/src/ApiServer/AzW.Web.API"
             },
             "problemMatcher": []
         },
@@ -92,7 +92,7 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/Jobs/AzW.Job.CacheHydrator"
+                "cwd": "${workspaceFolder}/src/Jobs/AzW.Job.CacheHydrator"
             },
             "problemMatcher": []
         },
@@ -102,7 +102,7 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/Portal.Services/AzW.Infrastructure.Data",
+                "cwd": "${workspaceFolder}/src/ApiServer/AzW.Infrastructure.Data",
                 "env": {
                     "env": "dev"
                 }
@@ -115,7 +115,7 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/AzW.Web.Portal",
+                "cwd": "${workspaceFolder}/src/Portal",
                 "env": {
                     "env": "dev"
                 }
@@ -128,7 +128,7 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/AzW.Web.Portal"
+                "cwd": "${workspaceFolder}/src/Portal"
             },
 
             "problemMatcher": []
@@ -139,7 +139,7 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/AzW.Web.Portal"
+                "cwd": "${workspaceFolder}/src/Portal"
             },
             "problemMatcher": []
         },
@@ -149,7 +149,7 @@
             "type": "shell",
             "args": [],
             "options": {
-                "cwd": "${workspaceFolder}/Jobs/AzW.Job.CacheHydrator",
+                "cwd": "${workspaceFolder}/src/Jobs/AzW.Job.CacheHydrator",
                 "env": {
                     "env": "dev"
                 }
@@ -161,7 +161,7 @@
             "type": "func",
             "dependsOn": "Build Func Job CacheHydrator",
             "options": {
-                "cwd": "${workspaceFolder}/Jobs/AzW.Job.CacheHydrator/bin/Debug/netcoreapp3.0"
+                "cwd": "${workspaceFolder}/src/Jobs/AzW.Job.CacheHydrator/bin/Debug/netcoreapp3.0"
             },
             "command": "host start",
             "isBackground": true,
