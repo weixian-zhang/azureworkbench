@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
-  <ItemGroup>&#xD;
+  <ItemGroup>&#xD;&#xD;
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AzW.Model\AzW.Model.csproj"/>
@@ -10,11 +10,12 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MongoDB.Driver" Version="2.10.0"/>
-    <PackageReference Include="StackExchange.Redis" Version="2.2.14"/>
+    <PackageReference Include="StackExchange.Redis" Version="2.2.88"/>
     <PackageReference Include="StackExchange.Redis.Extensions.Newtonsoft" Version="5.5.0"/>
     <PackageReference Include="ByteSize" Version="2.0.0"/>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.5.1"/>
     <PackageReference Include="shortid" Version="2.0.3"/>
     <PackageReference Include="Serilog" Version="2.10.0"/>
+    <PackageReference Include="StackExchange.Redis.Extensions.Core" Version="5.5.0"/>
   </ItemGroup>
 </Project>

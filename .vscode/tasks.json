@@ -111,7 +111,7 @@
         },
         {
             "label": "Run Portal",
-            "command": "set \"REACT_APP_ENV=local\" && npm start",
+            "command": "set \"REACT_APP_ENV=local\" ; npm start",
             "type": "shell",
             "args": [],
             "options": {
@@ -124,7 +124,7 @@
         },
         {
             "label": "Publish Portal - Beta",
-            "command": "set \"REACT_APP_ENV=beta\" && npm run build",
+            "command": "set \"REACT_APP_ENV=beta ; npm run build",
             "type": "shell",
             "args": [],
             "options": {
@@ -161,7 +161,7 @@
             "type": "func",
             "dependsOn": "Build Func Job CacheHydrator",
             "options": {
-                "cwd": "${workspaceFolder}/src/Jobs/AzW.Job.CacheHydrator/bin/Debug/netcoreapp3.0"
+                "cwd": "${workspaceFolder}/src/Jobs/AzW.Job.CacheHydrator/bin/Debug/net5.0"
             },
             "command": "host start",
             "isBackground": true,

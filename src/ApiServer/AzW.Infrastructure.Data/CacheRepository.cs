@@ -15,6 +15,11 @@ namespace AzW.Infrastructure.Data
     public class CacheRepository : ICacheRepository
     {
         const int CacheItemExpiryDays = 30;
+        private string _redisHost;
+        private string _redisConnString;
+        private string _redisPassword;
+        private const string VMImageKeyPrefix = "vmimgKey_";
+        private IRedisDatabase _redis;
 
         public CacheRepository
             (string redisConnString, string redisHost, string redisPassword)
@@ -55,11 +60,18 @@ namespace AzW.Infrastructure.Data
 
         public async Task<bool> IsServiceTagExistAsync()
         {
-           var keys = await _redis.SearchKeysAsync("servicetag*");
-           if(keys.Count() > 0)
-                return true;
-           else
-                return false;
+            try
+            {
+                var keys = await _redis.SearchKeysAsync("servicetag*");
+                if(keys.Count() > 0)
+                        return true;
+                else
+                        return false;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task SetServiceTagAsync(string key, ServiceTag value)
@@ -113,7 +125,7 @@ namespace AzW.Infrastructure.Data
 
              IEnumerable<string> keys = await _redis.SearchKeysAsync(searchQuery);
 
-            var kvs = await _redis.GetAllAsync<VMImagePublisher>(keys);
+            var kvs = await _redis.GetAllAsync<VMImagePublisher>(keys.ToArray());
 
             return kvs.Values;
         }
@@ -124,7 +136,7 @@ namespace AzW.Infrastructure.Data
 
             IEnumerable<string> keys = await _redis.SearchKeysAsync(searchQuery);
 
-            var vmImagesKV = await _redis.GetAllAsync<VMImage>(keys);
+            var vmImagesKV = await _redis.GetAllAsync<VMImage>(keys.ToArray());
 
             return vmImagesKV.Values;
 
@@ -136,7 +148,7 @@ namespace AzW.Infrastructure.Data
         {
             IEnumerable<string> keys = await _redis.SearchKeysAsync("vmsize*");
 
-            var vmSizeKV = await _redis.GetAllAsync<VMSize>(keys);
+            var vmSizeKV = await _redis.GetAllAsync<VMSize>(keys.ToArray());
 
             return vmSizeKV.Values;
         }
@@ -145,7 +157,7 @@ namespace AzW.Infrastructure.Data
         {
              IEnumerable<string> keys = await _redis.SearchKeysAsync("servicetag*");
 
-            var stKV = await _redis.GetAllAsync<ServiceTag>(keys);
+            var stKV = await _redis.GetAllAsync<ServiceTag>(keys.ToArray());
 
             return stKV.Values;
         }
@@ -190,11 +202,7 @@ namespace AzW.Infrastructure.Data
 
 
 
-        private string _redisHost;
-        private string _redisConnString;
-        private string _redisPassword;
-        private const string VMImageKeyPrefix = "vmimgKey_";
-        private IRedisDatabase _redis;
+        
     }
 
     internal class SinglePool : IRedisCacheConnectionPoolManager

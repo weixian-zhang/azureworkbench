@@ -1,28 +1,35 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AzW.Infrastructure.AzureServices;
 using AzW.Infrastructure.Data;
 using AzW.Model;
 using AzW.Secret;
 using Newtonsoft.Json;
 using Microsoft.Azure.Management.Compute.Fluent;
-using Microsoft.Azure.Management.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
-using Microsoft.Azure.WebJobs;
-
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Rest;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Logging;
+using Azure.Identity;
+using Azure.Core;
 
 namespace AzW.Job.CacheHydrator
 {
     public class CacheHydrator
     {
+        const string _RunEveryHourCron = "*/3 * * * * *";
+        private static Microsoft.Azure.Management.Fluent.IAzure _azure;
+
+        private static BlobManager _blobManager;
+
+        private static WorkbenchSecret _secret;
+        private static ICacheRepository _cache;
+        private static Serilog.Core.Logger _logger;
+
         public CacheHydrator
             (WorkbenchSecret secret, ICacheRepository cache, Serilog.Core.Logger logger)
         {
@@ -31,29 +38,24 @@ namespace AzW.Job.CacheHydrator
             _logger = logger;
 
             _blobManager = new BlobManager(secret.StorageConnString);
-
-            // sdkCred =
-            //     new ServiceClientCredential(_secret.TenantId, _secret.ClientId, _secret.ClientSecret);
-
-            // azureCreds = new AzureCredentials
-            //     (sdkCred, null, _secret.TenantId, AzureEnvironment.AzureGlobalCloud);
-
-
-
-
         }
 
-        [FunctionName("CacheHydrator")]
-        public async Task Run([TimerTrigger("* */60 * * * *")]TimerInfo myTimer, Microsoft.Extensions.Logging.ILogger log)
+        [Function("CacheHydrator")]
+        public async Task Run([Microsoft.Azure.Functions.Worker.TimerTrigger(_RunEveryHourCron)] TimerInfo myTimer, FunctionContext functionContext)
         {
-            var azureServiceTokenProvider = new AzureServiceTokenProvider("RunAs=App;");
+            // var azureServiceTokenProvider = new AzureServiceTokenProvider("RunAs=App;");
 
-            string resource = @"https://management.azure.com/";
-            var accessToken = await azureServiceTokenProvider.GetAccessTokenAsync(resource).ConfigureAwait(false);
+            // string resource = @"https://management.azure.com/";
+            // var accessToken = await azureServiceTokenProvider.GetAccessTokenAsync(resource).ConfigureAwait(false);
+
+            var a = functionContext.Items;
+
+            var defaultCredential = new DefaultAzureCredential();
+            string accessToken = defaultCredential.GetToken(new TokenRequestContext(new[] { "https://management.azure.com/.default" })).Token;
+            var defaultTokenCredentials = new Microsoft.Rest.TokenCredentials(accessToken);
 
             var azCred = new AzureCredentials
-                (new TokenCredentials(accessToken), null, _secret.TenantId, AzureEnvironment.AzureGlobalCloud);
-
+                (defaultTokenCredentials, null, _secret.TenantId, AzureEnvironment.AzureGlobalCloud);
 
            _azure = Microsoft.Azure.Management.Fluent.Azure
                 .Configure()
@@ -584,101 +586,5 @@ namespace AzW.Job.CacheHydrator
                    }
             }
         }
-
-        //shelved
-        // private async Task GetRateCardPricings()
-        // {
-        //     try
-        //     {
-        //         if(await _rcRepo.IsRatecardExist())
-        //             return;
-
-        //        var authenticationContext =
-        //             new AuthenticationContext(  String.Format("{0}/{1}",
-        //                     "https://login.microsoftonline.com/",
-        //                     "microsoft.onmicrosoft.com"));
-
-
-        //     //Ask the logged in user to authenticate, so that this client app can get a token on his behalf
-        //     var result = await authenticationContext.AcquireTokenAsync
-        //         ("https://management.azure.com", new ClientCredential(_secret.ClientId, _secret.ClientSecret));
-
-        //         string accessToken = result.AccessToken;
-
-        //         string requestURL = String.Format("{0}/{1}/{2}/{3}",
-        //                 "https://management.azure.com",
-        //                 "subscriptions",
-        //                 _secret.SubscriptionId,
-        //                 "providers/Microsoft.Commerce/RateCard?api-version=2016-08-31-preview&$filter=OfferDurableId eq 'MS-AZR-0003P' and Currency eq 'USD' and Locale eq 'en-US' and RegionInfo eq 'US'");
-
-        //         HttpWebRequest request = (HttpWebRequest)WebRequest.Create(requestURL);
-
-        //         // Add the OAuth Authorization header, and Content Type header
-        //         request.Headers.Add(HttpRequestHeader.Authorization, "Bearer " + accessToken);
-        //         request.ContentType = "application/json";
-
-        //         HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-        //         Stream receiveStream = response.GetResponseStream();
-
-        //         StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8);
-        //         string rateCardJson = readStream.ReadToEnd();
-
-        //         File.WriteAllText(@"C:\Users\weixzha\Desktop\ratecard.json", rateCardJson);
-
-        //         // Convert the Stream to a strongly typed RateCardPayload object.
-        //         // You can also walk through this object to manipulate the individuals member objects.
-        //         RateCardPayload payload =
-        //             JsonConvert.DeserializeObject<RateCardPayload>(rateCardJson);
-
-        //         var ratecards = new List<Ratecard>();
-
-        //         foreach(var meter in payload.Meters)
-        //         {
-        //             if( meter.MeterRegion.Contains("NO East") ||
-        //                 meter.MeterRegion.Contains("NO West") ||
-        //                 meter.MeterRegion.Contains("Azure Stack") ||
-        //                 meter.MeterRegion.StartsWith("Zone"))
-        //                 continue;
-
-        //             double rate = Math.Round(meter.MeterRates.FirstOrDefault().Value, 2);
-
-        //             string unitName = "";
-        //             double unitVal = 0;
-
-        //             var splittedUnit = meter.Unit.Split(' ');
-        //             if(splittedUnit.Length == 2)
-        //             {
-        //                 unitVal = Convert.ToDouble(splittedUnit[0]);
-        //                 unitName = splittedUnit[1];
-        //             }
-
-        //             ratecards.Add(new Ratecard(){
-        //                 MeterCategory = meter.MeterCategory,
-        //                 MeterName = meter.MeterName,
-        //                 MeterRate = rate,
-        //                 MeterRegion = meter.MeterRegion,
-        //                 MeterSubCategory = meter.MeterSubCategory,
-        //                 Unit = meter.Unit,
-        //                 UnitName = unitName,
-        //                 UnitValue = unitVal
-        //             });
-        //         }
-
-        //         await _rcRepo.InsertRatecardsAsync(ratecards);
-        //     }
-        //     catch(Exception ex)
-        //     {
-        //         throw ex;
-        //     }
-        // }
-
-        private Microsoft.Azure.Management.Fluent.IAzure _azure;
-
-        private BlobManager _blobManager;
-
-        private WorkbenchSecret _secret;
-        private ICacheRepository _cache;
-        private Serilog.Core.Logger _logger;
     }
 }
