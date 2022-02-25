@@ -4,8 +4,9 @@ import json
 from io import StringIO
 from BicepGenerator.azcontext import StorageAccount
 from resource_types import ResourceTypes
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, Template
 from types import SimpleNamespace
+from utils import with_template_ext
 
 class TemplateBuilder:
     
@@ -26,11 +27,13 @@ class TemplateBuilder:
 class BicepGenerator:
 
     templateBuilder: TemplateBuilder = None
-    templateLoader: FileSystemLoader = None
+    templateEnv: Environment = None
 
     def __init__(self) -> None:
          self.templateBuilder = TemplateBuilder()
-         self.templateLoader = FileSystemLoader('templates')
+         
+         templateLoader = FileSystemLoader('templates')
+         self.templateEnv = Environment(loader=templateLoader)
 
     def generate(self, azcontexts) -> str:
          bicep = self.build_template(azcontexts)
@@ -55,12 +58,16 @@ class BicepGenerator:
         return self.templateBuilder.get_template()
 
 
-    def gen_storage_account_template(self, azcontext: StorageAccount):
-        # self.templateLoader
-        filename = ResourceTypes.StorageAccount.join('j2')
-        template = self.templateLoader.load(filename)
+    def gen_storage_account_template(self, azcontext: StorageAccount) -> str:
 
-        template.render()
-        pass
+        template = self.get_template(ResourceTypes.StorageAccount)
+        bicep = template.render(azcontext)
+        return bicep
+
+    def get_template(self, resourceType: str) -> Template:
+
+        fileName = with_template_ext(resourceType)
+        template = self.templateEnv.get_template(fileName)
+        return template
 
             
