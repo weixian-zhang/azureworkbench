@@ -166,6 +166,14 @@
             "command": "host start",
             "isBackground": true,
             "problemMatcher": "$func-watch"
+        },
+        {
+            "label": "debug Bicepgen Flask Api",
+            "type": "shell",
+            "command": "py -3.10 -m flask run",
+            "options": {
+                "cwd": "${workspaceFolder}/src/BicepGenerator"
+            }
         }
     ]
 }
