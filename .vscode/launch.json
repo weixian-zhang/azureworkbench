@@ -5,17 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "debug BicepGen Flask",
+            "name": "debug Bicep Gen",
             "type": "python",
             "request": "launch",
             "module": "flask",
             "env": {
-                "FLASK_APP": "webapi.py",
-                "FLASK_ENV": "development"
+                "FLASK_APP": "main",
+                "FLASK_ENV": "development",
+                "FLASK_DEBUG": "1"
             },
             "args": [
                 "run",
-                "--no-debugger"
+                "--no-debugger",
+                "--no-reload"
             ],
             "jinja": true,
             "cwd": "${workspaceFolder}/src/BicepGenerator"
