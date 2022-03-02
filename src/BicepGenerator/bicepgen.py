@@ -32,11 +32,12 @@ class BicepGenerator:
          self.templateEnv.lstrip_blocks = True
          self.templateEnv.trim_blocks = True
 
-    def generate(self, azcontexts):
-        bicep = self.build_template(azcontexts)
-        return bicep
-
-    def build_template(self, diagramInfo: DiagramInfo) -> str:
+    # portal azcontexts resource name need to be cleansed from special characters
+    # as resource name is unique and is natural to use as bicep resource name
+    #special chars include: '_', '-', ' ', ',', '@', '~', '`'
+    def build_template(self, diagramInfo: DiagramInfo):
+        
+        #diagramInfo = self.diagramInfo_add_metaInfo(diagramInfo)
 
         diagramContext = diagramInfo.diagramContext
         
@@ -56,7 +57,27 @@ class BicepGenerator:
                     pass
 
         return self.templateBuilder.get_template()
+    
+    # def diagramInfo_add_metaInfo(self, diagram: DiagramInfo) -> DiagramInfo:
+        
+    #     for context in diagram.diagramContext.azcontexts:
+    #         context.bicepRscName = self.set_bicep_rsc_name(context.Name)
+            
+    #     return diagramContext
+    
+    # def set_bicep_rsc_name(self, rscName: str) -> str:
+        
+    #     bicepRscName = rscName
+        
+    #     bicepRscNameViolationChars = ['_', '-', ' ', ',', '@', '~', '`']
+        
+    #     hasViolationChars = [c for c in bicepRscName if c in bicepRscNameViolationChars]
 
+    #     if len(hasViolationChars) > 0:
+    #         for vChar in bicepRscNameViolationChars:
+    #             bicepRscNAme = bicepRscName.replace(vChar, '')
+                
+    #     return bicepRscName
 
     def internal_generate_template(self, resourceType, azcontext, diagramContext):
         try:
