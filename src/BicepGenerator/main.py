@@ -8,39 +8,31 @@
         # each resource a new template
         # see how to merge template
 
-
-
 from appconfig import AppConfig
+from bicepgen import BicepGenerator
 from flask import Flask, request, Response
+import json
+from contexts import DiagramInfo
 
 app = Flask(__name__)
 
 appconfig = AppConfig()
+bicepgenerator = BicepGenerator()
 
 @app.route('/api/bicepgen', methods=['POST'])
 def bicep_gen():
 
-    eg = '''
-        {
-            "useremail": "",
-            "blobClaimCheckFileIdentifier": "11122022-141055",
-            "azcontexts": [
-                {
-                    "ResourceType": "AzureStorage",
-                    "": ""
-                },
-                {
-                    "ResourceType": "VirtualMachine",
-                    "": ""
-                }
-            ]
-        }
-    '''
-    
-    if request.method == 'POST':
-        return 'POST received!'
+    body = request.data
 
-#auth before requets: https://stackoverflow.com/questions/51691730/flask-middleware-for-specific-route
+    diagram = json.loads(body, object_hook=DiagramInfo)
+
+    bicep = bicepgenerator.build_template(diagram)
+    print(bicep)
+    
+    response = app.response_class(response=json.dumps(bicep), status=200, mimetype='application/json')
+    
+    return response
+
 @app.before_request
 def authn_hook():
 
@@ -55,9 +47,3 @@ def authn_hook():
 
     if not appconfig.authKey == authKey:
         return Response('Not authorized', 401)
-
-
-
-# if __name__ == '__main__':
-#     run()
-

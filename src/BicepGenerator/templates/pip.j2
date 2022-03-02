@@ -1,1 +1,17 @@
-{% extends "base.bicep" %}
+resource publicip 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
+  name: {{ azcontext.Name }}
+  location: location
+  sku: {
+    name: 'Standard'
+  }
+  properties: {
+    publicIPAllocationMethod: 'Static'
+  },
+  {% if diagramContext.globalContext.tags|length > 0 %}
+  tags: {
+    {% for tag in diagramContext.globalContext.tags %}
+    {{tag.key}}: '{{tag.value}}'
+    {% endfor %}
+  }
+  {% endif %}
+}

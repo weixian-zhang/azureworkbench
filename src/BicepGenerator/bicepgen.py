@@ -1,73 +1,84 @@
-#https://ochzhen.com/blog/azure-bicep-parameters#should-i-use-parameters
+#https://github.com/Azure/bicep/tree/main/docs/examples
 
-import json
+import os
 from io import StringIO
-from BicepGenerator.azcontext import StorageAccount
 from resource_types import ResourceTypes
 from jinja2 import Environment, FileSystemLoader, Template
-from types import SimpleNamespace
-from utils import with_template_ext
+from contexts import DiagramInfo
 
 class TemplateBuilder:
+    bicep_snippets = []
+
+    def __init__(self):
+        self.bicep_snippets = []
+        #self._bicep_snippets = StringIO()
     
-    _bicep_snippets = None
-
-    def __init__(self) -> None:
-        self._bicep_snippets = StringIO()
-
-    def add(self, bicepSnippets) -> None:
-        self._bicep_snippets.write('\n')
-        self._bicep_snippets.write(bicepSnippets)
-
+    def add(self, bicepSnippets):
+        self.bicep_snippets.append(bicepSnippets)
+        
     def get_template(self) -> str:
-        return self._bicep_snippets.getvalue()
-
-# template file name follows resource type name as convention
+       return '\n\n'.join(self.bicep_snippets)
 
 class BicepGenerator:
-
+    
     templateBuilder: TemplateBuilder = None
     templateEnv: Environment = None
 
-    def __init__(self) -> None:
+    def __init__(self):
          self.templateBuilder = TemplateBuilder()
          
-         templateLoader = FileSystemLoader('templates')
+         templateLoader = FileSystemLoader('./templates')
          self.templateEnv = Environment(loader=templateLoader)
+         self.templateEnv.lstrip_blocks = True
+         self.templateEnv.trim_blocks = True
 
-    def generate(self, azcontexts) -> str:
-         bicep = self.build_template(azcontexts)
-         return bicep
+    def generate(self, azcontexts):
+        bicep = self.build_template(azcontexts)
+        return bicep
 
-    def build_template(self, azcontexts) -> str:
+    def build_template(self, diagramInfo: DiagramInfo) -> str:
 
-        for strContext in azcontexts:
+        diagramContext = diagramInfo.diagramContext
+        
+        for azcontext in diagramContext.azcontexts:
 
-            context =  x = json.loads(strContext, object_hook=lambda d: SimpleNamespace(**d))
+            #rscContext =  x = json.loads(azcontext, object_hook=lambda d: SimpleNamespace(**d))
             
-            rscType = context.ResourceType
+            match azcontext.ResourceType:
 
-            match rscType:
-
-                case ResourceTypes.StorageAccount:
-                    pass
-                case _:
-                    template = self.gen_storage_account_template(context)
+                case ResourceTypes.PublicIp:
+                    template = self.internal_generate_template(ResourceTypes.PublicIp, azcontext, diagramContext)
                     self.templateBuilder.add(template)
+                case ResourceTypes.StorageAccount:
+                    template = self.internal_generate_template(ResourceTypes.StorageAccount, azcontext, diagramContext)
+                    self.templateBuilder.add(template)
+                case _:
+                    pass
 
         return self.templateBuilder.get_template()
 
 
-    def gen_storage_account_template(self, azcontext: StorageAccount) -> str:
+    def internal_generate_template(self, resourceType, azcontext, diagramContext):
+        try:
+            template = self.load_template_from_file(resourceType)
+            bicep = template.render(azcontext=azcontext, diagramContext=diagramContext)
+            
+            if not bicep:
+                #TODO log
+                pass
+            return bicep
+        except Exception as e:
+            pass
+            #TODO: log error
 
-        template = self.get_template(ResourceTypes.StorageAccount)
-        bicep = template.render(azcontext)
-        return bicep
-
-    def get_template(self, resourceType: str) -> Template:
-
-        fileName = with_template_ext(resourceType)
+    def load_template_from_file(self, resourceType: str):
+        
+        fileName = self.with_template_ext(resourceType)
         template = self.templateEnv.get_template(fileName)
         return template
-
+    
+    def with_template_ext(self, resourceType: str):
+        fileName = resourceType + '.j2'
+        #templatePath = os.path.join('templates', fileName)
+        return fileName
             
