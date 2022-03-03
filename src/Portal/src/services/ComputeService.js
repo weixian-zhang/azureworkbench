@@ -1,0 +1,212 @@
+import ServiceTag from "../models/services/ServiceTag";
+import VMSize from "../models/services/VMSize";
+import VMimage from "../models/services/VMimage";
+import VMImagePublisher from "../models/services/VMImagePublisher";
+import axios from "axios";
+import AuthService from './AuthService';
+import Toast from '../components/Workbench/Helpers/Toast';
+import Messages from '../components/Workbench/Helpers/Messages';
+import ServiceHelper from './ServiceHelper';
+
+export default class ComputeService
+{
+    constructor(){
+        this.authService = AuthService;
+    }
+
+    async getVMSizes( onSuccess, onFailure) {
+
+      if(! await this.authService.checkLoginStateAndNotify())
+        return;
+
+      var user = this.authService.getUserProfile();
+
+      axios.get('api/compute/vmsize',
+      {
+        headers: {
+
+          'Authorization': 'Bearer ' + user.AccessToken,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(function (response) {
+        if(response.data != null)
+        {
+          var vmsizes= [];
+          response.data.map(x => {
+            var vmsize = new VMSize();
+            vmsize.Name = x.name;
+            vmsize.QueryName = x.queryName;
+            vmsize.MemoryInMB = x.memoryInMB
+            vmsize.NumberOfCores = x.numberOfCores;
+            vmsize.MaxNoOfDataDisks = x.maxNoOfDataDisks;
+            vmsizes.push(vmsize);
+          });
+          onSuccess(vmsizes);
+        }
+        else
+        onSuccess([]);
+      })
+      .catch(function (error) {
+        Toast.show("warning", 4000, Messages.GeneralHttpError());
+        onFailure(error)
+      });
+
+    }
+
+    async getServiceTags( onSuccess, onFailure) {
+
+      if(! await this.authService.checkLoginStateAndNotify())
+        return;
+
+      var user = this.authService.getUserProfile();
+
+      if(!user)
+        return;
+
+      axios.get('api/compute/svctag',
+      {
+        headers: {
+
+          'Authorization': 'Bearer ' + user.AccessToken,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(function (response) {
+        if(response.data != null)
+        {
+          var svcTags= [];
+          response.data.map(x => {
+            var svcTag = new ServiceTag();
+            svcTag.Id = x.id;
+            svcTag.Name = x.name
+            svcTags.push(svcTag);
+          });
+          onSuccess(svcTags);
+        }
+      })
+      .catch(function (error) {
+        onFailure(error)
+      });
+
+    }
+
+    async getAllVMImagePublishers(onSuccess, onFailure) {
+      if(! await this.authService.checkLoginStateAndNotify())
+        return;
+
+      var user = this.authService.getUserProfile();
+
+      axios.get('api/compute/image/publishers',
+        {
+          headers: {
+
+            'Authorization': 'Bearer ' + user.AccessToken,
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(function (response) {
+          if(response.data != null)
+          {
+            var publishers= [];
+            response.data.map(pub => {
+
+              var publisher = new VMImagePublisher();
+              publisher.Publisher = pub.publisher;
+              publisher.SearchableName = pub.searchableName;
+              publishers.push(publisher)
+
+            })
+            onSuccess(publishers);
+          }
+        })
+        .catch(function (error) {
+          Toast.show("warning", 4000, Messages.GeneralHttpError());
+          onFailure(error)
+        })
+    }
+
+    async getAllVMImages(publisher, onSuccess, onFailure) {
+        if(! await this.authService.checkLoginStateAndNotify())
+        return;
+
+        var user = this.authService.getUserProfile();
+
+        axios.get('api/compute/images',
+        {
+          params: {
+            publisher: publisher
+          },
+          headers: {
+
+            'Authorization': 'Bearer ' + user.AccessToken,
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(function (response) {
+          if(response.data != null)
+          {
+            var images= [];
+            response.data.map(vmimg => {
+
+              var vmImage = new VMimage();
+              vmImage.DisplayName = vmimg.displayName;
+              vmImage.SearcheableName = vmimg.searcheableName;
+              vmImage.Publisher = vmimg.publisher;
+              vmImage.Offer = vmimg.offer;
+              vmImage.Sku = vmimg.sku;
+              vmImage.Version = vmimg.version;
+              images.push(vmImage)
+
+            })
+            onSuccess(images);
+          }
+        })
+        .catch(function (error) {
+          Toast.show("warning", 4000, Messages.GeneralHttpError());
+          onFailure(error)
+        })
+    }
+
+    async searchVMImages(searchPattern, onSuccess, onFailure){
+
+      if(! await this.authService.checkLoginStateAndNotify())
+        return;
+
+        var user = this.authService.getUserProfile();
+
+        axios.get('api/compute/search/images',
+        {
+          params: {
+            searchPattern: searchPattern
+          },
+          headers: {
+
+            'Authorization': 'Bearer ' + user.AccessToken,
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(function (response) {
+          if(response.data != null)
+          {
+            var images= [];
+            response.data.map(vmimg => {
+
+              var vmImage = new VMimage();
+              vmImage.DisplayName = vmimg.displayName;
+              vmImage.Publisher = vmimg.publisher;
+              vmImage.Offer = vmimg.offer;
+              vmImage.Sku = vmimg.sku;
+              vmImage.Version = vmimg.version;
+              images.push(vmImage)
+
+            })
+            onSuccess(images);
+          }
+        })
+        .catch(function (error) {
+          Toast.show("warning", 4000, Messages.GeneralHttpError());
+          onFailure(error)
+        })
+    }
+}

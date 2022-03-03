@@ -1,0 +1,92 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+
+trigger:
+- master
+
+variables:
+  webappCurlStatus: false
+  buildConfiguration: 'Release'
+  apiWorkingDir: 'Portal.Services/AzW.Web.API'
+  apiPublishPath: $(Build.ArtifactStagingDirectory)/api/publish
+
+stages:
+- stage: Build
+  pool:
+    vmImage: ubuntu-latest
+  jobs:
+    
+    - job: CI
+      
+      steps:
+       - task: UseDotNet@2
+         displayName: set use DotNet 5.0
+         inputs:
+           version: '5.0.x'
+           includePreviewVersions: true # Required for preview versions
+
+       - script: |
+           echo build in directory Portal.Services/AzW.Web.API
+
+       - script: dotnet restore Portal.Services/AzW.Web.API
+         name: restore
+         displayName: 'dotnet restore'
+
+       - script: dotnet build ${{ variables.apiWorkingDir }} --configuration $(buildConfiguration)
+         displayName: 'dotnet build'
+
+       - script: |
+           echo publishing Backend.API to directory: ${{ variables.apiPublishPath }}
+
+       - task: DotNetCoreCLI@2
+         inputs:
+           command: 'publish'
+           publishWebProjects: true
+           modifyOutputPath: true
+           zipAfterPublish: true
+           arguments: -o ${{ variables.apiPublishPath }}
+      #  - script: dotnet publish ${{ variables.apiWorkingDir }} -o ${{ variables.apiPublishPath }}
+      #    displayName: 'dotnet publish'
+
+       - task: PublishBuildArtifacts@1
+         name: publish_build_artifact
+         inputs:
+            PathtoPublish: '${{ variables.apiPublishPath }}'
+            ArtifactName: 'drop'
+            publishLocation: 'Container'
+
+    - job: CD
+      dependsOn: CI
+    
+      steps:
+  
+       - task: DownloadBuildArtifacts@1
+         inputs:
+                buildType: 'current'
+                downloadType: 'single'
+                downloadPath: '$(System.ArtifactsDirectory)/api/publish'
+                artifactName: 'drop'
+         
+       - task: AzureWebApp@1
+         displayName: Deploy to Azure App Service
+         inputs:
+             azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
+             appType: 'webApp'
+             appName: 'webapp-api-dev'
+             package: '$(System.ArtifactsDirectory)/**/*.zip'
+             deploymentMethod: 'auto'
+  
+       
+       - script: |
+           result = $(curl -s -o /dev/null -w “%{http_code}” https://beta-api.azureworkbench.com/healthz)
+           if [ $result == “200” ]
+           then
+           echo 200
+           echo "##vso[task.setvariable variable=webappCurlStatus;]'true'"
+           else
+           2cho not 200
+           echo "##vso[task.setvariable variable=webappCurlStatus;]'false'"
+         #condition: eq(variables.webappCurlStatus, 'true')  

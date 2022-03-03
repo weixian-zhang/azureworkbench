@@ -1,0 +1,1 @@
+db.getCollection('Ratecard').find({"MeterCategory": "Storage","MeterSubCategory":"Files","MeterName": {$regex : ".*Data Stored.*"}})

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 16 16">
+  <g id="canvas" opacity="0" fill="none">
+    <path d="M16,16H0V0H16Z" opacity="0" fill="none" />
+  </g>
+  <g id="level-1">
+    <g opacity="0.75">
+      <path d="M16,6v9.5l-.5.5H2.5L2,15.5V8.009l1-.571V15H15V6Z" fill="#212121" />
+      <path d="M15,6v9H3V7.438L5.516,6Z" fill="#212121" opacity="0.1" />
+    </g>
+    <path d="M13.354,5.354l-2.5,2.5h-.708l-2.5-2.5.708-.707L10,6.293V1h1V6.293l1.646-1.646Z" fill="#005dba" />
+    <path d="M7,4,0,8V0Z" fill="#1f801f" />
+    <path d="M12,12.427v1l-.5.5h-1l-.5-.5v-1l.5-.5h1Zm-4,0v1l-.5.5h-1l-.5-.5v-1l.5-.5h1Zm-2-3v1l-.5.5h-1l-.5-.5v-1l.5-.5h1Zm4,0v1l-.5.5h-1l-.5-.5v-1l.5-.5h1Zm4,0v1l-.5.5h-1l-.5-.5v-1l.5-.5h1Z" fill="#212121" />
+  </g>
+</svg>

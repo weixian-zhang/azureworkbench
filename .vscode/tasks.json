@@ -1,0 +1,179 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build go SharedLinkHouseKeeper",
+            "command": "go build",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/src/Jobs/SharedLinkHouseKeeper/src",
+                "env": {
+                    "env": "dev"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "build AzW.Infra.Azure",
+            "command": "dotnet build",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/src/ApiServer/AzW.Infrastructure.AzureServices",
+                "env": {
+                    "ASPNETCORE_ENVIRONMENT": "Development"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "build AzW.Model",
+            "command": "dotnet build",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/src/ApiServer/AzW.Model",
+                "env": {
+                    "ASPNETCORE_ENVIRONMENT": "Development"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "build AzW.Secret",
+            "command": "dotnet build",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/src/ApiServer/AzW.Secret",
+                "env": {
+                    "ASPNETCORE_ENVIRONMENT": "Development"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "build API",
+            "command": "dotnet build",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/src/ApiServer/AzW.Web.API",
+                "env": {
+                    "ASPNETCORE_ENVIRONMENT": "Development"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Publish API",
+            "command": "dotnet publish -c Release -o ./publish",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/src/ApiServer/AzW.Web.API"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean API",
+            "command": "dotnet clean",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/src/ApiServer/AzW.Web.API"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Publish Func Job CacheHydrator",
+            "command": "dotnet publish -c Release -o ./publish",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/src/Jobs/AzW.Job.CacheHydrator"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "build Infra Data",
+            "command": "dotnet build",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/src/ApiServer/AzW.Infrastructure.Data",
+                "env": {
+                    "env": "dev"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Run Portal",
+            "command": "set \"REACT_APP_ENV=local\" ; npm start",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/src/Portal",
+                "env": {
+                    "env": "dev"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Publish Portal - Beta",
+            "command": "set \"REACT_APP_ENV=beta ; npm run build",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/src/Portal"
+            },
+
+            "problemMatcher": []
+        },
+        {
+            "label": "Publish Portal - Prod",
+            "command": "set \"REACT_APP_ENV=prod\" && npm run build",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/src/Portal"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build Func Job CacheHydrator",
+            "command": "dotnet build",
+            "type": "shell",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/src/Jobs/AzW.Job.CacheHydrator",
+                "env": {
+                    "env": "dev"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Func Start Job CacheHydrator",
+            "type": "func",
+            "dependsOn": "Build Func Job CacheHydrator",
+            "options": {
+                "cwd": "${workspaceFolder}/src/Jobs/AzW.Job.CacheHydrator/bin/Debug/net5.0"
+            },
+            "command": "host start",
+            "isBackground": true,
+            "problemMatcher": "$func-watch"
+        },
+        {
+            "label": "debug Bicepgen Flask Api",
+            "type": "shell",
+            "command": "py -3.10 -m flask run",
+            "options": {
+                "cwd": "${workspaceFolder}/src/BicepGenerator"
+            }
+        }
+    ]
+}

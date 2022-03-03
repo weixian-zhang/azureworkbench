@@ -1,0 +1,13 @@
+# Binaries, plugins, libs
+*.env
+secret.env
+aci-deploy.yaml
+*.dll
+*.dylib
+*.exe
+*.exe~
+*.so
+
+# Testing
+*.test
+*.tmp

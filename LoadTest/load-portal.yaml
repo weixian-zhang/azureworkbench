@@ -1,0 +1,17 @@
+config:
+  target: "https://beta.azureworkbench.com"
+  phases:
+    - duration: 300 #5 mins
+      arrivalRate: 10
+      name: warm up phase
+    - duration: 900  #15 mins
+      arrivalRate: 10
+      rampTo: 50
+      name: ramp up load
+    - duration: 1800 #30 mins
+      arrivalRate: 300
+      name: sustained load
+scenarios:
+  - flow:
+       - get:
+          url: "/"

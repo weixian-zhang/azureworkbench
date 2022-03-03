@@ -1,0 +1,11 @@
+.dockerignore
+.env
+.git
+.publish
+.gitignore
+.vs
+.vscode
+*/bin
+*/obj
+**/.toolstarget
+node_module
