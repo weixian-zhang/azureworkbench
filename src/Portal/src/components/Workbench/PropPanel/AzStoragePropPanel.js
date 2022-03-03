@@ -113,22 +113,6 @@ export default class AzStoragePropPanel extends Component {
                     }} />
                 </Grid>
               </Grid>
-              {/* <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
-                <Grid item sm={4}>
-                    <label>Resource Group</label>
-                </Grid>
-                <Grid item>
-                  <SelectResourceGroup
-                   SelectedResourceGroup={this.state.userObject.ProvisionContext.ResourceGroupName}
-                   onValueChange={
-                    (rg) => {
-                      var uo = this.state.userObject;
-                      uo.ProvisionContext.ResourceGroupName = rg
-                      this.setState({userObject:uo});
-                    }
-                  }/>
-                </Grid>
-              </Grid> */}
               <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center">
                 <Grid item sm={4}>
                     <label>Location</label>
@@ -168,7 +152,7 @@ export default class AzStoragePropPanel extends Component {
                       }
 
                     }>
-                    <Button text={this.state.userObject.ProvisionContext.SkuName == '' ? 'Sku' :
+                    <Button text={this.state.userObject.ProvisionContext.SkuName == '' ? 'Standard_LRS' :
                         Utils.limitTextLength(this.state.userObject.ProvisionContext.SkuName ,15)}
                         alignText='left'
                         rightIcon="double-caret-vertical" style={{width: '170px', maxWidth: '170px'}}/>
@@ -191,6 +175,8 @@ export default class AzStoragePropPanel extends Component {
   }
 
   show = (userObject, saveCallback) => {
+    //default sku value
+    userObject.SkuName = 'Standard_LRS';
     this.setState({ isOpen: true, userObject: userObject, saveCallback: saveCallback });
   }
 

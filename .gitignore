@@ -274,3 +274,6 @@ __pycache__/
 .vscode/redis-xplorer.redis
 .vscode/settings.json
 .vscode/settings.json
+src/BicepGenerator/.env
+src/BicepGenerator/.env
+.env

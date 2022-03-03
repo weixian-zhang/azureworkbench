@@ -1,0 +1,28 @@
+
+resource {{ azcontext.Name }} 'Microsoft.Network/virtualNetworks@2020-06-01' = {
+  name: virtualNetworkName
+  location: location
+  properties: {
+    addressSpace: {
+      addressPrefixes: [
+        '{{ azcontext.AddressSpace }}'
+      ]
+    }
+    subnets: [
+      {% for subnet in azcontext.Subnets %}
+       
+       set nsgId = subnet.NSGName + ".id"
+
+      {
+        name: {{ subnet.Name }}
+        properties: {
+          addressPrefix: '{{ subnet.AddressSpace }}'
+          networkSecurityGroup: {
+            id: nsgId
+          }
+        }
+      }
+      {% endfor %}
+    ]
+  }
+}
