@@ -42,19 +42,9 @@ class BicepGenerator:
         diagramContext = diagramInfo.diagramContext
         
         for azcontext in diagramContext.azcontexts:
-
-            #rscContext =  x = json.loads(azcontext, object_hook=lambda d: SimpleNamespace(**d))
             
-            match azcontext.ResourceType:
-
-                case ResourceTypes.PublicIp:
-                    template = self.internal_generate_template(ResourceTypes.PublicIp, azcontext, diagramContext)
-                    self.templateBuilder.add(template)
-                case ResourceTypes.StorageAccount:
-                    template = self.internal_generate_template(ResourceTypes.StorageAccount, azcontext, diagramContext)
-                    self.templateBuilder.add(template)
-                case _:
-                    pass
+            template = self.internal_generate_template(azcontext.ResourceType, azcontext, diagramContext)
+            self.templateBuilder.add(template)
 
         return self.templateBuilder.get_template()
     
