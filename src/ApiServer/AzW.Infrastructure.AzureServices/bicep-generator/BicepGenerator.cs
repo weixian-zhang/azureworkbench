@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RazorEngine;
@@ -55,6 +56,11 @@ namespace AzW.Infrastructure.AzureServices
             }
 
             return bicep;
+        }
+
+        public Task<string> Generate(Model.DiagramInfo diagraminfo)
+        {
+            return Task.FromResult("");
         }
 
         private dynamic[] _azcontexts;

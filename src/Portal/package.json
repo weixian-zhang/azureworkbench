@@ -14,6 +14,7 @@
     "@types/react": "^16.9.35",
     "@types/react-dom": "^16.9.8",
     "axios": "^0.19.2",
+    "axios-retry": "^3.2.4",
     "cidr-lib": "^1.1.3",
     "file-dialog": "0.0.8",
     "gojs": "^2.1.32",

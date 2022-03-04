@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Sas;
 using ByteSizeLib;
 using shortid;
 
@@ -23,6 +24,16 @@ namespace AzW.Infrastructure.Data
         const string QuickstartContainerName = "quickstarts";
         const string MySpaceSharedDiagrams = "myspace-shareddiagrams";
         const string System = "system";
+        const string MySpaceBicep = "myspace-bicep";
+
+        BlobServiceClient _blobClient;
+        BlobContainerClient _diagContainer;
+        BlobContainerClient _sharedLinkContainer;
+        BlobContainerClient _quickstartContainer;
+        BlobContainerClient _sharedDiagramMySpace;
+        BlobContainerClient _systemContainer;
+
+        BlobContainerClient _myspaceBicep;
 
         public BlobStorageManager(string connString)
         {
@@ -33,6 +44,7 @@ namespace AzW.Infrastructure.Data
             _sharedLinkContainer = _blobClient.GetBlobContainerClient(SharedDiagramContainerName);
             _sharedDiagramMySpace = _blobClient.GetBlobContainerClient(MySpaceSharedDiagrams);
             _systemContainer = _blobClient.GetBlobContainerClient(System);
+            _myspaceBicep = _blobClient.GetBlobContainerClient(MySpaceBicep);
 
             CreateContainersIfNotExist().GetAwaiter().GetResult();
         }
@@ -250,6 +262,7 @@ namespace AzW.Infrastructure.Data
         {
             await _diagContainer.CreateIfNotExistsAsync();
             await _sharedLinkContainer.CreateIfNotExistsAsync();
+            await _myspaceBicep.CreateIfNotExistsAsync();
         }
 
         private string GenerateDirectoryName(string emailId)
@@ -265,14 +278,24 @@ namespace AzW.Infrastructure.Data
             return onlyLettersNums;
         }
 
-        private
+        public string GenerateSasToken(string blobName)
+        {
+            var sasBuilder = new BlobSasBuilder()
+            {
+                BlobContainerName = MySpaceBicep,
+                BlobName = blobName,
+                Resource = "b", // b for blob, c for container
+                StartsOn = DateTimeOffset.UtcNow,
+                ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(15),
+            };
 
-        BlobServiceClient _blobClient;
-        BlobContainerClient _diagContainer;
-        BlobContainerClient _sharedLinkContainer;
-        BlobContainerClient _quickstartContainer;
-        BlobContainerClient _sharedDiagramMySpace;
-        BlobContainerClient _systemContainer;
+            sasBuilder.SetPermissions(BlobSasPermissions.Read);
 
+            var blobClient = _myspaceBicep.GetBlobClient(blobName);
+
+            Uri url = blobClient.GenerateSasUri(sasBuilder);
+
+            return url.ToString();
+        }
     }
 }

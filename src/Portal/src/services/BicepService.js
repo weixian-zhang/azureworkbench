@@ -1,7 +1,9 @@
 import Toast from '../components/Workbench/Helpers/Toast';
 import Messages from '../components/Workbench/Helpers/Messages';
 import axios from 'axios';
+import axiosRetry from 'axios-retry'
 import AuthService from './AuthService';
+import BicepDiagramInfo from '../models/services/BicepDiagramInfo';
 
 class BicepService
 {
@@ -20,11 +22,12 @@ class BicepService
 
         var user = this.authService.getUserProfile();
 
-        var param = {
-            provisionContexts: provisionContexts
-        }
+        var bicepDiagramInfo = new BicepDiagramInfo();
+        bicepDiagramInfo.diagramInfo.userEmail = user.UserName
+        bicepDiagramInfo.diagramInfo.diagramContext.azcontexts = provisionContexts
+        var jsonStr = JSON.stringify(bicepDiagramInfo);
 
-        axios.post('api/bicep/gen', JSON.stringify(param),
+        axios.post('api/bicep/gen', jsonStr,
         {
             headers: {
                 'Accept': 'application/octet-stream',
@@ -34,12 +37,52 @@ class BicepService
             responseType: 'blob'
         })
         .then(function (response) {
+            //onSuccess(response.data);
+
+            var bicepFileDonwloadUrl = response.headers['bicep-blob-url']
+            this.downloadBicepFile(bicepFileDonwloadUrl, onSuccess, onFailure)
+        })
+        .catch((err) => {
+            if (err.response.status !== 200) {
+                onFailure(err);
+                Toast.show('danger', 4000, 'Bicep generation API call failed');
+            }
+        });
+    }
+
+    downloadBicepFile(bicepFileUrl, onSuccess, onFailure) {
+        axiosRetry(axios, {
+            retries: 8, // number of retries
+            retryDelay: (retryCount) => {
+              console.log(`biceo download retry attempt: ${retryCount}`);
+              return 1000; // time interval between retries
+            },
+            retryCondition: (error) => {
+              // if retry condition is not specified, by default idempotent requests are retried
+              return error.response.status === 404;
+            },
+          });
+
+        axios({
+            url: bicepFileUrl,
+            method: 'GET',
+            responseType: 'blob', // important
+        }).then((response) => {
             onSuccess(response.data);
         })
-        .catch(function (error) {
-            onFailure(error);
-            Toast.show('danger', 8000, Messages.GeneralHttpError());
-        })
+        .catch((err) => {
+            if (err.response.status !== 200) {
+                onFailure(err);
+                Toast.show('danger', 4000, 'Bicep download failed...');
+            }
+        });
+    }
+
+    retryDownloadBicepFile(provisionContexts) {
+
+        var fileDownload = new function(resolve, reject) {
+            
+        };
     }
 }
 
