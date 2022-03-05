@@ -1,8 +1,5 @@
-using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using AzW.Infrastructure.AzureServices;
-using AzW.Secret;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +20,7 @@ namespace AzW.Web.API
         }
 
         [HttpPost("gen")]
-        public async Task<ActionResult> Generate([FromBody] object diagramInfo)
+        public async Task<IActionResult> Generate([FromBody] object diagramInfo)
         {
             string jsonDiagramInfo = diagramInfo.ToString();
             var jsonObj = JObject.Parse(jsonDiagramInfo);
@@ -32,25 +29,9 @@ namespace AzW.Web.API
             var diagramContext = JsonConvert.DeserializeObject<DiagramInfo>(innerContext.ToString());
 
             string bicepBlobUrl = await _templateGenerator.Generate(diagramContext);
-
-            Response.Headers.Add("bicep-blob-url", bicepBlobUrl);
-
-            return Ok();
-
-            // byte[] bytes = Encoding.ASCII.GetBytes(string.Empty);
-
-            //  return new FileContentResult(bytes, "application/octet-stream");
+            
+            return Ok(bicepBlobUrl);
         }
-
-        // [HttpPost("gen")]
-        // public FileContentResult Generate([FromBody] ProvisionParameters parameters)
-        // {
-        //     string bicep = _templateGenerator.Generate(parameters.ProvisionContexts);
-
-        //     byte[] bytes = Encoding.ASCII.GetBytes(bicep);
-
-        //      return new FileContentResult(bytes, "application/octet-stream");
-        // }
 
         private ITemplateGenerator _templateGenerator;
 

@@ -13,6 +13,9 @@ class BicepService
     }
 
     async generateBicep(provisionContexts, onSuccess, onFailure) {
+
+        var thisSvc = this;
+
         if(!await this.authService.isUserLogin()) {
             Toast.show("warning", 2500, "Please login to generate Bicep template")
             return;
@@ -32,34 +35,37 @@ class BicepService
             headers: {
                 'Accept': 'application/octet-stream',
                 'Authorization': 'Bearer ' + user.AccessToken,
-                'Content-Type': 'application/json'
-            },
-            responseType: 'blob'
+                'Content-Type': 'application/json',
+                'bicep-blob-url': ''
+            }
+            //responseType: 'blob'
         })
         .then(function (response) {
             //onSuccess(response.data);
 
-            var bicepFileDonwloadUrl = response.headers['bicep-blob-url']
-            this.downloadBicepFile(bicepFileDonwloadUrl, onSuccess, onFailure)
+            var bicepFileDonwloadUrl = response.data; //response.headers['bicep-blob-url']
+
+            if(bicepFileDonwloadUrl)
+                thisSvc.downloadBicepFile(bicepFileDonwloadUrl, onSuccess, onFailure)
         })
         .catch((err) => {
-            if (err.response.status !== 200) {
-                onFailure(err);
-                Toast.show('danger', 4000, 'Bicep generation API call failed');
-            }
+            onFailure(err);
+            Toast.show('danger', 4000, 'Bicep generation API call failed');
         });
     }
 
     downloadBicepFile(bicepFileUrl, onSuccess, onFailure) {
+        var attempt = 0;
         axiosRetry(axios, {
-            retries: 8, // number of retries
+            retries: 10, // number of retries
             retryDelay: (retryCount) => {
-              console.log(`biceo download retry attempt: ${retryCount}`);
-              return 1000; // time interval between retries
+              attempt = retryCount;
+              return 1000; // time interval between retries in milliseconds
             },
             retryCondition: (error) => {
+              console.log(`bicep download retrying attempt ${attempt}`);
               // if retry condition is not specified, by default idempotent requests are retried
-              return error.response.status === 404;
+              return error.response.status != 200;
             },
           });
 
@@ -71,10 +77,8 @@ class BicepService
             onSuccess(response.data);
         })
         .catch((err) => {
-            if (err.response.status !== 200) {
-                onFailure(err);
-                Toast.show('danger', 4000, 'Bicep download failed...');
-            }
+            onFailure(err);
+            //Toast.show('danger', 3000, 'Bicep file download failed...');
         });
     }
 

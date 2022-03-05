@@ -11,6 +11,8 @@ namespace AzW.Model
         //[JsonProperty("blobClaimCheckFileIdentifier")]
         public string BlobClaimCheckFileIdentifier { get; set; }
 
+        public string BlobFilePath { get; set; }
+
         [JsonProperty("diagramContext")]
         public DiagramContexts DiagramContext { get; set; }
     }

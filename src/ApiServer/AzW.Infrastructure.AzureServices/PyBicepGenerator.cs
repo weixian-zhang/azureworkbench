@@ -9,6 +9,8 @@ using Serilog;
 using System.Linq;
 using System.IO;
 using AzW.Infrastructure.Data;
+using System.Text;
+using System.IO.Compression;
 
 namespace AzW.Infrastructure.AzureServices
 {
@@ -31,13 +33,14 @@ namespace AzW.Infrastructure.AzureServices
         public async Task<string> Generate(DiagramInfo diagraminfo)
         {
             //file identifier for client portal to download Bicep file
-            string bicepBlobClaimCheckId = DateTime.Now.ToString("ddMMyyyy-hhmmss");
-
+            string bicepBlobClaimCheckId = GenerateClaimCheckId();
             diagraminfo.BlobClaimCheckFileIdentifier = bicepBlobClaimCheckId;
+
+            diagraminfo.BlobFilePath = GetBicepFullBlobPath(bicepBlobClaimCheckId, diagraminfo.UserEmail);
 
             await SendBicepGenCommand(diagraminfo);
 
-            return GetBicepBlobUrl(bicepBlobClaimCheckId, diagraminfo.UserEmail);
+            return GetBicepBlobUrl(diagraminfo.BlobFilePath);
         }
 
         private async Task SendBicepGenCommand(DiagramInfo diagraminfo)
@@ -52,7 +55,9 @@ namespace AzW.Infrastructure.AzureServices
                 
                 string msgJson = JsonConvert.SerializeObject(diagraminfo);
 
-                await _asbSender.SendMessageAsync(new ServiceBusMessage(msgJson));
+                string compressedJson = GZipBase64Message(msgJson);
+
+                await _asbSender.SendMessageAsync(new ServiceBusMessage(compressedJson));
 
                 //TODO: save diargamcontext
 
@@ -66,8 +71,19 @@ namespace AzW.Infrastructure.AzureServices
         }
 
         //Url format example:
-        //https://strgworkbenchdev.blob.core.windows.net/myspace-bicep/{username}/{blobclaimcheckid}/bicep_{claimcheck}.bicep
-        private string GetBicepBlobUrl(string blobClaimCheckId, string userEmail)
+        //https://strgworkbenchdev.blob.core.windows.net/myspace-bicep/{username}/{blobclaimcheckid}/bicep_{claimcheck}.bicep?{sas token}
+        private string GetBicepBlobUrl(string blobFilePath)
+        {
+             string url = _blobManager.GenerateSasToken(blobFilePath);
+             return url;
+        }
+
+        private string GenerateClaimCheckId()
+        {
+            return DateTime.Now.ToString("ddMMyyyy-hhmmss");;
+        }
+
+        private string GetBicepFullBlobPath(string blobClaimCheckId, string userEmail)
         {
             var baseUrl = new Uri(_secret.BicepBlobStorageUrl);
             string userDir = GetUserBicepBlobDirectory(userEmail);
@@ -75,9 +91,7 @@ namespace AzW.Infrastructure.AzureServices
             
             string fullBlobPath = $"{userDir}/{blobClaimCheckId}/{bicepFileName}";
 
-            string url = _blobManager.GenerateSasToken(fullBlobPath);
-            
-            return url;
+            return fullBlobPath;
         }
 
         private string GetUserBicepBlobDirectory(string userEmail)
@@ -85,6 +99,24 @@ namespace AzW.Infrastructure.AzureServices
             string onlyLettersNums =
                 new String(userEmail.Where(c => Char.IsLetter(c) || Char.IsNumber(c)).ToArray());
             return onlyLettersNums;
+        }
+
+        //Returns a compressed Json string in Base64 format
+        private string GZipBase64Message(string message)
+        {
+            byte[] inputBytes = Encoding.UTF8.GetBytes(message);
+ 
+            using (var outputStream = new MemoryStream())
+            {
+                using (var gZipStream = new GZipStream(outputStream, CompressionMode.Compress))
+                    gZipStream.Write(inputBytes, 0, inputBytes.Length);
+            
+                var outputBytes = outputStream.ToArray();
+            
+                //var outputCompressedStr = Encoding.UTF8.GetString(outputBytes);
+
+                return Convert.ToBase64String(inputBytes);
+            }
         }
     }
 }

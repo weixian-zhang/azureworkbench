@@ -6615,7 +6615,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         return;
         },
         function onFailure(error) {
-          Toast.show("danger", 6000, error);
+          Toast.show("danger", 4000, 'Bicep file download failed...');
         }
       );
   }
