@@ -22,12 +22,12 @@ namespace AzW.Secret
 
         public string AppInsightsKey { get; set; }
 
-        public string LibwkhtmltoxPath { get; set; }
-
         public string StorageConnString { get; set; }
 
         public string RedisConnString { get; set; }
         public string RedisHost { get; set; }
         public string RedisPassword { get; set; }
+        public string ServiceBusConnString { get; set; }
+        public string BicepBlobStorageUrl { get; set; }
     }
 }

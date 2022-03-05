@@ -195,11 +195,15 @@ namespace AzW.Web.API
         {
             services.AddSingleton<WorkbenchSecret>(sp => {return _secrets ;} );
 
+            var blobStorageManager = new BlobStorageManager(_secrets.AzBlobConnString);
+
             services.AddSingleton<BlobStorageManager>(sp => {
-                return new BlobStorageManager(_secrets.AzBlobConnString);
+                return blobStorageManager;
             });
 
-            services.AddSingleton<ITemplateGenerator, BicepGenerator>();
+            services.AddSingleton<ITemplateGenerator, PyBicepGenerator>(sp => {
+                return new PyBicepGenerator(_secrets, blobStorageManager, _logger);
+            });
 
             services.AddSingleton<Logger>(sp => {return _logger ;} );
             services.AddTransient<IDiagramRepository, DiagramRepository>();
@@ -275,12 +279,13 @@ namespace AzW.Web.API
                 AzBlobConnString =
                     Configuration.GetValue<string>("AzBlobConnString"),
                 PortalUrl = Configuration.GetValue<string>("PortalUrl"),
+                ServiceBusConnString = Configuration.GetValue<string>("ServiceBusConnString"),
                 TenantId = Configuration.GetValue<string>("TenantId"),
                 AppInsightsKey = Configuration.GetValue<string>("AppInsightsKey"),
-                LibwkhtmltoxPath = Configuration.GetValue<string>("LibwkhtmltoxPath"),
                 RedisConnString = Configuration.GetValue<string>("RedisConnString"),
                 RedisHost = Configuration.GetValue<string>("RedisHost"),
-                RedisPassword = Configuration.GetValue<string>("RedisPassword")
+                RedisPassword = Configuration.GetValue<string>("RedisPassword"),
+                BicepBlobStorageUrl = Configuration.GetValue<string>("BicepBlobStorageUrl")
             };
         }
 

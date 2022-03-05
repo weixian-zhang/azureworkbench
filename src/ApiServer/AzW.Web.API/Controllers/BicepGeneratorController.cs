@@ -1,11 +1,11 @@
-using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using AzW.Infrastructure.AzureServices;
-using AzW.Secret;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using AzW.Model;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AzW.Web.API
 {
@@ -20,13 +20,17 @@ namespace AzW.Web.API
         }
 
         [HttpPost("gen")]
-        public FileContentResult Generate([FromBody] ProvisionParameters parameters)
+        public async Task<IActionResult> Generate([FromBody] object diagramInfo)
         {
-            string bicep = _templateGenerator.Generate(parameters.ProvisionContexts);
+            string jsonDiagramInfo = diagramInfo.ToString();
+            var jsonObj = JObject.Parse(jsonDiagramInfo);
+            var innerContext =  jsonObj["diagramInfo"];
 
-            byte[] bytes = Encoding.ASCII.GetBytes(bicep);
+            var diagramContext = JsonConvert.DeserializeObject<DiagramInfo>(innerContext.ToString());
 
-             return new FileContentResult(bytes, "application/octet-stream");
+            string bicepBlobUrl = await _templateGenerator.Generate(diagramContext);
+            
+            return Ok(bicepBlobUrl);
         }
 
         private ITemplateGenerator _templateGenerator;
