@@ -55,9 +55,10 @@ namespace AzW.Infrastructure.AzureServices
                 
                 string msgJson = JsonConvert.SerializeObject(diagraminfo);
 
-                string compressedJson = GZipBase64Message(msgJson);
+                if(_secret.CompressMessage)
+                    msgJson = GZipBase64Message(msgJson);
 
-                await _asbSender.SendMessageAsync(new ServiceBusMessage(compressedJson));
+                await _asbSender.SendMessageAsync(new ServiceBusMessage(msgJson));
 
                 //TODO: save diargamcontext
 
@@ -115,7 +116,7 @@ namespace AzW.Infrastructure.AzureServices
             
                 //var outputCompressedStr = Encoding.UTF8.GetString(outputBytes);
 
-                return Convert.ToBase64String(inputBytes);
+                return Convert.ToBase64String(outputBytes);
             }
         }
     }

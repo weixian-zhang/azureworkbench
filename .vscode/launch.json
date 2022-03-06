@@ -5,23 +5,31 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "debug Bicep Gen",
+            "name": "debug BicepGen service",
             "type": "python",
             "request": "launch",
-            "module": "flask",
-            "env": {
-                "FLASK_APP": "main",
-                "FLASK_ENV": "development",
-                "FLASK_DEBUG": "1"
-            },
-            "args": [
-                "run",
-                "--no-debugger",
-                "--no-reload"
-            ],
-            "jinja": true,
-            "cwd": "${workspaceFolder}/src/BicepGenerator"
+            "program": "${workspaceFolder}/src/BicepGenerator/main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
         },
+        // {
+        //     "name": "debug Bicep Gen",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "module": "flask",
+        //     "env": {
+        //         "FLASK_APP": "main",
+        //         "FLASK_ENV": "development",
+        //         "FLASK_DEBUG": "1"
+        //     },
+        //     "args": [
+        //         "run",
+        //         "--no-debugger",
+        //         "--no-reload"
+        //     ],
+        //     "jinja": true,
+        //     "cwd": "${workspaceFolder}/src/BicepGenerator"
+        // },
         {
             "name": "debug Go Job.SharedLinkHouseKeeper",
             "type": "go",

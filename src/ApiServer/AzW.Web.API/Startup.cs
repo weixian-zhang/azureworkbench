@@ -285,7 +285,8 @@ namespace AzW.Web.API
                 RedisConnString = Configuration.GetValue<string>("RedisConnString"),
                 RedisHost = Configuration.GetValue<string>("RedisHost"),
                 RedisPassword = Configuration.GetValue<string>("RedisPassword"),
-                BicepBlobStorageUrl = Configuration.GetValue<string>("BicepBlobStorageUrl")
+                BicepBlobStorageUrl = Configuration.GetValue<string>("BicepBlobStorageUrl"),
+                CompressMessage = Configuration.GetValue<bool>("CompressMessage")
             };
         }
 
