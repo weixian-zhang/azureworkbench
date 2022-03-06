@@ -29,5 +29,6 @@ namespace AzW.Secret
         public string RedisPassword { get; set; }
         public string ServiceBusConnString { get; set; }
         public string BicepBlobStorageUrl { get; set; }
+        public bool CompressMessage { get; set; }
     }
 }
