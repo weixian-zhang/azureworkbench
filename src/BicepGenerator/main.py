@@ -14,25 +14,30 @@ from bicepgen import BicepGenerator
 from flask import Flask, request, Response
 import time
 from contexts import DiagramInfo
-from messaging import MsgBroker
+from bicepgen import BicepGenerator
+from messaging import MessageBroker, AzureServiceBusBroker
+import json
 
 #app = Flask(__name__)
 
 appconfig = AppConfig()
-msgBroker = MsgBroker(appconfig)
-
-def wait_until(somepredicate, timeout, period=0.5, *args, **kwargs):
-    mustend = time.time() + timeout
-    while time.time() < mustend:
-        if somepredicate(*args, **kwargs): return True
-        time.sleep(period)
-    return False
+bicepGenerator = BicepGenerator()
+msgBroker: MessageBroker = AzureServiceBusBroker(appconfig)
 
 def run():
     
     while True:
         
-        msgBroker.receive_bicep_gen_action()
+        #this function itself waits for 5secs for messages
+        #additional sleep not required in while
+        ok, diagramInfoJson = msgBroker.receive_bicep_generation_command()
+        
+        if not ok:
+            continue
+        
+        diagramInfoObj = json.loads(diagramInfoJson, object_hook=DiagramInfo)
+        
+        bicep = bicepGenerator.generate(diagramInfoObj)
         
         time.sleep(1)
 

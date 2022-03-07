@@ -5,13 +5,13 @@ from io import StringIO
 from resource_types import ResourceTypes
 from jinja2 import Environment, FileSystemLoader, Template
 from contexts import DiagramInfo
+from loguru import logger
 
 class TemplateBuilder:
     bicep_snippets = []
 
     def __init__(self):
         self.bicep_snippets = []
-        #self._bicep_snippets = StringIO()
     
     def add(self, bicepSnippets):
         self.bicep_snippets.append(bicepSnippets)
@@ -27,7 +27,7 @@ class BicepGenerator:
     def __init__(self):
          self.templateBuilder = TemplateBuilder()
          
-         templateLoader = FileSystemLoader('./templates')
+         templateLoader = FileSystemLoader(searchpath='./templates')
          self.templateEnv = Environment(loader=templateLoader)
          self.templateEnv.lstrip_blocks = True
          self.templateEnv.trim_blocks = True
@@ -35,7 +35,7 @@ class BicepGenerator:
     # portal azcontexts resource name need to be cleansed from special characters
     # as resource name is unique and is natural to use as bicep resource name
     #special chars include: '_', '-', ' ', ',', '@', '~', '`'
-    def build_template(self, diagramInfo: DiagramInfo):
+    def generate(self, diagramInfo: DiagramInfo):
         
         #diagramInfo = self.diagramInfo_add_metaInfo(diagramInfo)
 
@@ -43,8 +43,10 @@ class BicepGenerator:
         
         for azcontext in diagramContext.azcontexts:
             
-            template = self.internal_generate_template(azcontext.ResourceType, azcontext, diagramContext)
-            self.templateBuilder.add(template)
+            ok, template = self.internal_generate_template(azcontext.ResourceType, azcontext, diagramContext)
+            
+            if ok:
+                self.templateBuilder.add(template)
 
         return self.templateBuilder.get_template()
     
@@ -77,10 +79,10 @@ class BicepGenerator:
             if not bicep:
                 #TODO log
                 pass
-            return bicep
+            return True, bicep
         except Exception as e:
-            pass
-            #TODO: log error
+            logger.exception(e)
+            return False, ''
 
     def load_template_from_file(self, resourceType: str):
         

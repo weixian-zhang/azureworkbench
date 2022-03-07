@@ -5,13 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "debug BicepGen service",
+            "name": "debug BicepGen",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/BicepGenerator/main.py",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/src/BicepGenerator/" //cwd is important without this not able to locate ./templates
         },
+        //for Flask implementation, to be removed
         // {
         //     "name": "debug Bicep Gen",
         //     "type": "python",
