@@ -55,10 +55,10 @@ def write_bicep_to_azstorage(diagramInfo: DiagramInfo, bicep: str):
     
 def write_diagraminfo_to_azstorage(diagramInfo: DiagramInfo, data: str):
     
-    blobPath = f'diagraminfo_{diagramInfo.blobClaimCheckFileIdentifier}.txt'
+    blobPath = f'{diagramInfo.UserDirectory}/{diagramInfo.BlobClaimCheckFileIdentifier}/diagraminfo_{diagramInfo.BlobClaimCheckFileIdentifier}.txt'
     
     azstorage.write_blob(containerName=appconfig.BicepAzStorageContainer, \
-        blobFullPath=diagramInfo.BlobFilePath, data=data)
+        blobFullPath=blobPath, data=data)
     
 
 if __name__ == '__main__':

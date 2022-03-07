@@ -37,6 +37,7 @@ namespace AzW.Infrastructure.AzureServices
             diagraminfo.BlobClaimCheckFileIdentifier = bicepBlobClaimCheckId;
 
             diagraminfo.BlobFilePath = GetBicepFullBlobPath(bicepBlobClaimCheckId, diagraminfo.UserEmail);
+            diagraminfo.UserDirectory = GetUserBicepBlobDirectory(diagraminfo.UserEmail);
 
             await SendBicepGenCommand(diagraminfo);
 
@@ -81,7 +82,7 @@ namespace AzW.Infrastructure.AzureServices
 
         private string GenerateClaimCheckId()
         {
-            return DateTime.Now.ToString("ddMMyyyy-hhmmss");;
+            return DateTime.Now.ToString("ddMMyyyy-Hmmss");;
         }
 
         private string GetBicepFullBlobPath(string blobClaimCheckId, string userEmail)

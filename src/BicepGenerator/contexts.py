@@ -3,8 +3,9 @@ class DiagramInfo:
     
     def __init__( self, dict ):
 
-        self.useremail: str = ''
-        self.blobClaimCheckFileIdentifier: str = ''
+        self.UserEmail: str = ''
+        self.UserDirectory: str = ''
+        self.BlobClaimCheckFileIdentifier: str = ''
         self.azcontexts = None
         self.globalContext = None
 

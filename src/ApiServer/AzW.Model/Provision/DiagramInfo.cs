@@ -5,10 +5,10 @@ namespace AzW.Model
  {
     public class DiagramInfo
     {
-        //[JsonProperty("useremail")]
         public string UserEmail { get; set; }
 
-        //[JsonProperty("blobClaimCheckFileIdentifier")]
+        public string UserDirectory { get; set; }
+
         public string BlobClaimCheckFileIdentifier { get; set; }
 
         public string BlobFilePath { get; set; }
