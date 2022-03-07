@@ -5,7 +5,6 @@ class DiagramInfo:
 
         self.useremail: str = ''
         self.blobClaimCheckFileIdentifier: str = ''
-        self.blobFilePath: str = ''
         self.azcontexts = None
         self.globalContext = None
 

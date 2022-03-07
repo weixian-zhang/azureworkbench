@@ -17,12 +17,15 @@ from contexts import DiagramInfo
 from bicepgen import BicepGenerator
 from messaging import MessageBroker, AzureServiceBusBroker
 import json
+from azstorage import AzStorage
 
 #app = Flask(__name__)
 
 appconfig = AppConfig()
 bicepGenerator = BicepGenerator()
 msgBroker: MessageBroker = AzureServiceBusBroker(appconfig)
+azstorage: AzStorage = AzStorage(appconfig)
+
 
 def run():
     
@@ -35,14 +38,45 @@ def run():
         if not ok:
             continue
         
-        diagramInfoObj = json.loads(diagramInfoJson, object_hook=DiagramInfo)
+        diagramInfo = json.loads(diagramInfoJson, object_hook=DiagramInfo)
         
-        bicep = bicepGenerator.generate(diagramInfoObj)
+        bicep = bicepGenerator.generate(diagramInfo)
         
-        time.sleep(1)
+        write_bicep_to_azstorage(diagramInfo, bicep)
+        
+        write_diagraminfo_to_azstorage(diagramInfo, diagramInfoJson)
+        
+        time.sleep(0.5)
+        
+def write_bicep_to_azstorage(diagramInfo: DiagramInfo, bicep: str):
+    
+    azstorage.write_blob(containerName=appconfig.BicepAzStorageContainer, \
+        blobFullPath=diagramInfo.BlobFilePath, data=bicep)
+    
+def write_diagraminfo_to_azstorage(diagramInfo: DiagramInfo, data: str):
+    
+    blobPath = f'diagraminfo_{diagramInfo.blobClaimCheckFileIdentifier}.txt'
+    
+    azstorage.write_blob(containerName=appconfig.BicepAzStorageContainer, \
+        blobFullPath=diagramInfo.BlobFilePath, data=data)
+    
 
 if __name__ == '__main__':
     run()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # @app.route('/api/bicepgen', methods=['POST'])
 # def bicep_gen():
