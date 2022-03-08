@@ -15,7 +15,7 @@ export default class VNet
             Name: 'vnet-internet',
             Location: 'westus',
             ResourceGroupName: '',
-            AddressSpace: '10.0.0.0/24',
+            AddressSpace: '10.0.0.0/16',
             Subnets: []
         };
         this.CalculatorContext = {

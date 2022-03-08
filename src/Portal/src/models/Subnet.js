@@ -7,7 +7,7 @@ export default class Subnet
             ResourceType: ResourceType.Subnet(),
             DisplayName: '',
             IsGatewaySubnet: false,
-            VNetAddressSpace: '10.0.0.0/27',
+            VNetAddressSpace: '10.0.0.0/16',
             SubnetsAndCidrs: []
         };
 
@@ -15,7 +15,7 @@ export default class Subnet
             ResourceType: ResourceType.Subnet(),
 
             Name: 'subnet-web',
-            AddressSpace: '',
+            AddressSpace: '10.0.0.0/27',
             NSGName: '',
             ServiceEndpointTargetServices:[]
         };

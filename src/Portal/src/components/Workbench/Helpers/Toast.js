@@ -6,6 +6,7 @@ export const AppToaster = Toaster.create({
     autoFocus: false,
     canEscapeKeyClear: true,
     position: Position.TOP,
+    enableHtml: false
 });
 
 
