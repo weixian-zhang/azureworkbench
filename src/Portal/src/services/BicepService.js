@@ -57,7 +57,7 @@ class BicepService
     downloadBicepFile(bicepFileUrl, onSuccess, onFailure) {
         var attempt = 0;
         axiosRetry(axios, {
-            retries: 10, // number of retries
+            retries: 15, // number of retries
             retryDelay: (retryCount) => {
               attempt = retryCount;
               return 1000; // time interval between retries in milliseconds

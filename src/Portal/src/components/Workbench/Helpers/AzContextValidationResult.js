@@ -14,6 +14,6 @@ export default class AzContextValidationResult {
     }
 
     GetErrorMessages() {
-        return this.ErrorMessages.join(', \n');
+        return this.ErrorMessages.join('\n');
     }
 }

@@ -22,7 +22,6 @@ from azstorage import AzStorage
 #app = Flask(__name__)
 
 appconfig = AppConfig()
-bicepGenerator = BicepGenerator()
 msgBroker: MessageBroker = AzureServiceBusBroker(appconfig)
 azstorage: AzStorage = AzStorage(appconfig)
 
@@ -40,6 +39,7 @@ def run():
         
         diagramInfo = json.loads(diagramInfoJson, object_hook=DiagramInfo)
         
+        bicepGenerator = BicepGenerator()
         bicep = bicepGenerator.generate(diagramInfo)
         
         write_bicep_to_azstorage(diagramInfo, bicep)

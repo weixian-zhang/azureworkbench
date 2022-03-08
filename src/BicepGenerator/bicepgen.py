@@ -25,7 +25,9 @@ class TemplateBuilder:
         self.bicep_snippets.append(bicepSnippets)
         
     def get_template(self) -> str:
-       return '\n\n'.join(self.bicep_snippets)
+       return ''.join(self.bicep_snippets)
+   
+
 
 class BicepGenerator(TemplateGenerator):
     
@@ -37,6 +39,7 @@ class BicepGenerator(TemplateGenerator):
          
          templateLoader = FileSystemLoader(searchpath='./templates')
          self.templateEnv = Environment(loader=templateLoader)
+         self.templateEnv.globals['resolve_bicep_resource'] = self.resolve_bicep_resource
          self.templateEnv.lstrip_blocks = True
          self.templateEnv.trim_blocks = True
 
@@ -45,9 +48,11 @@ class BicepGenerator(TemplateGenerator):
     #special chars include: '_', '-', ' ', ',', '@', '~', '`'
     def generate(self, diagramInfo: DiagramInfo):
         
-        #diagramInfo = self.diagramInfo_add_metaInfo(diagramInfo)
-
         diagramContext = diagramInfo.diagramContext
+        
+        #load base template
+        ok, baseTemplate = self.load_base_template()
+        self.templateBuilder.add(baseTemplate)
         
         for azcontext in diagramContext.azcontexts:
             
@@ -78,6 +83,19 @@ class BicepGenerator(TemplateGenerator):
     #             bicepRscNAme = bicepRscName.replace(vChar, '')
                 
     #     return bicepRscName
+    
+    def load_base_template(self):
+        try:
+            template = self.load_template_from_file('base')
+            bicep = template.render()
+            
+            if not bicep:
+                #TODO log
+                pass
+            return True, bicep
+        except Exception as e:
+            logger.exception(e)
+            return False, ''
 
     def internal_generate_template(self, resourceType, azcontext, diagramContext):
         try:
@@ -91,15 +109,26 @@ class BicepGenerator(TemplateGenerator):
         except Exception as e:
             logger.exception(e)
             return False, ''
+    
+    def resolve_bicep_resource(self, azcontextRscName: str):
+        
+        specialChars = ['_', '-', ' ', ',', '@', '~', '`']
+        
+        for sChar in specialChars:
+            azcontextRscName = azcontextRscName.replace(sChar, '')
+        
+        return azcontextRscName
 
     def load_template_from_file(self, resourceType: str):
         
         fileName = self.with_template_ext(resourceType)
         template = self.templateEnv.get_template(fileName)
+        
+        #template.globals.update(resolve_bicep_resource=self.resolve_bicep_resource)
+        
         return template
     
     def with_template_ext(self, resourceType: str):
         fileName = resourceType + '.j2'
-        #templatePath = os.path.join('templates', fileName)
         return fileName
             

@@ -1,4 +1,4 @@
-resource publicip 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
+resource {{ resolve_bicep_resource(zcontext.Name) }} 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
   name: {{ azcontext.Name }}
   location: location
   sku: {

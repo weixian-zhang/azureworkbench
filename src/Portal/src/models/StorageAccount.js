@@ -13,7 +13,7 @@ export default class StorageAccount
             Name: '',
             Location: 'westus',
             ResourceGroupName: '',
-            SkuName: ''
+            SkuName: 'Standard_LRS'
         };
         this.CalculatorContext = {
             IsFree: false,

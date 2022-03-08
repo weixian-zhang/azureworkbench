@@ -28,14 +28,25 @@ export default class AzContextValidator {
         //check empty names
         azcontexts.forEach((azcontext, arrIndex, azcontexts) => {
             AzContextValidator.CheckEmptyResourceName(azcontext, result.ErrorMessages);
+            AzContextValidator.CheckEmptySubnetAddress(azcontext, result.ErrorMessages);
         });
 
         return result
     }
 
+    
     static CheckEmptyResourceName(azcontext, errList) {
         if(!azcontext.Name)
             errList.push(`Resource type ${azcontext.ResourceType} cannot have empty name`);
+    }
+
+    static CheckEmptySubnetAddress(azcontext, errList) {
+        if(azcontext.ResourceType == ResourceType.VNet()) {
+            azcontext.Subnets.forEach(subnet => {
+                if(!subnet.AddressSpace)
+                    errList.push(`Subnet '${subnet.Name}' addresss space is empty`);
+            });
+        }
     }
 
     static CheckDuplicatedResourceName(azcontexts, errList) {
@@ -76,20 +87,20 @@ export default class AzContextValidator {
      
 
     //special treatment for VNet as Subnets are embedded as array in VNet azcontext
-    static setBicepNameForVNetSubnets(azcontext) {
+    // static setBicepNameForVNetSubnets(azcontext) {
 
-        if (Utils.IsNullOrUndefine(azcontext.Subnets))
-            return azcontext;
+    //     if (Utils.IsNullOrUndefine(azcontext.Subnets))
+    //         return azcontext;
 
-        azcontext.Name = AzContextValidator.removeSpecialChar(azcontext.Name);
+    //     azcontext.Name = AzContextValidator.removeSpecialChar(azcontext.Name);
 
-        var subnets = azcontext.Subnets;
-        azcontext.Subnets.forEach((subnet, arrIndex, subnets) => {
-            var curatedSubnet =  subnet;
-            curatedSubnet.BicepResourceName = AzContextValidator.removeSpecialChar(subnet.Name);
-            subnet = curatedSubnet;
-        })
-    }
+    //     var subnets = azcontext.Subnets;
+    //     azcontext.Subnets.forEach((subnet, arrIndex, subnets) => {
+    //         var curatedSubnet =  subnet;
+    //         curatedSubnet.BicepResourceName = AzContextValidator.removeSpecialChar(subnet.Name);
+    //         subnet = curatedSubnet;
+    //     })
+    // }
 
 
     static removeSpecialChar(name) {
