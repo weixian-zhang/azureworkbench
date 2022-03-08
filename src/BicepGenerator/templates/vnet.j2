@@ -1,6 +1,6 @@
 
-resource {{ azcontext.Name }} 'Microsoft.Network/virtualNetworks@2020-06-01' = {
-  name: virtualNetworkName
+resource {{ resolve_bicep_resource(azcontext.Name) }} 'Microsoft.Network/virtualNetworks@2020-06-01' = {
+  name: '{{ azcontext.Name }}'
   location: location
   properties: {
     addressSpace: {
@@ -10,16 +10,17 @@ resource {{ azcontext.Name }} 'Microsoft.Network/virtualNetworks@2020-06-01' = {
     }
     subnets: [
       {% for subnet in azcontext.Subnets %}
-       
-       set nsgId = subnet.NSGName + ".id"
-
+       {#variable#}
+       {% set _nsgId = subnet.NSGName|join('.id') %}
       {
-        name: {{ subnet.Name }}
+        name: '{{ subnet.Name }}'
         properties: {
           addressPrefix: '{{ subnet.AddressSpace }}'
+          {% if subnet.NSGName != '' %}
           networkSecurityGroup: {
-            id: nsgId
+            id: {{ _nsgId }}
           }
+          {% endif %}
         }
       }
       {% endfor %}
