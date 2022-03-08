@@ -6,6 +6,14 @@ from resource_types import ResourceTypes
 from jinja2 import Environment, FileSystemLoader, Template
 from contexts import DiagramInfo
 from loguru import logger
+from abc import ABC, abstractmethod
+
+class TemplateGenerator(ABC):
+    
+    @abstractmethod
+    def generate(self):
+        pass
+
 
 class TemplateBuilder:
     bicep_snippets = []
@@ -19,7 +27,7 @@ class TemplateBuilder:
     def get_template(self) -> str:
        return '\n\n'.join(self.bicep_snippets)
 
-class BicepGenerator:
+class BicepGenerator(TemplateGenerator):
     
     templateBuilder: TemplateBuilder = None
     templateEnv: Environment = None

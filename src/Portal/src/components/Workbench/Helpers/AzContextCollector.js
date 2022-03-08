@@ -1,6 +1,7 @@
 import Utils from "./Utils";
 import ResourceType from '../../../models/ResourceType';
 import * as go from 'gojs';
+import AzContextValidator from './AzContextValidator';
 
 export default class AzContextCollector
 {
@@ -64,9 +65,10 @@ export default class AzContextCollector
             }
         }
 
-        return this.sortProvisionContexts(provisionContexts);
-    }
+        var sortedContexts = this.sortProvisionContexts(provisionContexts);
 
+        var curatedContexts = AzContextValidator.Validate(sortedContexts);
+    }   
 
     sortProvisionContexts(proContexts) {
 
