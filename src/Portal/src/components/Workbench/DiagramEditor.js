@@ -6589,15 +6589,21 @@ loadPastedImageFromBrowserClipboard(src, callback){
         return;
       }
 
-      var contexts = this.azcontextCollector.ExtractAzContexts(this.diagram);
-
-      if(Utils.IsNullOrUndefine(contexts))
-      {
-        Toast.show(Intent.WARNING, 2000, Messages.NoResourceToProvision());
+      var validationResult = this.azcontextCollector.ExtractAzContexts(this.diagram);
+      if(validationResult.HasErrors()) {
+        Toast.show(Intent.WARNING, 12000, validationResult.GetErrorMessages());
         return;
       }
 
-       this.bicepsvc.generateBicep(contexts,
+      var azcontexts = validationResult.AzContexts;
+
+      // if(Utils.IsNullOrUndefine(contexts))
+      // {
+      //   Toast.show(Intent.WARNING, 2000, Messages.NoResourceToProvision());
+      //   return;
+      // }
+
+       this.bicepsvc.generateBicep(azcontexts,
         function onSuccess(bicepTemplate) {
           const url = window.URL.createObjectURL(new Blob([bicepTemplate]));
           const link = document.createElement('a');

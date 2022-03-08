@@ -67,7 +67,9 @@ export default class AzContextCollector
 
         var sortedContexts = this.sortProvisionContexts(provisionContexts);
 
-        var curatedContexts = AzContextValidator.Validate(sortedContexts);
+        var result = AzContextValidator.Validate(sortedContexts);
+
+        return result;
     }   
 
     sortProvisionContexts(proContexts) {

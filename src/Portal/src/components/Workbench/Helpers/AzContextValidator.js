@@ -40,7 +40,6 @@ export default class AzContextValidator {
 
     static CheckDuplicatedResourceName(azcontexts, errList) {
 
-
         //get duplicated resource names
         var duplicateNames = azcontexts.map(azc => azc.Name).filter((name, pos, self) => self.indexOf(name) != pos );
         //filter azcontexts to find duplicated azcontexts. Main purpose is to also get Resource Type for meaningful
@@ -64,11 +63,11 @@ export default class AzContextValidator {
         //check if subnet names in a VNet has duplicates
         azcontexts.forEach(azcontext => {
             if(azcontext.ResourceType == ResourceType.VNet()) {
-                var dupSubnets = azcontext.Subnets.filter((s, pos) => azcontext.Subnets.indexOf(s.Name) != pos)
+                var dupSubnetNames = azcontext.Subnets.map(subnet => subnet.Name).filter((subnetName, pos, self) => self.indexOf(subnetName) != pos)
 
-                if(dupSubnets.length > 0) {
-                    dupSubnets.forEach((subnet) => {
-                        errList.push(`Duplicate Subnet name '${subnet.Name}' found in VNet '${azcontext.Name}'`)
+                if(dupSubnetNames.length > 0) {
+                    dupSubnetNames.forEach((name) => {
+                        errList.push(`Duplicate Subnet name '${name}' found in VNet '${azcontext.Name}'`)
                     })
                 } 
             }

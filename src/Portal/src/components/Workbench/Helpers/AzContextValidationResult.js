@@ -13,7 +13,7 @@ export default class AzContextValidationResult {
         return false;
     }
 
-    Messages() {
+    GetErrorMessages() {
         return this.ErrorMessages.join(', \n');
     }
 }
