@@ -67,10 +67,12 @@ export default class AzContextValidator {
             })
         }
 
-        AzContextValidator.CheckDuplicatedSubnetNames(azcontexts, errList);
+        AzContextValidator.CheckForDuplicatedSubnetNames(azcontexts, errList);
+
+        AzContextValidator.CheckForDuplicatedNSGRuleNames(azcontexts, errList);
     }
 
-    static CheckDuplicatedSubnetNames(azcontexts, errList) {
+    static CheckForDuplicatedSubnetNames(azcontexts, errList) {
         //check if subnet names in a VNet has duplicates
         azcontexts.forEach(azcontext => {
             if(azcontext.ResourceType == ResourceType.VNet()) {
@@ -79,6 +81,35 @@ export default class AzContextValidator {
                 if(dupSubnetNames.length > 0) {
                     dupSubnetNames.forEach((name) => {
                         errList.push(`Duplicate Subnet name '${name}' found in VNet '${azcontext.Name}'`)
+                    })
+                } 
+            }
+        });
+    }
+
+    static CheckForDuplicatedNSGRuleNames(azcontexts, errList) {
+        //check if subnet names in a VNet has duplicates
+        azcontexts.forEach(azcontext => {
+            if(azcontext.ResourceType == ResourceType.NSG()) {
+                //inbound rules
+                var dupInboundRules = azcontext.InboundRules
+                    .map(rule => rule.Name)
+                    .filter((name, pos, self) => self.indexOf(name) != pos);
+
+                if(dupInboundRules.length > 0) {
+                    dupInboundRules.forEach((name) => {
+                        errList.push(`Duplicate NSG Inbound rule name '${name}' found in NSG '${azcontext.Name}'`)
+                    })
+                } 
+
+                //outbound rules
+                var dupOutboundRules = azcontext.OutboundRules
+                    .map(rule => rule.Name)
+                    .filter((name, pos, self) => self.indexOf(name) != pos);
+
+                if(dupOutboundRules.length > 0) {
+                    dupOutboundRules.forEach((name) => {
+                        errList.push(`Duplicate NSG Outbound rule name '${name}' found in NSG '${azcontext.Name}'`)
                     })
                 } 
             }

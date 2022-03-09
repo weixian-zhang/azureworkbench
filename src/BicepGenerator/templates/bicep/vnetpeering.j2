@@ -5,35 +5,29 @@
 {% set remoteRscName = remoteVNetName + localVNetName %}
 
 resource {{ localRscName }} 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-05-01' = {
-  name: '{{ remoteVNetName + '/' + remoteVNetName + '-' + localVNetName }}'
-  dependsOn: [
-    {{ localVNetName }}
-    {{ remoteVNetName }}
-  ]
+  name: '{{ localVNetName + '-' + remoteVNetName }}'
+  parent: {{ localVNetName }}
   properties: {
     allowForwardedTraffic: false
     allowGatewayTransit: false
     allowVirtualNetworkAccess: true
     useRemoteGateways: false
     remoteVirtualNetwork: {
-      id: {{ localRscName + ".id" }}
+      id: {{ remoteVNetName + ".id" }}
     }
   }
 }
 
 resource {{ remoteRscName }} 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-05-01' = {
-  name: '{{ localVNetName + '/' + localVNetName + '-' + remoteRscName }}'
-  dependsOn: [
-    {{ localVNetName }}
-    {{ remoteVNetName }}
-  ]
+  name: '{{ remoteVNetName + '-' + localVNetName }}'
+  parent: {{ remoteVNetName }}
   properties: {
     allowForwardedTraffic: false
     allowGatewayTransit: false
     allowVirtualNetworkAccess: true
     useRemoteGateways: false
     remoteVirtualNetwork: {
-      id: {{ remoteRscName + ".id" }}
+      id: {{ localVNetName + ".id" }}
     }
   }
 }

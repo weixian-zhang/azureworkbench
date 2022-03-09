@@ -1,6 +1,6 @@
 
 resource {{ resolve_bicep_resource(azcontext.Name) }} 'Microsoft.Network/networkSecurityGroups@2021-05-01' = {
-  name: '{{ azcontext.Name }}'
+  name: '{{ resolve_bicep_resource(azcontext.Name) }}'
   location: location
   {% if diagramContext.globalContext.tags|length > 0 %}
   tags: {
@@ -36,14 +36,14 @@ resource {{ resolve_bicep_resource(azcontext.Name) }} 'Microsoft.Network/network
       {
         name: '{{ outboundRule.Name }}'
         properties: {
-          access: {{ 'Allow' if outboundRule.Allow == true else 'Deny' }}
+          access: '{{ 'Allow' if outboundRule.Allow == true else 'Deny' }}'
           description: ''
           destinationAddressPrefix: '{{ outboundRule.ToAddresses }}'
           destinationAddressPrefixes: []
-          destinationApplicationSecurityGroups: [
-          destinationPortRange: {{ outboundRule.ToPorts }}
+          destinationApplicationSecurityGroups: []
+          destinationPortRange: '{{ outboundRule.ToPorts }}'
           destinationPortRanges: []
-          direction: 'Inbound'
+          direction: 'Outbound'
           priority: {{ outboundRule.Priority}}
           protocol: '{{ outboundRule.Protocol}}'
           sourceAddressPrefix: '{{ outboundRule.FromAddresses}}'
