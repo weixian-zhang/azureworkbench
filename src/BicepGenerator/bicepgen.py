@@ -114,9 +114,6 @@ class BicepGenerator(TemplateGenerator):
     
     def resolve_bicep_resource(self, azcontextRscName: str):
         
-        if not azcontextRscName.isalnum():
-            return azcontextRscName
-        
         specialChars = [' ', ',', '@', '~', '`']
         
         for sChar in specialChars:
