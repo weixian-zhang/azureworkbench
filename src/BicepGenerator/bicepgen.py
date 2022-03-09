@@ -2,6 +2,8 @@
 
 import os
 from io import StringIO
+import random
+import string
 from resource_types import ResourceTypes
 from jinja2 import Environment, FileSystemLoader, Template
 from contexts import DiagramInfo
@@ -37,7 +39,7 @@ class BicepGenerator(TemplateGenerator):
     def __init__(self):
          self.templateBuilder = TemplateBuilder()
          
-         templateLoader = FileSystemLoader(searchpath='./templates')
+         templateLoader = FileSystemLoader(searchpath='./templates/bicep')
          self.templateEnv = Environment(loader=templateLoader)
          self.templateEnv.globals['resolve_bicep_resource'] = self.resolve_bicep_resource
          self.templateEnv.lstrip_blocks = True
@@ -112,12 +114,20 @@ class BicepGenerator(TemplateGenerator):
     
     def resolve_bicep_resource(self, azcontextRscName: str):
         
-        specialChars = ['_', '-', ' ', ',', '@', '~', '`']
+        if not azcontextRscName.isalnum():
+            return azcontextRscName
+        
+        specialChars = [' ', ',', '@', '~', '`']
         
         for sChar in specialChars:
             azcontextRscName = azcontextRscName.replace(sChar, '')
+            
+        azcontextRscName = azcontextRscName.replace('-', '_')
+            
+        #cleansedName = [s.replace(self.generateRandomThreeChars(s)) for s in azcontextRscName if s.isnumeric()]
         
         return azcontextRscName
+    
 
     def load_template_from_file(self, resourceType: str):
         

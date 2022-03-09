@@ -11,7 +11,7 @@ resource {{ resolve_bicep_resource(azcontext.Name) }} 'Microsoft.Network/virtual
     subnets: [
       {% for subnet in azcontext.Subnets %}
        {#variable#}
-       {% set _nsgId = subnet.NSGName|join('.id') %}
+       {% set _nsgId = resolve_bicep_resource(subnet.NSGName) + "id" %}
       {
         name: '{{ subnet.Name }}'
         properties: {
