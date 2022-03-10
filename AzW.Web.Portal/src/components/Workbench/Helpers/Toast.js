@@ -19,4 +19,8 @@ export default class Toast extends Component {
       else
         AppToaster.show({intent: intent,timeout: duration, message: message});
     }
+
+    static warn = (duration, message) => {
+      AppToaster.show({intent: 'warning', timeout: duration, message: message});
+    }
   }

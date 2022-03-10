@@ -342,6 +342,9 @@ export default class MySpace extends Component {
 
         var thisComp = this;
 
+        if(this.props.DiagramEditor.preventLoadDiagramOnChanges())
+           return;
+           
         this.diagramService.loadSharedDiagramFromMySpace(uid,
           function onSuccess(diagramXml) {
             if(diagramXml == '')
@@ -488,6 +491,10 @@ export default class MySpace extends Component {
     }
 
     loadDiagramFromWorkspace = (diagramContext) => {
+
+      if(this.props.DiagramEditor.preventLoadDiagramOnChanges())
+           return;
+
       var thisComp = this;
       diagramContext.DiagramXml =
           this.diagramService.loadDiagramFromWorkspace
