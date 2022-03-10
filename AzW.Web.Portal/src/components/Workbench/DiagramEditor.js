@@ -6188,6 +6188,8 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
     if(diagramJson == null || diagramJson == '')
       return;
+      if(this.preventLoadDiagramOnChanges())
+      return;
 
       var jsonFromBase64 = this.getDiagramFromBase64(diagramJson);
       var model = go.Model.fromJson(jsonFromBase64);
@@ -6207,6 +6209,8 @@ loadPastedImageFromBrowserClipboard(src, callback){
   }
 
    loadQuickstartDiagram(category, name) {
+    if(this.preventLoadDiagramOnChanges())
+      return;
       var thisComp = this;
       this.diagService.loadQuickstartDiagram
         (category, name,
@@ -6271,6 +6275,9 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
   loadSharedDiagram = () => {
     if(Utils.IsNullOrUndefine(this.state.queryString)) //querystring is object contains path and querystring
+      return;
+
+    if(this.preventLoadDiagramOnChanges())
       return;
 
     var parsedQS =  queryString.parse(this.state.queryString.search)
@@ -6356,7 +6363,13 @@ loadPastedImageFromBrowserClipboard(src, callback){
       Toast.show('warning',2000, reader.error);
     };
   }
-
+  preventLoadDiagramOnChanges() {
+    if(this.state.unsavedChanges){
+      Toast.warn(4000, 'There are unsave changes, please save before loading any diagram');
+      return true;
+    }
+    return false;
+  }
   exportWorkbenchFormat() {
     if(Utils.isCanvasEmpty(this.diagram))
     {

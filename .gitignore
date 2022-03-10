@@ -274,3 +274,7 @@ __pycache__/
 .vscode/redis-xplorer.redis
 .vscode/settings.json
 .vscode/settings.json
+.env
+src/Jobs/SharedLinkHouseKeeper/secret.env
+src/Jobs/SharedLinkHouseKeeper/aci-deploy.yaml
+src/Jobs/AzW.Job.CacheHydrator/local.settings.json
