@@ -1,0 +1,107 @@
+
+{% set vmName = resolve_bicep_resource(azcontext.Name) %}
+{% set nicName = 'nic_' + vmName %}
+{% set pipName = 'pip_' + vmName + '_' + resolve_bicep_resource(azcontext.PublicIPName) %}
+{% set vnetName = resolve_bicep_resource(azcontext.VNetName) %}
+{% set subnetName = azcontext.SubnetName %}
+{% set vmUserName = vmName + '_' + 'adminUsername' %}
+{% set vmPassword = vmName + '_' + 'adminPassword' %}
+
+@description('Default Admin username')
+param {{ vmUserName }} string = '{{ azcontext.AdminUsername }}'
+{# discourage password for Linux #}
+{% if azcontext.IsLinux == false %}
+@description('Default Admin password')
+@secure()
+param {{ vmPassword }} string
+{% endif %}
+
+resource {{ vmName }} 'Microsoft.Compute/virtualMachines@2020-06-01' = {
+  name: '{{ vmName }}'
+  location: location
+  properties: {
+    osProfile: {
+      computerName: '{{ truncate_win_computer_name(vmName) if azcontext.IsLinux == false else truncate_linux_computer_name(vmName) }}'
+      adminUsername: {{ vmUserName }}
+      {% if azcontext.IsLinux == false %}
+      adminPassword: {{ vmPassword }}
+      windowsConfiguration: {
+        provisionVMAgent: true
+      }
+      {% else %}
+      linuxConfiguration: {
+        disablePasswordAuthentication: true
+        ssh: {
+          publicKeys: [
+            {
+              path: '/home/{% raw %}${{% endraw %}{{ vmUserName }}{% raw %}}{% endraw %}/.ssh/authorized_keys'
+              keyData: '{{ azcontext.SSHPublicKey }}'
+            }
+          ]
+        }
+      }
+      {% endif %}
+    }
+    hardwareProfile: {
+      vmSize: '{{ azcontext.SizeName }}'
+    }
+    storageProfile: {
+      imageReference: {
+        publisher: '{{ azcontext.VMPublisher }}'
+        offer: '{{ azcontext.VMOffer }}'
+        sku: '{{ azcontext.VMSKU }}'
+        version: '{{ azcontext.VMVersion }}'
+      }
+      osDisk: {
+        createOption: 'FromImage'
+      }
+    }
+    networkProfile: {
+      networkInterfaces: [
+        {
+          properties: {
+            primary: true
+          }
+          id: {{ nicName + '.id'}}
+        }
+      ]
+    }
+  }
+}
+
+resource {{ nicName }} 'Microsoft.Network/networkInterfaces@2020-06-01' = {
+  name: '{{ nicName }}'
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        name: '{{nicName + '_ipconfig'}}'
+        properties: {
+          subnet: {
+            {#e.g '${vnet_1.id}/subnets/subnet_web' #}
+            id: '{%raw%}${{% endraw %}{{vnetName + '.id' }}{%raw%}}{% endraw %}/subnets/{{ azcontext.SubnetName }}'
+          }
+          privateIPAllocationMethod: 'Dynamic'
+          {% if azcontext.HasPublicIP == true %}
+          publicIPAddress: {
+            id: {{ pipName + '.id' }}
+          }
+          {% endif %}
+        }
+      }
+    ]
+  }
+}
+
+{% if azcontext.HasPublicIP == true %}
+  resource {{ pipName }} 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
+  name: '{{ pipName }}'
+  location: location
+  properties: {
+    publicIPAllocationMethod: 'Dynamic'
+    dnsSettings: {
+      domainNameLabel: '{{ pipName }}'
+    }
+  }
+}
+{% endif %}

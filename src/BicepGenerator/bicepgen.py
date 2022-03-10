@@ -1,4 +1,5 @@
 #https://github.com/Azure/bicep/tree/main/docs/examples
+# https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?tabs=bicep
 
 import os
 from io import StringIO
@@ -42,6 +43,8 @@ class BicepGenerator(TemplateGenerator):
          templateLoader = FileSystemLoader(searchpath='./templates/bicep')
          self.templateEnv = Environment(loader=templateLoader)
          self.templateEnv.globals['resolve_bicep_resource'] = self.resolve_bicep_resource
+         self.templateEnv.globals['truncate_win_computer_name'] = self.truncate_win_computer_name
+         self.templateEnv.globals['truncate_linux_computer_name'] = self.truncate_linux_computer_name
          self.templateEnv.lstrip_blocks = True
          self.templateEnv.trim_blocks = True
 
@@ -111,7 +114,19 @@ class BicepGenerator(TemplateGenerator):
         except Exception as e:
             logger.exception(e)
             return False, ''
+
+    def load_template_from_file(self, resourceType: str):
+        
+        fileName = self.with_template_ext(resourceType)
+        template = self.templateEnv.get_template(fileName)
+        
+        return template
     
+    def with_template_ext(self, resourceType: str):
+        fileName = resourceType + '.j2'
+        return fileName
+    
+    #use in jinja
     def resolve_bicep_resource(self, azcontextRscName: str):
         
         specialChars = [' ', ',', '@', '~', '`']
@@ -125,17 +140,23 @@ class BicepGenerator(TemplateGenerator):
         
         return azcontextRscName
     
-
-    def load_template_from_file(self, resourceType: str):
-        
-        fileName = self.with_template_ext(resourceType)
-        template = self.templateEnv.get_template(fileName)
-        
-        #template.globals.update(resolve_bicep_resource=self.resolve_bicep_resource)
-        
-        return template
+    def truncate_win_computer_name(self, name: str):
+        name = self.clean_computer_name(name)
+        name = (name[:14]) if len(name) > 15 else name
+        return name
     
-    def with_template_ext(self, resourceType: str):
-        fileName = resourceType + '.j2'
-        return fileName
+    def truncate_linux_computer_name(self, name: str):
+        name = self.clean_computer_name(name)
+        name = (name[:63]) if len(name) > 64 else name
+        return name
+    
+    def clean_computer_name(self, name: str):
+        specialChars = ['`', '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '=', '+', '_', '[', ']', '{', '}', '\\', '|', ';', ':', "'", ',', '\/', '\?', '.']
+        
+        for sChar in specialChars:
+            name = name.replace(sChar, '')
+            
+        return name
+            
+        
             

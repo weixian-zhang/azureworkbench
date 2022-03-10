@@ -21,12 +21,12 @@ export default class VM
             SubnetName: '',
 
             AdminUsername: 'AzureUser',
-            AdminPassword: '',
+            //AdminPassword: '',
 
             VMPublisher: '',
             VMOffer: '',
             VMSKU: '',
-            VMVersion: '',
+            VMVersion: 'latest', //always 'latest'. input specific version causes deployment error image not found
             VMPublisherSearchableName: '',
 
             SizeName: 'STANDARD_DS2_V2',

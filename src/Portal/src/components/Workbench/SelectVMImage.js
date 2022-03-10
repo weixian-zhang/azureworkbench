@@ -164,7 +164,10 @@ export default class SelectVMImage extends Component {
         vmImg.Publisher = item.currentTarget.dataset.publisher;
         vmImg.Offer = item.currentTarget.dataset.offer;
         vmImg.Sku = item.currentTarget.dataset.sku;
-        vmImg.Version = item.currentTarget.dataset.version;
+
+        //always 'latest'. input specific version causes deployment error image not found
+        vmImg.Version = 'latest';
+
         vmImg.PublisherSearchableName = this.state.publisherSearchableName;
 
         this.setState({
