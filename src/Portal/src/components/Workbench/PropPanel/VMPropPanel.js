@@ -180,32 +180,6 @@ export default class VMPropPanel extends Component {
                 </Grid>
               </Grid>
               <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
-                <Grid item sm={3}>
-                    <label>Admin Password</label>
-                </Grid>
-                <Grid item>
-                  <InputGroup
-                      placeholder="Enter your password..."
-                      value={this.state.userObject.ProvisionContext.AdminPassword}
-                      onChange={(e) => {
-                        var uo = this.state.userObject;
-                        uo.ProvisionContext.AdminPassword = e.target.value
-                        this.setState({userObject:uo});
-                      }}
-                      rightElement={
-                        <Tooltip content={`${this.state.showPassword ? "Hide" : "Show"} Password`}>
-                            <Button
-                                icon={this.state.showPassword ? "unlock" : "lock"}
-                                intent={Intent.WARNING}
-                                minimal={true}
-                                onClick={this.handleLockClick}
-                            />
-                        </Tooltip>
-                      }
-                      type={this.state.showPassword ? "text" : "password"} />
-                </Grid>
-              </Grid>
-              <Grid container item direction="row" xs="12" spacing="1" justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
                 <Grid item>
                   <Switch checked={this.state.userObject.ProvisionContext.IsLinux} label="Is Linux"
                     onChange={(e) => {
