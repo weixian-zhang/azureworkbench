@@ -1,0 +1,136 @@
+
+{% set nlbName = resolve_bicep_resource(azcontext.Name) %}
+{% set pipName = resolve_bicep_resource(azcontext.PublicIPName) %}
+{% set frontendIpConfigName = "NLBFrontEnd-" + azcontext.FrontendPort|string %}
+{% set healthProbeName = "healthprobe-" + azcontext.FrontendPort|string %}
+
+{% if azcontext.IsInternalNLB == false %}
+resource {{ pipName }} 'Microsoft.Network/publicIPAddresses@2020-06-01' = {
+  name: '{{ azcontext.PublicIPName }}'
+  location: location
+  sku: {
+    name: 'Standard'
+  }
+  properties: {
+    publicIPAllocationMethod: 'Static'
+  }
+}
+{% endif %}
+
+resource {{ nlbName }} 'Microsoft.Network/loadBalancers@2020-05-01' = {
+  name: '{{ azcontext.Name }}'
+  location: location
+  sku: {
+    name: '{{ "Standard" if azcontext.IsStandardSku == true else "Basic" }}'
+  }
+  properties: {
+    frontendIPConfigurations: [
+      {
+        name: '{{ frontendIpConfigName }}'
+        properties: {
+          {% if azcontext.IsInternalNLB == true %}
+          privateIPAllocationMethod: 'Dynamic'
+          subnet: {
+            id: '{%raw%}${{% endraw %}{{resolve_bicep_resource(azcontext.VNetName) + '.id' }}{%raw%}}{% endraw %}/subnets/{{ azcontext.SubnetName }}'
+          }
+          privateIPAddressVersion: 'IPv4'
+          {% else %}
+          publicIPAddress: {
+              id:  {{ pipName + ".id" }}
+          }
+          {% endif %}
+          
+        }
+      }
+    ]
+    {% if ( (azcontext.IsInternalNLB == true) and (azcontext.LoadBalanceToExistingVMNames|length > 0) ) -%}
+    backendAddressPools: [
+      {
+        name: 'lbBackendPoolName1'
+        properties: {        
+          loadBalancerBackendAddresses: [
+          {% for vmName in azcontext.LoadBalanceToExistingVMNames %}
+            {% set vmNicName = 'nic_' + resolve_bicep_resource(vmName) %}
+            {
+                {# Names of loadBalancerBackendAddresses must match backendAddress Names below of 
+                "Microsoft.Network/loadBalancers/backendAddressPools" #}
+                name: '{{ vmName + '_' + vmNicName }}'
+                properties: {}
+            }
+          {% endfor %}
+          ]
+        }
+      }
+    ] 
+    {% else %}   
+    backendAddressPools: [
+      {
+        name: 'lbBackendPoolName1'
+        properties: {
+          loadBalancerBackendAddresses:[]
+        }
+      }
+    ]
+    {%- endif %}
+    loadBalancingRules: [
+      {
+        name: 'lbRuleName1'
+        properties: {
+          frontendIPConfiguration: {
+            id: concat(resourceId('Microsoft.Network/loadBalancers', '{{ azcontext.Name  }}'), '/frontendIPConfigurations/{{ frontendIpConfigName }}')
+          }
+          frontendPort: {{ azcontext.FrontendPort }}
+          backendPort: 443
+          enableFloatingIP: false
+          idleTimeoutInMinutes: 4
+          protocol: 'Tcp'
+          enableTcpReset: false
+          loadDistribution: 'SourceIP'
+          backendAddressPool: {
+               id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', '{{ azcontext.Name  }}', 'lbBackendPoolName1')
+          }
+          probe: {
+            id: resourceId('Microsoft.Network/loadBalancers/probes', '{{ azcontext.Name  }}', '{{ healthProbeName }}')
+          }
+        }
+      }
+    ]
+    probes: [
+      {
+        name: '{{ healthProbeName }}'
+        properties: {
+          protocol: 'Tcp'
+          port: 443
+          intervalInSeconds: 5
+          numberOfProbes: 2
+        }
+      }
+    ]
+    inboundNatRules: []
+    outboundRules: []
+    inboundNatPools: []
+  }
+}
+
+{% if ( (azcontext.IsInternalNLB == true) and (azcontext.LoadBalanceToExistingVMNames|length > 0) ) -%}
+{% set backendPoolName = nlbName + '_backendAddressPools' %}
+resource {{ backendPoolName }} 'Microsoft.Network/loadBalancers/backendAddressPools@2020-11-01' = {
+  name: '{{ backendPoolName }}'
+  parent: {{ nlbName }}
+  properties: {
+    loadBalancerBackendAddresses: [
+      {% for vmName in azcontext.LoadBalanceToExistingVMNames %}
+        {% set vmNicName = 'nic_' + resolve_bicep_resource(vmName) %}
+        {% set nicPrivateIP = vmNicName + ".properties.ipConfigurations[0].properties.privateIPAddress" %}
+
+      {
+        name: '{{ vmName + '_' + vmNicName }}'
+        properties: {
+          ipAddress: {{vmNicName + '.properties.ipConfigurations[0].properties.privateIPAddress' }}
+        }
+      }
+      {% endfor %}
+    ]
+  }
+}
+{%- endif %}
