@@ -1,6 +1,6 @@
 #https://github.com/Azure/bicep/tree/main/docs/examples
-# https://docs.microsoft.com/en-us/azure/templates/microsoft.compute/virtualmachines?tabs=bicep
-
+# custom policy in ALZ - https://github.com/Azure/ALZ-Bicep/tree/main/infra-as-code/bicep/modules/policy
+# ALZ custom policy readme: https://github.com/Azure/Enterprise-Scale/blob/main/docs/ESLZ-Policies.md
 import os
 from io import StringIO
 import random
