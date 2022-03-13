@@ -1,0 +1,109 @@
+{#
+Name: 'appsvc-web',
+            Location: 'westus',
+            ResourceGroupName: '',
+            PlanName: 'asp-web-dev',
+            IsLinux: false,
+            LinuxFrameworkVersion
+            PricingTier: 'S1',
+            NumberOfInstance: 1,
+            AppInsightsName: 'appinsights-webapp',
+            LogAnalyticsWorkspaceName: 'law-appinsights-webapp'
+#}
+
+{% set appsvcName = resolve_bicep_resource(azcontext.Name) %}
+{% set appsvcPlanName = 'appsvcplan_' + appsvcName %}
+{% set appinsightsName = resolve_bicep_resource(azcontext.AppInsightsName) %}
+{% set lawName = resolve_bicep_resource(azcontext.LogAnalyticsWorkspaceName) %}
+{% set appsvcSiteExtensionsName = appsvcName + '_siteExtensions' %}
+
+resource {{ appsvcPlanName }} 'Microsoft.Web/serverfarms@2020-06-01' = {
+  name: '{{ appsvcPlanName }}'
+  location: location
+  properties: {
+    reserved: true
+  }
+  sku: {
+    name: '{{ azcontext.PricingTier }}'
+    capacity: {{ azcontext.NumberOfInstance }}
+  }
+  {% if azcontext.IsLinux == true %}
+  kind: 'linux'
+  {% endif %}
+}
+
+resource {{ appsvcName }} 'Microsoft.Web/sites@2020-06-01' = {
+  name: '{{ azcontext.Name}}'
+  location: location
+  properties: {
+    serverFarmId: {{ appsvcPlanName + '.id' }}
+    siteConfig: {
+      minTlsVersion: '1.2'
+      {% if azcontext.IsLinux == true %}
+      linuxFxVersion: '{{ azcontext.LinuxFrameworkVersion }}'
+      {% endif %}
+    }
+  }
+}
+
+resource {{ appsvcName + '_appsvclogging'}} 'Microsoft.Web/sites/config@2020-06-01' = {
+  name: '{%raw%}${{%endraw%}{{ appsvcName + '.name'}}{%raw%}}{%endraw%}/logs'
+  properties: {
+    applicationLogs: {
+      fileSystem: {
+        level: 'Warning'
+      }
+    }
+    httpLogs: {
+      fileSystem: {
+        retentionInMb: 40
+        enabled: true
+      }
+    }
+    failedRequestsTracing: {
+      enabled: true
+    }
+    detailedErrorMessages: {
+      enabled: true
+    }
+  }
+}
+
+{% if azcontext.AppInsightsName != '' -%}
+resource {{ appsvcName + '_appsettings'}} 'Microsoft.Web/sites/config@2020-06-01' = {
+  name: '{%raw%}${{%endraw%}{{ appsvcName + '.name'}}{%raw%}}{%endraw%}/appsettings'
+  properties: {
+    APPINSIGHTS_INSTRUMENTATIONKEY: {{ appinsightsName + '.properties.InstrumentationKey' }}
+  }
+}
+
+resource {{ appinsightsName }} 'microsoft.insights/components@2020-02-02-preview' = {
+  name: '{{ azcontext.AppInsightsName }}'
+  location: location
+  kind: 'string'
+  tags: {
+    displayName: 'AppInsight'
+    ProjectName: toLower('{{ appsvcName }}')
+  }
+  properties: {
+    Application_Type: 'web'
+    WorkspaceResourceId: {{ lawName + '.id' }}
+  }
+}
+
+//LA Workspace - @appsvc.LogAnalyticsWorkspaceName
+resource {{ lawName }} 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
+  name: '{{ azcontext.LogAnalyticsWorkspaceName }}'
+  location: location
+  tags: {
+    displayName: 'Log Analytics'
+    ProjectName: toLower('{{ azcontext.LogAnalyticsWorkspaceName }}')
+  }
+  properties: {
+    sku: {
+      name: 'PerGB2018'
+    }
+    retentionInDays: 90
+  }
+}
+{%- endif %}
