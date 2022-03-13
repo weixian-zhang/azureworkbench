@@ -371,7 +371,8 @@ export default class AzContextCollector
 
             azfwProContext.VNetName = this.getResourceVNetName(azfw);
 
-            azfwProContext.SubnetName = this.getResourceSubnetName(azfw);
+            azfwProContext.SubnetName = 'AzureFirewallSubnet'; //this.getResourceSubnetName(azfw);
+            this.setAzureFirewallSubnetName(azfw); 
 
             azfwProContext.SubnetAddressSpace = this.getResourceSubnetIPAddressSpace(azfw);
 
@@ -492,6 +493,17 @@ export default class AzContextCollector
         var vnet = node.containingGroup.containingGroup;
         if(Utils.isVNet(vnet))
             return vnet.data.azcontext.ProvisionContext.Name;
+        else
+            return "";
+    }
+
+    setAzureFirewallSubnetName(node) {
+        var subnet = node.containingGroup;
+        if(Utils.isSubnet(subnet))
+            var azfwSubnetName = 'AzureFirewallSubnet';
+            var subnetName = subnet.data.azcontext.ProvisionContext.Name;
+            if(subnetName != azfwSubnetName)
+                subnet.data.azcontext.ProvisionContext.Name = azfwSubnetName;
         else
             return "";
     }
