@@ -1,13 +1,3 @@
-{#}
-Name: '',
-            Location: 'westus',
-            ResourceGroupName: '',
-            PublicIPName: '',
-            VNetName: '',
-            SubnetName: '',
-            SubnetAddressSpace: ''
-            #}
-
 {% set pipName = resolve_bicep_resource(azcontext.PublicIPName) %}
 {% set azfwName = resolve_bicep_resource(azcontext.Name) %}
 {% set vnetName = resolve_bicep_resource(azcontext.VNetName) %}
