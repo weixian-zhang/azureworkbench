@@ -13,7 +13,7 @@ export default class AzureFirewall
             Name: '',
             Location: 'westus',
             ResourceGroupName: '',
-            PublicIPName: '',
+            PublicIPName: 'pip-azfw',
             VNetName: '',
             SubnetName: '',
             SubnetAddressSpace: ''
