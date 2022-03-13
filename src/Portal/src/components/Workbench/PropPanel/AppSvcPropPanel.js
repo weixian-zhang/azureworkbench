@@ -17,8 +17,10 @@ export default class AppServicePropPanel extends Component {
         userObject: new AppService(),
         pricingTier: [],
         runtimeStack: [],
+        linuxFrameworkVersion: [],
         selectedPricingTier: '',
         selectedRuntime: '',
+        selectedLinuxFrameworkVersion: '',
         value: 'diagram', //tabs
 
         saveCallback: function () {},
@@ -134,6 +136,46 @@ export default class AppServicePropPanel extends Component {
                     }} />
                 </Grid>
               </Grid>
+              {
+                  (this.state.userObject.ProvisionContext.IsLinux)
+                  ?
+                    <Grid container item direction="row" xs="12"  justify="flex-start" alignItems="center">
+                      <Grid item sm={4}>
+                          <label>Linux Framework Version</label>
+                      </Grid>
+                      <Grid item>
+                        <Select
+                          closeOnSelect={true}
+                          filterable={false}
+                          items={this.state.linuxFrameworkVersion}
+                          itemRenderer={
+                            (linuxFx, { handleClick, modifiers }) => {
+                              return (<MenuItem
+                                text={linuxFx}
+                                onClick={
+                                  (e) => {
+                                    this.setState({ selectedLinuxFrameworkVersion: linuxFx });
+                                    var uo = this.state.userObject;
+                                    uo.ProvisionContext.LinuxFrameworkVersion = linuxFx;
+                                    this.setState({userObject:uo});
+                                  }
+                                } />);
+                            }
+    
+                          }>
+                          <Button text={this.state.selectedLinuxFrameworkVersion == '' ? 'Linux Framework Version' : this.state.selectedLinuxFrameworkVersion }
+                              alignText='left'
+                              rightIcon="double-caret-vertical" style={{width: '170px', maxWidth: '170px'}}/>
+                        </Select>
+                      </Grid>
+                      <Grid container item direction="row" xs="12"  justify="flex-start" alignItems="center" style={{marginBottom: '10px'}}>
+                        <Grid item sm={3} />
+                      </Grid>
+                    </Grid>
+                    
+                  : ''
+              }
+
               <Grid container item direction="row" xs="12"  justify="flex-start" alignItems="center">
                 <Grid item sm={4}>
                     <label>Tier</label>
@@ -162,7 +204,7 @@ export default class AppServicePropPanel extends Component {
                         alignText='left'
                         rightIcon="double-caret-vertical" style={{width: '170px', maxWidth: '170px'}}/>
                   </Select>
-                </Grid>
+              </Grid>
 
               <Grid container item direction="row" xs="12" style={{marginTop: '15px', width: '100%'}} justify="flex-start" alignItems="center">
                 <Grid item sm={4}>
@@ -259,19 +301,9 @@ export default class AppServicePropPanel extends Component {
      this.setState({pricingTier: ['F1','D1','B1','B2','B3',
       'S1','S2','S3','P1','P1v2','P2v2','P3v2','P1v3','P2v3', 'P3v3']});
 
-    this.setState({workerSize: ['Small', 'Medium']});
+     this.setState({workerSize: ['Small', 'Medium']});
 
-      // this.setState({runtimeStack: ['Java_11_Java11','Java_8_Jre8','NETCore_V1_0','NETCore_V1_1',
-      // 'NETCore_V2_0','NETCore_V2_1','NETCore_V2_2','NodeJS_10_1','NodeJS_10_12',
-      // 'NodeJS_10_14','NodeJS_10_LTS','NodeJS_4_4','NodeJS_4_5',
-      // 'NodeJS_6_10','NodeJS_6_11','NodeJS_6_2','NodeJS_6_6',
-      // 'NodeJS_6_9','NodeJS_6_LTS','NodeJS_8_0','NodeJS_8_1',
-      // 'NodeJS_8_11','NodeJS_8_12','NodeJS_8_2','NodeJS_8_8',
-      // 'NodeJS_8_9','NodeJS_8_LTS','NodeJS_9_4','NodeJS_LTS',
-      // 'PHP_5_6','PHP_7_0','PHP_7_2','PHP_7_3',
-      // 'Python_2_7','Python_3_6','Python_3_7','Ruby_2_3',
-      // 'Ruby_2_4','Ruby_2_5','Ruby_2_6','Tomcat_8_5_JAVA11',
-      // 'Tomcat_8_5_JRE8','Tomcat_9_0_JAVA11','Tomcat_9_0_JRE8']});
+     this.setState({ linuxFrameworkVersion: ['DOTNETCORE|3.0', 'PHP|7.4', 'NODE|10.15', 'JAVA|1.8 |TOMCAT|9.0', 'PYTHON|3.7', 'RUBY|2.6'] });
   }
 
   saveForm = () => {
