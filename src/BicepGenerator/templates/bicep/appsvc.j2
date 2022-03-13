@@ -1,15 +1,3 @@
-{#
-Name: 'appsvc-web',
-            Location: 'westus',
-            ResourceGroupName: '',
-            PlanName: 'asp-web-dev',
-            IsLinux: false,
-            LinuxFrameworkVersion
-            PricingTier: 'S1',
-            NumberOfInstance: 1,
-            AppInsightsName: 'appinsights-webapp',
-            LogAnalyticsWorkspaceName: 'law-appinsights-webapp'
-#}
 
 {% set appsvcName = resolve_bicep_resource(azcontext.Name) %}
 {% set appsvcPlanName = 'appsvcplan_' + appsvcName %}
