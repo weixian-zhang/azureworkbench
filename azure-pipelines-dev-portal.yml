@@ -38,8 +38,8 @@ stages:
             script: |
               - script: |
                   echo REACT_APP_ENV=${{ variables.REACT_APP_ENV }}
-                  # npm install
-                  # npm run build
+                  npm install
+                  npm run build
 
         - task: CopyFiles@2
           inputs:
