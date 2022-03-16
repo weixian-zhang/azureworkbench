@@ -54,12 +54,19 @@ stages:
             archiveType: 'zip'
             archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
             replaceExistingArchive: true
-        
-        - task: PublishPipelineArtifact@1
+            
+        - task: PublishBuildArtifacts@1
           inputs:
             targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-            artifact: 'drop'
-            publishLocation: 'pipeline'
+            ArtifactName: 'drop'
+            publishLocation: FilePath
+        
+        # - task: PublishPipelineArtifact@1
+        #   inputs:
+        #     targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+        #     artifact: 'drop'
+        #     publishLocation: 'pipeline'
+            
 
   - stage: Deploy_App_Service
     jobs:
