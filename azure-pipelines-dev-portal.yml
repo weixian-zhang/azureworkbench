@@ -61,8 +61,7 @@ stages:
           runOnce:
               deploy:
                  steps:
-                    -
-                 
+                   
                     - task: DownloadBuildArtifacts@0
                       inputs:
                         buildType: 'current'
