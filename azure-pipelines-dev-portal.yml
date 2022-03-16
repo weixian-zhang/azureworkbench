@@ -25,7 +25,7 @@ stages:
           REACT_APP_ENV: 'beta'
 
         steps:        
-        - task: CredScan@3
+        #- task: CredScan@3
 
         - task: Bash@3
           env:
@@ -59,7 +59,6 @@ stages:
           inputs:
             targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
             ArtifactName: 'drop'
-            publishLocation: FilePath
         
         # - task: PublishPipelineArtifact@1
         #   inputs:
