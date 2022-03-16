@@ -57,7 +57,7 @@ stages:
             
         - task: PublishBuildArtifacts@1
           inputs:
-            targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+            targetPath: '/home/vsts/work/1/a/$(Build.BuildId).zip'
             ArtifactName: 'drop'
         
         # - task: PublishPipelineArtifact@1
@@ -88,7 +88,7 @@ stages:
                         azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                         appType: 'webApp'
                         appName: 'portal-azworkbench-dev'
-                        package: '$(System.ArtifactsDirectory)/*.zip'
+                        package: '/home/vsts/work/1/a/drop/$(Build.BuildId).zip'
                         deploymentMethod: 'auto'
                         
                     # - task: AzureRmWebAppDeployment@4
