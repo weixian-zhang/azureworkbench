@@ -25,7 +25,28 @@ stages:
           REACT_APP_ENV: 'beta'
 
         steps:        
+        
+        
         #- task: CredScan@3
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: |
+              # Write your commands here
+              
+              echo "Structure of work folder of this pipeline:"
+              tree $(Agent.WorkFolder)\1 /f
+              
+              echo "Build.ArtifactStagingDirectory:" 
+              echo "$(Build.ArtifactStagingDirectory)"
+              echo "Build.BinariesDirectory:" 
+              echo "$(Build.BinariesDirectory)"
+              echo "Build.SourcesDirectory:"
+              echo "$(Build.SourcesDirectory)"
+              echo "Build.SourcesDirectory:"
+              echo "$(Build.SourcesDirectory)"
+              echo "Agent.BuildDirectory:"
+              echo "$(Agent.BuildDirectory)"
 
         - task: Bash@3
           env:
@@ -75,5 +96,5 @@ stages:
                         azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                         appType: 'webApp'
                         WebAppName: 'portal-azworkbench-dev'
-                        packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
+                        packageForLinux: '$(System.ArtifactsDirectory)/drop/*.tar'
   
