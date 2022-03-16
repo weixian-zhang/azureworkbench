@@ -25,6 +25,19 @@ stages:
           REACT_APP_ENV: 'beta'
 
         steps:
+        
+        - task: AntiMalware@4
+          inputs:
+            InputType: 'Basic'
+            ScanType: 'CustomScan'
+            FileDirPath: '$(build.sourcesdirectory)'
+            EnableServices: true
+            TreatSignatureUpdateFailureAs: 'Warning'
+            SignatureFreshness: 'UpToDate'
+            TreatStaleSignatureAs: 'Error'
+        
+        - task: CredScan@3
+
         - task: Bash@3
           env:
             REACT_APP_ENV: '${{ variables.REACT_APP_ENV }}'
@@ -44,6 +57,14 @@ stages:
             SourceFolder: '$(build.sourcesdirectory)/src/Portal/build'
             Contents: '**'
             TargetFolder: '$(Build.ArtifactStagingDirectory)/build'
+        
+        - task: ArchiveFiles@2
+          inputs:
+            rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/build'
+            includeRootFolder: true
+            archiveType: 'zip'
+            archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+            replaceExistingArchive: true
         
         - task: PublishPipelineArtifact@1
           inputs:
