@@ -38,8 +38,8 @@ stages:
             script: |
               - script: |
                   echo REACT_APP_ENV=${{ variables.REACT_APP_ENV }}
-                  npm install
-                  npm run build
+                  # npm install
+                  # npm run build
 
         - task: CopyFiles@2
           inputs:
@@ -75,12 +75,20 @@ stages:
           runOnce:
               deploy:
                  steps:
-                    - task: AzureRmWebAppDeployment@4
-                      # condition: ${{ eq(variables['DEPLOY'], true) }}
+                 
+                    - task: AzureWebApp@1
                       inputs:
-                        ConnectionType: 'AzureRM'
                         azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                         appType: 'webApp'
-                        WebAppName: 'portal-azworkbench-dev'
-                        package: '$(System.ArtifactsDirectory)/**/*.zip'
+                        appName: 'portal-azworkbench-dev'
+                        package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+                        deploymentMethod: 'auto'
+                    # - task: AzureRmWebAppDeployment@4
+                    #   # condition: ${{ eq(variables['DEPLOY'], true) }}
+                    #   inputs:
+                    #     ConnectionType: 'AzureRM'
+                    #     azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
+                    #     appType: 'webApp'
+                    #     WebAppName: 'portal-azworkbench-dev'
+                    #     package: '$(System.ArtifactsDirectory)/**/*.zip'
   
