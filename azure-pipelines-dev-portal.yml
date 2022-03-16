@@ -45,26 +45,12 @@ stages:
           inputs:
             SourceFolder: '$(build.sourcesdirectory)/src/Portal/build'
             Contents: '**'
-            TargetFolder: '$(Build.ArtifactStagingDirectory)/build'
-        
-        - task: ArchiveFiles@2
-          inputs:
-            rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/build'
-            includeRootFolder: true
-            archiveType: 'zip'
-            archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-            replaceExistingArchive: true
-            
+            targetFolder: '$(Build.ArtifactStagingDirectory)'
         - task: PublishBuildArtifacts@1
           inputs:
-            targetPath: '/home/vsts/work/1/a/$(Build.BuildId).zip'
-            ArtifactName: 'drop'
-        
-        # - task: PublishPipelineArtifact@1
-        #   inputs:
-        #     targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-        #     artifact: 'drop'
-        #     publishLocation: 'pipeline'
+            pathToPublish: '$(Build.ArtifactStagingDirectory)'
+            artifactName: drop
+            StoreAsTar: true
             
 
   - stage: Deploy_App_Service
@@ -75,28 +61,20 @@ stages:
           runOnce:
               deploy:
                  steps:
+                    -
                  
-                    - task: DownloadBuildArtifacts@1
+                    - task: DownloadBuildArtifacts@0
                       inputs:
                         buildType: 'current'
                         downloadType: 'single'
                         artifactName: 'drop'
-                        itemPattern: '*.zip'
-                        downloadPath: '/home/vsts/work/1/a'
-                    - task: AzureWebApp@1
+                        downloadPath: '$(System.ArtifactsDirectory)'
+
+                    - task: AzureRmWebAppDeployment@4
                       inputs:
+                        ConnectionType: 'AzureRM'
                         azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                         appType: 'webApp'
-                        appName: 'portal-azworkbench-dev'
-                        package: '/home/vsts/work/1/a/$(Build.BuildId).zip'
-                        deploymentMethod: 'auto'
-                        
-                    # - task: AzureRmWebAppDeployment@4
-                    #   # condition: ${{ eq(variables['DEPLOY'], true) }}
-                    #   inputs:
-                    #     ConnectionType: 'AzureRM'
-                    #     azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
-                    #     appType: 'webApp'
-                    #     WebAppName: 'portal-azworkbench-dev'
-                    #     package: '$(System.ArtifactsDirectory)/**/*.zip'
+                        WebAppName: 'portal-azworkbench-dev'
+                        packageForLinux: '$(System.ArtifactsDirectory)/**/*.zip'
   
