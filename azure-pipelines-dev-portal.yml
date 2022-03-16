@@ -1,0 +1,70 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+ branches:
+    include:
+      - dev
+    exclude:
+      - master
+      - release-v1.0.0-24022022
+      - release-v1.0.1-10032022
+
+stages:
+  - stage: Build
+    jobs:
+      - job: build_Portal_NPM
+         
+      
+        pool:
+          vmImage: ubuntu-latest
+
+        variables:
+          REACT_APP_ENV: 'beta'
+
+        steps:
+        - task: Bash@3
+          env:
+            REACT_APP_ENV: '${{ variables.REACT_APP_ENV }}'
+          displayName: Npm Install
+          inputs:
+            targetType: 'inline'
+            workingDirectory: 'src/Portal'
+            bashEnvValue: 
+            script: |
+              - script: |
+                  echo REACT_APP_ENV=${{ variables.REACT_APP_ENV }}
+                  npm install
+                  npm run build
+
+        - task: CopyFiles@2
+          inputs:
+            SourceFolder: '$(build.sourcesdirectory)/src/Portal/build'
+            Contents: '**'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)/build'
+        
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: '$(Build.ArtifactStagingDirectory)/build'
+            artifact: 'drop'
+            publishLocation: 'pipeline'
+
+  - stage: Deploy_App_Service
+    jobs:
+      -  deployment:
+         environment: Dev
+         strategy:
+          runOnce:
+              deploy:
+                 steps:
+                    - task: AzureRmWebAppDeployment@4
+                      condition: ${{ eq(variables['DEPLOY'], true) }}
+                      inputs:
+                        ConnectionType: 'AzureRM'
+                        azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
+                        appType: 'webApp'
+                        WebAppName: 'portal-azworkbench-dev'
+                        packageForLinux: '$(Build.ArtifactStagingDirectory)/build'
+  
