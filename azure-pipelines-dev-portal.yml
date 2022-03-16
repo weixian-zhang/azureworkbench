@@ -24,18 +24,7 @@ stages:
         variables:
           REACT_APP_ENV: 'beta'
 
-        steps:
-        
-        - task: AntiMalware@4
-          inputs:
-            InputType: 'Basic'
-            ScanType: 'CustomScan'
-            FileDirPath: '$(build.sourcesdirectory)'
-            EnableServices: true
-            TreatSignatureUpdateFailureAs: 'Warning'
-            SignatureFreshness: 'UpToDate'
-            TreatStaleSignatureAs: 'Error'
-        
+        steps:        
         - task: CredScan@3
 
         - task: Bash@3
