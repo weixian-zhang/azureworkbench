@@ -81,14 +81,14 @@ stages:
                         buildType: 'current'
                         downloadType: 'single'
                         artifactName: 'drop'
-                        itemPattern: '$(Build.BuildId).zip'
+                        itemPattern: '*.zip'
                         downloadPath: '$(System.ArtifactsDirectory)'
                     - task: AzureWebApp@1
                       inputs:
                         azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                         appType: 'webApp'
                         appName: 'portal-azworkbench-dev'
-                        package: '$(System.ArtifactsDirectory)/$(Build.BuildId).zip'
+                        package: '$(System.ArtifactsDirectory)/*.zip'
                         deploymentMethod: 'auto'
                         
                     # - task: AzureRmWebAppDeployment@4
