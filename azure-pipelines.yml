@@ -4,14 +4,63 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- master
+ branches:
+    include:
+      - dev
 
-pool:
-  vmImage: ubuntu-latest
+stages:
+  - stage: Build
+    jobs:
+      - job: build_Portal_NPM
+         
+      
+        pool:
+          vmImage: ubuntu-latest
 
-variables:
-  buildConfiguration: 'Release'
+        variables:
+          REACT_APP_ENV: 'beta'
 
-steps:
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+        steps:
+        - task: Bash@3
+          env:
+            REACT_APP_ENV: '${{ variables.REACT_APP_ENV }}'
+          displayName: Npm Install
+          inputs:
+            targetType: 'inline'
+            workingDirectory: 'src/Portal'
+            bashEnvValue: 
+            script: |
+              - script: |
+                  echo REACT_APP_ENV=${{ variables.REACT_APP_ENV }}
+                  npm install
+                  npm run build
+
+        - task: CopyFiles@2
+          inputs:
+            SourceFolder: '$(build.sourcesdirectory)/src/Portal/build'
+            Contents: '**'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)/build'
+        
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: '$(Build.ArtifactStagingDirectory)/build'
+            artifact: 'drop'
+            publishLocation: 'pipeline'
+
+  - stage: Deploy_App_Service
+    jobs:
+      -  deployment:
+         environment: Dev
+         strategy:
+          runOnce:
+              deploy:
+                 steps:
+                    - task: AzureRmWebAppDeployment@4
+                      condition: ${{ eq(variables['DEPLOY'], true) }}
+                      inputs:
+                        ConnectionType: 'AzureRM'
+                        azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
+                        appType: 'webApp'
+                        WebAppName: 'portal-azworkbench-dev'
+                        packageForLinux: '$(Build.ArtifactStagingDirectory)/build'
+  
