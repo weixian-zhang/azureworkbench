@@ -52,6 +52,7 @@ stages:
                 steps:
                   
                  - task: AzureWebApp@1
+                   condition: ${{ eq(variables['DEPLOY_APISERVER'], true) }}
                    inputs:
                       azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                       appType: 'webApp'
