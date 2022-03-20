@@ -58,7 +58,7 @@ stages:
                       azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                       appType: 'webApp'
                       appName: 'webapp-api-dev'
-                      package: '$(Build.ArtifactStagingDirectory)/publish/AzW.Web.API'
+                      package: '$(System.ArtifactsDirectory)'
                       deploymentMethod: 'auto'
 
                  
