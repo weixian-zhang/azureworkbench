@@ -68,18 +68,18 @@ stages:
             Contents: '**'
             targetFolder: '$(Build.ArtifactStagingDirectory)/build'
             
-        - task: ArchiveFiles@2
-          inputs:
-            rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/build'
-            includeRootFolder: true
-            archiveType: 'zip'
-            archiveFile: '$(Build.ArtifactStagingDirectory)/build/portal.zip'
-            replaceExistingArchive: true
+        # - task: ArchiveFiles@2
+        #   inputs:
+        #     rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/build'
+        #     includeRootFolder: true
+        #     archiveType: 'zip'
+        #     archiveFile: '$(Build.ArtifactStagingDirectory)/build/portal.zip'
+        #     replaceExistingArchive: true
 
         - task: PublishBuildArtifacts@1
           inputs:
-            pathToPublish: '$(Build.ArtifactStagingDirectory)/build/portal.zip'
-            artifactName: drop
+            pathToPublish: '$(Build.ArtifactStagingDirectory)/build'
+            artifactName: ''
             StoreAsTar: false
             
 
@@ -92,12 +92,12 @@ stages:
               deploy:
                  steps:
                    
-                    - task: DownloadBuildArtifacts@0
-                      inputs:
-                        buildType: 'current'
-                        downloadType: 'single'
-                        artifactName: 'drop'
-                        downloadPath: '$(System.ArtifactsDirectory)'
+                    # - task: DownloadBuildArtifacts@0
+                    #   inputs:
+                    #     buildType: 'current'
+                    #     downloadType: 'single'
+                    #     artifactName: 'drop'
+                    #     downloadPath: '$(System.ArtifactsDirectory)'
 
                     # - task: DownloadBuildArtifacts@1
                     #   displayName: Download artifact drop.tar
@@ -108,20 +108,21 @@ stages:
                     #     itemPattern: '**/drop.tar'
                     #     downloadPath: '$(Build.ArtifactStagingDirectory)/tar'
                         
-                    - task: ExtractFiles@1
-                      inputs:
-                        archiveFilePatterns: '$(System.ArtifactsDirectory)/drop/*.zip'
-                        destinationFolder: '$(Build.ArtifactsDirectory)/unzip'
-                        cleanDestinationFolder: true
-                        overwriteExistingFiles: true
+                    # - task: ExtractFiles@1
+                    #   inputs:
+                    #     archiveFilePatterns: '$(System.ArtifactsDirectory)/drop/*.zip'
+                    #     destinationFolder: '$(Build.ArtifactsDirectory)/unzip'
+                    #     cleanDestinationFolder: true
+                    #     overwriteExistingFiles: true
 
                     - task: AzureWebApp@1
                       inputs:
                         azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                         appType: 'webApp'
                         appName: 'portal-azworkbench-dev'
-                        package: '$(System.ArtifactsDirectory)/unzip'
-                        deploymentMethod: 'auto'
+                        package: '$(System.ArtifactsDirectory)/build'
+                        deploymentMethod: 'zipDeploy'
+
 
                         
                     
