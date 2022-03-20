@@ -9,7 +9,7 @@ trigger:
 stages:
     - stage: Build
       jobs:
-          - job: build_apiserver
+          - job: Build_ApiServer
       
             pool:
                 vmImage: ubuntu-latest
@@ -27,6 +27,37 @@ stages:
                inputs:
                  command: 'build'
                  workingDirectory: src/ApiServer/AzW.Web.API
+                 
+             
+             - task: DotNetCoreCLI@2
+               inputs:
+                  command: 'publish'
+                  publishWebProjects: true
+                  arguments: '-o $(Build.ArtifactStagingDirectory)/publish'
+                  zipAfterPublish: false
+                  
+             - task: PublishBuildArtifacts@1
+               inputs:
+                 TargetPath: '$(Build.ArtifactStagingDirectory)/publish'
+                 ArtifactName: 'drop'
+                 
+                 
+    - stage: Deploy
+      jobs:
+        - deployment:
+          environment: Dev
+          strategy:
+            runOnce:
+              deploy:
+                steps:
+                  
+                 - task: AzureWebApp@1
+                   inputs:
+                      azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
+                      appType: 'webApp'
+                      appName: 'webapp-api-dev'
+                      package: '$(Build.ArtifactStagingDirectory)/publish'
+                      deploymentMethod: 'auto'
 
                  
         
