@@ -41,7 +41,7 @@ stages:
              - task: PublishBuildArtifacts@1
                displayName: publish build artifact
                inputs:
-                 TargetPath: '$(Build.ArtifactStagingDirectory)/publish'
+                 PathtoPublish: $(Build.ArtifactStagingDirectory)/publish
                  ArtifactName: 'drop'
                  
                  
