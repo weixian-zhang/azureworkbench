@@ -1,0 +1,29 @@
+
+trigger:
+ branches:
+     include:
+         - dev
+     exclude:
+         - master
+
+stages:
+    - stage: Build
+      jobs:
+          - job: build_apiserver
+      
+            pool:
+                vmImage: ubuntu-latest
+        
+            steps:
+            
+             - task: UseDotNet@2
+               displayName: set sdk .Net 5.0
+               inputs:
+                 packageType: 'sdk'
+                 version: '5.0.x'
+                 
+             - task: DotNetCoreCLI@2
+               displayName: dotnet build
+               inputs:
+                 command: 'build'
+        
