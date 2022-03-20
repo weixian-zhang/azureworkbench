@@ -30,6 +30,7 @@ stages:
                  
              
              - task: DotNetCoreCLI@2
+               displayName: dotnet publish
                inputs:
                   command: 'publish'
                   publishWebProjects: true
@@ -38,6 +39,7 @@ stages:
                   workingDirectory: src/ApiServer/AzW.Web.API
                   
              - task: PublishBuildArtifacts@1
+               displayName: publish build artifact
                inputs:
                  TargetPath: '$(Build.ArtifactStagingDirectory)/publish'
                  ArtifactName: 'drop'
@@ -59,7 +61,7 @@ stages:
                       appType: 'webApp'
                       appName: 'webapp-api-dev'
                       package: '$(System.ArtifactsDirectory)'
-                      deploymentMethod: 'auto'
+                      deploymentMethod: 'zipDeploy'
 
                  
         
