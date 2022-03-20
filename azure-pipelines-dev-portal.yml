@@ -97,7 +97,7 @@ stages:
                         buildType: 'current'
                         downloadType: 'single'
                         artifactName: 'drop'
-                        downloadPath: '$(Build.ArtifactStagingDirectory)/build/portal.zip'
+                        downloadPath: '$(System.ArtifactsDirectory)'
 
                     # - task: DownloadBuildArtifacts@1
                     #   displayName: Download artifact drop.tar
