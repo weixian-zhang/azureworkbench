@@ -26,4 +26,7 @@ stages:
                displayName: dotnet build
                inputs:
                  command: 'build'
+                 workingDirectory: src/ApiServer/AzW.Web.API
+
+                 
         
