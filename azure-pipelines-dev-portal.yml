@@ -67,14 +67,6 @@ stages:
             SourceFolder: '$(build.sourcesdirectory)/src/Portal/build'
             Contents: '**'
             targetFolder: '$(Build.ArtifactStagingDirectory)/build'
-            
-        # - task: ArchiveFiles@2
-        #   inputs:
-        #     rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/build'
-        #     includeRootFolder: true
-        #     archiveType: 'zip'
-        #     archiveFile: '$(Build.ArtifactStagingDirectory)/build/portal.zip'
-        #     replaceExistingArchive: true
 
         - task: PublishBuildArtifacts@1
           inputs:
@@ -87,33 +79,11 @@ stages:
     jobs:
       -  deployment:
          environment: Dev
+         condition: 
          strategy:
           runOnce:
               deploy:
                  steps:
-                   
-                    # - task: DownloadBuildArtifacts@0
-                    #   inputs:
-                    #     buildType: 'current'
-                    #     downloadType: 'single'
-                    #     artifactName: 'drop'
-                    #     downloadPath: '$(System.ArtifactsDirectory)'
-
-                    # - task: DownloadBuildArtifacts@1
-                    #   displayName: Download artifact drop.tar
-                    #   inputs:
-                    #     buildType: 'current'
-                    #     downloadType: 'single'
-                    #     artifactName: 'drop'
-                    #     itemPattern: '**/drop.tar'
-                    #     downloadPath: '$(Build.ArtifactStagingDirectory)/tar'
-                        
-                    # - task: ExtractFiles@1
-                    #   inputs:
-                    #     archiveFilePatterns: '$(System.ArtifactsDirectory)/drop/*.zip'
-                    #     destinationFolder: '$(Build.ArtifactsDirectory)/unzip'
-                    #     cleanDestinationFolder: true
-                    #     overwriteExistingFiles: true
 
                     - task: AzureWebApp@1
                       inputs:
