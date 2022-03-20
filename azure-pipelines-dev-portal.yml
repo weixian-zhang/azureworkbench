@@ -108,20 +108,21 @@ stages:
                     #     itemPattern: '**/drop.tar'
                     #     downloadPath: '$(Build.ArtifactStagingDirectory)/tar'
                         
-                    # - task: ExtractFiles@1
-                    #   inputs:
-                    #     archiveFilePatterns: '$(Build.ArtifactStagingDirectory)/tar/*.tar'
-                    #     destinationFolder: '$(Build.ArtifactStagingDirectory)/untar'
-                    #     cleanDestinationFolder: true
-                    #     overwriteExistingFiles: true
+                    - task: ExtractFiles@1
+                      inputs:
+                        archiveFilePatterns: '$(System.ArtifactsDirectory)/drop/*.zip'
+                        destinationFolder: '$(Build.ArtifactsDirectory)/unzip'
+                        cleanDestinationFolder: true
+                        overwriteExistingFiles: true
 
                     - task: AzureWebApp@1
                       inputs:
                         azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                         appType: 'webApp'
                         appName: 'portal-azworkbench-dev'
-                        package: '$(System.ArtifactsDirectory)'
+                        package: '$(System.ArtifactsDirectory)/unzip'
                         deploymentMethod: 'auto'
+
                         
                     
                     
