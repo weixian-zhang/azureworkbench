@@ -54,7 +54,7 @@ stages:
               deploy:
                  steps:
                     - task: AzureRmWebAppDeployment@4
-                      condition: ${{ eq(variables['DEPLOY'], true) }}
+                      condition: ${{ eq(variables['DEPLOY_PORTAL'], true) }}
                       inputs:
                         ConnectionType: 'AzureRM'
                         azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
