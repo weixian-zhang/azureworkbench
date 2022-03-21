@@ -134,7 +134,6 @@
                     "REACT_APP_ENV": "beta"
                 }
             },
-
             "problemMatcher": []
         },
         {
@@ -173,6 +172,27 @@
             "command": "host start",
             "isBackground": true,
             "problemMatcher": "$func-watch"
+        },
+        {
+            "type": "docker-build",
+            "label": "docker-build",
+            "platform": "python",
+            "dockerBuild": {
+                "tag": "azureworkbench:latest",
+                "dockerfile": "${workspaceFolder}/Dockerfile",
+                "context": "${workspaceFolder}",
+                "pull": true
+            }
+        },
+        {
+            "type": "docker-run",
+            "label": "docker-run: debug",
+            "dependsOn": [
+                "docker-build"
+            ],
+            "python": {
+                "file": "src\\BicepGenerator\\main.py"
+            }
         }
     ]
 }
