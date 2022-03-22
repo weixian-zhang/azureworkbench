@@ -1,17 +1,6 @@
-# TODO:
-    # mq module
-        # receive bicep-gen command
-        # send bicep-gen-event
-    
-    # bicep generate
-        # jinja2 template
-        # each resource a new template
-        # see how to merge template
-        
-import asyncio
+
 from appconfig import AppConfig
 from bicepgen import BicepGenerator
-from flask import Flask, request, Response
 import time
 from contexts import DiagramInfo
 from bicepgen import BicepGenerator
@@ -19,12 +8,9 @@ from messaging import MessageBroker, AzureServiceBusBroker
 import json
 from azstorage import AzStorage
 
-#app = Flask(__name__)
-
 appconfig = AppConfig()
 msgBroker: MessageBroker = AzureServiceBusBroker(appconfig)
 azstorage: AzStorage = AzStorage(appconfig)
-
 
 def run():
     
