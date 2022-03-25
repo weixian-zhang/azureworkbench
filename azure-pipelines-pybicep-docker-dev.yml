@@ -63,7 +63,7 @@ stages:
     steps:
       - task: CmdLine@2
         inputs:
-          script: echo $(major)
+          script: echo $(imageName)
     # - powershell: |
     #     Set-Variable -Name d -Value (Get-Date).ToString('yyyyMMdd')
     #     Write-Host "##vso[task.setvariable variable=buildDate]$d"
