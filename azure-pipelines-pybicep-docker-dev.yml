@@ -14,9 +14,9 @@ variables:
   containerRegistry: 'acrazworkbenchdev.azurecr.io'
   imageRepository: 'pybicep'
   appServiceName: 'webapp-pybicep-container-dev'
-  major: ${{ variables['PYBICEP_DOCKERIMAGE_VERSION_MAJOR'] }}
-  minor: ${{ variables['PYBICEP_DOCKERIMAGE_VERSION_MINOR'] }}
-  patch: ${{ variables['PYBICEP_DOCKERIMAGE_VERSION_PATCH'] }}
+  major: $[variables.PYBICEP_DOCKERIMAGE_VERSION_MAJOR] #variables['PYBICEP_DOCKERIMAGE_VERSION_MAJOR'])
+  minor: $[variables.PYBICEP_DOCKERIMAGE_VERSION_MINOR]
+  patch: $[variables.PYBICEP_DOCKERIMAGE_VERSION_PATCH]
   buildDate: ''
   tag: pybicep-$(major).$(minor).$(patch).$(buildDate)
   imageName: $(containerRegistry)/$(imageRepository):$(tag)
