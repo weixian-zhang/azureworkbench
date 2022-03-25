@@ -12,6 +12,8 @@ settings.json
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+examples
+
 #npm build
 build
 #dotnet publish
