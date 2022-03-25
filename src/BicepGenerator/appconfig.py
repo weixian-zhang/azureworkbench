@@ -1,28 +1,31 @@
 import os
 from loguru import logger
 
-class AppConfig:
-    azstorageConnString: str = ''
-    azstorageBicepContainer: str = ''
-    authKey: str = ''
-    messageBrokerConnString: str = ''
-    bicepGenCmdQueueName: str = ''
-    
+class AppConfig(object):
+    # azstorageConnString: str = ''
+    # azstorageBicepContainer: str = ''
+    # messageBrokerConnString: str = ''
+    # bicepGenCmdQueueName: str = ''
+    # compressMessage: bool = True
     AZSTORAGE_CONN_STRING = 'AZSTORAGE_CONN_STRING'
     BICEP_AZSTORAGE_CONTAINER = 'BICEP_AZSTORAGE_CONTAINER'
     AZURE_SERVICE_BUS_CONN_STRING = 'AZURE_SERVICE_BUS_CONN_STRING'
     BICEP_GEN_COMMAND_QUEUE_NAME = 'BICEP_GEN_COMMAND_QUEUE_NAME'
     COMPRESS_MSG = 'COMPRESS_MSG'
-
-    def __init__(self) -> None:
+    
+    def __init__(self):
         
         self.load_fromdotenv()
         
         self.azstorageConnString = os.environ.get(AppConfig.AZSTORAGE_CONN_STRING)
-        self.BicepAzStorageContainer = os.environ.get(AppConfig.BICEP_AZSTORAGE_CONTAINER)
+        self.azstorageBicepContainer = os.environ.get(AppConfig.BICEP_AZSTORAGE_CONTAINER)
         self.messageBrokerConnString = os.environ.get(AppConfig.AZURE_SERVICE_BUS_CONN_STRING)
         self.bicepGenCmdQueueName = os.environ.get(AppConfig.BICEP_GEN_COMMAND_QUEUE_NAME)
         self.compressMessage = os.environ.get(AppConfig.COMPRESS_MSG)
+    
+    
+
+    
         
     def load_fromdotenv(self) -> None:
         if os.path.exists('.env'):

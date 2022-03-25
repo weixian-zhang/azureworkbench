@@ -2,18 +2,35 @@
 from appconfig import AppConfig
 from bicepgen import BicepGenerator
 import time
+import json
+from multiprocessing import Process, Value
+from flask import Flask
+
+appconfig = AppConfig()
+
 from contexts import DiagramInfo
 from bicepgen import BicepGenerator
 from messaging import MessageBroker, AzureServiceBusBroker
-import json
 from azstorage import AzStorage
 
-appconfig = AppConfig()
+webapp = Flask(__name__)
 msgBroker: MessageBroker = AzureServiceBusBroker(appconfig)
 azstorage: AzStorage = AzStorage(appconfig)
 
 def run():
     
+    process = Process(target=listen_to_bicepgen_commands)
+    process.start() # start listen_to_bicepgen_commands in new process
+    
+    webapp.run(host='0.0.0.0', port=3000)
+    
+    process.join()
+    
+@webapp.route('/')
+def get_health_state():
+    return 'alive'
+        
+def listen_to_bicepgen_commands():
     while True:
         
         #this function itself waits for 5secs for messages
@@ -33,7 +50,7 @@ def run():
         write_diagraminfo_to_azstorage(diagramInfo, diagramInfoJson)
         
         time.sleep(0.5)
-        
+       
 def write_bicep_to_azstorage(diagramInfo: DiagramInfo, bicep: str):
     
     azstorage.write_blob(containerName=appconfig.BicepAzStorageContainer, \
