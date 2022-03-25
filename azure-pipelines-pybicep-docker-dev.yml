@@ -19,7 +19,7 @@ variables:
   minor: ${{ variables['PYBICEP_DOCKERIMAGE_VERSION_MINOR'] }}
   patch: ${{ variables['PYBICEP_DOCKERIMAGE_VERSION_PATCH'] }}
   versionDate: $(Date:yyyyMM)
-  tag: $(variables.major).$(variables.minor).$(variables.patch).$(variables.patch).$(variables.versionDate)
+  tag: $(variables['major']) #.$(variables.minor).$(variables.patch).$(variables.patch).$(variables.versionDate)
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -30,8 +30,7 @@ stages:
   jobs:
   - job: Build
     displayName: Build
-    pool:
-      vmImage: $(vmImageName)
+
     steps:
     - task: CmdLine@2
       inputs:
