@@ -10,7 +10,6 @@ class AppConfig:
     
     AZSTORAGE_CONN_STRING = 'AZSTORAGE_CONN_STRING'
     BICEP_AZSTORAGE_CONTAINER = 'BICEP_AZSTORAGE_CONTAINER'
-    AUTH_KEY = 'AUTH_KEY'
     AZURE_SERVICE_BUS_CONN_STRING = 'AZURE_SERVICE_BUS_CONN_STRING'
     BICEP_GEN_COMMAND_QUEUE_NAME = 'BICEP_GEN_COMMAND_QUEUE_NAME'
     COMPRESS_MSG = 'COMPRESS_MSG'
@@ -21,7 +20,6 @@ class AppConfig:
         
         self.azstorageConnString = os.environ.get(AppConfig.AZSTORAGE_CONN_STRING)
         self.BicepAzStorageContainer = os.environ.get(AppConfig.BICEP_AZSTORAGE_CONTAINER)
-        self.authKey = os.environ.get(AppConfig.AUTH_KEY)
         self.messageBrokerConnString = os.environ.get(AppConfig.AZURE_SERVICE_BUS_CONN_STRING)
         self.bicepGenCmdQueueName = os.environ.get(AppConfig.BICEP_GEN_COMMAND_QUEUE_NAME)
         self.compressMessage = os.environ.get(AppConfig.COMPRESS_MSG)
@@ -40,8 +38,6 @@ class AppConfig:
                                 os.environ[AppConfig.AZSTORAGE_CONN_STRING] = envValue
                             case AppConfig.BICEP_AZSTORAGE_CONTAINER:
                                 os.environ[AppConfig.BICEP_AZSTORAGE_CONTAINER] = envValue
-                            case AppConfig.AUTH_KEY:
-                                os.environ[AppConfig.AUTH_KEY] = envValue
                             case AppConfig.AZURE_SERVICE_BUS_CONN_STRING:
                                 os.environ[AppConfig.AZURE_SERVICE_BUS_CONN_STRING] = envValue
                             case AppConfig.BICEP_GEN_COMMAND_QUEUE_NAME:

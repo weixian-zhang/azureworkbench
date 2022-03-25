@@ -174,24 +174,35 @@
             "problemMatcher": "$func-watch"
         },
         {
-            "type": "docker-build",
-            "label": "docker-build",
-            "platform": "python",
-            "dockerBuild": {
-                "tag": "azureworkbench:latest",
-                "dockerfile": "${workspaceFolder}/Dockerfile",
-                "context": "${workspaceFolder}",
-                "pull": true
+            "label": "docker build pybicep",
+            "type": "shell",
+            "command": "docker build -t acrazworkbenchdev.azurecr.io/pybicep:pybicep-0.1.0 .",
+            "options": {
+                "cwd": "${workspaceFolder}/src/BicepGenerator/"
             }
         },
         {
-            "type": "docker-run",
-            "label": "docker-run: debug",
-            "dependsOn": [
-                "docker-build"
-            ],
-            "python": {
-                "file": "src\\BicepGenerator\\main.py"
+            "label": "docker delete pybicep",
+            "type": "shell",
+            "command": "docker rmi acrazworkbenchdev.azurecr.io/pybicep:pybicep-0.1.0 -f",
+            "options": {
+                "cwd": "${workspaceFolder}/src/BicepGenerator/"
+            }
+        },
+        {
+            "label": "docker run pybicep",
+            "type": "shell",
+            "command": "docker run --rm acrazworkbenchdev.azurecr.io/pybicep:pybicep-0.1.0",
+            "options": {
+                "cwd": "${workspaceFolder}/src/BicepGenerator/"
+            }
+        },
+        {
+            "label": "unittest PyBicep",
+            "type": "shell",
+            "command": "py -m unittest discover -s tests/unittests",
+            "options": {
+                "cwd": "${workspaceFolder}/src/BicepGenerator/"
             }
         }
     ]
