@@ -51,7 +51,7 @@ variables:
     value: $(containerRegistry)/$(imageRepository):$(tag)
 
 pool:
- name: 'ubuntu-latest'
+  vmImage: ubuntu-latest
 
 stages:
 - stage: Build
