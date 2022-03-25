@@ -17,7 +17,8 @@ variables:
   major: ${{ variables['PYBICEP_DOCKERIMAGE_VERSION_MAJOR'] }}
   minor: ${{ variables['PYBICEP_DOCKERIMAGE_VERSION_MINOR'] }}
   patch: ${{ variables['PYBICEP_DOCKERIMAGE_VERSION_PATCH'] }}
-  tag: $(major).$(minor).$(patch).$(Date:yyyyMMdd)
+  buildDate: ''
+  tag: $(major).$(minor).$(patch).$(buildDate)
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -30,6 +31,11 @@ stages:
     displayName: Build
 
     steps:
+    
+    - powershell: |
+        Set-Variable -Name d -Value (Get-Date).ToString('yyyyMMdd')
+        Write-Host "##vso[task.setvariable variable=buildDate]$d"
+
     - task: CmdLine@2
       inputs:
         script: |
