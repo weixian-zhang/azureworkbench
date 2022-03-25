@@ -15,10 +15,9 @@ variables:
   containerRegistry: 'acrazworkbenchdev.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/src/BicepGenerator/Dockerfile'
   
-
-  major: variables.PYBICEP_DOCKERIMAGE_VERSION_MAJOR
-  minor: variables.PYBICEP_DOCKERIMAGE_VERSION_MINOR
-  patch: variables.PYBICEP_DOCKERIMAGE_VERSION_PATCH
+  major: ${{ variables['PYBICEP_DOCKERIMAGE_VERSION_MAJOR'] }}
+  minor: ${{ variables['PYBICEP_DOCKERIMAGE_VERSION_MINOR'] }}
+  patch: ${{ variables['PYBICEP_DOCKERIMAGE_VERSION_PATCH'] }}
   versionDate: $(Date:yyyyMM)
   tag: ${{ join('.'variables.major, variables.minor, variables.patch, variables.versionDate) }}
 
@@ -40,12 +39,12 @@ stages:
           echo $(tag)
           
 
-    # - task: Docker@2
-    #   displayName: Build and push an image to container registry
-    #   inputs:
-    #     command: buildAndPush
-    #     repository: $(imageRepository)
-    #     dockerfile: $(dockerfilePath)
-    #     containerRegistry: $(dockerRegistryServiceConnection)
-    #     tags: |
-    #       $(tag)
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
