@@ -13,13 +13,12 @@ variables:
   dockerRegistryServiceConnection: '5585900c-e623-41f3-ab62-dd91d9a9bb66'
   imageRepository: 'dockerpullacrazworkbenchdevazurecriopybiceppybicep'
   containerRegistry: 'acrazworkbenchdev.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/src/BicepGenerator/Dockerfile'
   
   major: ${{ variables['PYBICEP_DOCKERIMAGE_VERSION_MAJOR'] }}
   minor: ${{ variables['PYBICEP_DOCKERIMAGE_VERSION_MINOR'] }}
   patch: ${{ variables['PYBICEP_DOCKERIMAGE_VERSION_PATCH'] }}
   versionDate: $(Date:yyyyMM)
-  tag: $(variables['major']) #.$(variables.minor).$(variables.patch).$(variables.patch).$(variables.versionDate)
+  tag: $[variables['major']] #.$(variables.minor).$(variables.patch).$(variables.patch).$(variables.versionDate)
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -43,7 +42,7 @@ stages:
     #   inputs:
     #     command: buildAndPush
     #     repository: $(imageRepository)
-    #     dockerfile: $(dockerfilePath)
+    #     dockerfile: $(Build.SourcesDirectory)/src/BicepGenerator/Dockerfile
     #     containerRegistry: $(dockerRegistryServiceConnection)
     #     tags: |
     #       $(tag)
