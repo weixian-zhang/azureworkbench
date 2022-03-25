@@ -48,6 +48,7 @@ stages:
 - stage: Deploy App Service
   jobs:
     - deployment: 
+      environment: Dev
       strategy:
         runOnce:
           deploy:
