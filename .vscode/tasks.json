@@ -192,7 +192,7 @@
         {
             "label": "docker run pybicep",
             "type": "shell",
-            "command": "docker run --rm acrazworkbenchdev.azurecr.io/pybicep:pybicep-0.1.0",
+            "command": "docker run --rm -p 3000:3000 acrazworkbenchdev.azurecr.io/pybicep:pybicep-0.1.0",
             "options": {
                 "cwd": "${workspaceFolder}/src/BicepGenerator/"
             }
