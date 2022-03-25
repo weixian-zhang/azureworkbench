@@ -42,8 +42,7 @@ stages:
         repository: $(imageRepository)
         command: 'buildAndPush'
         dockerfile: $(Build.SourcesDirectory)/src/BicepGenerator/Dockerfile
-        container: '$(imageName)'
-        tags: '$(tag)'
+        tags: $(tag)
 
 
 - stage: Deploy App Service
