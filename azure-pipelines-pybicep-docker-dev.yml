@@ -33,7 +33,6 @@ stages:
     - task: CmdLine@2
       inputs:
         script: |
-          echo $(versionDate)
           echo $(tag)
           
 
