@@ -43,7 +43,7 @@ stages:
         repository: $(imageRepository)
         command: 'buildAndPush'
         dockerfile: $(Build.SourcesDirectory)/src/BicepGenerator/Dockerfile
-        tags: $(imageName)
+        tags: $(tag)
 
 
 - stage:
