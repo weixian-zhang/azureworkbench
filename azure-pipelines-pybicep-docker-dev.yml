@@ -50,7 +50,8 @@ variables:
   - name: imageName
     value: $(containerRegistry)/$(imageRepository):$(tag)
 
-pool: 'ubuntu-latest'
+pool:
+ name: 'ubuntu-latest'
 
 stages:
 - stage: Build
