@@ -70,28 +70,28 @@ stages:
           script: |
             echo $(tag)
     
-    # - task: Docker@2
-    #   displayName: Build and push an image to container registry
-    #   inputs:
-    #     containerRegistry: 'AcrAzWorkbenchDev'
-    #     repository: $(imageRepository)
-    #     command: 'buildAndPush'
-    #     dockerfile: $(Build.SourcesDirectory)/src/BicepGenerator/Dockerfile
-    #     tags: $(tag)
+      - task: Docker@2
+        displayName: Build and push an image to container registry
+        inputs:
+          containerRegistry: 'AcrAzWorkbenchDev'
+          repository: $(imageRepository)
+          command: 'buildAndPush'
+          dockerfile: $(Build.SourcesDirectory)/src/BicepGenerator/Dockerfile
+          tags: $(tag)
 
 
-# - stage:
-#   displayName: Deploy Pybicep to App Service $(appServiceName)
-#   jobs:
-#     - deployment: 
-#       environment: Dev
-#       strategy:
-#         runOnce:
-#           deploy:
-#             steps:
-#               - task: AzureWebAppContainer@1
-#                 displayName: Deploy PyBicep container to App Service
-#                 inputs:
-#                   azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
-#                   appName: '$(appServiceName)'
-#                   containers: '$(imageName)'
+- stage:
+  displayName: Deploy Pybicep to App Service $(appServiceName)
+  jobs:
+    - deployment: 
+      environment: Dev
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: AzureWebAppContainer@1
+                displayName: Deploy PyBicep container to App Service
+                inputs:
+                  azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
+                  appName: '$(appServiceName)'
+                  containers: '$(imageName)'
