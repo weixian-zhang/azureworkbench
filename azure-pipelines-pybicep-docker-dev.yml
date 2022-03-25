@@ -7,22 +7,50 @@ trigger:
 
 resources:
 - repo: self
+  
+
+# variables:
+#   - group: Dev
+#   - name: major
+#     value: $[variables.PYBICEP_DOCKERIMAGE_VERSION_MAJOR]
+    
+#   # Container registry service connection established during pipeline creation
+#   #dockerRegistryServiceConnection: '5585900c-e623-41f3-ab62-dd91d9a9bb66'
+#   containerRegistry: 'acrazworkbenchdev.azurecr.io'
+#   imageRepository: 'pybicep'
+#   appServiceName: 'webapp-pybicep-container-dev'
+#   major: $(variables['']) #variables['PYBICEP_DOCKERIMAGE_VERSION_MAJOR'])
+#   minor: $[variables.PYBICEP_DOCKERIMAGE_VERSION_MINOR]
+#   patch: $[variables.PYBICEP_DOCKERIMAGE_VERSION_PATCH]
+#   buildDate: ''
+#   tag: pybicep-$(major).$(minor).$(patch).$(buildDate)
+#   imageName: $(containerRegistry)/$(imageRepository):$(tag)
 
 variables:
+  - group: Dev
+  - name: major
+    value: $[variables.PYBICEP_DOCKERIMAGE_VERSION_MAJOR]
+  - name: minor
+    value: $[variables.PYBICEP_DOCKERIMAGE_VERSION_MINOR]
+  - name: patch
+    value: $[variables.PYBICEP_DOCKERIMAGE_VERSION_PATCH]
+
   # Container registry service connection established during pipeline creation
   #dockerRegistryServiceConnection: '5585900c-e623-41f3-ab62-dd91d9a9bb66'
-  containerRegistry: 'acrazworkbenchdev.azurecr.io'
-  imageRepository: 'pybicep'
-  appServiceName: 'webapp-pybicep-container-dev'
-  major: $(variables['PYBICEP_DOCKERIMAGE_VERSION_MAJOR']) #variables['PYBICEP_DOCKERIMAGE_VERSION_MAJOR'])
-  minor: $[variables.PYBICEP_DOCKERIMAGE_VERSION_MINOR]
-  patch: $[variables.PYBICEP_DOCKERIMAGE_VERSION_PATCH]
-  buildDate: ''
-  tag: pybicep-$(major).$(minor).$(patch).$(buildDate)
-  imageName: $(containerRegistry)/$(imageRepository):$(tag)
+  - name: containerRegistry
+    value: 'acrazworkbenchdev.azurecr.io'
+  - name: imageRepository
+    value: 'pybicep'
+  - name: appServiceName
+    value: 'webapp-pybicep-container-dev'
+  - name: buildDate
+    value: ''
+  - name: tag
+    value: pybicep-$(major).$(minor).$(patch).$(buildDate)
+  - name: imageName
+    value: $(containerRegistry)/$(imageRepository):$(tag)
 
-  # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+pool: 'ubuntu-latest'
 
 stages:
 - stage: Build
@@ -30,7 +58,7 @@ stages:
   jobs:
   - job: Build
     displayName: Build
-
+    
     steps:
       - task: CmdLine@2
         inputs:
