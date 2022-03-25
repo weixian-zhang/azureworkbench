@@ -1,4 +1,5 @@
 import os
+from loguru import logger
 
 class AppConfig:
     azstorageConnString: str = ''
@@ -16,47 +17,44 @@ class AppConfig:
 
     def __init__(self) -> None:
         
-        if self.load_fromdotenv():
-            return
+        self.load_fromdotenv()
         
-        self.azstorageConnString = os.environ.get('AZSTORAGE_CONN_STRING')
-        self.BicepAzStorageContainer = os.environ.get('BICEP_AZSTORAGE_CONTAINER')
-        self.authKey = os.environ.get('AUTH_KEY')
-        self.messageBrokerConnString = os.environ.get('AZURE_SERVICE_BUS_CONN_STRING')
-        self.bicepGenCmdQueueName = os.environ.get('BICEP_GEN_COMMAND_QUEUE_NAME')
-        self.compressMessage = os.environ.get('COMPRESS_MSG')
+        self.azstorageConnString = os.environ.get(AppConfig.AZSTORAGE_CONN_STRING)
+        self.BicepAzStorageContainer = os.environ.get(AppConfig.BICEP_AZSTORAGE_CONTAINER)
+        self.authKey = os.environ.get(AppConfig.AUTH_KEY)
+        self.messageBrokerConnString = os.environ.get(AppConfig.AZURE_SERVICE_BUS_CONN_STRING)
+        self.bicepGenCmdQueueName = os.environ.get(AppConfig.BICEP_GEN_COMMAND_QUEUE_NAME)
+        self.compressMessage = os.environ.get(AppConfig.COMPRESS_MSG)
         
-    def load_fromdotenv(self) -> bool:
+    def load_fromdotenv(self) -> None:
         if os.path.exists('.env'):
             with open('.env') as file:
                 content = file.readlines();
                 for keyval in content:
-                    
-                    keyvalArray = keyval.strip().split('=')
-                    
+                                        
                     ok, envKey, envValue = self.get_keyval_from_dotenv(keyval)
                     
                     if ok:
                         match envKey:
                             case AppConfig.AZSTORAGE_CONN_STRING:
-                                self.azstorageConnString = envValue
+                                os.environ[AppConfig.AZSTORAGE_CONN_STRING] = envValue
                             case AppConfig.BICEP_AZSTORAGE_CONTAINER:
-                                self.BicepAzStorageContainer = envValue
+                                os.environ[AppConfig.BICEP_AZSTORAGE_CONTAINER] = envValue
                             case AppConfig.AUTH_KEY:
-                                self.authKey = envValue
+                                os.environ[AppConfig.AUTH_KEY] = envValue
                             case AppConfig.AZURE_SERVICE_BUS_CONN_STRING:
-                                self.messageBrokerConnString = envValue
+                                os.environ[AppConfig.AZURE_SERVICE_BUS_CONN_STRING] = envValue
                             case AppConfig.BICEP_GEN_COMMAND_QUEUE_NAME:
-                                self.bicepGenCmdQueueName = envValue
+                                os.environ[AppConfig.BICEP_GEN_COMMAND_QUEUE_NAME] = envValue
                             case AppConfig.COMPRESS_MSG:
-                                self.compressMessage = envValue
-            return True
-        
-        return False
+                                os.environ[AppConfig.COMPRESS_MSG] = envValue
     
     def get_keyval_from_dotenv(self, kv: str):
         
-        replaceConstExpr = '__TBREPLACE__'
+        replaceConstExpr = '__REPLACE__'
+        
+        if not kv:
+            return False, '', ''
         
         envContent = list(kv.replace(' ', '').replace('\n', ''))
         
