@@ -13,13 +13,12 @@ variables:
   dockerRegistryServiceConnection: '5585900c-e623-41f3-ab62-dd91d9a9bb66'
   containerRegistry: 'acrazworkbenchdev.azurecr.io'
   imageRepository: 'pybicep'
-
   major: ${{ variables['PYBICEP_DOCKERIMAGE_VERSION_MAJOR'] }}
   minor: ${{ variables['PYBICEP_DOCKERIMAGE_VERSION_MINOR'] }}
   patch: ${{ variables['PYBICEP_DOCKERIMAGE_VERSION_PATCH'] }}
   buildDate: ''
   tag: pybicep-$(major).$(minor).$(patch).$(buildDate)
-  imageName = $(containerRegistry)/$(imageRepository):$(tag)
+  imageName: $(containerRegistry)/$(imageRepository):$(tag)
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -32,27 +31,22 @@ stages:
     displayName: Build
 
     steps:
-    
     - powershell: |
         Set-Variable -Name d -Value (Get-Date).ToString('yyyyMMdd')
         Write-Host "##vso[task.setvariable variable=buildDate]$d"
-
-    - task: CmdLine@2
-      inputs:
-        script: |
-          echo $(tag)
-          
+    
     - task: Docker@2
       displayName: Build and push an image to container registry
       inputs:
-        command: buildAndPush
+        containerRegistry: 'AcrAzWorkbenchDev'
         repository: $(imageRepository)
+        command: 'buildAndPush'
         dockerfile: $(Build.SourcesDirectory)/src/BicepGenerator/Dockerfile
-        containerRegistry: $(dockerRegistryServiceConnection)
-        tags: |
-          $(tag)
+        container: '$(imageName)'
+        tags: '$(tag)'
 
-- stage: 
+
+- stage: Deploy App Service
   jobs:
     - deployment: 
       strategy:
