@@ -14,8 +14,13 @@ variables:
   imageRepository: 'dockerpullacrazworkbenchdevazurecriopybiceppybicep'
   containerRegistry: 'acrazworkbenchdev.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/src/BicepGenerator/Dockerfile'
-  tag: '$(Build.BuildId)'
-  major: $(Get-Date -Format yyyyMM)
+  
+
+  major: variables.PYBICEP_DOCKERIMAGE_VERSION_MAJOR
+  minor: variables.PYBICEP_DOCKERIMAGE_VERSION_MINOR
+  patch: variables.PYBICEP_DOCKERIMAGE_VERSION_PATCH
+  versionDate: ${{ Get-Date -Format yyyyMM }}
+  tag: ${{ join('.'variables.major, variables.minor, variables.patch, variables.versionDate) }}
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -32,7 +37,7 @@ stages:
     - task: CmdLine@2
       inputs:
         script: |
-          echo major
+          echo $(tag)
           
 
     # - task: Docker@2
