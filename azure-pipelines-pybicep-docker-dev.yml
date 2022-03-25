@@ -66,8 +66,9 @@ stages:
           Write-Host "##vso[task.setvariable variable=buildDate]$d"
           
       - task: CmdLine@2
-          inputs:
-            script: echo $(imageName)
+        inputs:
+          script: |
+            echo $(tag)
     
     # - task: Docker@2
     #   displayName: Build and push an image to container registry
