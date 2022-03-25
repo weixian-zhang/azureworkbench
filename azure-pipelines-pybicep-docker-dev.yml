@@ -45,7 +45,7 @@ stages:
         tags: $(tag)
 
 
-- stage: Deploy App Service
+- stage:
   jobs:
     - deployment: 
       environment: Dev
@@ -54,7 +54,8 @@ stages:
           deploy:
             steps:
               - task: AzureWebAppContainer@1
+                displayName: Deploy PyBicep container to App Service
                 inputs:
                   azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
-                  appName: 'WebappPybicepDev'
+                  appName: 'webapp-pybicep-dev'
                   containers: '$(imageName)'
