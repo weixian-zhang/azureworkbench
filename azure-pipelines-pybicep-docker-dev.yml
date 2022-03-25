@@ -15,6 +15,7 @@ variables:
   containerRegistry: 'acrazworkbenchdev.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/src/BicepGenerator/Dockerfile'
   tag: '$(Build.BuildId)'
+  major: $(Get-Date -Format yyyyMM)
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -28,12 +29,18 @@ stages:
     pool:
       vmImage: $(vmImageName)
     steps:
-    - task: Docker@2
-      displayName: Build and push an image to container registry
+    - task: CmdLine@2
       inputs:
-        command: buildAndPush
-        repository: $(imageRepository)
-        dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
-        tags: |
-          $(tag)
+        script: |
+          echo major
+          
+
+    # - task: Docker@2
+    #   displayName: Build and push an image to container registry
+    #   inputs:
+    #     command: buildAndPush
+    #     repository: $(imageRepository)
+    #     dockerfile: $(dockerfilePath)
+    #     containerRegistry: $(dockerRegistryServiceConnection)
+    #     tags: |
+    #       $(tag)
