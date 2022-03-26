@@ -5,6 +5,7 @@ import time
 import json
 from multiprocessing import Process, Value
 from flask import Flask
+from loguru import logger
 
 appconfig = AppConfig()
 
@@ -16,13 +17,17 @@ from azstorage import AzStorage
 webapp = Flask(__name__)
 msgBroker: MessageBroker = AzureServiceBusBroker(appconfig)
 azstorage: AzStorage = AzStorage(appconfig)
+webApiPort = 3000
 
 def run():
+    
+    logger.info('PyBicep started')
     
     process = Process(target=listen_to_bicepgen_commands)
     process.start() # start listen_to_bicepgen_commands in new process
     
-    webapp.run(host='0.0.0.0', port=3000)
+    logger.info(f'PyBicep starts listening at HTTP 0.0.0.0:{webApiPort}')
+    webapp.run(host='0.0.0.0', port=webApiPort)
     
     process.join()
     
@@ -31,6 +36,9 @@ def get_health_state():
     return 'alive'
         
 def listen_to_bicepgen_commands():
+    
+    logger.info('PyBicep starts listening to bicep gen command')
+    
     while True:
         
         #this function itself waits for 5secs for messages

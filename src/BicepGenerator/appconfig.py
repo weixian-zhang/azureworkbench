@@ -2,11 +2,7 @@ import os
 from loguru import logger
 
 class AppConfig(object):
-    # azstorageConnString: str = ''
-    # azstorageBicepContainer: str = ''
-    # messageBrokerConnString: str = ''
-    # bicepGenCmdQueueName: str = ''
-    # compressMessage: bool = True
+
     AZSTORAGE_CONN_STRING = 'AZSTORAGE_CONN_STRING'
     BICEP_AZSTORAGE_CONTAINER = 'BICEP_AZSTORAGE_CONTAINER'
     AZURE_SERVICE_BUS_CONN_STRING = 'AZURE_SERVICE_BUS_CONN_STRING'
@@ -22,15 +18,23 @@ class AppConfig(object):
         self.messageBrokerConnString = os.environ.get(AppConfig.AZURE_SERVICE_BUS_CONN_STRING)
         self.bicepGenCmdQueueName = os.environ.get(AppConfig.BICEP_GEN_COMMAND_QUEUE_NAME)
         self.compressMessage = os.environ.get(AppConfig.COMPRESS_MSG)
-    
-    
-
-    
         
+        logger.info(f'env vars loaded {AppConfig.AZSTORAGE_CONN_STRING}={self.azstorageConnString}, \
+            {AppConfig.BICEP_AZSTORAGE_CONTAINER}={self.azstorageBicepContainer}, \
+            {AppConfig.AZURE_SERVICE_BUS_CONN_STRING}={self.messageBrokerConnString}, \
+            {AppConfig.BICEP_GEN_COMMAND_QUEUE_NAME}={self.bicepGenCmdQueueName}, \
+            {AppConfig.COMPRESS_MSG}={self.compressMessage}')
+    
+    
     def load_fromdotenv(self) -> None:
         if os.path.exists('.env'):
+            
+            logger.info('.env found, loading env vars from .env')
             with open('.env') as file:
+                
                 content = file.readlines();
+                logger.info(f'.env content {content}')
+                
                 for keyval in content:
                                         
                     ok, envKey, envValue = self.get_keyval_from_dotenv(keyval)
@@ -47,6 +51,9 @@ class AppConfig(object):
                                 os.environ[AppConfig.BICEP_GEN_COMMAND_QUEUE_NAME] = envValue
                             case AppConfig.COMPRESS_MSG:
                                 os.environ[AppConfig.COMPRESS_MSG] = envValue
+                                
+        else:
+            logger.info('.env not found, loading end vars from hosted platform')
     
     def get_keyval_from_dotenv(self, kv: str):
         
