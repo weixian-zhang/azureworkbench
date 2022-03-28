@@ -9,6 +9,7 @@ class AppConfig(object):
     BICEP_GEN_COMMAND_QUEUE_NAME = 'BICEP_GEN_COMMAND_QUEUE_NAME'
     COMPRESS_MSG = 'COMPRESS_MSG'
     
+    @logger.catch
     def __init__(self):
         
         self.load_fromdotenv()
@@ -25,7 +26,7 @@ class AppConfig(object):
             {AppConfig.BICEP_GEN_COMMAND_QUEUE_NAME}={self.bicepGenCmdQueueName}, \
             {AppConfig.COMPRESS_MSG}={self.compressMessage}')
     
-    
+    @logger.catch
     def load_fromdotenv(self) -> None:
         if os.path.exists('.env'):
             

@@ -1,11 +1,16 @@
 
+from msilib.schema import Error
 from appconfig import AppConfig
 from bicepgen import BicepGenerator
 import time
 import json
+import sys
 from multiprocessing import Process, Value
 from flask import Flask
+
 from loguru import logger
+logger.add(sys.stderr, format="{time} {level} {message}")
+logger.add(sys.stdin, format="{time} {level} {message}")
 
 appconfig = AppConfig()
 
@@ -19,6 +24,7 @@ msgBroker: MessageBroker = AzureServiceBusBroker(appconfig)
 azstorage: AzStorage = AzStorage(appconfig)
 webApiPort = 3000
 
+@logger.catch
 def run():
     
     logger.info('PyBicep started')
@@ -30,17 +36,19 @@ def run():
     webapp.run(host='0.0.0.0', port=webApiPort)
     
     process.join()
-    
+
+@logger.catch
 @webapp.route('/')
 def get_health_state():
     return 'alive'
-        
+
+@logger.catch
 def listen_to_bicepgen_commands():
     
     logger.info('PyBicep starts listening to bicep gen command')
     
     while True:
-        
+            
         #this function itself waits for 5secs for messages
         #additional sleep not required in while
         ok, diagramInfoJson = msgBroker.receive_bicep_generation_command()
@@ -58,18 +66,21 @@ def listen_to_bicepgen_commands():
         write_diagraminfo_to_azstorage(diagramInfo, diagramInfoJson)
         
         time.sleep(0.5)
-       
+
+@logger.catch
 def write_bicep_to_azstorage(diagramInfo: DiagramInfo, bicep: str):
     
     azstorage.write_blob(containerName=appconfig.BicepAzStorageContainer, \
         blobFullPath=diagramInfo.BlobFilePath, data=bicep)
-    
+
+@logger.catch
 def write_diagraminfo_to_azstorage(diagramInfo: DiagramInfo, data: str):
     
     blobPath = f'{diagramInfo.UserDirectory}/{diagramInfo.BlobClaimCheckFileIdentifier}/diagraminfo_{diagramInfo.BlobClaimCheckFileIdentifier}.txt'
     
     azstorage.write_blob(containerName=appconfig.BicepAzStorageContainer, \
         blobFullPath=blobPath, data=data)
+    
     
 
 if __name__ == '__main__':
