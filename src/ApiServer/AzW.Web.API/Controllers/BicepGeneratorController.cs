@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using AzW.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Serilog;
 
 namespace AzW.Web.API
 {
@@ -13,9 +14,12 @@ namespace AzW.Web.API
     [Route("api/bicep")]
     public class BicepGeneratorController : BaseController
     {
+        private ILogger _logger;
+
         public BicepGeneratorController
-            (ITemplateGenerator templateGenerator, IWebHostEnvironment _webenv)
+            (ITemplateGenerator templateGenerator, ILogger logger)
         {
+            _logger = logger;
             _templateGenerator = templateGenerator;
         }
 
@@ -28,7 +32,11 @@ namespace AzW.Web.API
 
             var diagramContext = JsonConvert.DeserializeObject<DiagramInfo>(innerContext.ToString());
 
+            _logger.Information("BicepGeneratorController: Bicep template gen request receive, generating request");
+
             string bicepBlobUrl = await _templateGenerator.Generate(diagramContext);
+
+            _logger.Information($"BicepGeneratorController: Bicep template command sent successfully, bicep blob Url {bicepBlobUrl}");
             
             return Ok(bicepBlobUrl);
         }

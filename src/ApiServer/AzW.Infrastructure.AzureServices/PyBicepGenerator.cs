@@ -39,7 +39,11 @@ namespace AzW.Infrastructure.AzureServices
             diagraminfo.BlobFilePath = GetBicepFullBlobPath(bicepBlobClaimCheckId, diagraminfo.UserEmail);
             diagraminfo.UserDirectory = GetUserBicepBlobDirectory(diagraminfo.UserEmail);
 
+            _logger.Information($"Infrastructure.AzureServices.PyBicepGenerator: sending bicep generation command to pybicep service for user {diagraminfo.UserEmail}");
+
             await SendBicepGenCommand(diagraminfo);
+
+            _logger.Information($"Infrastructure.AzureServices.PyBicepGenerator: sending bicep generation command sent to pybicep service successfully for user {diagraminfo.UserEmail}");
 
             return GetBicepBlobUrl(diagraminfo.BlobFilePath);
         }

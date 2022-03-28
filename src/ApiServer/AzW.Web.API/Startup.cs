@@ -205,7 +205,7 @@ namespace AzW.Web.API
                 return new PyBicepGenerator(_secrets, blobStorageManager, _logger);
             });
 
-            services.AddSingleton<Logger>(sp => {return _logger ;} );
+            services.AddSingleton<ILogger>(sp => {return _logger ;} );
             services.AddTransient<IDiagramRepository, DiagramRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<ICacheRepository>(x => {
@@ -294,20 +294,22 @@ namespace AzW.Web.API
         {
             _logger = new LoggerConfiguration()
                 .WriteTo
-                .MongoDB(
-                    CosmosDbHelper.GetDatabase(_secrets),
-                    LogEventLevel.Debug,
-                    collectionName: "Log-API",
-                    period: TimeSpan.Zero)
-                    .WriteTo
-                        .ApplicationInsights(new TelemetryConfiguration(){
-                            InstrumentationKey = _secrets.AppInsightsKey
-                        }, new TraceTelemetryConverter())
+                    .Console()
+                .WriteTo
+                    .MongoDB(
+                        CosmosDbHelper.GetDatabase(_secrets),
+                        LogEventLevel.Debug,
+                        collectionName: "Log-API",
+                        period: TimeSpan.Zero)
+                        .WriteTo
+                            .ApplicationInsights(new TelemetryConfiguration(){
+                                InstrumentationKey = _secrets.AppInsightsKey
+                            }, new TraceTelemetryConverter())
                 .CreateLogger();
         }
 
         private WorkbenchSecret _secrets;
-        private Logger _logger;
+        private ILogger _logger;
         private IWebHostEnvironment _webenv;
     }
 }
