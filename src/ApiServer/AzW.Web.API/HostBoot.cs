@@ -6,13 +6,13 @@ using AzW.Infrastructure.Data;
 using AzW.Model;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
-using Serilog.Core;
+using Serilog;
 
 namespace AzW.Web.API
 {
     internal sealed class HostBoot : IHostedService
     {
-        public HostBoot(ICacheRepository cache, BlobStorageManager blob, Logger logger)
+        public HostBoot(ICacheRepository cache, BlobStorageManager blob, ILogger logger)
         {
             _cache = cache;
             _blob = blob;
@@ -153,7 +153,7 @@ namespace AzW.Web.API
             return Task.FromResult(true);
         }
 
-        private Logger _logger;
+        private ILogger _logger;
         private BlobStorageManager _blob;
         private ICacheRepository _cache;
     }

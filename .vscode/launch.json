@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "debug BicepGen",
+            "name": "debug PyBicep",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/BicepGenerator/main.py",
@@ -24,7 +24,7 @@
             }
         },
         {
-            "name": "Debug API",
+            "name": "Debug ApiServer",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build API",
