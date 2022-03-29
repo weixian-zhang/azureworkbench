@@ -85,13 +85,28 @@ stages:
               deploy:
                  steps:
 
+                    - task: AzureAppServiceManage@0
+                      displayName: Stop portal-azworkbench-dev
+                      inputs:
+                        azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
+                        Action: 'Stop Azure App Service'
+                        WebAppName: 'portal-azworkbench-dev'
+
                     - task: AzureWebApp@1
+                      displayName: Zip deploy to portal-azworkbench-dev
                       inputs:
                         azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                         appType: 'webApp'
                         appName: 'portal-azworkbench-dev'
                         package: '$(System.ArtifactsDirectory)'
                         deploymentMethod: 'zipDeploy'
+                        
+                    - task: AzureAppServiceManage@0
+                      displayName: Start portal-azworkbench-dev
+                      inputs:
+                        azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
+                        Action: 'Start Azure App Service'
+                        WebAppName: 'portal-azworkbench-dev'
 
 
                         
