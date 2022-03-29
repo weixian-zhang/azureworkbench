@@ -20,7 +20,7 @@ stages:
 
         steps:       
 
-        - download: self
+        - checkout: self
         
         - task: CredScan@3
         
