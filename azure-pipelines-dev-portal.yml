@@ -4,13 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
- branches:
-    include:
-      - dev
-    exclude:
-      - master
-      - release-v1.0.0-24022022
-      - release-v1.0.1-10032022
+ - dev
 
 stages:
   - stage: Build
@@ -67,14 +61,6 @@ stages:
             SourceFolder: '$(build.sourcesdirectory)/src/Portal/build'
             Contents: '**'
             targetFolder: '$(Build.ArtifactStagingDirectory)/build'
-            
-        - task: ArchiveFiles@2
-          inputs:
-            rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/build'
-            includeRootFolder: false
-            archiveType: 'zip'
-            archiveFile: '$(Build.ArtifactStagingDirectory)/drop.zip'
-            replaceExistingArchive: true
 
         - task: PublishBuildArtifacts@1
           inputs:
@@ -106,10 +92,8 @@ stages:
                         azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                         appType: 'webApp'
                         appName: 'portal-azworkbench-dev'
-                        package: '$(System.ArtifactsDirectory)/drop.zip'
+                        package: '$(System.ArtifactsDirectory)'
                         deploymentMethod: 'zipDeploy'
-                    
-
                         
                     - task: AzureAppServiceManage@0
                       displayName: Start portal-azworkbench-dev
