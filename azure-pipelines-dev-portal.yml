@@ -58,7 +58,7 @@ stages:
             bashEnvValue: 
             script: |
               - script: |
-                  echo REACT_APP_ENV=${{ variables.REACT_APP_ENV }}
+                  echo REACT_APP_ENV=beta
                   npm install
                   npm run build
 
