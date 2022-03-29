@@ -20,8 +20,6 @@ stages:
 
         steps:       
 
-        - checkout: self
-        
         - task: CredScan@3
         
         - task: Bash@3
