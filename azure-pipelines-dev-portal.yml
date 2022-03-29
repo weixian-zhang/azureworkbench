@@ -18,7 +18,9 @@ stages:
         variables:
           REACT_APP_ENV: 'beta'
 
-        steps:        
+        steps:       
+
+        - download: self
         
         - task: CredScan@3
         
