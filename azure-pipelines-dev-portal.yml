@@ -91,7 +91,7 @@ stages:
                         azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                         appType: 'webApp'
                         appName: 'portal-azworkbench-dev'
-                        package: '$(System.ArtifactsDirectory)'
+                        package: '$(System.ArtifactsDirectory)/drop'
                         deploymentMethod: 'zipDeploy'
                         
                     # - task: AzureAppServiceManage@0
