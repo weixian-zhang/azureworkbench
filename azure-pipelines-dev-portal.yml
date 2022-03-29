@@ -62,11 +62,11 @@ stages:
           inputs:
             SourceFolder: '$(build.sourcesdirectory)/src/Portal/build'
             Contents: '**'
-            targetFolder: '$(Build.ArtifactStagingDirectory)/build'
+            targetFolder: '$(Build.ArtifactStagingDirectory)'
 
         - task: PublishBuildArtifacts@1
           inputs:
-            pathToPublish: '$(Build.ArtifactStagingDirectory)/build'
+            pathToPublish: '$(Build.ArtifactStagingDirectory)'
             artifactName: 'drop'
             
 
