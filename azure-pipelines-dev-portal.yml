@@ -31,6 +31,8 @@ stages:
               echo "Structure of work folder of this pipeline:"
               tree $(Agent.WorkFolder)\1 /f
               
+              echo "$(System.DefaultWorkingDirectory)"
+              echo "System.DefaultWorkingDirectory"
               echo "Build.ArtifactStagingDirectory:" 
               echo "$(Build.ArtifactStagingDirectory)"
               echo "Build.BinariesDirectory:" 
@@ -109,7 +111,7 @@ stages:
                         azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                         appType: 'webApp'
                         WebAppName: 'portal-azworkbench-dev'
-                        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+                        packageForLinux: '$(System.DefaultWorkingDirectory)/*'
                         
                     # - task: AzureAppServiceManage@0
                     #   displayName: Start portal-azworkbench-dev
