@@ -32,6 +32,8 @@ stages:
               tree $(Agent.WorkFolder)\1 /f
               
               echo "$(System.DefaultWorkingDirectory)"
+              echo "$(System.ArtifactsDirectory)"
+              echo "System.ArtifactsDirectory"
               echo "System.DefaultWorkingDirectory"
               echo "Build.ArtifactStagingDirectory:" 
               echo "$(Build.ArtifactStagingDirectory)"
