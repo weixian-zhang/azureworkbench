@@ -60,11 +60,11 @@ stages:
           inputs:
             SourceFolder: '$(build.sourcesdirectory)/src/Portal/build'
             Contents: '**'
-            targetFolder: '$(Build.ArtifactStagingDirectory)'
+            targetFolder: '$(Build.ArtifactStagingDirectory)/build'
 
         - task: PublishBuildArtifacts@1
           inputs:
-            pathToPublish: '$(Build.ArtifactStagingDirectory)'
+            pathToPublish: '$(Build.ArtifactStagingDirectory)/build'
             artifactName: 'drop'
             
 
@@ -77,6 +77,8 @@ stages:
           runOnce:
               deploy:
                  steps:
+
+                 
 
                     # - task: AzureAppServiceManage@0
                     #   displayName: Stop portal-azworkbench-dev
@@ -91,7 +93,7 @@ stages:
                         azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                         appType: 'webApp'
                         appName: 'portal-azworkbench-dev'
-                        package: '$(Build.ArtifactStagingDirectory)/drop' #'$(System.ArtifactsDirectory)/drop'
+                        package: '$(Build.ArtifactStagingDirectory)' #'$(System.ArtifactsDirectory)/drop'
                         deploymentMethod: 'zipDeploy'
                         
                     # - task: AzureAppServiceManage@0
