@@ -20,7 +20,7 @@ stages:
 
         steps:       
 
-        #- task: CredScan@3
+        - task: CredScan@3
         
         - task: Bash@3
           inputs:
