@@ -79,6 +79,7 @@ stages:
                  steps:
 
                     - task: DownloadBuildArtifacts@1
+                      displayName: Debug download artifact
                       inputs:
                         buildType: 'current'
                         downloadType: 'single'
@@ -93,14 +94,22 @@ stages:
                     #     Action: 'Stop Azure App Service'
                     #     WebAppName: 'portal-azworkbench-dev'
 
-                    - task: AzureWebApp@1
-                      displayName: Deploy to portal-azworkbench-dev
+                    # - task: AzureWebApp@1
+                    #   displayName: Deploy to portal-azworkbench-dev
+                    #   inputs:
+                    #     azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
+                    #     appType: 'webApp'
+                    #     appName: 'portal-azworkbench-dev'
+                    #     package: '$(System.ArtifactsDirectory)'
+                    #     deploymentMethod: 'zipDeploy'
+
+                    - task: AzureRmWebAppDeployment@4
                       inputs:
+                        ConnectionType: 'AzureRM'
                         azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                         appType: 'webApp'
-                        appName: 'portal-azworkbench-dev'
-                        package: '$(System.ArtifactsDirectory)'
-                        deploymentMethod: 'zipDeploy'
+                        WebAppName: 'portal-azworkbench-dev'
+                        packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
                         
                     # - task: AzureAppServiceManage@0
                     #   displayName: Start portal-azworkbench-dev
