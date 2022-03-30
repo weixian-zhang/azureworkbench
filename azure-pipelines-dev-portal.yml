@@ -78,7 +78,13 @@ stages:
               deploy:
                  steps:
 
-                 
+                    - task: DownloadBuildArtifacts@1
+                      inputs:
+                        buildType: 'current'
+                        downloadType: 'single'
+                        artifactName: 'drop'
+                        downloadPath: '$(System.ArtifactsDirectory)'
+                    
 
                     # - task: AzureAppServiceManage@0
                     #   displayName: Stop portal-azworkbench-dev
@@ -93,7 +99,7 @@ stages:
                         azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                         appType: 'webApp'
                         appName: 'portal-azworkbench-dev'
-                        package: '$(Build.ArtifactStagingDirectory)' #'$(System.ArtifactsDirectory)/drop'
+                        package: '$(System.ArtifactsDirectory)'
                         deploymentMethod: 'zipDeploy'
                         
                     # - task: AzureAppServiceManage@0
