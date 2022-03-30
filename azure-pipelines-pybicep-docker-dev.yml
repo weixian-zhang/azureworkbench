@@ -66,6 +66,7 @@ stages:
           Write-Host "##vso[task.setvariable variable=buildDate]$d"
           
       - task: CmdLine@2
+        displayName: echo imageName
         inputs:
           script: |
             echo $(imageName)
@@ -90,14 +91,19 @@ stages:
           deploy:
             steps:
 
+              - powershell: |
+                  Set-Variable -Name d -Value (Get-Date).ToString('yyyyMMdd')
+                  Write-Host "##vso[task.setvariable variable=buildDate]$d"
+
               - task: Bash@3
+                displayName: echo imageName
                 inputs:
                   targetType: 'inline'
                   script: echo $(imageName)
 
-              # - task: AzureWebAppContainer@1
-              #   displayName: Deploy PyBicep container to App Service
-              #   inputs:
-              #     azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
-              #     appName: '$(appServiceName)'
-              #     containers: '$(imageName)'
+              - task: AzureWebAppContainer@1
+                displayName: Deploy PyBicep container to App Service
+                inputs:
+                  azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
+                  appName: '$(appServiceName)'
+                  containers: '$(imageName)'
