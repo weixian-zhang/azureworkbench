@@ -53,15 +53,30 @@ stages:
             runOnce:
               deploy:
                 steps:
-                  
-                 - task: AzureWebApp@1
-                  #  condition: ${{ eq(variables['DEPLOY_APISERVER'], true) }}
+                
+                 - task: DownloadBuildArtifacts@1
+                   displayName: Download artifact
                    inputs:
+                      buildType: 'current'
+                      downloadType: 'single'
+                      artifactName: 'drop'
+                      downloadPath: '$(System.DefaultWorkingDirectory)'
+                  
+                #  - task: AzureWebApp@1
+                #    inputs:
+                #       azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
+                #       appType: 'webApp'
+                #       appName: 'webapp-api-dev'
+                #       package: '$(System.ArtifactsDirectory)'
+                #       deploymentMethod: 'zipDeploy'
+                      
+                 - task: AzureRmWebAppDeployment@4
+                   inputs:
+                      ConnectionType: 'AzureRM'
                       azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                       appType: 'webApp'
-                      appName: 'webapp-api-dev'
-                      package: '$(System.ArtifactsDirectory)'
-                      deploymentMethod: 'zipDeploy'
+                      WebAppName: 'webapp-api-dev'
+                      packageForLinux: '$(System.DefaultWorkingDirectory)/drop'
 
                  
         
