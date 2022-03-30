@@ -1,11 +1,7 @@
 
 trigger:
- branches:
-     include:
-         - dev
-     exclude:
-         - master
-
+ - dev
+ 
 stages:
     - stage: Build
       jobs:
