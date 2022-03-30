@@ -96,23 +96,6 @@ stages:
                         artifactName: 'drop'
                         downloadPath: '$(System.DefaultWorkingDirectory)'
                     
-
-                    # - task: AzureAppServiceManage@0
-                    #   displayName: Stop portal-azworkbench-dev
-                    #   inputs:
-                    #     azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
-                    #     Action: 'Stop Azure App Service'
-                    #     WebAppName: 'portal-azworkbench-dev'
-
-                    # - task: AzureWebApp@1
-                    #   displayName: Deploy to portal-azworkbench-dev
-                    #   inputs:
-                    #     azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
-                    #     appType: 'webApp'
-                    #     appName: 'portal-azworkbench-dev'
-                    #     package: '$(System.ArtifactsDirectory)'
-                    #     deploymentMethod: 'zipDeploy'
-
                     - task: AzureRmWebAppDeployment@4
                       inputs:
                         ConnectionType: 'AzureRM'
@@ -120,14 +103,6 @@ stages:
                         appType: 'webApp'
                         WebAppName: 'portal-azworkbench-dev'
                         packageForLinux: '$(System.DefaultWorkingDirectory)/drop'
-                        
-                    # - task: AzureAppServiceManage@0
-                    #   displayName: Start portal-azworkbench-dev
-                    #   inputs:
-                    #     azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
-                    #     Action: 'Start Azure App Service'
-                    #     WebAppName: 'portal-azworkbench-dev'
-
 
                         
                     
