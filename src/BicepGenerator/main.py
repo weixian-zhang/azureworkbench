@@ -10,7 +10,7 @@ from flask import Flask
 
 from loguru import logger
 logger.add(sys.stderr, format="{time} {level} {message}")
-logger.add(sys.stdin, format="{time} {level} {message}")
+logger.add(sys.stdout, format="{time} {level} {message}")
 
 appconfig = AppConfig()
 
