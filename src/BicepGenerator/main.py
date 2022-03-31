@@ -28,13 +28,13 @@ def run():
     
     logger.info('PyBicep started')
     
-    # process = Process(target=listen_to_bicepgen_commands)
-    # process.start() # start listen_to_bicepgen_commands in new process
+    process = Process(target=listen_to_bicepgen_commands)
+    process.start() # start listen_to_bicepgen_commands in new process
     
     logger.info(f'PyBicep starts listening at HTTP 0.0.0.0:{webApiPort}')
     webapp.run(host='0.0.0.0', port=webApiPort)
     
-   # process.join()
+    process.join()
 
 @logger.catch
 @webapp.route('/')
