@@ -48,7 +48,7 @@ variables:
   - name: tag
     value: pybicep-$(major).$(minor).$(patch).$(buildDate)
   - name: buildNumber
-    value: $(Build.BuildNumber)
+    value: $(Build.BuildId)
   - name: imageName
     value: $(containerRegistry)/$(imageRepository):$(tag).$(buildNumber)
 
