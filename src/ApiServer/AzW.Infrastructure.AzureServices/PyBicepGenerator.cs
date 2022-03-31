@@ -86,7 +86,7 @@ namespace AzW.Infrastructure.AzureServices
 
         private string GenerateClaimCheckId()
         {
-            return DateTime.Now.ToString("ddMMyyyy-Hmmss");;
+            return DateTime.Now.ToString("ddMMyyyy-HHmmss");;
         }
 
         private string GetBicepFullBlobPath(string blobClaimCheckId, string userEmail)
