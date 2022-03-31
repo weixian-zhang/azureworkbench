@@ -46,11 +46,11 @@ variables:
   - name: buildDate
     value: ''
   - name: tag
-    value: pybicep-$(major).$(minor).$(patch).$(buildDate)
+    value: pybicep-$(major).$(minor).$(patch).$(buildDate).$(buildNumber)
   - name: buildNumber
     value: $(Build.BuildId)
   - name: imageName
-    value: $(containerRegistry)/$(imageRepository):$(tag).$(buildNumber)
+    value: $(containerRegistry)/$(imageRepository):$(tag)
 
 pool:
   vmImage: ubuntu-latest
