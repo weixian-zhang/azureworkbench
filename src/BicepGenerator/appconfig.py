@@ -1,7 +1,7 @@
 import os
 from loguru import logger
 
-class AppConfig(object):
+class AppConfig:
     
     AZSTORAGE_CONN_STRING = 'AZSTORAGE_CONN_STRING'
     BICEP_AZSTORAGE_CONTAINER = 'BICEP_AZSTORAGE_CONTAINER'
@@ -52,6 +52,8 @@ class AppConfig(object):
                                 os.environ[AppConfig.BICEP_GEN_COMMAND_QUEUE_NAME] = envValue
                             case AppConfig.COMPRESS_MSG:
                                 os.environ[AppConfig.COMPRESS_MSG] = envValue
+                            case _:
+                                pass
                                 
         else:
             logger.info('.env not found, loading end vars from hosted platform')
