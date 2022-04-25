@@ -10,6 +10,8 @@ resources:
 
 variables:
   - group: Common
+  - name: APPROVAL_CHECK
+    value: $[variables.APPROVAL_CHECK]
   - name: major
     value: $[variables.PYBICEP_DOCKERIMAGE_VERSION_MAJOR]
   - name: minor
