@@ -9,7 +9,7 @@ resources:
 - repo: self
 
 variables:
-  - group: Dev
+  - group: Common
   - name: major
     value: $[variables.PYBICEP_DOCKERIMAGE_VERSION_MAJOR]
   - name: minor
@@ -96,4 +96,4 @@ stages:
                 inputs:
                   azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                   Action: 'Restart Azure App Service'
-                  WebAppName: 'webapp-pybicep-container-dev'
+                  WebAppName: 'webapp-pybicep-container-prod'
