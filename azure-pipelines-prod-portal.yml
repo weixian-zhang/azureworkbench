@@ -34,13 +34,6 @@ stages:
             verbosity: 'Verbose'
             sourceScanPath: '$(portalDirectory)'
             alertWarningLevel: 'High'
-
-        - task: ESLint@1
-          inputs:
-            Configuration: 'required'
-            TargetType: 'eslint'
-            TargetsESLint: '$(portalDirectory)/**/*.{js,ts}'
-            ErrorLevel: 'warn'
         
         - task: Bash@3
           inputs:
