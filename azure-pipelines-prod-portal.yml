@@ -25,13 +25,22 @@ stages:
           displayName: Scan for credentials
           inputs:
             scanFolder: $(portalDirectory)
+            
+        #https://docs.opensource.microsoft.com/tools/cg/index.html
+        - task: ComponentGovernanceComponentDetection@0
+          displayName: Scans open-source package vulnerabilities
+          inputs:
+            scanType: 'Register'
+            verbosity: 'Verbose'
+            sourceScanPath: '$(portalDirectory)'
+            alertWarningLevel: 'High'
 
-        # - task: ESLint@1
-        #   inputs:
-        #     Configuration: 'required'
-        #     TargetType: 'eslint'
-        #     Parser: 'babel-eslint'
-        #     ErrorLevel: 'warn'
+        - task: ESLint@1
+          inputs:
+            Configuration: 'required'
+            TargetType: 'eslint'
+            TargetsESLint: '$(portalDirectory)/**/*.{js,ts}'
+            ErrorLevel: 'warn'
         
         - task: Bash@3
           inputs:
