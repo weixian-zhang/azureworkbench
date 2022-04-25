@@ -20,15 +20,15 @@ stages:
 
         steps:       
 
-        - task: CredScan@3
-          displayName: Scan for credentials
+        # - task: CredScan@3
+        #   displayName: Scan for credentials
 
-        - task: ESLint@1
-          inputs:
-            Configuration: 'required'
-            TargetType: 'eslint'
-            Parser: 'babel-eslint'
-            ErrorLevel: 'warn'
+        # - task: ESLint@1
+        #   inputs:
+        #     Configuration: 'required'
+        #     TargetType: 'eslint'
+        #     Parser: 'babel-eslint'
+        #     ErrorLevel: 'warn'
         
         - task: Bash@3
           inputs:

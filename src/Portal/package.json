@@ -67,6 +67,8 @@
     ]
   },
   "devDependencies": {
+    "eslint": "^8.14.0",
+    "eslint-plugin-react": "^7.29.4",
     "file-loader": "^5.1.0",
     "url-loader": "^3.0.0"
   }
