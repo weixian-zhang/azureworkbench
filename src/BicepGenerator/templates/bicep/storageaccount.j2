@@ -1,0 +1,17 @@
+
+
+resource {{ resolve_bicep_resource(azcontext.Name) }} 'Microsoft.Storage/storageAccounts@2019-06-01' = {
+  name: '{{ azcontext.Name }}'
+  location: location
+  kind: 'StorageV2'
+  sku: {
+    name: '{{ azcontext.SkuName }}'
+  }
+  {% if diagramContext.globalContext.tags|length > 0 %}
+  tags: {
+    {% for tag in diagramContext.globalContext.tags %}
+    {{tag.key}}: '{{tag.value}}'
+    {% endfor %}
+  }
+  {% endif %}
+}

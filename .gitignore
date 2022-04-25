@@ -12,6 +12,8 @@ settings.json
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+examples
+
 #npm build
 build
 #dotnet publish
@@ -278,3 +280,4 @@ __pycache__/
 src/Jobs/SharedLinkHouseKeeper/secret.env
 src/Jobs/SharedLinkHouseKeeper/aci-deploy.yaml
 src/Jobs/AzW.Job.CacheHydrator/local.settings.json
+src/BicepGenerator/.env

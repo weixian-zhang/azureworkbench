@@ -1,0 +1,29 @@
+
+resource {{ resolve_bicep_resource(azcontext.Name) }} 'Microsoft.Network/virtualNetworks@2020-06-01' = {
+  name: '{{ azcontext.Name }}'
+  location: location
+  properties: {
+    addressSpace: {
+      addressPrefixes: [
+        '{{ azcontext.AddressSpace }}'
+      ]
+    }
+    subnets: [
+      {% for subnet in azcontext.Subnets %}
+       {#variable#}
+       {% set _nsgId = resolve_bicep_resource(subnet.NSGName) + '.id' %}
+      {
+        name: '{{ subnet.Name }}'
+        properties: {
+          addressPrefix: '{{ subnet.AddressSpace }}'
+          {% if subnet.NSGName != '' %}
+          networkSecurityGroup: {
+            id: {{ _nsgId }}
+          }
+          {% endif %}
+        }
+      }
+      {% endfor %}
+    ]
+  }
+}

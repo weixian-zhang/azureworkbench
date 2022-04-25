@@ -1,0 +1,33 @@
+
+{% set localVNetName = resolve_bicep_resource(azcontext.LocalVNetName) %}
+{% set remoteVNetName = resolve_bicep_resource(azcontext.RemoteVNetName) %}
+{% set localRscName = localVNetName + remoteVNetName %}
+{% set remoteRscName = remoteVNetName + localVNetName %}
+
+resource {{ localRscName }} 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-05-01' = {
+  name: '{{ localVNetName + '-' + remoteVNetName }}'
+  parent: {{ localVNetName }}
+  properties: {
+    allowForwardedTraffic: false
+    allowGatewayTransit: false
+    allowVirtualNetworkAccess: true
+    useRemoteGateways: false
+    remoteVirtualNetwork: {
+      id: {{ remoteVNetName + ".id" }}
+    }
+  }
+}
+
+resource {{ remoteRscName }} 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2021-05-01' = {
+  name: '{{ remoteVNetName + '-' + localVNetName }}'
+  parent: {{ remoteVNetName }}
+  properties: {
+    allowForwardedTraffic: false
+    allowGatewayTransit: false
+    allowVirtualNetworkAccess: true
+    useRemoteGateways: false
+    remoteVirtualNetwork: {
+      id: {{ localVNetName + ".id" }}
+    }
+  }
+}

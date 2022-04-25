@@ -1,0 +1,58 @@
+
+resource {{ resolve_bicep_resource(azcontext.Name) }} 'Microsoft.Network/networkSecurityGroups@2021-05-01' = {
+  name: '{{ resolve_bicep_resource(azcontext.Name) }}'
+  location: location
+  {% if diagramContext.globalContext.tags|length > 0 %}
+  tags: {
+    {% for tag in diagramContext.globalContext.tags %}
+    {{tag.key}}: '{{tag.value}}'
+    {% endfor %}
+  }
+  {% endif %}
+  properties: {
+    securityRules: [
+      {% for inboundRule in azcontext.InboundRules %}
+      {
+        name: '{{ inboundRule.Name }}'
+        properties: {
+          access: '{{ 'Allow' if inboundRule.Allow == true else 'Deny' }}'
+          description: ''
+          destinationAddressPrefix: '{{ inboundRule.ToAddresses }}'
+          destinationAddressPrefixes: []
+          destinationApplicationSecurityGroups: []
+          destinationPortRange: '{{ inboundRule.ToPorts }}'
+          destinationPortRanges: []
+          direction: 'Inbound'
+          priority: {{ inboundRule.Priority}}
+          protocol: '{{ inboundRule.Protocol}}'
+          sourceAddressPrefix: '{{ inboundRule.FromAddresses}}'
+          sourceAddressPrefixes: []
+          sourcePortRange: '{{ inboundRule.ToPorts}}'
+          sourcePortRanges: []
+        }
+      }
+      {% endfor %}
+      {% for outboundRule in azcontext.OutboundRules %}
+      {
+        name: '{{ outboundRule.Name }}'
+        properties: {
+          access: '{{ 'Allow' if outboundRule.Allow == true else 'Deny' }}'
+          description: ''
+          destinationAddressPrefix: '{{ outboundRule.ToAddresses }}'
+          destinationAddressPrefixes: []
+          destinationApplicationSecurityGroups: []
+          destinationPortRange: '{{ outboundRule.ToPorts }}'
+          destinationPortRanges: []
+          direction: 'Outbound'
+          priority: {{ outboundRule.Priority}}
+          protocol: '{{ outboundRule.Protocol}}'
+          sourceAddressPrefix: '{{ outboundRule.FromAddresses}}'
+          sourceAddressPrefixes: []
+          sourcePortRange: '{{ outboundRule.ToPorts}}'
+          sourcePortRanges: []
+        }
+      }
+      {% endfor %}
+    ]
+  }
+}
