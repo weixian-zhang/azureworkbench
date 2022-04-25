@@ -6,6 +6,10 @@
 trigger:
  - master
 
+variables:
+  REACT_APP_ENV: 'prod'
+  webappName: 'portal-azworkbench-prod'
+
 stages:
   - stage: Build
     jobs:
@@ -13,10 +17,6 @@ stages:
          
         pool:
           vmImage: ubuntu-latest
-
-        variables:
-          REACT_APP_ENV: 'prod'
-          webappName: 'portal-azworkbench-prod'
 
         steps:       
 
