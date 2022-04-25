@@ -6,6 +6,10 @@ variables:
   - group: Common
   - name: APPROVAL_CHECK
     value: $[variables.APPROVAL_CHECK]
+  - name: apiserverSrcDirectory
+    value: src/ApiServer/AzW.Web.API
+  - name: webappName
+    value: webapp-api-prod
  
 stages:
     - stage: Build
@@ -20,16 +24,14 @@ stages:
              - task: CredScan@3
                inputs:
                  outputFormat: 'csv'
+                 scanFolder: $(apiserverSrcDirectory)
 
-             - task: Semmle@1
-               displayName: GitHub CodeQL scan
+             - task: ComponentGovernanceComponentDetection@0
                inputs:
-                 sourceCodeDirectory: '$(Build.SourcesDirectory)'
-                 language: 'csharp'
-                 querySuite: 'Recommended'
-                 timeout: '1800'
-                 ram: '16384'
-                 addProjectDirToScanningExclusionList: true
+                 scanType: 'Register'
+                 verbosity: 'Verbose'
+                 sourceScanPath: '$(apiserverSrcDirectory)'
+                 alertWarningLevel: 'High'
             
              - task: UseDotNet@2
                displayName: set sdk .Net 5.0
@@ -41,7 +43,7 @@ stages:
                displayName: dotnet build
                inputs:
                  command: 'build'
-                 workingDirectory: src/ApiServer/AzW.Web.API
+                 workingDirectory: $(apiserverSrcDirectory)
                  
              
              - task: DotNetCoreCLI@2
@@ -51,7 +53,7 @@ stages:
                   publishWebProjects: true
                   arguments: '-o $(Build.ArtifactStagingDirectory)/publish'
                   zipAfterPublish: false
-                  workingDirectory: src/ApiServer/AzW.Web.API
+                  workingDirectory: $(apiserverSrcDirectory)
                   
              - task: PublishBuildArtifacts@1
                displayName: publish build artifact
@@ -82,7 +84,7 @@ stages:
                       ConnectionType: 'AzureRM'
                       azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                       appType: 'webApp'
-                      WebAppName: 'webapp-api-prod'
+                      WebAppName: $(webappName)
                       packageForLinux: '$(System.DefaultWorkingDirectory)/drop'
 
                  
