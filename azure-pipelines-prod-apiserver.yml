@@ -57,14 +57,6 @@ stages:
                       downloadType: 'single'
                       artifactName: 'drop'
                       downloadPath: '$(System.DefaultWorkingDirectory)'
-                  
-                #  - task: AzureWebApp@1
-                #    inputs:
-                #       azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
-                #       appType: 'webApp'
-                #       appName: 'webapp-api-dev'
-                #       package: '$(System.ArtifactsDirectory)'
-                #       deploymentMethod: 'zipDeploy'
                       
                  - task: AzureRmWebAppDeployment@4
                    inputs:
