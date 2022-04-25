@@ -27,7 +27,7 @@ resources:
 #   imageName: $(containerRegistry)/$(imageRepository):$(tag)
 
 variables:
-  - group: Dev
+  - group: Common
   - name: major
     value: $[variables.PYBICEP_DOCKERIMAGE_VERSION_MAJOR]
   - name: minor
