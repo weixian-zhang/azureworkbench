@@ -22,16 +22,7 @@ stages:
 
         - task: CredScan@3
           displayName: Scan for credentials
-        
-        - task: Semmle@1
-          displayName: GitHub CodeQL scan Javascript
-          inputs:
-            sourceCodeDirectory: '$(Build.SourcesDirectory)'
-            language: 'javascript'
-            querySuite: 'Recommended'
-            timeout: '1800'
-            ram: '16384'
-            addProjectDirToScanningExclusionList: true
+
         
         - task: Bash@3
           inputs:
