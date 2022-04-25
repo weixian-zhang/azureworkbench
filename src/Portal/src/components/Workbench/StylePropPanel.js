@@ -135,6 +135,7 @@ export default class StylePropPanel extends Component {
             <Grid item>
               <NumericInput placeholder="Z Ordering" min={-300} max={500}
                 allowNumericCharactersOnly={true} stepSize={5}
+                
                 value={
                   this.state.node.data.zOrder
                 }
@@ -192,15 +193,16 @@ export default class StylePropPanel extends Component {
           </Grid>
           <Grid container item direction="row" spacing="1" justify="center" alignItems="center" style={{marginTop:'8px'}}>
             <Grid item>
-              <NumericInput placeholder="Font size" min={3}
-                allowNumericCharactersOnly={false}
+              <NumericInput placeholder="Font size" 
+                allowNumericCharactersOnly={true}
+                min={3}
                 value={
                   this.getFontSizeFromFont(this.state.node.data.font)
                 }
                 onValueChange={
-                  (numValue) => {
+                  (valAsNum, valAsString, inputRef) => {
                       var changedFont =
-                        this.getFontStringOnFontSizeChange(numValue,this.state.node.data.font );
+                        this.getFontStringOnFontSizeChange(valAsNum, this.state.node.data.font );
                       this.diagram.model.setDataProperty(this.state.node.data, 'font', changedFont);
                   }
                 } />
@@ -405,14 +407,14 @@ export default class StylePropPanel extends Component {
       <Grid container item direction="row" spacing="1" justify="center" alignItems="center" style={{marginTop:'8px'}}>
         <Grid item>
           <NumericInput placeholder="Font size" min={3}
-            allowNumericCharactersOnly={false}
+            allowNumericCharactersOnly={true}
             value={
               this.getFontSizeFromFont(this.state.node.data.font)
             }
             onValueChange={
-              (numValue) => {
+              (valAsNum, valAsString, inputRef) => {
                   var changedFont =
-                    this.getFontStringOnFontSizeChange(numValue,this.state.node.data.font );
+                    this.getFontStringOnFontSizeChange(valAsNum, this.state.node.data.font );
                   this.diagram.model.setDataProperty(this.state.node.data, 'font', changedFont);
               }
             } />
@@ -498,14 +500,14 @@ export default class StylePropPanel extends Component {
         <Grid container item direction="row" spacing="1" justify="center" alignItems="center" style={{marginTop:'8px'}}>
           <Grid item>
             <NumericInput placeholder="Font size" min={3}
-              allowNumericCharactersOnly={false}
+              allowNumericCharactersOnly={true}
               value={
                 this.getFontSizeFromFont(this.state.node.data.font)
               }
               onValueChange={
-                (numValue) => {
+                (valAsNum, valAsString, inputRef)=> {
                     var changedFont =
-                      this.getFontStringOnFontSizeChange(numValue,this.state.node.data.font );
+                      this.getFontStringOnFontSizeChange(valAsNum,this.state.node.data.font );
                     this.diagram.model.setDataProperty(this.state.node.data, 'font', changedFont);
                 }
               } />
@@ -530,7 +532,8 @@ export default class StylePropPanel extends Component {
   }
 
   getFontSizeFromFont = (font) => {
-    return parseInt(font.split(' ')[0], 10);
+    var fontSize = font.split(' ')[0];
+    return parseInt(fontSize, 10);
   }
 
   getFontStringOnFontSizeChange = (fontSize, font) => {
