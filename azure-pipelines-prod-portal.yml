@@ -28,7 +28,7 @@ stages:
             
         #https://docs.opensource.microsoft.com/tools/cg/index.html
         - task: ComponentGovernanceComponentDetection@0
-          displayName: Scans open-source package vulnerabilities
+          displayName: ComponentGovernanceComponentDetection - Scans open-source package vulnerabilities
           inputs:
             scanType: 'Register'
             verbosity: 'Verbose'
@@ -36,6 +36,7 @@ stages:
             alertWarningLevel: 'High'
         
         - task: Bash@3
+          displayName: echo env vars
           inputs:
             targetType: 'inline'
             script: |
