@@ -298,7 +298,7 @@ namespace AzW.Web.API
                 .WriteTo
                     .MongoDB(
                         CosmosDbHelper.GetDatabase(_secrets),
-                        LogEventLevel.Debug,
+                        LogEventLevel.Error,
                         collectionName: "Log-API",
                         period: TimeSpan.Zero)
                         .WriteTo

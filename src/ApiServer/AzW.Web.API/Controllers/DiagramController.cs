@@ -18,19 +18,23 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 
 using AzW.Secret;
-using System.Text.RegularExpressions;
 using Serilog.Core;
 using Microsoft.AspNetCore.WebUtilities;
 using shortid;
 using shortid.Configuration;
+using Serilog;
 
 namespace AzW.Web.API
 {
     [Route("api")]
     public class DiagramController : BaseController
     {
+        private IDiagramRepository _diagramRepo;
+        private WorkbenchSecret _secret;
+        private ILogger _logger;
+
         public DiagramController
-            (IDiagramRepository repo, WorkbenchSecret secret, Logger logger)
+            (IDiagramRepository repo, WorkbenchSecret secret, ILogger logger)
         {
             _diagramRepo = repo;
             _secret = secret;
@@ -288,10 +292,6 @@ namespace AzW.Web.API
                 throw ex;
             }
         }
-        
-        private IDiagramRepository _diagramRepo;
-        private WorkbenchSecret _secret;
-        private Logger _logger;
     }
 
     public class ExportPngParam
