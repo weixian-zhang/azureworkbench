@@ -39,14 +39,6 @@ namespace AzW.Web.API
            return vmImages;
         }
 
-      //   [HttpGet("vm/images")]
-      //   public async Task<IEnumerable<VMImage>> GetAllVMImages()
-      //   {
-      //      var vmImages = await _cache.GetAllVMImagesAsync();
-
-      //      return vmImages;
-      //   }
-
         [HttpGet("vmsize")]
         public async Task<IEnumerable<VMSize>> SearchVMSizes()
         {

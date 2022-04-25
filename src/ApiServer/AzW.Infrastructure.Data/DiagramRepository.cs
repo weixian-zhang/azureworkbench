@@ -5,13 +5,18 @@ using System.Threading.Tasks;
 using AzW.Model;
 using AzW.Secret;
 using MongoDB.Driver;
+using Serilog;
 using Serilog.Core;
 
 namespace AzW.Infrastructure.Data
 {
     public class DiagramRepository : IDiagramRepository
     {
-        public DiagramRepository(WorkbenchSecret secret, BlobStorageManager blobStorageManager, Logger logger)
+        private ILogger _logger;
+        private WorkbenchSecret _secret;
+        private BlobStorageManager _blob;
+
+        public DiagramRepository(WorkbenchSecret secret, BlobStorageManager blobStorageManager, ILogger logger)
         {
             _secret =secret;
             _blob = blobStorageManager;
@@ -388,9 +393,5 @@ namespace AzW.Infrastructure.Data
                 DiagramXml = diagramJson
             };
         }
-
-        private Logger _logger;
-        private WorkbenchSecret _secret;
-        private BlobStorageManager _blob;
     }
 }
