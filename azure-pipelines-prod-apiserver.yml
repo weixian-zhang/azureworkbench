@@ -1,6 +1,11 @@
 
 trigger:
  - master
+
+variables:
+  - group: Common
+  - name: APPROVAL_CHECK
+    value: $[variables.APPROVAL_CHECK]
  
 stages:
     - stage: Build
