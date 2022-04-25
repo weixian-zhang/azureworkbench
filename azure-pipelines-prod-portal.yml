@@ -15,7 +15,8 @@ stages:
           vmImage: ubuntu-latest
 
         variables:
-          REACT_APP_ENV: 'beta'
+          REACT_APP_ENV: 'prod'
+          webappName: 'portal-azworkbench-prod'
 
         steps:       
 
@@ -72,7 +73,7 @@ stages:
             bashEnvValue: 
             script: |
               - script: |
-                  echo REACT_APP_ENV=beta
+                  echo REACT_APP_ENV=$(REACT_APP_ENV)
                   npm install
                   npm run build
 
@@ -111,7 +112,7 @@ stages:
                         ConnectionType: 'AzureRM'
                         azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                         appType: 'webApp'
-                        WebAppName: 'portal-azworkbench-prod'
+                        WebAppName: '$(webappName)'
                         packageForLinux: '$(System.DefaultWorkingDirectory)/drop'        
                     
                     
