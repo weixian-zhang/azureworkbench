@@ -9,6 +9,7 @@ trigger:
 variables:
   REACT_APP_ENV: 'prod'
   webappName: 'portal-azworkbench-prod'
+  portalDirectory: src/Portal
 
 stages:
   - stage: Build
@@ -20,8 +21,10 @@ stages:
 
         steps:       
 
-        # - task: CredScan@3
-        #   displayName: Scan for credentials
+        - task: CredScan@3
+          displayName: Scan for credentials
+          inputs:
+            scanFolder: $(portalDirectory)
 
         # - task: ESLint@1
         #   inputs:
@@ -54,11 +57,17 @@ stages:
               echo "Build.SourcesDirectory:"
               echo "$(Build.SourcesDirectory)"
 
-              echo "Build.SourcesDirectory:"
-              echo "$(Build.SourcesDirectory)"
-
               echo "Agent.BuildDirectory:"
               echo "$(Agent.BuildDirectory)"
+
+              echo "REACT_APP_ENV:"
+              echo "$(REACT_APP_ENV)"
+
+              echo "Portal Directory:"
+              echo "$(portalDirectory)"
+
+              
+              
 
         - task: Bash@3
           env:
@@ -66,7 +75,7 @@ stages:
           displayName: Npm Install
           inputs:
             targetType: 'inline'
-            workingDirectory: 'src/Portal'
+            workingDirectory: $(portalDirectory)
             bashEnvValue: 
             script: |
               - script: |
