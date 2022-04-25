@@ -6,21 +6,39 @@
 trigger:
  - master
 
+variables:
+  - group: Common
+  - name: APPROVAL_CHECK
+    value: $[variables.APPROVAL_CHECK]
+
 stages:
   - stage: Build
     jobs:
       - job: build_Portal_NPM
          
-      
         pool:
           vmImage: ubuntu-latest
 
         variables:
-          REACT_APP_ENV: 'beta'
+          REACT_APP_ENV: 'prod'
+          webappName: 'portal-azworkbench-prod'
 
-        steps:       
+        steps:      
 
-        - task: CredScan@3
+        # - task: CredScan@3
+        #   displayName: Scan for credentials
+        #   inputs:
+        #     scanFolder: 'src/Portal'
+        
+        # - task: Semmle@1
+        #   displayName: GitHub CodeQL scan Javascript
+        #   inputs:
+        #     sourceCodeDirectory: 'src/Portal'
+        #     language: 'javascript'
+        #     querySuite: 'Recommended'
+        #     timeout: '1800'
+        #     ram: '16384'
+        #     addProjectDirToScanningExclusionList: true
         
         - task: Bash@3
           inputs:
@@ -62,7 +80,7 @@ stages:
             bashEnvValue: 
             script: |
               - script: |
-                  echo REACT_APP_ENV=beta
+                  echo REACT_APP_ENV=$(REACT_APP_ENV)
                   npm install
                   npm run build
 
@@ -101,10 +119,8 @@ stages:
                         ConnectionType: 'AzureRM'
                         azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
                         appType: 'webApp'
-                        WebAppName: 'portal-azworkbench-dev'
-                        packageForLinux: '$(System.DefaultWorkingDirectory)/drop'
-
-                        
+                        WebAppName: '$(webappName)'
+                        packageForLinux: '$(System.DefaultWorkingDirectory)/drop'        
                     
                     
   
