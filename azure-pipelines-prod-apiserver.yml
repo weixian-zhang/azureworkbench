@@ -12,6 +12,20 @@ stages:
         
             steps:
             
+             - task: CredScan@3
+               inputs:
+                 outputFormat: 'csv'
+
+             - task: Semmle@1
+               displayName: GitHub CodeQL scan
+               inputs:
+                 sourceCodeDirectory: '$(Build.SourcesDirectory)'
+                 language: 'csharp'
+                 querySuite: 'Recommended'
+                 timeout: '1800'
+                 ram: '16384'
+                 addProjectDirToScanningExclusionList: true
+            
              - task: UseDotNet@2
                displayName: set sdk .Net 5.0
                inputs:
