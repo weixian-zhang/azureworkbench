@@ -6,6 +6,7 @@ import { CompactPicker } from 'react-color';
 import Grid from '@material-ui/core/Grid';
 import Utils from './Helpers/Utils';
 import Typography from '@material-ui/core/Typography';
+import { TextField } from "@material-ui/core";
 import GoNodeType from './Helpers/GoNodeType';
 
 export default class StylePropPanel extends Component {
@@ -135,12 +136,14 @@ export default class StylePropPanel extends Component {
             <Grid item>
               <NumericInput placeholder="Z Ordering" min={-300} max={500}
                 allowNumericCharactersOnly={true} stepSize={5}
+                
                 value={
                   this.state.node.data.zOrder
                 }
                 onValueChange={
                   (numValue) => {
                       this.diagram.model.setDataProperty(this.state.node.data, 'zOrder', numValue);
+                      this.updateNodeZOrderState(numValue);
                   }
                 } />
             </Grid>
@@ -171,11 +174,6 @@ export default class StylePropPanel extends Component {
           </Grid>
           <Grid container item direction="row" spacing="1" justify="center" alignItems="center" style={{marginTop:'8px'}}>
             <Grid item>
-              {/* <SwatchesPicker onChange={ 
-                (color) => {
-                  this.diagram.model.setDataProperty(this.state.node.data, 'stroke', color.hex);
-                }
-               } />  */}
               <CompactPicker  colors={this.state.colors}
               height= {200}
               onChangeComplete={
@@ -192,16 +190,18 @@ export default class StylePropPanel extends Component {
           </Grid>
           <Grid container item direction="row" spacing="1" justify="center" alignItems="center" style={{marginTop:'8px'}}>
             <Grid item>
-              <NumericInput placeholder="Font size" min={3}
-                allowNumericCharactersOnly={false}
+              <NumericInput placeholder="Font size" 
+                allowNumericCharactersOnly={true}
+                min={3} max={100}
                 value={
                   this.getFontSizeFromFont(this.state.node.data.font)
                 }
                 onValueChange={
-                  (numValue) => {
+                  (valAsNum) => {
                       var changedFont =
-                        this.getFontStringOnFontSizeChange(numValue,this.state.node.data.font );
+                        this.getFontStringOnFontSizeChange(valAsNum, this.state.node.data.font );
                       this.diagram.model.setDataProperty(this.state.node.data, 'font', changedFont);
+                      this.updateNodeFontState(changedFont);
                   }
                 } />
             </Grid>
@@ -220,6 +220,7 @@ export default class StylePropPanel extends Component {
               onValueChange={
                 (value) => {
                   this.diagram.model.setDataProperty(this.state.node.data, 'strokeWidth', value);
+                  this.updateNodeStrokeWidthState(value);
                 }
               } />
           </div>
@@ -336,6 +337,7 @@ export default class StylePropPanel extends Component {
             onValueChange={
               (numValue) => {
                   this.diagram.model.setDataProperty(this.state.node.data, 'zOrder', numValue);
+                  this.updateNodeZOrderState(numValue);
               }
             } />
         </Grid>
@@ -404,16 +406,17 @@ export default class StylePropPanel extends Component {
       </Grid>
       <Grid container item direction="row" spacing="1" justify="center" alignItems="center" style={{marginTop:'8px'}}>
         <Grid item>
-          <NumericInput placeholder="Font size" min={3}
-            allowNumericCharactersOnly={false}
+          <NumericInput placeholder="Font size" min={3} max={100}
+            allowNumericCharactersOnly={true}
             value={
               this.getFontSizeFromFont(this.state.node.data.font)
             }
             onValueChange={
-              (numValue) => {
+              (valAsNum) => {
                   var changedFont =
-                    this.getFontStringOnFontSizeChange(numValue,this.state.node.data.font );
+                    this.getFontStringOnFontSizeChange(valAsNum, this.state.node.data.font );
                   this.diagram.model.setDataProperty(this.state.node.data, 'font', changedFont);
+                  this.updateNodeFontState(changedFont);
               }
             } />
         </Grid>
@@ -486,6 +489,7 @@ export default class StylePropPanel extends Component {
             onValueChange={
               (numValue) => {
                   this.diagram.model.setDataProperty(this.state.node.data, 'zOrder', numValue);
+                  this.updateNodeZOrderState(numValue);
               }
             } />
         </Grid>
@@ -497,16 +501,17 @@ export default class StylePropPanel extends Component {
         </Grid>
         <Grid container item direction="row" spacing="1" justify="center" alignItems="center" style={{marginTop:'8px'}}>
           <Grid item>
-            <NumericInput placeholder="Font size" min={3}
-              allowNumericCharactersOnly={false}
+            <NumericInput placeholder="Font size" min={3} max={100}
+              allowNumericCharactersOnly={true}
               value={
                 this.getFontSizeFromFont(this.state.node.data.font)
               }
               onValueChange={
-                (numValue) => {
+                (valAsNum)=> {
                     var changedFont =
-                      this.getFontStringOnFontSizeChange(numValue,this.state.node.data.font );
+                      this.getFontStringOnFontSizeChange(valAsNum,this.state.node.data.font );
                     this.diagram.model.setDataProperty(this.state.node.data, 'font', changedFont);
+                    this.updateNodeFontState(changedFont);
                 }
               } />
           </Grid>
@@ -529,8 +534,29 @@ export default class StylePropPanel extends Component {
     );
   }
 
+  updateNodeFontState(newFont) {
+    var node = this.state.node;
+    node.data.font = newFont;
+    this.setState({ node: node });
+  }
+
+  updateNodeZOrderState(newZOrder) {
+    var node = this.state.node;
+    node.data.zOrder = newZOrder;
+    this.setState({ node: node });
+  }
+
+  updateNodeStrokeWidthState(newWidth) {
+    var node = this.state.node;
+    node.data.strokeWidth = newWidth;
+    this.setState({ node: node });
+  }
+
   getFontSizeFromFont = (font) => {
-    return parseInt(font.split(' ')[0], 10);
+    var fontSizePX= font.split(' ')[0];
+    var fontSizeStr = fontSizePX.substring(0, fontSizePX.length);
+    var fontSize = parseInt(fontSizeStr);
+    return fontSize;
   }
 
   getFontStringOnFontSizeChange = (fontSize, font) => {
