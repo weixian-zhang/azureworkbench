@@ -1,0 +1,7 @@
+schedules:
+- cron: "0 0 * * *"
+  displayName: Daily midnight build Prod Deployment
+  branches:
+    include:
+    - master
+  always: true
