@@ -92,11 +92,12 @@ namespace AzW.Web.API
 
         [Authorize()]
         [HttpGet("wrkspace/shareddiags")]
-        public async Task<IEnumerable<SharedDiagramMySpaceInfo>> GetAllSharedDiagramsFromMySpace(string emailId)
+        public async Task<IEnumerable<SharedDiagramMySpaceInfo>> GetAllSharedDiagramsFromMySpace()
         {
             try
             {
-                var diagrams = await _diagramRepo.GetAllSharedDiagramsFromMySpace(emailId);
+                string emailId = GetUserIdentity().Email;
+                var diagrams = await _diagramRepo.GetAllSharedDiagramsFromMySpace(GetUserIdentity().Email);
                 return diagrams;
             }
             catch(Exception ex)
@@ -119,8 +120,10 @@ namespace AzW.Web.API
 
         [Authorize()]
         [HttpDelete("wrkspace/shareddiag/del")]
-        public async Task<IActionResult> DeleteSharedDiagramFromMySpace(string emailId, string diagramUID)
+        public async Task<IActionResult> DeleteSharedDiagramFromMySpace(string diagramUID)
         {
+            string emailId = GetUserIdentity().Email;
+
             bool result = await _diagramRepo.DeleteSharedDiagramInMySpace(emailId, diagramUID);
 
             if(result == true)
@@ -178,10 +181,11 @@ namespace AzW.Web.API
 
         [Authorize()]
         [HttpGet("wrkspace/diagrams")]
-        public async Task<IEnumerable<WorkspaceDiagramContextResult>> GetDiagramsFromWorkspace(string emailId)
+        public async Task<IEnumerable<WorkspaceDiagramContextResult>> GetDiagramsFromWorkspace()
         {
             try
             {
+                string emailId = GetUserIdentity().Email;
                 var diagramContexts = await _diagramRepo.GetDiagramsFromWorkspace(emailId);
                 return diagramContexts;
             }
@@ -194,8 +198,10 @@ namespace AzW.Web.API
 
         [Authorize()]
         [HttpGet("wrkspace/dia/load")]
-        public async Task<ContentResult> LoadDiagramFromWorkspace(string emailId, string collectionName, string diagramName)
+        public async Task<ContentResult> LoadDiagramFromWorkspace(string collectionName, string diagramName)
         {
+           string emailId = GetUserIdentity().Email;
+            
            string json =
             await _diagramRepo.LoadDiagramFromWorkspace(emailId, collectionName, diagramName);
            
@@ -204,17 +210,20 @@ namespace AzW.Web.API
 
         [Authorize()]
         [HttpDelete("wrkspace/dia/del")]
-        public async Task<bool> deleteDiagramFromWorkspace(string emailId, string collectionName, string diagramName)
+        public async Task<bool> deleteDiagramFromWorkspace(string collectionName, string diagramName)
         {
+            string emailId = GetUserIdentity().Email;
             return await _diagramRepo.deleteDiagramFromWorkspace(emailId, collectionName, diagramName);;
         }
 
         [Authorize()]
         [HttpGet("wrkspace/colls")]
-        public async Task<IEnumerable<Collection>> GetCollectionFromWorkspace([FromQuery] string emailId)
+        public async Task<IEnumerable<Collection>> GetCollectionFromWorkspace()
         {
             try
             {
+                string emailId = GetUserIdentity().Email;
+
                 var collections = await _diagramRepo.GetCollectionFromWorkspaceAsync(emailId);
 
                 var collectionDistinct = collections.ToList().Distinct();
