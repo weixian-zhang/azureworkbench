@@ -118,9 +118,6 @@ export default class DiagramService
 
         axios.get('api/wrkspace/colls', 
         {
-          params: {
-            emailId: user.UserName
-          },
           headers: {
 
             'Authorization': 'Bearer ' + user.AccessToken,
@@ -148,9 +145,6 @@ export default class DiagramService
 
       axios.get('api/wrkspace/diagrams', 
       {
-        params: {
-          emailId: user.UserName
-        },
         headers: {
 
           'Authorization': 'Bearer ' + user.AccessToken,
@@ -178,7 +172,6 @@ export default class DiagramService
         axios.get('api/wrkspace/dia/load', 
         {
           params: {
-            emailId: diagramContext.emailId,
             collectionName: diagramContext.collectionName,
             diagramName: diagramContext.diagramName
           },
@@ -209,7 +202,6 @@ export default class DiagramService
         axios.delete('api/wrkspace/dia/del', 
         {
           params: {
-            emailId: diagramContext.emailId,
             collectionName: diagramContext.collectionName,
             diagramName: diagramContext.diagramName
           },
@@ -260,9 +252,6 @@ export default class DiagramService
 
       axios.get('/api/wrkspace/shareddiags', 
       {
-        params: {
-          emailId: user.UserName
-        },
         headers: {
 
           'Authorization': 'Bearer ' + user.AccessToken,
@@ -288,7 +277,6 @@ export default class DiagramService
       axios.delete('/api/wrkspace/shareddiag/del', 
       {
         params: {
-          emailId: emailId,
           diagramUID: uid
         },
         headers: {
