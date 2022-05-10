@@ -18,7 +18,7 @@ stages:
         variables:
         - group: Dev
         - name: STATIC_WEBAPP_DEV_PORTAL_TOKEN
-          value: '$[variables.STATIC_WEBAPP_DEV_PORTAL_TOKEN]'
+          value: "$[variables.STATIC_WEBAPP_DEV_PORTAL_TOKEN]"
         - name: REACT_APP_ENV
           value: 'beta'
 
@@ -30,7 +30,7 @@ stages:
             script: |
                # Write your commands here
                
-               echo $(STATIC_WEBAPP_DEV_PORTAL_TOKEN)
+               echo "$(STATIC_WEBAPP_DEV_PORTAL_TOKEN)"
 
         # - task: CredScan@3
         
