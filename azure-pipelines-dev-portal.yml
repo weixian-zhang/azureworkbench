@@ -9,7 +9,7 @@ trigger:
 variables:
   - group: Dev
   - name: STATICWEBAPP_DEV_PORTAL_TOKEN
-    value: '$[variables.STATICWEBAPP_DEV_PORTAL_TOKEN]'
+    value: $[variables.STATICWEBAPP_DEV_PORTAL_TOKEN]
   - name: REACT_APP_ENV
     value: 'beta'
 
