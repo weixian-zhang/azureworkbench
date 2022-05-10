@@ -17,8 +17,6 @@ stages:
 
         variables:
         - group: Dev
-        - name: STATIC_WEBAPP_DEV_PORTAL_TOKEN
-          value: "$[variables.STATIC_WEBAPP_DEV_PORTAL_TOKEN]"
         - name: REACT_APP_ENV
           value: 'beta'
 
