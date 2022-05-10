@@ -16,9 +16,12 @@ stages:
           vmImage: ubuntu-latest
 
         variables:
-        - group: Dev
+        
         - name: REACT_APP_ENV
           value: 'beta'
+        - group: Dev
+        - name: STATIC_WEBAPP_DEV_PORTAL_TOKEN
+          value: $[variables.STATIC_WEBAPP_DEV_PORTAL_TOKEN]
 
         steps:      
 
@@ -26,7 +29,7 @@ stages:
           displayName: Display STATIC_WEBAPP_DEV_PORTAL_TOKEN
           inputs:
             script: |
-              echo $[variables.STATIC_WEBAPP_DEV_PORTAL_TOKEN]
+              echo "$(STATIC_WEBAPP_DEV_PORTAL_TOKEN)"
 
         # - task: CredScan@3
         
