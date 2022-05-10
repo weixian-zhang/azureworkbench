@@ -16,7 +16,11 @@ stages:
           vmImage: ubuntu-latest
 
         variables:
-          REACT_APP_ENV: 'beta'
+        - group: "Dev"
+        - name: STATIC_WEBAPP_DEV_PORTAL_TOKEN
+          value: $[variables.STATIC_WEBAPP_DEV_PORTAL_TOKEN]
+        - name: REACT_APP_ENV
+          value: 'beta'
 
         steps:       
 
@@ -96,13 +100,21 @@ stages:
                         artifactName: 'drop'
                         downloadPath: '$(System.DefaultWorkingDirectory)'
                     
-                    - task: AzureRmWebAppDeployment@4
+                    # - task: AzureRmWebAppDeployment@4
+                    #   inputs:
+                    #     ConnectionType: 'AzureRM'
+                    #     azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
+                    #     appType: 'webApp'
+                    #     WebAppName: 'portal-azworkbench-dev'
+                    #     packageForLinux: '$(System.DefaultWorkingDirectory)/drop'
+
+
+                    - task: AzureStaticWebApp@0
                       inputs:
-                        ConnectionType: 'AzureRM'
-                        azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
-                        appType: 'webApp'
-                        WebAppName: 'portal-azworkbench-dev'
-                        packageForLinux: '$(System.DefaultWorkingDirectory)/drop'
+                        workingDirectory: '$(System.DefaultWorkingDirectory)/drop'
+                        app_location: '/'
+                        verbose: true
+                        azure_static_web_apps_api_token: '$(STATIC_WEBAPP_DEV_PORTAL_TOKEN)'
 
                         
                     
