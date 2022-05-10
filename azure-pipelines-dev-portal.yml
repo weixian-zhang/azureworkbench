@@ -22,12 +22,11 @@ stages:
 
         steps:      
 
-        - task: Bash@3
+        - task: CmdLine@2
           displayName: Display STATIC_WEBAPP_DEV_PORTAL_TOKEN
           inputs:
-            targetType: 'inline'
             script: |
-               echo "$[variables.STATIC_WEBAPP_DEV_PORTAL_TOKEN]"
+              echo $[variables.STATIC_WEBAPP_DEV_PORTAL_TOKEN]
 
         # - task: CredScan@3
         
