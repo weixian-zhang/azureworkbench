@@ -20,8 +20,8 @@ stages:
         - name: REACT_APP_ENV
           value: 'beta'
         - group: Dev
-        - name: STATIC_WEBAPP_DEV_PORTAL_TOKEN
-          value: '$[variables.STATIC_WEBAPP_DEV_PORTAL_TOKEN]'
+        - name: STATICWEBAPP_DEV_PORTAL_TOKEN
+          value: '$[variables.STATICWEBAPP_DEV_PORTAL_TOKEN]'
 
         steps:      
 
@@ -56,6 +56,8 @@ stages:
 
               echo "Agent.BuildDirectory:"
               echo "$(Agent.BuildDirectory)"
+
+              echo '$(STATIC_WEBAPP_DEV_PORTAL_TOKEN)'
 
         - task: Bash@3
           env:
@@ -115,7 +117,7 @@ stages:
                         workingDirectory: '$(System.DefaultWorkingDirectory)/drop'
                         app_location: '/'
                         verbose: true
-                        azure_static_web_apps_api_token: '40d60b652e855314c8d4316caaf0d44d411bcc0a3501199aabfe993da613ae0c1-fd70b51b-b8d0-43bd-b0e8-1dec46b7a13500026529'#'$(STATIC_WEBAPP_DEV_PORTAL_TOKEN)'
+                        azure_static_web_apps_api_token: 'asas'#'$(STATIC_WEBAPP_DEV_PORTAL_TOKEN)'
 
                         
                     
