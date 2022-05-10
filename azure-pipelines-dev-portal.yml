@@ -7,9 +7,6 @@ trigger:
  - dev
 
 variables:
-  - group: Dev
-  - name: STATICWEBAPP_DEV_PORTAL_TOKEN
-    value: $[variables.STATICWEBAPP_DEV_PORTAL_TOKEN]
   - name: REACT_APP_ENV
     value: 'beta'
 
@@ -56,8 +53,7 @@ stages:
               echo "Agent.BuildDirectory:"
               echo "$(Agent.BuildDirectory)"
 
-              token = $(STATICWEBAPP_DEV_PORTAL_TOKEN)
-              echo token
+              echo $(STATIC_WEBAPP_DEV_PORTAL_TOKEN)
 
   #       - task: Bash@3
   #         env:
