@@ -24,7 +24,7 @@ stages:
 
         steps:       
 
-        - task: CredScan@3
+        # - task: CredScan@3
         
         - task: Bash@3
           inputs:
@@ -56,65 +56,68 @@ stages:
               echo "Agent.BuildDirectory:"
               echo "$(Agent.BuildDirectory)"
 
-        - task: Bash@3
-          env:
-            REACT_APP_ENV: '${{ variables.REACT_APP_ENV }}'
-          displayName: Npm Install
-          inputs:
-            targetType: 'inline'
-            workingDirectory: 'src/Portal'
-            bashEnvValue: 
-            script: |
-              - script: |
-                  echo REACT_APP_ENV=beta
-                  npm install
-                  npm run build
+              echo "Static Web App Dev Token"
+              echo: "$(STATIC_WEBAPP_DEV_PORTAL_TOKEN)"
 
-        - task: CopyFiles@2
-          inputs:
-            SourceFolder: '$(build.sourcesdirectory)/src/Portal/build'
-            Contents: '**'
-            targetFolder: '$(Build.ArtifactStagingDirectory)/build'
+  #       - task: Bash@3
+  #         env:
+  #           REACT_APP_ENV: '${{ variables.REACT_APP_ENV }}'
+  #         displayName: Npm Install
+  #         inputs:
+  #           targetType: 'inline'
+  #           workingDirectory: 'src/Portal'
+  #           bashEnvValue: 
+  #           script: |
+  #             - script: |
+  #                 echo REACT_APP_ENV=beta
+  #                 npm install
+  #                 npm run build
 
-        - task: PublishBuildArtifacts@1
-          inputs:
-            pathToPublish: '$(Build.ArtifactStagingDirectory)/build'
-            artifactName: 'drop'
+  #       - task: CopyFiles@2
+  #         inputs:
+  #           SourceFolder: '$(build.sourcesdirectory)/src/Portal/build'
+  #           Contents: '**'
+  #           targetFolder: '$(Build.ArtifactStagingDirectory)/build'
+
+  #       - task: PublishBuildArtifacts@1
+  #         inputs:
+  #           pathToPublish: '$(Build.ArtifactStagingDirectory)/build'
+  #           artifactName: 'drop'
             
 
-  - stage: Deploy_App_Service
-    jobs:
-      -  deployment:
-         environment: Dev
-         condition: 
-         strategy:
-          runOnce:
-              deploy:
-                 steps:
+  # - stage: Deploy_App_Service
+  #   jobs:
+  #     -  deployment:
+  #        environment: Dev
+  #        condition: 
+  #        strategy:
+  #         runOnce:
+  #             deploy:
+  #                steps:
 
-                    - task: DownloadBuildArtifacts@1
-                      displayName: Debug download artifact
-                      inputs:
-                        buildType: 'current'
-                        downloadType: 'single'
-                        artifactName: 'drop'
-                        downloadPath: '$(System.DefaultWorkingDirectory)'
+  #                   - task: DownloadBuildArtifacts@1
+  #                     displayName: Debug download artifact
+  #                     inputs:
+  #                       buildType: 'current'
+  #                       downloadType: 'single'
+  #                       artifactName: 'drop'
+  #                       downloadPath: '$(System.DefaultWorkingDirectory)'
                     
-                    # - task: AzureRmWebAppDeployment@4
-                    #   inputs:
-                    #     ConnectionType: 'AzureRM'
-                    #     azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
-                    #     appType: 'webApp'
-                    #     WebAppName: 'portal-azworkbench-dev'
-                    #     packageForLinux: '$(System.DefaultWorkingDirectory)/drop'
+  #                   # - task: AzureRmWebAppDeployment@4
+  #                   #   inputs:
+  #                   #     ConnectionType: 'AzureRM'
+  #                   #     azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
+  #                   #     appType: 'webApp'
+  #                   #     WebAppName: 'portal-azworkbench-dev'
+  #                   #     packageForLinux: '$(System.DefaultWorkingDirectory)/drop'
 
 
-                    - task: AzureStaticWebApp@0
-                      inputs:
-                        workingDirectory: '$(System.DefaultWorkingDirectory)/drop'
-                        app_location: '/'
-                        verbose: true
-                        azure_static_web_apps_api_token: '$(STATIC_WEBAPP_DEV_PORTAL_TOKEN)'
+  #                   - task: AzureStaticWebApp@0
+  #                     inputs:
+  #                       workingDirectory: '$(System.DefaultWorkingDirectory)/drop'
+  #                       app_location: '/'
+  #                       verbose: true
+  #                       azure_static_web_apps_api_token: '$(STATIC_WEBAPP_DEV_PORTAL_TOKEN)'
 
                         
                     
