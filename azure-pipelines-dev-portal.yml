@@ -21,7 +21,7 @@ stages:
           value: 'beta'
         - group: Dev
         - name: STATIC_WEBAPP_DEV_PORTAL_TOKEN
-          value: '$[variables.STATIC_WEBAPP_DEV_PORTAL_TOKEN]''
+          value: '$[variables.STATIC_WEBAPP_DEV_PORTAL_TOKEN]'
 
         steps:      
 
