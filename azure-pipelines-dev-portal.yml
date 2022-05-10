@@ -29,7 +29,7 @@ stages:
             targetType: 'inline'
             script: |
                # Write your commands here
-               echo $(STATIC_WEBAPP_DEV_PORTAL_TOKEN)
+               echo "$[variables.STATIC_WEBAPP_DEV_PORTAL_TOKEN]"
 
         # - task: CredScan@3
         
