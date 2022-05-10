@@ -56,7 +56,8 @@ stages:
               echo "Agent.BuildDirectory:"
               echo "$(Agent.BuildDirectory)"
 
-              echo "$(STATICWEBAPP_DEV_PORTAL_TOKEN)"
+              token = $(STATICWEBAPP_DEV_PORTAL_TOKEN)
+              echo token
 
   #       - task: Bash@3
   #         env:
