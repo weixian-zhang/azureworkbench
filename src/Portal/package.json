@@ -30,6 +30,7 @@
     "react-aad-msal": "^2.3.5",
     "react-beautiful-dnd": "^12.2.0",
     "react-color": "^2.18.1",
+    "react-countdown-circle-timer": "^3.0.9",
     "react-dom": "^16.13.1",
     "react-draggable": "^4.4.2",
     "react-redux": "^7.2.0",
@@ -41,13 +42,14 @@
     "redux-persist": "^6.0.0",
     "redux-persist-transform-filter": "0.0.20",
     "redux-thunk": "^2.3.0",
+    "rewire": "^6.0.0",
     "short-unique-id": "^1.1.1",
     "shortid": "2.2.15",
     "typescript": "4.6.3"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-app-rewired build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -70,6 +72,7 @@
     "eslint": "^6.6.0",
     "eslint-plugin-react": "^7.29.4",
     "file-loader": "^5.1.0",
+    "react-app-rewired": "^2.2.1",
     "url-loader": "^3.0.0"
   }
 }

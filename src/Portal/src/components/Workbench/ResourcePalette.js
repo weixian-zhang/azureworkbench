@@ -1024,7 +1024,7 @@ export default class ResourcePalette extends Component {
       },
       {
         resourceGroup: {
-          groupName: 'Azure - Not Deployable',
+          groupName: 'Azure Misc (non Bicep)',
           groupExpanded: false,
           groupSearchVisible: true,
           resources: [
@@ -1115,15 +1115,6 @@ export default class ResourcePalette extends Component {
               Name: 'blueprint arm',
               Tooltip: 'Blueprint',
               Image: require('../../assets/IconCloud/azure/nondeployable/00006-icon-Blueprints-Management-Governance.svg'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true
-            },
-
-            {
-              Name: 'policy',
-              Tooltip: 'Policy',
-              Image: require('../../assets/IconCloud/azure/nondeployable/10316-icon-Policy-Management-Governance.svg'),
               Provisionable: false,
               IsPng: false,
               IsVisible:true
@@ -1326,34 +1317,6 @@ export default class ResourcePalette extends Component {
               IsPng: false,
               IsVisible:true
             },
-
-            {
-              Name: 'management group',
-              Tooltip: 'Management Group',
-              Image: require('../../assets/IconCloud/azure/nondeployable/10011-icon-Management Groups-General.svg'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true
-            },
-
-            {
-              Name: 'subscription',
-              Tooltip: 'Subscription',
-              Image: require('../../assets/IconCloud/azure/nondeployable/10002-icon-Subscriptions-General.svg'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true
-            },
-
-            {
-              Name: 'resource group rg',
-              Tooltip: 'Resource Group',
-              Image: require('../../assets/IconCloud/azure/nondeployable/10007-icon-Resource Groups-General.svg'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true
-            },
-
             {
               Name: 'kubernetes kube',
               Tooltip: 'Azure Kubernetes',
@@ -1478,14 +1441,6 @@ export default class ResourcePalette extends Component {
               IsVisible:true
             },
             {
-              Name: 'rbac custom role aad',
-              Tooltip: 'Custom Role',
-              Image: require('../../assets/IconCloud/azure/nondeployable/identity/02680-icon-Custom Azure AD Roles-Identity.svg'),
-              Provisionable: false,
-              IsPng: false,
-              IsVisible:true
-            },
-            {
               Name: 'license aad',
               Tooltip: 'Azure AD User License',
               Image: require('../../assets/IconCloud/azure/nondeployable/identity/02681-icon-AAD Licenses-Identity.svg'),
@@ -1552,6 +1507,62 @@ export default class ResourcePalette extends Component {
             },
           ]
         }
+     },
+     {
+      resourceGroup: {
+        groupName: 'ESLZ',
+        groupExpanded: false,
+        groupSearchVisible: true,
+        resources: [
+          {
+            Name: 'management group',
+            Tooltip: 'Management Group',
+            azInfo: ['Bicep support'],
+            Image: require('../../assets/IconCloud/azure/eslz/10011-icon-Management Groups-General.svg'),
+            Provisionable: true,
+            IsPng: false,
+            IsVisible:true,
+            resourceType: ResourceType.ManagementGroup()
+          },
+
+          {
+            Name: 'subscription',
+            Tooltip: 'Subscription',
+            azInfo: ['Bicep support'],
+            Image: require('../../assets/IconCloud/azure/eslz/10002-icon-Subscriptions-General.svg'),
+            Provisionable: true,
+            IsPng: false,
+            IsVisible:true,
+            resourceType: ResourceType.Subscription()
+          },
+          {
+            Name: 'resource group rg',
+            Tooltip: 'Resource Group',
+            azInfo: ['Bicep support'],
+            Image: require('../../assets/IconCloud/azure/eslz/10007-icon-Resource Groups-General.svg'),
+            Provisionable: true,
+            IsPng: false,
+            IsVisible:true,
+            resourceType: ResourceType.ResourceGroup()
+          },
+          {
+            Name: 'policy',
+            Tooltip: 'Policy',
+            Image: require('../../assets/IconCloud/azure/eslz/10316-icon-Policy-Management-Governance.svg'),
+            Provisionable: false,
+            IsPng: false,
+            IsVisible:true
+          },
+          {
+            Name: 'rbac custom role aad',
+            Tooltip: 'Custom Role',
+            Image: require('../../assets/IconCloud/azure/eslz/02680-icon-Custom Azure AD Roles-Identity.svg'),
+            Provisionable: false,
+            IsPng: false,
+            IsVisible:true
+          }
+        ]
+      }
      },
       {
         resourceGroup: {

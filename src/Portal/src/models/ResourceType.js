@@ -24,6 +24,9 @@ export default class ResourceType
     static WAF() {return 'waf'; }
     static ProximityPlacementGroup() {return 'proximityplacementgroup'; }
     static AvailabilitySet() {return 'availabilityset'; }
+    static ManagementGroup() {return 'managementgroup'; }
+    static Subscription() {return 'subscription'; }
+    static ResourceGroup() {return 'resourcegroup'; }
 
     static NetworkWatcher() {return 'networkwatcher'; }
     static Subnet() {return 'subnet'; }

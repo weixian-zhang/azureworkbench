@@ -2,6 +2,7 @@ import Utils from "./Utils";
 import ResourceType from '../../../models/ResourceType';
 import * as go from 'gojs';
 import AzContextValidator from './AzContextValidator';
+import { NotListedLocation } from "@material-ui/icons";
 
 export default class AzContextCollector
 {
@@ -11,6 +12,9 @@ export default class AzContextCollector
             return [];
 
         var provisionContexts = [];
+
+        //management groups and susbcriptions azcontexts
+        this.createManagementGroupsSubscriptionsResourceGroupsContexts(diagram, provisionContexts);
 
         var allNodes = diagram.nodes;
 
@@ -177,6 +181,73 @@ export default class AzContextCollector
 
         return sortedContexts;
     }
+
+    createManagementGroupsSubscriptionsResourceGroupsContexts(diagram, proContexts) {
+
+        var result = [];
+        var mgmtSubContexts = this.getAllMgmtGrpSubs(diagram);
+
+        mgmtSubContexts.forEach(node => {
+
+            var proContext = node.data.azcontext.ProvisionContext;
+
+            if(Utils.IsManagementGroup(node)) {
+
+                var parent = Utils.getParent(node);
+                
+                if(parent != null) {
+                    proContext.ParentName = parent.data.azcontext.ProvisionContext.Name;
+                }
+
+                //get subscriptions
+                var children = Utils.getChildren(node);
+
+                children.forEach(childNode => {
+                    if(Utils.IsSubscription(childNode)) {
+                        proContext.SubscriptionNames.push(childNode.data.azcontext.ProvisionContext.Name);
+                    }
+                });
+            }
+
+            if(Utils.IsSubscription(node)) {
+                var parent = Utils.getParent(node);
+                if(parent != null) {
+                    proContext.ManagementGroup = parent.data.azcontext.ProvisionContext.Name;
+                }
+            }
+
+            if(Utils.IsResourceGroup(node)) {
+                var parent = Utils.getParent(node);
+                if(parent != null) {
+                    proContext.SubscriptionName = parent.data.azcontext.ProvisionContext.Name;
+                }
+            }
+
+            proContexts.push(proContext);
+
+        });
+    }
+
+    
+
+    getAllMgmtGrpSubs(diagram) {
+
+        var allNodes = diagram.nodes;
+        var mgmtgrpsSubsNodes = [];
+
+        while (allNodes.next()) {
+            var node = allNodes.value;
+            var resourceType = node.data.azcontext.ProvisionContext.ResourceType;
+            if (resourceType == ResourceType.ManagementGroup()
+                || resourceType == ResourceType.Subscription()
+                || resourceType == ResourceType.ResourceGroup()) {
+                mgmtgrpsSubsNodes.push(node);
+            }
+        }
+
+        return mgmtgrpsSubsNodes;
+    }
+
 
     getVNetContext = (node, provisionContexts) => {
 
@@ -478,6 +549,9 @@ export default class AzContextCollector
     }
 
     getAllNonVIRContexts = (node, provisionContexts) => {
+
+        if(Utils.IsSubscription(node) || Utils.IsManagementGroup(node) || Utils.IsResourceGroup(node))
+            return provisionContexts;
 
         if(!Utils.isPartVIR(node) && !Utils.isLAW(node))
         {
