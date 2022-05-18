@@ -4,8 +4,8 @@ module.exports = function override(config, env) {
     }
 
     // Get rid of hash for js files
-    config.output.filename = "static/js/[name].[contenthash].js"
-    config.output.chunkFilename = "static/js/[name].[contenthash].chunk.js"
+    config.output.filename = "static/js/[name].[hash:8].js"
+    config.output.chunkFilename = "static/js/[name].[hash:8].chunk.js"
 
     // Get rid of hash for css files
     const miniCssExtractPlugin = config.plugins.find(element => element.constructor.name === "MiniCssExtractPlugin");
@@ -17,7 +17,7 @@ module.exports = function override(config, env) {
         // if (!oneOf.options ||  oneOf.options.name !== "static/media/[name].[contenthash].[ext]") {
         //     return;
         // }
-        oneOf.options.name = "static/media/[name].[contenthash].[ext]"
+        oneOf.options.name = "static/media/[name].[hash:8].[ext]"
     });
 
     return config;
