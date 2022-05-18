@@ -26,7 +26,7 @@ module.exports = function override(config, env) {
                             {
                                 loader: 'file-loader',
                                 options: {
-                                    name: 'static/media/[name].[ext]'
+                                    name: 'static/media/[name].[contenthash].[ext]'
                                 }
                             }
                         ]
