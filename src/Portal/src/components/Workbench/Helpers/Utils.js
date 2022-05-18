@@ -289,6 +289,42 @@ export default class Utils
             return false;
     }
 
+    static IsManagementGroup(node) {
+        if(!Utils.isAzContextExist(node))
+            return false;
+
+        var pc = node.data.azcontext.ProvisionContext;
+
+        if(pc.ResourceType == ResourceType.ManagementGroup())
+            return true;
+        
+        return false;
+    }
+
+    static IsSubscription(node) {
+        if(!Utils.isAzContextExist(node))
+            return false;
+
+        var pc = node.data.azcontext.ProvisionContext;
+
+        if(pc.ResourceType == ResourceType.Subscription())
+            return true;
+        
+        return false;
+    }
+
+    static IsResourceGroup(node) {
+        if(!Utils.isAzContextExist(node))
+            return false;
+
+        var pc = node.data.azcontext.ProvisionContext;
+
+        if(pc.ResourceType == ResourceType.ResourceGroup())
+            return true;
+        
+        return false;
+    }
+
     static IsVMSS(node) {
         if(!Utils.isAzContextExist(node))
         return false;
@@ -398,6 +434,44 @@ export default class Utils
             return true;
         else
             return false;
+    }
+
+    static hasMultiParents(node) {
+        var parent = node.findNodesInto();
+
+        if(parent.count > 1)
+            return true;
+        
+        return false;
+    }
+
+    static getParent(node) {
+        var parent = node.findNodesInto();
+
+        if(parent.count == 0)
+            return null;
+
+        if(parent.count == 1) {
+            return parent.value;
+        }
+    }
+
+    static getChildren(node) {
+
+        var children = [];
+
+        var links = node.findLinksOutOf();
+
+        while (links.next()) { // for each link get the link text and toNode text
+
+            var link = links.value;
+
+            var toNode = link.toNode;
+
+            children.push(toNode);
+        }
+
+        return children;
     }
 
 
