@@ -55,7 +55,7 @@ export default class OverlayTutorial extends Component {
                         <Typography variant="body1" align="left" gutterBottom>
                             You can copy any image from other websites and do <b>"Ctrl V"</b> to paste on Canvas, in cases when you can't find an Icon that suits your need
                         </Typography>
-                        <img src={require("../../../public/IconCloud/azworkbench/tutorial-copyimageotherwebsite.png")} width="500px" height="250px" /> 
+                        <img src={require("../../assets/IconCloud/azworkbench/tutorial-copyimageotherwebsite.png")} width="500px" height="250px" /> 
                         <Typography variant="body1" align="left" gutterBottom>
                             "Ctrl C" on one or multi-selected nodes and "Ctrl V" to duplicate selected nodes.
                         </Typography>
@@ -196,7 +196,7 @@ export default class OverlayTutorial extends Component {
                             these link-connected VMs will be added into the Backend Pools of Load Balancer and App Gateway.
                         </Typography>
                         <div>
-                            <img src = {require("../../../public/IconCloud/azworkbench/tutorial-vmbackendpool.svg")} width="400px" height="200px" />
+                            <img src = {require("../../assets/IconCloud/azworkbench/tutorial-vmbackendpool.svg")} width="400px" height="200px" />
                         </div>
                         <Typography variant="h6" align="left" color="primary" >
                             Recovery Service Vault
