@@ -99,13 +99,13 @@ stages:
                         artifactName: 'drop'
                         downloadPath: '$(System.DefaultWorkingDirectory)'
                     
-                    # - task: AzureRmWebAppDeployment@4
-                    #   inputs:
-                    #     ConnectionType: 'AzureRM'
-                    #     azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
-                    #     appType: 'webApp'
-                    #     WebAppName: 'portal-azworkbench-dev'
-                    #     packageForLinux: '$(System.DefaultWorkingDirectory)/drop'
+                    - task: AzureRmWebAppDeployment@4
+                      inputs:
+                        ConnectionType: 'AzureRM'
+                        azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
+                        appType: 'webApp'
+                        WebAppName: 'portal-azworkbench-dev'
+                        packageForLinux: '$(System.DefaultWorkingDirectory)/drop'
 
 
                     - task: AzureStaticWebApp@0
