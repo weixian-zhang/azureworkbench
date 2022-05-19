@@ -105,7 +105,7 @@ export default class Header extends Component {
                 <MenuIcon />
               </IconButton>
             <Typography color="inherit">
-              <img src ={require('../../../public/IconCloud/azworkbench/azworkbench-logo.png')} alt="" style={{width : 25, height : 25, marginRight: 3}} />
+              <img src ={require('../../assets/IconCloud/azworkbench/azworkbench-logo.png')} alt="" style={{width : 25, height : 25, marginRight: 3}} />
               Azure Workbench
             </Typography>
 
@@ -120,7 +120,7 @@ export default class Header extends Component {
                   </div>
               )}>
                   <IconButton aria-label="Edit" onClick={this.setBicepTimer} disabled={this.state.bicepBtnDisabled}>
-                      <img src={require('../../../public/IconCloud/azure/nondeployable/azure-bicep.png')} style={{width: '25px', height: '25px'}} />
+                      <img src={require('../../assets/IconCloud/azure/nondeployable/azure-bicep.png')} style={{width: '25px', height: '25px'}} />
                   </IconButton>
               </Tooltip>
               
