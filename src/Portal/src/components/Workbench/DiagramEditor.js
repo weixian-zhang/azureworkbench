@@ -1030,7 +1030,7 @@ createVIRBySkuBased(dropContext) {
           })
         else
           this.createNonVIRAzureResource({
-            source: require('../../assets/IconCloud/azure/compute/10370-icon-Azure Spring Cloud-Compute.svg'),
+            source: require('../../../public/IconCloud/azure/compute/10370-icon-Azure Spring Cloud-Compute.svg'),
             label: 'spring cloud', x: dropContext.x, y: dropContext.y,
             azcontext: new SpringCloud()
           });
@@ -1045,7 +1045,7 @@ createVIRBySkuBased(dropContext) {
           })
         else
           this.createNonVIRAzureResource({
-            source: require('../../assets/IconCloud/azure/network/10062-icon-Load Balancers-Networking.svg'),
+            source: require('../../../public/IconCloud/azure/network/10062-icon-Load Balancers-Networking.svg'),
             label: 'external load balancer', x: dropContext.x, y: dropContext.y,
             azcontext: new NLB()
           });
@@ -1061,7 +1061,7 @@ createVIRBySkuBased(dropContext) {
         })
       else
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/integration/10042-icon-API Management Services-Integration.svg'),
+          source: require('../../../public/IconCloud/azure/integration/10042-icon-API Management Services-Integration.svg'),
           label: 'non-premium apim', x: dropContext.x, y: dropContext.y,
           azcontext: new APIM()
         });
@@ -1077,7 +1077,7 @@ createVIRBySkuBased(dropContext) {
         })
         else
           this.createNonVIRAzureResource({
-            source: require('../../assets/IconCloud/azure/databases/10137-icon-Cache Redis-Databases.svg'),
+            source: require('../../../public/IconCloud/azure/databases/10137-icon-Cache Redis-Databases.svg'),
             label: 'non-premium redis', x: dropContext.x, y: dropContext.y,
             azcontext: new Redis()
           });
@@ -1888,14 +1888,14 @@ createVNetTemplate() {
           stretch: go.GraphObject.Fill,
           desiredSize: new go.Size(25,25),
           alignment: go.Spot.TopRight, alignmentFocus: go.Spot.BottomRight,
-          source: require('../../assets/IconCloud/azure/network/10061-icon-Virtual Networks-Networking.svg')
+          source: require('../../../public/IconCloud/azure/network/10061-icon-Virtual Networks-Networking.svg')
         }),
         this.$(go.Picture, {
           name: "NATGW",
           stretch: go.GraphObject.Fill,
           desiredSize: new go.Size(25,25),
           alignment: new go.Spot(1, 0, -42, -12),
-          source: require('../../assets/IconCloud/azure/network/10310-icon-NAT-Networking.svg'),
+          source: require('../../../public/IconCloud/azure/network/10310-icon-NAT-Networking.svg'),
           doubleClick: function(e, shape) {
             e.handled = true;
             e.event.preventDefault();
@@ -1992,7 +1992,7 @@ createSubnetTemplate() {
         stretch: go.GraphObject.Fill,
         desiredSize: new go.Size(24,24),
         alignment: new go.Spot(0, 0, 6, -15),
-        source: require('../../assets/IconCloud/azure/nondeployable/10067-icon-Network Security Groups-Networking.svg'),
+        source: require('../../../public/IconCloud/azure/nondeployable/10067-icon-Network Security Groups-Networking.svg'),
 
         doubleClick: function(e, picture) {
           e.handled = true;
@@ -2020,7 +2020,7 @@ createSubnetTemplate() {
         stretch: go.GraphObject.Fill,
         desiredSize: new go.Size(25,25),
         alignment: new go.Spot(0, 0, 31, -17),
-        source: require('../../assets/IconCloud/azure/nondeployable/10082-icon-Route Tables-Networking.svg'),
+        source: require('../../../public/IconCloud/azure/nondeployable/10082-icon-Route Tables-Networking.svg'),
         doubleClick: function(e, picture) {
           e.handled = true;
           e.event.preventDefault();
@@ -2049,7 +2049,7 @@ createSubnetTemplate() {
       //   alignment: go.Spot(0,0)
       //   alignmentFocus: go.Spot.BottomLeft,
 
-      //   source: require('../../assets/IconCloud/azure/network/02742-icon-Subnet-menu.svg')
+      //   source: require('../../../public/IconCloud/azure/network/02742-icon-Subnet-menu.svg')
       //}),
       this.$(go.Picture, {
         name: "SVCEndpoint",
@@ -2057,7 +2057,7 @@ createSubnetTemplate() {
         desiredSize: new go.Size(25,25),
         alignment: new go.Spot(0, 0, 61, -15),
         isActionable: true,
-        source: require('../../assets/IconCloud/azure/nondeployable/02578-icon-Service Endpoints-menu.svg'),
+        source: require('../../../public/IconCloud/azure/nondeployable/02578-icon-Service Endpoints-menu.svg'),
         doubleClick: function(e, picture) {
           e.handled = true;
           e.event.preventDefault();
@@ -2331,7 +2331,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'spring cloud';
           nodeKey = 'springcloud-' + this.shortUID.randomUUID(6);
-          image = require('../../assets/IconCloud/azure/compute/10370-icon-Azure Spring Cloud-Compute.svg');
+          image = require('../../../public/IconCloud/azure/compute/10370-icon-Azure Spring Cloud-Compute.svg');
           azcontext = rsc;
         break;
 
@@ -2346,7 +2346,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'service fabric cluster';
           nodeKey = 'svcfabriccluster-' + this.shortUID.randomUUID(6);
-          image = require('../../assets/IconCloud/azure/compute/10036-icon-Service Fabric Clusters-Compute.svg');
+          image = require('../../../public/IconCloud/azure/compute/10036-icon-Service Fabric Clusters-Compute.svg');
           azcontext = rsc;
         break;
 
@@ -2361,7 +2361,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'service fabric managed cluster';
           nodeKey = 'svcfabricmanagedcluster-' + this.shortUID.randomUUID(6);
-          image = require('../../assets/IconCloud/azure/compute/02370-icon-Managed Service Fabric-New Icons.svg');
+          image = require('../../../public/IconCloud/azure/compute/02370-icon-Managed Service Fabric-New Icons.svg');
           azcontext = rsc;
         break;
 
@@ -2376,7 +2376,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'hpc cache';
           nodeKey = 'hpccache-' + this.shortUID.randomUUID(6);
-          image = require('../../assets/IconCloud/azure/data_storage/00776-icon-Azure HCP Cache-Storage.svg');
+          image = require('../../../public/IconCloud/azure/data_storage/00776-icon-Azure HCP Cache-Storage.svg');
           azcontext = rsc;
         break;
 
@@ -2391,7 +2391,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'private endpoint';
           nodeKey = Utils.uniqueId('pendp');
-          image = require('../../assets/IconCloud/azure/network/02579-icon-Private Endpoints-menu.svg');
+          image = require('../../../public/IconCloud/azure/network/02579-icon-Private Endpoints-menu.svg');
           azcontext = rsc;
         break;
         case ResourceType.VM():
@@ -2402,7 +2402,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'vm';
           nodeKey = 'vm-' + this.shortUID.randomUUID(6);
-          image = require('../../assets/IconCloud/azure/compute/10021-icon-Virtual Machine-Compute.svg');
+          image = require('../../../public/IconCloud/azure/compute/10021-icon-Virtual Machine-Compute.svg');
 
           if(azcontext != null)
             azcontext = azcontext;
@@ -2423,7 +2423,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'vm scale sets';
           nodeKey = 'vmss-' + this.shortUID.randomUUID(6);
-          image = require('../../assets/IconCloud/azure/compute/10034-icon-VM Scale Sets-Compute.svg');
+          image = require('../../../public/IconCloud/azure/compute/10034-icon-VM Scale Sets-Compute.svg');
           azcontext =rsc;
         break;
         case ResourceType.Firewall():
@@ -2437,7 +2437,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'firewall';
           nodeKey = 'azfw-' + this.shortUID.randomUUID(6);
-          image = require('../../assets/IconCloud/azure/network/10084-icon-Firewalls-Networking.svg');
+          image = require('../../../public/IconCloud/azure/network/10084-icon-Firewalls-Networking.svg');
           azcontext = rsc;
         break;
         case ResourceType.Bastion():
@@ -2451,7 +2451,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'bastion';
           nodeKey = 'bastion-' + this.shortUID.randomUUID(6);
-          image = require('../../assets/IconCloud/azure/security_identity/02422-icon-Bastions-Preview.svg');
+          image = require('../../../public/IconCloud/azure/security_identity/02422-icon-Bastions-Preview.svg');
           azcontext = rsc;
         break;
         case ResourceType.AppGw():
@@ -2465,7 +2465,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'app gateway';
           nodeKey = 'appgw-' + this.shortUID.randomUUID(6);
-          image = require('../../assets/IconCloud/azure/network/10076-icon-Application Gateways-Networking.svg');
+          image = require('../../../public/IconCloud/azure/network/10076-icon-Application Gateways-Networking.svg');
           azcontext = rsc;
         break;
         case ResourceType.ASE():
@@ -2479,7 +2479,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'ase';
           nodeKey = Utils.uniqueId('ase');
-          image = require('../../assets/IconCloud/azure/appservices/10047-icon-App Service Environments-App Services.svg');
+          image = require('../../../public/IconCloud/azure/appservices/10047-icon-App Service Environments-App Services.svg');
           azcontext = rsc;
         break;
         case ResourceType.ISE():
@@ -2489,7 +2489,7 @@ createVIROntoSubnet(dropContext) {
           }
           text = 'ise';
           nodeKey = Utils.uniqueId('ise');
-          image = require('../../assets/IconCloud/azure/integration/00555-icon-Integration Service Environments-Integration.svg');
+          image = require('../../../public/IconCloud/azure/integration/00555-icon-Integration Service Environments-Integration.svg');
           azcontext = new IntegratedServiceEnvironment();
         break;
         case ResourceType.SQLMI():
@@ -2499,7 +2499,7 @@ createVIROntoSubnet(dropContext) {
           }
           text = 'sql mi';
           nodeKey = Utils.uniqueId('sqlmi');
-          image = require('../../assets/IconCloud/azure/databases/10136-icon-SQL Managed Instance-Databases.svg');
+          image = require('../../../public/IconCloud/azure/databases/10136-icon-SQL Managed Instance-Databases.svg');
           azcontext = new SQLMI();
         break;
         case ResourceType.HdInsight():
@@ -2510,7 +2510,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'hdinsight';
           nodeKey = Utils.uniqueId('hdinsight');
-          image = require('../../assets/IconCloud/azure/data_analytics/10142-icon-HD Insight Clusters-Analytics.svg');
+          image = require('../../../public/IconCloud/azure/data_analytics/10142-icon-HD Insight Clusters-Analytics.svg');
           azcontext = new HdInsight();
         break;
         case ResourceType.Databricks():
@@ -2521,7 +2521,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'databricks';
           nodeKey = Utils.uniqueId('databricks');
-          image = require('../../assets/IconCloud/azure/data_analytics/10787-icon-Azure Databricks-Analytics.svg');
+          image = require('../../../public/IconCloud/azure/data_analytics/10787-icon-Azure Databricks-Analytics.svg');
           azcontext = new Databricks();
         break;
         case ResourceType.AADDomainService():
@@ -2532,7 +2532,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'aad domain service';
           nodeKey = Utils.uniqueId('databricks');
-          image = require('../../assets/IconCloud/azure/security_identity/10222-icon-Azure AD Domain Services-Identity.svg');
+          image = require('../../../public/IconCloud/azure/security_identity/10222-icon-Azure AD Domain Services-Identity.svg');
           azcontext = new AzureADDomainService();
         break;
         case ResourceType.Kubernetes():
@@ -2543,7 +2543,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'k8s';
           nodeKey = Utils.uniqueId('k8s');
-          image = require('../../assets/IconCloud/azure/compute/10023-icon-Kubernetes Services-Compute.svg');
+          image = require('../../../public/IconCloud/azure/compute/10023-icon-Kubernetes Services-Compute.svg');
           azcontext = new Kubernetes();
         break;
         case ResourceType.NetAppFile():
@@ -2554,7 +2554,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'netapp files';
           nodeKey = Utils.uniqueId('netapp');
-          image = require('../../assets/IconCloud/azure/data_storage/10096-icon-Azure NetApp Files-Storage.svg');
+          image = require('../../../public/IconCloud/azure/data_storage/10096-icon-Azure NetApp Files-Storage.svg');
           azcontext = new NetAppFile();
         break;
         case ResourceType.VirtualNetworkGateway():
@@ -2565,7 +2565,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'vnet gateway';
           nodeKey = Utils.uniqueId('vnetgw');
-          image = require('../../assets/IconCloud/azure/network/10063-icon-Virtual Network Gateways-Networking.svg');
+          image = require('../../../public/IconCloud/azure/network/10063-icon-Virtual Network Gateways-Networking.svg');
           azcontext = new VirtualNetworkGateway();
         break;
         case ResourceType.ASE():
@@ -2576,7 +2576,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'ase';
           nodeKey = Utils.uniqueId('vnetgw');
-          image = require('../../assets/IconCloud/azure/network/10063-icon-Virtual Network Gateways-Networking.svg');
+          image = require('../../../public/IconCloud/azure/network/10063-icon-Virtual Network Gateways-Networking.svg');
           azcontext = new VirtualNetworkGateway();
           break;
         case ResourceType.NLB():
@@ -2587,7 +2587,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'internal lb';
           nodeKey = Utils.uniqueId('internallb');
-          image = require('../../assets/IconCloud/azure/network/10062-icon-Load Balancers-Networking.svg');
+          image = require('../../../public/IconCloud/azure/network/10062-icon-Load Balancers-Networking.svg');
 
           var nlb = new NLB();
           nlb.ProvisionContext.IsInternalNLB = true;
@@ -2601,7 +2601,7 @@ createVIROntoSubnet(dropContext) {
 
           text = 'apim premium';
           nodeKey = Utils.uniqueId('apimpremium');
-          image = require('../../assets/IconCloud/azure/integration/10042-icon-API Management Services-Integration.svg');
+          image = require('../../../public/IconCloud/azure/integration/10042-icon-API Management Services-Integration.svg');
           azcontext = new APIM();
           break;
         case ResourceType.Redis():
@@ -2612,7 +2612,7 @@ createVIROntoSubnet(dropContext) {
 
             text = 'redis premium';
             nodeKey = Utils.uniqueId('redispremium');
-            image = require('../../assets/IconCloud/azure/databases/10137-icon-Cache Redis-Databases.svg');
+            image = require('../../../public/IconCloud/azure/databases/10137-icon-Cache Redis-Databases.svg');
             azcontext = new Redis();
             break;
         case ResourceType.ContainerInstance():
@@ -2622,7 +2622,7 @@ createVIROntoSubnet(dropContext) {
               }
               text = 'private container instance';
               nodeKey = Utils.uniqueId('privateci');
-              image = require('../../assets/IconCloud/azure/container/10104-icon-Container Instances-Containers.svg');
+              image = require('../../../public/IconCloud/azure/container/10104-icon-Container Instances-Containers.svg');
               azcontext = new ContainerInstance();
             break;
     }
@@ -3521,12 +3521,12 @@ loadPastedImageFromBrowserClipboard(src, callback){
         break;
       case 'Location 1':
           this.createPictureShape
-          ({source: require('../../assets/IconCloud/fluent/shape/shape-location-1.svg'),
+          ({source: require('../../../public/IconCloud/fluent/shape/shape-location-1.svg'),
             label: '', x: dropContext.x, y: dropContext.y});
       break;
       case 'Location 2':
           this.createPictureShape
-          ({source: require('../../assets/IconCloud/fluent/shape/shape-location-2.svg'),
+          ({source: require('../../../public/IconCloud/fluent/shape/shape-location-2.svg'),
             label: '', x: dropContext.x, y: dropContext.y});
       break;
 
@@ -3535,43 +3535,43 @@ loadPastedImageFromBrowserClipboard(src, callback){
       //people
       case 'User 1':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/people/ic_fluent_person-1.svg'),
+        ({source: require('../../../public/IconCloud/fluent/people/ic_fluent_person-1.svg'),
           label: 'user', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'User 2':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/people/user-2.svg'),
+        ({source: require('../../../public/IconCloud/fluent/people/user-2.svg'),
           label: 'user', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'User Account':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/people/ic_fluent_person_accounts_24_filled.svg'),
+        ({source: require('../../../public/IconCloud/fluent/people/ic_fluent_person_accounts_24_filled.svg'),
           label: 'user account', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'User Support':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/people/ic_fluent_person_support_24_filled.svg'),
+        ({source: require('../../../public/IconCloud/fluent/people/ic_fluent_person_support_24_filled.svg'),
           label: 'support', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Team 1':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/people/ic_fluent_people_team-1.svg'),
+        ({source: require('../../../public/IconCloud/fluent/people/ic_fluent_people_team-1.svg'),
           label: 'users', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Team 2':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/people/people-team-2.svg'),
+        ({source: require('../../../public/IconCloud/fluent/people/people-team-2.svg'),
           label: 'users', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Team 3':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/people/team-3.svg'),
+        ({source: require('../../../public/IconCloud/fluent/people/team-3.svg'),
           label: 'users', x: dropContext.x, y: dropContext.y});
       break;
 
@@ -3580,545 +3580,545 @@ loadPastedImageFromBrowserClipboard(src, callback){
       //devices
       case 'Server Farm':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/devices/10835-icon-Server Farm-General.svg'),
+        ({source: require('../../../public/IconCloud/fluent/devices/10835-icon-Server Farm-General.svg'),
           label: 'server farm', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Server':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/devices/00060-icon-Servers-menu.svg'),
+        ({source: require('../../../public/IconCloud/fluent/devices/00060-icon-Servers-menu.svg'),
           label: 'server', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Web Server':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/devices/IconLightWebServer.svg'),
+        ({source: require('../../../public/IconCloud/fluent/devices/IconLightWebServer.svg'),
           label: 'web server', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Firewall':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/devices/00059-icon-Firewall-menu.svg'),
+        ({source: require('../../../public/IconCloud/fluent/devices/00059-icon-Firewall-menu.svg'),
           label: 'firewall', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'MacOS':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/devices/00593-icon-macOS-menu.svg'),
+        ({source: require('../../../public/IconCloud/fluent/devices/00593-icon-macOS-menu.svg'),
           label: 'macos', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Windows WSUS':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/devices/02212-icon-WSUS-menu.svg'),
+        ({source: require('../../../public/IconCloud/fluent/devices/02212-icon-WSUS-menu.svg'),
           label: 'wsus', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'BareMetal Server':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/devices/02561-icon-Bare Metal Infrastructure-New Icons.svg'),
+        ({source: require('../../../public/IconCloud/fluent/devices/02561-icon-Bare Metal Infrastructure-New Icons.svg'),
           label: 'baremetal', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'VM':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/devices/10021-icon-Virtual Machine-Compute.svg'),
+        ({source: require('../../../public/IconCloud/fluent/devices/10021-icon-Virtual Machine-Compute.svg'),
           label: 'vm', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'SQL VM':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/devices/10124-icon-Azure SQL VM-Databases.svg'),
+        ({source: require('../../../public/IconCloud/fluent/devices/10124-icon-Azure SQL VM-Databases.svg'),
           label: 'sql vm', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Devices':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/devices/10332-icon-Devices-family.svg'),
+        ({source: require('../../../public/IconCloud/fluent/devices/10332-icon-Devices-family.svg'),
           label: 'devices', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Camera':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/devices/device-camera.svg'),
+        ({source: require('../../../public/IconCloud/fluent/devices/device-camera.svg'),
           label: 'camera', x: dropContext.x, y: dropContext.y});
       break;
 
 
       case 'Mobile':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/devices/device-mobile.svg'),
+        ({source: require('../../../public/IconCloud/fluent/devices/device-mobile.svg'),
           label: 'mobile', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Tablet':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/devices/tablet.svg'),
+        ({source: require('../../../public/IconCloud/fluent/devices/tablet.svg'),
           label: 'tablet', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Printer':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/devices/device-printer.svg'),
+        ({source: require('../../../public/IconCloud/fluent/devices/device-printer.svg'),
           label: 'printer', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Tape':
         this.createPictureShape
-        ({source:  require('../../assets/IconCloud/fluent/devices/tape.svg'),
+        ({source:  require('../../../public/IconCloud/fluent/devices/tape.svg'),
           label: 'storage device', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Storage Device':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/devices/device-storage.svg'),
+        ({source: require('../../../public/IconCloud/fluent/devices/device-storage.svg'),
           label: 'storage device', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Storage Device 2':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/devices/device-storage-2.svg'),
+        ({source: require('../../../public/IconCloud/fluent/devices/device-storage-2.svg'),
           label: 'storage device', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Cloud Server':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/devices/IconLightCloudServer.svg'),
+        ({source: require('../../../public/IconCloud/fluent/devices/IconLightCloudServer.svg'),
           label: 'cloud server', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Database':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/devices/IconLightDatabase.svg'),
+        ({source: require('../../../public/IconCloud/fluent/devices/IconLightDatabase.svg'),
           label: 'db', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Database Server':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/devices/IconLightServerDatabase.svg'),
+        ({source: require('../../../public/IconCloud/fluent/devices/IconLightServerDatabase.svg'),
           label: 'db', x: dropContext.x, y: dropContext.y});
       break;
 
       //software
       case 'File':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/software/00058-icon-Files-menu.svg'),
+        ({source: require('../../../public/IconCloud/fluent/software/00058-icon-Files-menu.svg'),
           label: 'file', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Files':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/software/files.svg'),
+        ({source: require('../../../public/IconCloud/fluent/software/files.svg'),
           label: 'files', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Folder':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/fluent/software/10802-icon-Folder Blank-General.svg'),
+        ({source: require('../../../public/IconCloud/fluent/software/10802-icon-Folder Blank-General.svg'),
         label: 'folder', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Directory Structure':
-      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/02270-icon-Directory-menu.svg'), label: '', x: dropContext.x, y: dropContext.y});
+      this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/02270-icon-Directory-menu.svg'), label: '', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Folder Sync':
-      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/sync-folder.svg'), label: 'folder sync', x: dropContext.x, y: dropContext.y});
+      this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/sync-folder.svg'), label: 'folder sync', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Sync':
-      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/sync.svg'), label: 'sync', x: dropContext.x, y: dropContext.y});
+      this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/sync.svg'), label: 'sync', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Search':
-      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/search.svg'), label: 'search', x: dropContext.x, y: dropContext.y});
+      this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/search.svg'), label: 'search', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Filter':
-      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/filter.svg'),
+      this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/filter.svg'),
         label: 'filter', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'SSH Key':
-      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00412-icon-SSH Keys-Other.svg'),
+      this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/00412-icon-SSH Keys-Other.svg'),
         label: 'ssh key', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'RSA Key':
-      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00787-icon-Keys-Other.svg'),
+      this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/00787-icon-Keys-Other.svg'),
         label: 'rsa key', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Antivirus':
-      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00555-icon-Antivirus-menu.svg'),
+      this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/00555-icon-Antivirus-menu.svg'),
         label: 'antivirus', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Diagnostic Tool':
-      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00689-icon-Diagnostic Tools B-menu.svg'),
+      this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/00689-icon-Diagnostic Tools B-menu.svg'),
         label: 'diagnostic tool', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Data Warehouse':
-      this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00760-icon-Data Warehouse-menu.svg'),
+      this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/00760-icon-Data Warehouse-menu.svg'),
         label: 'data warehouse', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Invoice':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/00916-Icon-Invoice-menu.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/00916-Icon-Invoice-menu.svg'),
         label: 'invoice', x: dropContext.x, y: dropContext.y});
         break;
 
 
         case 'QR Code':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/QRCode.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/QRCode.svg'),
         label: 'qrcode', x: dropContext.x, y: dropContext.y});
         break;
 
 
         case 'Drive':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/01026-icon-Drives-menu.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/01026-icon-Drives-menu.svg'),
         label: 'drive', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Email':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/02271-icon-Email Message-menu.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/02271-icon-Email Message-menu.svg'),
         label: 'email', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Process 1':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/02275-icon-Process-menu.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/02275-icon-Process-menu.svg'),
         label: 'process', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Process 2':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/process-2.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/process-2.svg'),
         label: 'process', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Windows Registry':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/02279-icon-Windows Registry Key-menu.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/02279-icon-Windows Registry Key-menu.svg'),
         label: 'win registry', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'GPU':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/02492-icon-GPU-menu.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/02492-icon-GPU-menu.svg'),
         label: 'gpu', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Software-as-a-Service':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10213-icon-Software as a Service-Integration.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/10213-icon-Software as a Service-Integration.svg'),
         label: 'SaaS', x: dropContext.x, y: dropContext.y});
         break;
 
 
         case 'Browser':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10783-icon-Browser-General.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/10783-icon-Browser-General.svg'),
         label: 'browser', x: dropContext.x, y: dropContext.y});
         break;
 
 
         case 'Scheduler':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10833-icon-Scheduler-General.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/10833-icon-Scheduler-General.svg'),
         label: 'scheduler', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Table':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10841-icon-Table-General.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/10841-icon-Table-General.svg'),
         label: 'table', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Workflow':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10852-icon-Workflow-General.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/10852-icon-Workflow-General.svg'),
         label: 'workflow', x: dropContext.x, y: dropContext.y});
         break;
 
 
         case 'Data Copy':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/data-copy.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/data-copy.svg'),
         label: 'data copy', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Data Movement':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/data-movement.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/data-movement.svg'),
         label: 'data movement', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Pipeline':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/pipeline.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/pipeline.svg'),
         label: 'pipeline', x: dropContext.x, y: dropContext.y});
         break;
 
 
         case 'Docker':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/docker.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/docker.svg'),
         label: '', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Container 1':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/container-1.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/container-1.svg'),
         label: 'container', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Container 2':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/container-2.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/container-2.svg'),
         label: 'container', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'GitHub':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/Github.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/Github.svg'),
         label: '', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'GitHub Actions':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/github-actions.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/github-actions.svg'),
         label: 'github actions', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Git':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandGit.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/IconLightBrandGit.svg'),
         label: 'git', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Hololens':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/hololens.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/hololens.svg'),
         label: 'hololens', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Internet':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/internet.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/internet.svg'),
         label: 'Internet', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Chrome':
-        this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandChrome.svg'),
+        this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/IconLightBrandChrome.svg'),
         label: '', x: dropContext.x, y: dropContext.y});
         break;
 
     case 'Google Drive':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/google-drive.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/google-drive.svg'),
     label: 'Google Drive', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Edge':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandEdge.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/IconLightBrandEdge.svg'),
     label: 'Edge', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Function':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/function.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/function.svg'),
     label: 'func', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Powershell':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10825-icon-Powershell-General.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/10825-icon-Powershell-General.svg'),
     label: 'ps', x: dropContext.x, y: dropContext.y});
     break;
 
 
   case 'C#':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightCSFileNode.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/IconLightCSFileNode.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case '.Net':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightDotNET.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/IconLightDotNET.svg'),
     label: '.Net', x: dropContext.x, y: dropContext.y});
     break;
 
 
     case 'Bug':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10784-icon-Bug-General.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/10784-icon-Bug-General.svg'),
     label: 'bug', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Code 1':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10787-icon-Code-General.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/10787-icon-Code-General.svg'),
     label: 'code', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Code 2':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/code-2.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/code-2.svg'),
     label: 'code', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'File Binaries':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/file-binaries.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/file-binaries.svg'),
     label: 'binaries', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Javascript':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/ic_fluent_javascript_24_regular.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/ic_fluent_javascript_24_regular.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Nuget':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandNuget.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/IconLightBrandNuget.svg'),
     label: 'nuget', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'F#':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightFSFileNode.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/IconLightFSFileNode.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Python':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightPYProjectNode.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/IconLightPYProjectNode.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'TypeScript':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightTSFileNode.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/IconLightTSFileNode.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Visual Basic':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightVBFileNode.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/IconLightVBFileNode.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Java':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/java.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/java.svg'),
     label: 'java', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'C++':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightCPPProjectNode.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/IconLightCPPProjectNode.svg'),
     label: 'C++', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Visual Studio':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandVisualStudio.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/IconLightBrandVisualStudio.svg'),
     label: 'vs', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Web Api':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightWebAPI.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/IconLightWebAPI.svg'),
     label: 'Web Api', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Web Service':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightWebService.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/IconLightWebService.svg'),
     label: 'Web Service', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Webhook':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/web-02437-icon-Webhook-menu.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/web-02437-icon-Webhook-menu.svg'),
     label: 'webhook', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Event':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/web-event.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/web-event.svg'),
     label: 'event', x: dropContext.x, y: dropContext.y});
     break;
 
 
     case 'Execute':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightExecute.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/IconLightExecute.svg'),
     label: 'execute', x: dropContext.x, y: dropContext.y});
     break;
 
 
     case 'Message':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/message.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/message.svg'),
     label: 'message', x: dropContext.x, y: dropContext.y});
     break;
 
 
     case 'Queue':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/60049-Icon-Queued-command.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/60049-Icon-Queued-command.svg'),
     label: 'queue', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Publish':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/publish.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/publish.svg'),
     label: 'pub', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Subscribe':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/subscribe.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/subscribe.svg'),
     label: 'sub', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Report':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/report.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/report.svg'),
     label: 'report', x: dropContext.x, y: dropContext.y});
     break;
 
 
     case 'BizTalk':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10779-icon-Biz Talk-General.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/10779-icon-Biz Talk-General.svg'),
     label: 'BizTalk', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'D365':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/D365.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/D365.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'office':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandOffice.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/IconLightBrandOffice.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Outlook':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandOutlook.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/IconLightBrandOutlook.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'PowerPoint':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandPowerPoint.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/IconLightBrandPowerPoint.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Project':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandProject.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/IconLightBrandProject.svg'),
     label: 'ms project', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Words':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/IconLightBrandWord.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/IconLightBrandWord.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'SharePoint':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/sharepoint.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/sharepoint.svg'),
     label: 'SharePoint', x: dropContext.x, y: dropContext.y});
     break;
 
 
     case 'Jenkins':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/jenkins.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/jenkins.svg'),
     label: 'Jenkins', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Linux':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/linux.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/linux.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Windows':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/windows-logo.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/windows-logo.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Microsoft':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/microsoft-logo.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/microsoft-logo.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'PDF':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/pdf.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/pdf.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Image':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/10812-icon-Image-General.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/10812-icon-Image-General.svg'),
     label: 'image', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Power BI':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/fluent/software/powerbi.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/fluent/software/powerbi.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
@@ -4127,343 +4127,343 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
       case 'IoT Edge':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/iot/10186-icon-IoT Edge-IoT.svg'),
+        ({source: require('../../../public/IconCloud/azure/iot/10186-icon-IoT Edge-IoT.svg'),
           label: 'iot edge', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'App Group(WVD)':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/wvd-appgroup.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/wvd-appgroup.svg'),
           label: 'appgroup', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Windows Virtual Desktop':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/00327-icon-Windows Virtual Desktop-Other.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/00327-icon-Windows Virtual Desktop-Other.svg'),
           label: 'wvd', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Azure':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/60115-Icon-Azure.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/60115-Icon-Azure.svg'),
           label: '', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Azure DevOps':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10261-icon-Azure DevOps-DevOps.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/10261-icon-Azure DevOps-DevOps.svg'),
           label: 'Azure DevOps', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'ARM Template':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10009-icon-Templates-General.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/10009-icon-Templates-General.svg'),
           label: 'arm', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Azure LightHouse':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/00471-icon-Azure Lighthouse-Management-Governance.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/00471-icon-Azure Lighthouse-Management-Governance.svg'),
           label: 'lighthouse', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Azure Monitor':
         this.createPictureShape
-        ({source:  require('../../assets/IconCloud/azure/nondeployable/00001-icon-Monitor-Management-Governance.svg'),
+        ({source:  require('../../../public/IconCloud/azure/nondeployable/00001-icon-Monitor-Management-Governance.svg'),
           label: 'monitor', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Alert':
         this.createPictureShape
-        ({source:  require('../../assets/IconCloud/azure/nondeployable/00002-icon-Alerts-Management-Governance.svg'),
+        ({source:  require('../../../public/IconCloud/azure/nondeployable/00002-icon-Alerts-Management-Governance.svg'),
           label: 'alert', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Advisor':
         this.createPictureShape
-        ({source:require('../../assets/IconCloud/azure/nondeployable/00003-icon-Advisor-Management-Governance.svg'),
+        ({source:require('../../../public/IconCloud/azure/nondeployable/00003-icon-Advisor-Management-Governance.svg'),
           label: 'advisor', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Cost Management':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/00004-icon-Cost Management and Billing-Migrate.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/00004-icon-Cost Management and Billing-Migrate.svg'),
           label: 'cost', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Blueprint':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/00006-icon-Blueprints-Management-Governance.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/00006-icon-Blueprints-Management-Governance.svg'),
           label: 'blueprint', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Policy':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/eslz/10316-icon-Policy-Management-Governance.svg'),
+        ({source: require('../../../public/IconCloud/azure/eslz/10316-icon-Policy-Management-Governance.svg'),
           label: 'policy', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Activity Log':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/00007-icon-Activity Log-Management-Governance.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/00007-icon-Activity Log-Management-Governance.svg'),
           label: 'activity', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Metrics':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/00020-icon-Metrics-Management-Governance.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/00020-icon-Metrics-Management-Governance.svg'),
           label: 'metrics', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Monitoring Solution':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/00021-icon-Solutions-Management-Governance.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/00021-icon-Solutions-Management-Governance.svg'),
           label: 'solution', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Peering Service':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/00973-icon-Peering Service prefix-menu.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/00973-icon-Peering Service prefix-menu.svg'),
           label: 'peering service', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Universal Print':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/00631-icon-Universal Print Connectors-menu.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/00631-icon-Universal Print Connectors-menu.svg'),
           label: 'universal print', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Workbook':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/02189-icon-Azure Workbooks-Preview.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/02189-icon-Azure Workbooks-Preview.svg'),
           label: 'workbook', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Azure Defender':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/02247-icon-Azure Defender-Security.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/02247-icon-Azure Defender-Security.svg'),
           label: 'defender', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Backup Center':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/02360-icon-Azure Backup Center-Other.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/02360-icon-Azure Backup Center-Other.svg'),
           label: 'backup center', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Azure Dashboard':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10015-icon-Dashboard-General.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/10015-icon-Dashboard-General.svg'),
           label: 'dashboard', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Azure Data Studio':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/02558-icon-Azure Data Studio-menu.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/02558-icon-Azure Data Studio-menu.svg'),
           label: 'data studio', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Storage Explorer':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10091-icon-Storage Explorer-Storage.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/10091-icon-Storage Explorer-Storage.svg'),
           label: 'storage explorer', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Resource Graph Explorer':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10318-icon-Resource Graph Explorer-Management-Governance.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/10318-icon-Resource Graph Explorer-Management-Governance.svg'),
           label: 'resource graph explorer', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Resource Explorer':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10349-icon-Resource Explorer-General.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/10349-icon-Resource Explorer-General.svg'),
           label: 'resource explorer', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Cloud Shell':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/cloudshell.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/cloudshell.svg'),
           label: 'cloud shell', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Storage Block Blob':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10780-icon-Blob Block-General.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/10780-icon-Blob Block-General.svg'),
           label: 'block blob', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Storage Page Blob':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10781-icon-Blob Page-General.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/10781-icon-Blob Page-General.svg'),
           label: 'page blob', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Integration Account':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10218-icon-Integration Accounts-Integration.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/10218-icon-Integration Accounts-Integration.svg'),
           label: 'integration acct', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Azure Stack':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10114-icon-Azure Stack-Azure Stack.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/10114-icon-Azure Stack-Azure Stack.svg'),
           label: 'stack', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Azure SQL Stretch DB':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10137-icon-Azure SQL Server Stretch Databases-Databases.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/10137-icon-Azure SQL Server Stretch Databases-Databases.svg'),
           label: 'stretch db', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Azure Sphere':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10190-icon-Azure Sphere-Preview.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/10190-icon-Azure Sphere-Preview.svg'),
           label: 'sphere', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'VM Health':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/02648-icon-VM Health-menu.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/02648-icon-VM Health-menu.svg'),
           label: 'vm health', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Azure Service Health':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10004-icon-Service Health-General.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/10004-icon-Service Health-General.svg'),
           label: 'service health', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Azure Orbital':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/02697-icon-Azure Orbital-Preview.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/02697-icon-Azure Orbital-Preview.svg'),
           label: 'orbital', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Azure Kubernetes':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10023-icon-Kubernetes Services-Compute.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/10023-icon-Kubernetes Services-Compute.svg'),
           label: 'aks', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Cloud Service(classic)':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10030-icon-Cloud Services (Classic)-Compute.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/10030-icon-Cloud Services (Classic)-Compute.svg'),
           label: 'cloud service', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Network Watcher':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10066-icon-Network Watcher-Networking.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/10066-icon-Network Watcher-Networking.svg'),
           label: 'network watcher', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Subnet':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/02742-icon-Subnet-menu.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/02742-icon-Subnet-menu.svg'),
           label: 'subnet', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'VNet Peering':
         this.createPictureShape
-        ({source:require('../../assets/IconCloud/azure/nondeployable/02743-icon-Peerings-menu.svg'),
+        ({source:require('../../../public/IconCloud/azure/nondeployable/02743-icon-Peerings-menu.svg'),
           label: 'peering', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Nat Gateway':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10310-icon-NAT-Networking.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/10310-icon-NAT-Networking.svg'),
           label: 'nat gateway', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Service Endpoint':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/02578-icon-Service Endpoints-menu.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/02578-icon-Service Endpoints-menu.svg'),
           label: 'service endpoint', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Network Security Group':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10067-icon-Network Security Groups-Networking.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/10067-icon-Network Security Groups-Networking.svg'),
           label: 'nsg', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Route Table':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10082-icon-Route Tables-Networking.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/10082-icon-Route Tables-Networking.svg'),
           label: 'udr', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Kusto':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/Kusto.png'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/Kusto.png'),
           label: 'kusto', x: dropContext.x, y: dropContext.y});
       break;
 
       case 'Azure Arc':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/00756-icon-Azure Arc-Management-Governance.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/00756-icon-Azure Arc-Management-Governance.svg'),
           label: 'arc', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Azure AD':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/identity/10221-icon-Azure Active Directory-Identity.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/identity/10221-icon-Azure Active Directory-Identity.svg'),
           label: 'aad', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Azure AD B2C':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/identity/10228-icon-Azure AD B2C-Identity.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/identity/10228-icon-Azure AD B2C-Identity.svg'),
           label: 'b2c', x: dropContext.x, y: dropContext.y});
         break;
 
       case 'Azure Migrate':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10281-icon-Azure Migrate-Migrate.svg'),
+        ({source: require('../../../public/IconCloud/azure/nondeployable/10281-icon-Azure Migrate-Migrate.svg'),
           label: 'az migrate', x: dropContext.x, y: dropContext.y});
         break;
 
 
   case 'Custom Role':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/azure/eslz/02680-icon-Custom Azure AD Roles-Identity.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/azure/eslz/02680-icon-Custom Azure AD Roles-Identity.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Azure AD User License':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/02681-icon-AAD Licenses-Identity.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/azure/nondeployable/identity/02681-icon-AAD Licenses-Identity.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Group':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/10223-icon-Groups-Identity.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/azure/nondeployable/identity/10223-icon-Groups-Identity.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Enterprise App':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/10225-icon-Enterprise Applications-Identity.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/azure/nondeployable/identity/10225-icon-Enterprise Applications-Identity.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'Information Protection':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/10229-icon-Azure Information Protection-Identity.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/azure/nondeployable/identity/10229-icon-Azure Information Protection-Identity.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'App Registration':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/10232-icon-App Registrations-Identity.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/azure/nondeployable/identity/10232-icon-App Registrations-Identity.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
 
     case 'Conditional Access':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/10233-icon-Conditional Access-Security.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/azure/nondeployable/identity/10233-icon-Conditional Access-Security.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
     case 'PIM':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/10234-icon-Azure AD Privilege Identity Management-Identity.svg'),
+    this.createPictureShape ({ source: require('../../../public/IconCloud/azure/nondeployable/identity/10234-icon-Azure AD Privilege Identity Management-Identity.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
@@ -4472,7 +4472,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new ResourceGroup();
         rsc.ProvisionContext.ResourceType = ResourceType.ResourceGroup();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/eslz/10007-icon-Resource Groups-General.svg'),
+          source: require('../../../public/IconCloud/azure/eslz/10007-icon-Resource Groups-General.svg'),
           label: 'resource group', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4482,7 +4482,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new ManagementGroup();
         rsc.ProvisionContext.ResourceType = ResourceType.ManagementGroup();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/eslz/10011-icon-Management Groups-General.svg'),
+          source: require('../../../public/IconCloud/azure/eslz/10011-icon-Management Groups-General.svg'),
           label: 'management group', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4492,7 +4492,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new Subscription();
         rsc.ProvisionContext.ResourceType = ResourceType.Subscription();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/eslz/10002-icon-Subscriptions-General.svg'),
+          source: require('../../../public/IconCloud/azure/eslz/10002-icon-Subscriptions-General.svg'),
           label: 'subscription', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4502,7 +4502,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new ContainerApps();
         rsc.ProvisionContext.ResourceType = ResourceType.ContainerApps();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/container/02884-icon-Worker Container App-Preview.svg'),
+          source: require('../../../public/IconCloud/azure/container/02884-icon-Worker Container App-Preview.svg'),
           label: 'container apps', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4512,7 +4512,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new ImportExportJob();
         rsc.ProvisionContext.ResourceType = ResourceType.ImportExportJob();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/data_storage/10100-icon-Import Export Jobs-Storage.svg'),
+          source: require('../../../public/IconCloud/azure/data_storage/10100-icon-Import Export Jobs-Storage.svg'),
           label: 'import/export job', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4522,7 +4522,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new VNetPeering();
         rsc.ProvisionContext.ResourceType = ResourceType.VNetPeering();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/02743-icon-Peerings-menu.svg'),
+          source: require('../../../public/IconCloud/azure/network/02743-icon-Peerings-menu.svg'),
           label: 'vnet peer', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4532,7 +4532,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new CommunicationService();
         rsc.ProvisionContext.ResourceType = ResourceType.CommunicationService();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/integration/00968-icon-Azure Communication Services-Other.svg'),
+          source: require('../../../public/IconCloud/azure/integration/00968-icon-Azure Communication Services-Other.svg'),
           label: 'communication service', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4542,7 +4542,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new DeviceProvisioningService();
         rsc.ProvisionContext.ResourceType = ResourceType.DeviceProvisioningService();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/iot/10369-icon-Device Provisioning Services-IoT.svg'),
+          source: require('../../../public/IconCloud/azure/iot/10369-icon-Device Provisioning Services-IoT.svg'),
           label: 'device provisioning service', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4552,7 +4552,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new DeviceUpdateForIoTHub();
         rsc.ProvisionContext.ResourceType = ResourceType.DeviceUpdateForIoTHub();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/iot/02475-icon-Device Update IoT Hub-IoT.svg'),
+          source: require('../../../public/IconCloud/azure/iot/02475-icon-Device Update IoT Hub-IoT.svg'),
           label: 'device update for iot hub', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4562,7 +4562,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new DigitalTwins();
         rsc.ProvisionContext.ResourceType = ResourceType.DigitalTwins();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/iot/01030-icon-Digital Twins-IoT.svg'),
+          source: require('../../../public/IconCloud/azure/iot/01030-icon-Digital Twins-IoT.svg'),
           label: 'digital twins', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4572,7 +4572,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new TimeSeriesInsightsEventSource();
         rsc.ProvisionContext.ResourceType = ResourceType.TimeSeriesInsightsEventSource();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/iot/10188-icon-Time Series Insights Event Sources-IoT.svg'),
+          source: require('../../../public/IconCloud/azure/iot/10188-icon-Time Series Insights Event Sources-IoT.svg'),
           label: 'time series insights event source', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4582,7 +4582,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new EventHubCluster();
         rsc.ProvisionContext.ResourceType = ResourceType.EventHubCluster();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/iot/10149-icon-Event Hub Clusters-Analytics.svg'),
+          source: require('../../../public/IconCloud/azure/iot/10149-icon-Event Hub Clusters-Analytics.svg'),
           label: 'event hub cluster', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4592,7 +4592,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new LogicAppCustomConnector();
         rsc.ProvisionContext.ResourceType = ResourceType.LogicAppCustomConnector();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/integration/10363-icon-Logic Apps Custom Connector-Integration.svg'),
+          source: require('../../../public/IconCloud/azure/integration/10363-icon-Logic Apps Custom Connector-Integration.svg'),
           label: 'logic app custom connector', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4602,7 +4602,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new ProximityPlacementGroup();
         rsc.ProvisionContext.ResourceType = ResourceType.ProximityPlacementGroup();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/10365-icon-Proximity Placement Groups-Networking.svg'),
+          source: require('../../../public/IconCloud/azure/network/10365-icon-Proximity Placement Groups-Networking.svg'),
           label: 'proximity placement group', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4612,7 +4612,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new AvailabilitySet();
         rsc.ProvisionContext.ResourceType = ResourceType.AvailabilitySet();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/10025-icon-Availability Sets-Compute.svg'),
+          source: require('../../../public/IconCloud/azure/network/10025-icon-Availability Sets-Compute.svg'),
           label: 'availability set', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4622,7 +4622,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new WAF();
         rsc.ProvisionContext.ResourceType = ResourceType.WAF();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/10362-icon-Web Application Firewall Policies(WAF)-Networking.svg'),
+          source: require('../../../public/IconCloud/azure/network/10362-icon-Web Application Firewall Policies(WAF)-Networking.svg'),
           label: 'waf', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4632,7 +4632,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new RouteFilters();
         rsc.ProvisionContext.ResourceType = ResourceType.RouteFilters();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/10071-icon-Route Filters-Networking.svg'),
+          source: require('../../../public/IconCloud/azure/network/10071-icon-Route Filters-Networking.svg'),
           label: 'route filters', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4642,7 +4642,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new NetworkManager();
         rsc.ProvisionContext.ResourceType = ResourceType.NetworkManager();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/02237-icon-Azure Network Manager-Preview.svg'),
+          source: require('../../../public/IconCloud/azure/network/02237-icon-Azure Network Manager-Preview.svg'),
           label: 'network manager', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4652,7 +4652,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new AMPLS();
         rsc.ProvisionContext.ResourceType = ResourceType.AMPLS();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/01036-icon-Azure Monitor Private Link Scope-menu.svg'),
+          source: require('../../../public/IconCloud/azure/network/01036-icon-Azure Monitor Private Link Scope-menu.svg'),
           label: 'ampls', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4662,7 +4662,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new IPGroups();
         rsc.ProvisionContext.ResourceType = ResourceType.IPGroup();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/00701-icon-IP Groups-Networking.svg'),
+          source: require('../../../public/IconCloud/azure/network/00701-icon-IP Groups-Networking.svg'),
           label: 'ip group', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4672,7 +4672,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new PrivateLink();
         rsc.ProvisionContext.ResourceType = ResourceType.PrivateLink();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/00427-icon-Private Link-Networking.svg'),
+          source: require('../../../public/IconCloud/azure/network/00427-icon-Private Link-Networking.svg'),
           label: 'private link', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4682,7 +4682,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new LocalNetworkGateway();
         rsc.ProvisionContext.ResourceType = ResourceType.LocalNetworkGateway();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/10077-icon-Local Network Gateways-Networking.svg'),
+          source: require('../../../public/IconCloud/azure/network/10077-icon-Local Network Gateways-Networking.svg'),
           label: 'local network gateway', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4692,7 +4692,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new PublicIpPrefixes();
         rsc.ProvisionContext.ResourceType = ResourceType.PublicIpPrefixes();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/10372-icon-Public IP Prefixes-Networking.svg'),
+          source: require('../../../public/IconCloud/azure/network/10372-icon-Public IP Prefixes-Networking.svg'),
           label: 'publicip prefixes', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4702,7 +4702,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new Host();
         rsc.ProvisionContext.ResourceType = ResourceType.Host();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/compute/10347-icon-Hosts-Compute.svg'),
+          source: require('../../../public/IconCloud/azure/compute/10347-icon-Hosts-Compute.svg'),
           label: 'host', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4712,7 +4712,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new Hostgroup();
         rsc.ProvisionContext.ResourceType = ResourceType.Hostgroup();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/compute/10346-icon-Host Groups-Compute.svg'),
+          source: require('../../../public/IconCloud/azure/compute/10346-icon-Host Groups-Compute.svg'),
           label: 'host group', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4722,7 +4722,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new VMWareSolution();
         rsc.ProvisionContext.ResourceType = ResourceType.VMWareSolution();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/compute/00524-icon-AVS-Azure VMware Solution.svg'),
+          source: require('../../../public/IconCloud/azure/compute/00524-icon-AVS-Azure VMware Solution.svg'),
           label: 'avs', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4732,7 +4732,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new WorkspaceWVD();
         rsc.ProvisionContext.ResourceType = ResourceType.WorkspaceWVD();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/compute/00330-icon-Workspaces-menu.svg'),
+          source: require('../../../public/IconCloud/azure/compute/00330-icon-Workspaces-menu.svg'),
           label: 'workspace', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4742,7 +4742,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new DiskEncryptionSet();
         rsc.ProvisionContext.ResourceType = ResourceType.DiskEncryptionSet();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/compute/00398-icon-Disk Encryption Sets-Compute.svg'),
+          source: require('../../../public/IconCloud/azure/compute/00398-icon-Disk Encryption Sets-Compute.svg'),
           label: 'image', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4752,7 +4752,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new VMImage();
         rsc.ProvisionContext.ResourceType = ResourceType.VMImage();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/compute/10033-icon-Images-Compute.svg'),
+          source: require('../../../public/IconCloud/azure/compute/10033-icon-Images-Compute.svg'),
           label: 'image', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4762,7 +4762,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new DiskSnapshot();
         rsc.ProvisionContext.ResourceType = ResourceType.DiskSnapshot();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/compute/10026-icon-Disks Snapshots-Compute.svg'),
+          source: require('../../../public/IconCloud/azure/compute/10026-icon-Disks Snapshots-Compute.svg'),
           label: 'disk snapshot', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4772,7 +4772,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new ImageTemplate();
         rsc.ProvisionContext.ResourceType = ResourceType.ImageTemplate();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/compute/02634-icon-Image Templates-Compute.svg'),
+          source: require('../../../public/IconCloud/azure/compute/02634-icon-Image Templates-Compute.svg'),
           label: 'image template', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4782,7 +4782,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new Automanage();
         rsc.ProvisionContext.ResourceType = ResourceType.Automanage();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/compute/02112-icon-Automanaged VM-Compute.svg'),
+          source: require('../../../public/IconCloud/azure/compute/02112-icon-Automanaged VM-Compute.svg'),
           label: 'automanage', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4792,7 +4792,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new LabService();
         rsc.ProvisionContext.ResourceType = ResourceType.LabService();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/compute/10265-icon-Lab Services-DevOps.svg'),
+          source: require('../../../public/IconCloud/azure/compute/10265-icon-Lab Services-DevOps.svg'),
           label: 'lab service', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4801,7 +4801,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new AzureBatch();
         rsc.ProvisionContext.ResourceType = ResourceType.Batch();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/compute/10031-icon-Batch Accounts-Containers.svg'),
+          source: require('../../../public/IconCloud/azure/compute/10031-icon-Batch Accounts-Containers.svg'),
           label: 'batch account', x: dropContext.x, y: dropContext.y,
           azcontext: new AzureBatch()
         });
@@ -4811,7 +4811,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new DataBoxEdge();
         rsc.ProvisionContext.ResourceType = ResourceType.DataboxEdge();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/data_storage/10095-icon-Data Box Edge-Migrate.svg'),
+          source: require('../../../public/IconCloud/azure/data_storage/10095-icon-Data Box Edge-Migrate.svg'),
           label: 'data box edge', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4820,7 +4820,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new StorSimpleDataManager();
         rsc.ProvisionContext.ResourceType = ResourceType.StorSimpleDataManager();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/data_storage/10092-icon-StorSimple Data Managers-Storage.svg'),
+          source: require('../../../public/IconCloud/azure/data_storage/10092-icon-StorSimple Data Managers-Storage.svg'),
           label: 'storesimple data manager', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4829,7 +4829,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new OnPremDataGateway();
         rsc.ProvisionContext.ResourceType = ResourceType.OnPremDataGateway();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/data_storage/10070-icon-On Premises Data Gateways-Networking.svg'),
+          source: require('../../../public/IconCloud/azure/data_storage/10070-icon-On Premises Data Gateways-Networking.svg'),
           label: 'on-prem data gateway', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4838,7 +4838,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new PurviewAccount();
         rsc.ProvisionContext.ResourceType = ResourceType.PurviewAccount();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/data_storage/02517-icon-Azure Purview Accounts-other.svg'),
+          source: require('../../../public/IconCloud/azure/data_storage/02517-icon-Azure Purview Accounts-other.svg'),
           label: 'purview', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4847,7 +4847,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new AzureStackEdge();
         rsc.ProvisionContext.ResourceType = ResourceType.AzureStackEdge();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/data_storage/00691-icon-Azure Stack Edge-Storage.svg'),
+          source: require('../../../public/IconCloud/azure/data_storage/00691-icon-Azure Stack Edge-Storage.svg'),
           label: 'stack edge', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4856,7 +4856,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new BackupVault();
         rsc.ProvisionContext.ResourceType = ResourceType.BackupVault();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/data_storage/02361-icon-Backup Vault-menu.svg'),
+          source: require('../../../public/IconCloud/azure/data_storage/02361-icon-Backup Vault-menu.svg'),
           label: 'backup vault', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4865,7 +4865,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new StaticApp();
         rsc.ProvisionContext.ResourceType = ResourceType.StaticApp();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/appservices/01007-icon-Static Apps-Preview.svg'),
+          source: require('../../../public/IconCloud/azure/appservices/01007-icon-Static Apps-Preview.svg'),
           label: 'static app', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4874,7 +4874,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new AnalysisService();
         rsc.ProvisionContext.ResourceType = ResourceType.AnalysisService();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/data_analytics/10148-icon-Analysis Services-Analytics.svg'),
+          source: require('../../../public/IconCloud/azure/data_analytics/10148-icon-Analysis Services-Analytics.svg'),
           label: 'analysis service', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4883,7 +4883,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new AppServicePlan();
         rsc.ProvisionContext.ResourceType = ResourceType.AppServicePlan();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/appservices/00046-icon-App Service Plans-App Services.svg'),
+          source: require('../../../public/IconCloud/azure/appservices/00046-icon-App Service Plans-App Services.svg'),
           label: 'app service plan', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4892,7 +4892,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new AzureFirewallManager();
         rsc.ProvisionContext.ResourceType = ResourceType.FirewallManager();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/00271-icon-Azure Firewall Manager-Networking.svg'),
+          source: require('../../../public/IconCloud/azure/network/00271-icon-Azure Firewall Manager-Networking.svg'),
           label: 'firewall manager', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4901,7 +4901,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         var rsc = new MediaService();
         rsc.ProvisionContext.ResourceType = ResourceType.MediaService();
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/appservices/10309-icon-Azure Media Service-Web.svg'),
+          source: require('../../../public/IconCloud/azure/appservices/10309-icon-Azure Media Service-Web.svg'),
           label: 'media service', x: dropContext.x, y: dropContext.y,
           azcontext: rsc
         });
@@ -4915,42 +4915,42 @@ loadPastedImageFromBrowserClipboard(src, callback){
       break;
       case ResourceType.DataCatalog():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/data_storage/10216-icon-Azure Data Catalog-Integration.svg'),
+          source: require('../../../public/IconCloud/azure/data_storage/10216-icon-Azure Data Catalog-Integration.svg'),
           label: 'data catalog', x: dropContext.x, y: dropContext.y,
           azcontext: new DataCatalog()
         });
       break;
       case ResourceType.DataShare():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/data_storage//10098-icon-Data Shares-Storage.svg'),
+          source: require('../../../public/IconCloud/azure/data_storage//10098-icon-Data Shares-Storage.svg'),
           label: 'data share', x: dropContext.x, y: dropContext.y,
           azcontext: new DataShare()
         });
       break;
       case ResourceType.ManagedIdentity():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/security_identity/10227-icon-Managed Identities-Identity.svg'),
+          source: require('../../../public/IconCloud/azure/security_identity/10227-icon-Managed Identities-Identity.svg'),
           label: 'user assigned managed identity', x: dropContext.x, y: dropContext.y,
           azcontext: new ManagedIdentity()
         });
       break;
       case ResourceType.VirtualWAN():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/10353-icon-Virtual WANs-Networking.svg'),
+          source: require('../../../public/IconCloud/azure/network/10353-icon-Virtual WANs-Networking.svg'),
           label: 'virtual wan', x: dropContext.x, y: dropContext.y,
           azcontext: new VirtualWAN()
         });
       break;
       case ResourceType.Blockchain():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/blockchain/10366-icon-Azure Blockchain Service-Blockchain.svg'),
+          source: require('../../../public/IconCloud/azure/blockchain/10366-icon-Azure Blockchain Service-Blockchain.svg'),
           label: 'blockchain service', x: dropContext.x, y: dropContext.y,
           azcontext: new Blockchain()
         });
       break;
       case ResourceType.AppService():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/appservices/10035-icon-App Services-App Services.svg'),
+          source: require('../../../public/IconCloud/azure/appservices/10035-icon-App Services-App Services.svg'),
           label: 'app service', x: dropContext.x, y: dropContext.y,
           azcontext: new AppService()
         });
@@ -4960,84 +4960,84 @@ loadPastedImageFromBrowserClipboard(src, callback){
         break;
       case ResourceType.Function():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/appservices/10029-icon-Function Apps-IoT.svg'),
+          source: require('../../../public/IconCloud/azure/appservices/10029-icon-Function Apps-IoT.svg'),
           label: 'func', x: dropContext.x, y: dropContext.y,
           azcontext: new Function()
         });
         break;
       case ResourceType.AzureSearch():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/appservices/10044-icon-Search Services-App Services.svg'),
+          source: require('../../../public/IconCloud/azure/appservices/10044-icon-Search Services-App Services.svg'),
           label: 'azure search', x: dropContext.x, y: dropContext.y,
           azcontext: new AzureSearch()
         });
         break;
       case ResourceType.SignalR():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/appservices/10052-icon-SignalR-Web.svg'),
+          source: require('../../../public/IconCloud/azure/appservices/10052-icon-SignalR-Web.svg'),
           label: 'signalr', x: dropContext.x, y: dropContext.y,
           azcontext: new SignalR()
         });
         break;
       case ResourceType.AppServiceCert():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/appservices/00049-icon-App Service Certificates-App Services.svg'),
+          source: require('../../../public/IconCloud/azure/appservices/00049-icon-App Service Certificates-App Services.svg'),
           label: 'app service certificate', x: dropContext.x, y: dropContext.y,
           azcontext: new AppServiceCert()
         });
         break;
       case ResourceType.AppServiceDomain():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/appservices/00050-icon-App Service Domains-App Services.svg'),
+          source: require('../../../public/IconCloud/azure/appservices/00050-icon-App Service Domains-App Services.svg'),
           label: 'app service domain', x: dropContext.x, y: dropContext.y,
           azcontext: new AppServiceDomain()
         });
         break;
         case ResourceType.NotificationHub():
           this.createNonVIRAzureResource({
-            source: require('../../assets/IconCloud/azure/appservices/10045-icon-Notification Hubs-App Services.svg'),
+            source: require('../../../public/IconCloud/azure/appservices/10045-icon-Notification Hubs-App Services.svg'),
             label: 'notification hub', x: dropContext.x, y: dropContext.y,
             azcontext: new NotificationHub()
           });
           break;
       case ResourceType.AppConfig():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/integration/10219-icon-App Configuration-Integration.svg'),
+          source: require('../../../public/IconCloud/azure/integration/10219-icon-App Configuration-Integration.svg'),
           label: 'app configuration', x: dropContext.x, y: dropContext.y,
           azcontext: new AppConfig()
         });
         break;
         case ResourceType.DedicatedHost():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/compute/10346-icon-Host Groups-Compute.svg'),
+          source: require('../../../public/IconCloud/azure/compute/10346-icon-Host Groups-Compute.svg'),
           label: 'dedicated host', x: dropContext.x, y: dropContext.y,
           azcontext: new DedicatedHost()
         });
         break;
       case ResourceType.SharedImageGallery():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/compute/10039-icon-Shared Image Galleries-Compute.svg'),
+          source: require('../../../public/IconCloud/azure/compute/10039-icon-Shared Image Galleries-Compute.svg'),
           label: 'shared image gallery', x: dropContext.x, y: dropContext.y,
           azcontext: new SharedImageGallery()
         });
         break;
       case ResourceType.DevTestLab():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/compute/10264-icon-DevTest Labs-DevOps.svg'),
+          source: require('../../../public/IconCloud/azure/compute/10264-icon-DevTest Labs-DevOps.svg'),
           label: 'devtest lab', x: dropContext.x, y: dropContext.y,
           azcontext: new DevTestLab()
         });
         break;
       case ResourceType.PublicIp():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/10069-icon-Public IP Addresses-Networking.svg'),
+          source: require('../../../public/IconCloud/azure/network/10069-icon-Public IP Addresses-Networking.svg'),
           label: 'public ip', x: dropContext.x, y: dropContext.y,
           azcontext: new PublicIp()
         });
         break;
       case ResourceType.TrafficManager():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/10065-icon-Traffic Manager Profiles-Networking.svg'),
+          source: require('../../../public/IconCloud/azure/network/10065-icon-Traffic Manager Profiles-Networking.svg'),
           label: 'traffic manager', x: dropContext.x, y: dropContext.y,
           azcontext: new TrafficManager()
         });
@@ -5045,21 +5045,21 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
       case ResourceType.CDN():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/00056-icon-CDN Profiles-Networking.svg'),
+          source: require('../../../public/IconCloud/azure/network/00056-icon-CDN Profiles-Networking.svg'),
           label: 'cdn', x: dropContext.x, y: dropContext.y,
           azcontext: new AzureCDN()
         });
         break;
         case ResourceType.ASG():
           this.createNonVIRAzureResource({
-            source: require('../../assets/IconCloud/azure/security_identity/10244-icon-Application Security Groups-Security.svg'),
+            source: require('../../../public/IconCloud/azure/security_identity/10244-icon-Application Security Groups-Security.svg'),
             label: 'asg', x: dropContext.x, y: dropContext.y,
             azcontext: new ASG()
           });
         break;
       case ResourceType.NIC():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/10080-icon-Network Interfaces-Networking.svg'),
+          source: require('../../../public/IconCloud/azure/network/10080-icon-Network Interfaces-Networking.svg'),
           label: 'nic', x: dropContext.x, y: dropContext.y,
           azcontext: new NIC()
         });
@@ -5067,49 +5067,49 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
       case ResourceType.StorageAccount():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/data_storage/10086-icon-Storage Accounts-Storage.svg'),
+          source: require('../../../public/IconCloud/azure/data_storage/10086-icon-Storage Accounts-Storage.svg'),
           label: 'storage account', x: dropContext.x, y: dropContext.y,
           azcontext: new StorageAccount()
         });
         break;
       case ResourceType.Databox():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/data_storage/10094-icon-Data Box-Migrate.svg'),
+          source: require('../../../public/IconCloud/azure/data_storage/10094-icon-Data Box-Migrate.svg'),
           label: 'databox', x: dropContext.x, y: dropContext.y,
           azcontext: new Databox()
         });
         break;
       case ResourceType.PostgreSQL():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/databases/10131-icon-Azure Database PostgreSQL Server-Databases.svg'),
+          source: require('../../../public/IconCloud/azure/databases/10131-icon-Azure Database PostgreSQL Server-Databases.svg'),
           label: 'postgresql', x: dropContext.x, y: dropContext.y,
           azcontext: new PostgreSQL()
         });
         break;
       case ResourceType.MariaDB():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/databases/10123-icon-Azure Database MariaDB Server-Databases.svg'),
+          source: require('../../../public/IconCloud/azure/databases/10123-icon-Azure Database MariaDB Server-Databases.svg'),
           label: 'mariadb', x: dropContext.x, y: dropContext.y,
           azcontext: new MariaDB()
         });
         break;
       case ResourceType.SQLDB():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/databases/10130-icon-SQL Database-Databases.svg'),
+          source: require('../../../public/IconCloud/azure/databases/10130-icon-SQL Database-Databases.svg'),
           label: 'sql db', x: dropContext.x, y: dropContext.y,
           azcontext: new SQLDB()
         });
         break;
       case ResourceType.ElasticJobAgent():
           this.createNonVIRAzureResource({
-            source: require('../../assets/IconCloud/azure/databases/10128-icon-Elastic Job Agents-Databases.svg'),
+            source: require('../../../public/IconCloud/azure/databases/10128-icon-Elastic Job Agents-Databases.svg'),
             label: 'elastic job agent', x: dropContext.x, y: dropContext.y,
             azcontext: new ElasticJobAgent()
           });
         break;
       case ResourceType.CosmosDB():
           this.createNonVIRAzureResource({
-          source:require('../../assets/IconCloud/azure/databases/10121-icon-Azure Cosmos DB-Databases.svg'),
+          source:require('../../../public/IconCloud/azure/databases/10121-icon-Azure Cosmos DB-Databases.svg'),
           label: 'cosmos db', x: dropContext.x, y: dropContext.y,
           azcontext: new Cosmos()
         });
@@ -5132,49 +5132,49 @@ loadPastedImageFromBrowserClipboard(src, callback){
         break;
       case ResourceType.DNS():
           this.createNonVIRAzureResource({
-            source: require('../../assets/IconCloud/azure/network/10064-icon-DNS Zones-Networking.svg'),
+            source: require('../../../public/IconCloud/azure/network/10064-icon-DNS Zones-Networking.svg'),
             label: 'dns zone', x: dropContext.x, y: dropContext.y,
             azcontext: new DNS()
           });
           break;
       case ResourceType.DNSPrivateZone():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/10064-icon-DNS Zones-Networking.svg'),
+          source: require('../../../public/IconCloud/azure/network/10064-icon-DNS Zones-Networking.svg'),
           label: 'private dns zone', x: dropContext.x, y: dropContext.y,
           azcontext: new DNSPrivateZone()
         });
         break;
       case ResourceType.FrontDoor():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/10073-icon-Front Doors-Networking.svg'),
+          source: require('../../../public/IconCloud/azure/network/10073-icon-Front Doors-Networking.svg'),
           label: 'front door', x: dropContext.x, y: dropContext.y,
           azcontext: new FrontDoor()
         });
         break;
       case ResourceType.ExpressRouteCircuit():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/network/10079-icon-ExpressRoute Circuits-Networking.svg'),
+          source: require('../../../public/IconCloud/azure/network/10079-icon-ExpressRoute Circuits-Networking.svg'),
           label: 'expressroute circuit', x: dropContext.x, y: dropContext.y,
           azcontext: new ExpressRouteCircuit()
         });
         break;
       case ResourceType.AzFileSync():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/data_storage/10093-icon-Storage Sync Services-Storage.svg'),
+          source: require('../../../public/IconCloud/azure/data_storage/10093-icon-Storage Sync Services-Storage.svg'),
           label: 'storage sync service', x: dropContext.x, y: dropContext.y,
           azcontext: new FileSync()
         });
         break;
       case ResourceType.MySQL():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/databases/10122-icon-Azure Database MySQL Server-Databases.svg'),
+          source: require('../../../public/IconCloud/azure/databases/10122-icon-Azure Database MySQL Server-Databases.svg'),
           label: 'mysql', x: dropContext.x, y: dropContext.y,
           azcontext: new MySQL()
         });
         break;
       case ResourceType.SQLElasticPool():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/databases/10134-icon-SQL Elastic Pools-Databases.svg'),
+          source: require('../../../public/IconCloud/azure/databases/10134-icon-SQL Elastic Pools-Databases.svg'),
           label: 'elastic db pool', x: dropContext.x, y: dropContext.y,
           azcontext: new SQLElasticPool()
         });
@@ -5191,7 +5191,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
         break;
       case ResourceType.Synapse():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/data_analytics/00606-icon-Azure Synapse Analytics-Analytics.svg'),
+          source: require('../../../public/IconCloud/azure/data_analytics/00606-icon-Azure Synapse Analytics-Analytics.svg'),
           label: 'synapse', x: dropContext.x, y: dropContext.y,
           azcontext: new SynapseAnalytics()
         });
@@ -5199,7 +5199,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
       case ResourceType.DataExplorer():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/data_storage/10145-icon-Azure Data Explorer Clusters-Databases.svg'),
+          source: require('../../../public/IconCloud/azure/data_storage/10145-icon-Azure Data Explorer Clusters-Databases.svg'),
           label: 'data explorer', x: dropContext.x, y: dropContext.y,
           azcontext: new DataExplorer()
         });
@@ -5207,7 +5207,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
       case ResourceType.Databricks():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/data_analytics/10787-icon-Azure Databricks-Analytics.svg'),
+          source: require('../../../public/IconCloud/azure/data_analytics/10787-icon-Azure Databricks-Analytics.svg'),
           label: 'databricks', x: dropContext.x, y: dropContext.y,
           azcontext: new Databricks()
         });
@@ -5215,7 +5215,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
       case ResourceType.DataFactory():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/data_storage/10126-icon-Data Factory-Databases.svg'),
+          source: require('../../../public/IconCloud/azure/data_storage/10126-icon-Data Factory-Databases.svg'),
           label: 'data factory', x: dropContext.x, y: dropContext.y,
           azcontext: new DataFactory()
         });
@@ -5223,14 +5223,14 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
       case ResourceType.DataLakeAnalytics():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/data_analytics/10143-icon-Data Lake Analytics-Analytics.svg'),
+          source: require('../../../public/IconCloud/azure/data_analytics/10143-icon-Data Lake Analytics-Analytics.svg'),
           label: 'datalake analytics', x: dropContext.x, y: dropContext.y,
           azcontext: new DataLakeAnalytics()
         });
         break;
       case ResourceType.HdInsight():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/data_analytics/10142-icon-HD Insight Clusters-Analytics.svg'),
+          source: require('../../../public/IconCloud/azure/data_analytics/10142-icon-HD Insight Clusters-Analytics.svg'),
           label: 'hdinsight', x: dropContext.x, y: dropContext.y,
           azcontext: new HdInsight()
         });
@@ -5238,28 +5238,28 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
       case ResourceType.Cognitive():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/ai_ml/10162-icon-Cognitive Services-AI-Machine Learning.svg'),
+          source: require('../../../public/IconCloud/azure/ai_ml/10162-icon-Cognitive Services-AI-Machine Learning.svg'),
           label: 'cognitive', x: dropContext.x, y: dropContext.y,
           azcontext: new Cognitive()
         });
         break;
       case ResourceType.BotsService():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/ai_ml/10165-icon-Bot Services-AI-Machine Learning.svg'),
+          source: require('../../../public/IconCloud/azure/ai_ml/10165-icon-Bot Services-AI-Machine Learning.svg'),
           label: 'bot service', x: dropContext.x, y: dropContext.y,
           azcontext: new BotsService()
         });
         break;
       case ResourceType.Genomics():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/ai_ml/10164-icon-Genomics Accounts-AI-Machine Learning.svg'),
+          source: require('../../../public/IconCloud/azure/ai_ml/10164-icon-Genomics Accounts-AI-Machine Learning.svg'),
           label: 'genomics', x: dropContext.x, y: dropContext.y,
           azcontext: new Genomics()
         });
         break;
       case ResourceType.MLServiceWorkspace():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/ai_ml/10166-icon-Machine Learning-AI-Machine Learning.svg'),
+          source: require('../../../public/IconCloud/azure/ai_ml/10166-icon-Machine Learning-AI-Machine Learning.svg'),
           label: 'ml', x: dropContext.x, y: dropContext.y,
           azcontext: new MLServiceWorkspace()
         });
@@ -5267,14 +5267,14 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
       case ResourceType.ContainerInstance():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/container/10104-icon-Container Instances-Containers.svg'),
+          source: require('../../../public/IconCloud/azure/container/10104-icon-Container Instances-Containers.svg'),
           label: 'container instance', x: dropContext.x, y: dropContext.y,
           azcontext: new ContainerInstance()
         });
         break;
       case ResourceType.ContainerRegistry():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/container/10105-icon-Container Registries-Containers.svg'),
+          source: require('../../../public/IconCloud/azure/container/10105-icon-Container Registries-Containers.svg'),
           label: 'container registry', x: dropContext.x, y: dropContext.y,
           azcontext: new ContainerRegistry()
         });
@@ -5283,63 +5283,63 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
       case ResourceType.ASB():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/integration/10836-icon-Service Bus-Integration.svg'),
+          source: require('../../../public/IconCloud/azure/integration/10836-icon-Service Bus-Integration.svg'),
           label: 'service bus', x: dropContext.x, y: dropContext.y,
           azcontext: new ServiceBus()
         });
         break;
       case ResourceType.LogicApp():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/integration/10201-icon-Logic Apps-IoT.svg'),
+          source: require('../../../public/IconCloud/azure/integration/10201-icon-Logic Apps-IoT.svg'),
           label: 'logic app', x: dropContext.x, y: dropContext.y,
           azcontext: new LogicApp()
         });
         break;
       case ResourceType.EventGridTopic():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/integration/10206-icon-Event Grid Topics-Integration.svg'),
+          source: require('../../../public/IconCloud/azure/integration/10206-icon-Event Grid Topics-Integration.svg'),
           label: 'event grid topic', x: dropContext.x, y: dropContext.y,
           azcontext: new EventGridTopic()
         });
         break;
       case ResourceType.EventGridSubscription():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/integration/10221-icon-Event Grid Subscriptions-Integration.svg'),
+          source: require('../../../public/IconCloud/azure/integration/10221-icon-Event Grid Subscriptions-Integration.svg'),
           label: 'event grid subscription', x: dropContext.x, y: dropContext.y,
           azcontext: new EventGridSubscription()
         });
         break;
       case ResourceType.EventGridDomain():
           this.createNonVIRAzureResource({
-            source: require('../../assets/IconCloud/azure/integration/10215-icon-Event Grid Domains-Integration.svg'),
+            source: require('../../../public/IconCloud/azure/integration/10215-icon-Event Grid Domains-Integration.svg'),
             label: 'event grid domain', x: dropContext.x, y: dropContext.y,
             azcontext: new EventGridDomain()
           });
           break;
       case ResourceType.StreamAnalytics():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/iot/00042-icon-Stream Analytics Jobs-IoT.svg'),
+          source: require('../../../public/IconCloud/azure/iot/00042-icon-Stream Analytics Jobs-IoT.svg'),
           label: 'stream analytics', x: dropContext.x, y: dropContext.y,
           azcontext: new StreamAnalytics()
         });
         break;
       case ResourceType.EventHub():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/iot/00039-icon-Event Hubs-IoT.svg'),
+          source: require('../../../public/IconCloud/azure/iot/00039-icon-Event Hubs-IoT.svg'),
           label: 'event hub', x: dropContext.x, y: dropContext.y,
           azcontext: new EventHub()
         });
         break;
       case ResourceType.SendGrid():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/integration/10220-icon-SendGrid Accounts-Integration.svg'),
+          source: require('../../../public/IconCloud/azure/integration/10220-icon-SendGrid Accounts-Integration.svg'),
           label: 'sendgrid', x: dropContext.x, y: dropContext.y,
           azcontext: new SendGrid()
         });
         break;
       case ResourceType.Relay():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/integration/10209-icon-Relays-Integration.svg'),
+          source: require('../../../public/IconCloud/azure/integration/10209-icon-Relays-Integration.svg'),
           label: 'relay', x: dropContext.x, y: dropContext.y,
           azcontext: new Relay()
         });
@@ -5350,28 +5350,28 @@ loadPastedImageFromBrowserClipboard(src, callback){
       //   break;
       case ResourceType.Sentinel():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/security_identity/10248-icon-Azure Sentinel-Security.svg'),
+          source: require('../../../public/IconCloud/azure/security_identity/10248-icon-Azure Sentinel-Security.svg'),
           label: 'sentinel', x: dropContext.x, y: dropContext.y,
           azcontext: new Sentinel()
         });
         break;
       case ResourceType.KeyVault():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/security_identity/10245-icon-Key Vaults-Security.svg'),
+          source: require('../../../public/IconCloud/azure/security_identity/10245-icon-Key Vaults-Security.svg'),
           label: 'key vault', x: dropContext.x, y: dropContext.y,
           azcontext: new KeyVault()
         });
         break;
       case ResourceType.SecurityCenter():
         this.createNonVIRAzureResource({
-          source:  require('../../assets/IconCloud/azure/security_identity/10241-icon-Security Center-Security.svg'),
+          source:  require('../../../public/IconCloud/azure/security_identity/10241-icon-Security Center-Security.svg'),
           label: 'security center', x: dropContext.x, y: dropContext.y,
           azcontext: new SecurityCenter()
         });
         break;
       case ResourceType.DDoSStandard():
         this.createNonVIRAzureResource({
-          source:  require('../../assets/IconCloud/azure/network/10072-icon-DDoS Protection Plans-Networking.svg'),
+          source:  require('../../../public/IconCloud/azure/network/10072-icon-DDoS Protection Plans-Networking.svg'),
           label: 'ddos standard', x: dropContext.x, y: dropContext.y,
           azcontext: new DDoSStandard()
         });
@@ -5379,28 +5379,28 @@ loadPastedImageFromBrowserClipboard(src, callback){
         break;
       case ResourceType.RecoveryServiceVault():
         this.createNonVIRAzureResource({
-          source:  require('../../assets/IconCloud/azure/data_storage/00017-icon-Recovery Services Vaults-Storage.svg'),
+          source:  require('../../../public/IconCloud/azure/data_storage/00017-icon-Recovery Services Vaults-Storage.svg'),
           label: 'site recovery', x: dropContext.x, y: dropContext.y,
           azcontext: new RecoveryServiceVault()
         });
         break;
       case ResourceType.AppInsights():
         this.createNonVIRAzureResource({
-          source:  require('../../assets/IconCloud/azure/management/00012-icon-Application Insights-Management-Governance.svg'),
+          source:  require('../../../public/IconCloud/azure/management/00012-icon-Application Insights-Management-Governance.svg'),
           label: 'app insights', x: dropContext.x, y: dropContext.y,
           azcontext: new AppInsights()
         });
         break;
       case ResourceType.LogAnalytics():
         this.createNonVIRAzureResource({
-          source:  require('../../assets/IconCloud/azure/data_analytics/00009-icon-Log Analytics Workspaces-Analytics.svg'),
+          source:  require('../../../public/IconCloud/azure/data_analytics/00009-icon-Log Analytics Workspaces-Analytics.svg'),
           label: 'log analytics', x: dropContext.x, y: dropContext.y,
           azcontext: new LogAnalytics()
         });
         break;
       case ResourceType.Automation():
         this.createNonVIRAzureResource({
-          source:  require('../../assets/IconCloud/azure/management/00022-icon-Automation Accounts-Management-Governance.svg'),
+          source:  require('../../../public/IconCloud/azure/management/00022-icon-Automation Accounts-Management-Governance.svg'),
           label: 'automation', x: dropContext.x, y: dropContext.y,
           azcontext: new Automation()
         });
@@ -5408,28 +5408,28 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
       case ResourceType.IoTHub():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/iot/10182-icon-IoT Hub-IoT.svg'),
+          source: require('../../../public/IconCloud/azure/iot/10182-icon-IoT Hub-IoT.svg'),
           label: 'iot hub', x: dropContext.x, y: dropContext.y,
           azcontext: new IoTHub()
         });
         break;
       case ResourceType.IoTCentral():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/iot/10184-icon-IoT Central Applications-IoT.svg'),
+          source: require('../../../public/IconCloud/azure/iot/10184-icon-IoT Central Applications-IoT.svg'),
           label: 'iot central', x: dropContext.x, y: dropContext.y,
           azcontext: new IoTCentral()
         });
       break;
       case ResourceType.AzureMaps():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/iot/10185-icon-Azure Maps Accounts-IoT.svg'),
+          source: require('../../../public/IconCloud/azure/iot/10185-icon-Azure Maps Accounts-IoT.svg'),
           label: 'maps', x: dropContext.x, y: dropContext.y,
           azcontext: new Maps()
         });
         break;
       case ResourceType.TimeSeriesInsights():
         this.createNonVIRAzureResource({
-          source: require('../../assets/IconCloud/azure/iot/10181-icon-Time Series Insights Environments-IoT.svg'),
+          source: require('../../../public/IconCloud/azure/iot/10181-icon-Time Series Insights Environments-IoT.svg'),
           label: 'time series insights environment', x: dropContext.x, y: dropContext.y,
           azcontext: new TimeSeriesInsights()
         });
