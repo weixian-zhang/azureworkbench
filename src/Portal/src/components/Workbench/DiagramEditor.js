@@ -154,7 +154,8 @@ import SharedImageGallery from "../../models/SharedImageGallery";
 import AppServiceDomain from "../../models/AppServiceDomain";
 import AppServiceCert from "../../models/AppServiceCert";
 import SignalR from "../../models/SignalR";
-import Func from "../../models/Function";
+import Subscription from "../../models/Subscription";
+import ManagementGroup from "../../models/ManagementGroup";
 import AzureSearch from "../../models/AzureSearch";
 import VM from "../../models/VM";
 import VMSS from "../../models/VMSS";
@@ -167,12 +168,14 @@ import ResourceType from '../../models/ResourceType';
 import ASE from "../../models/ASE";
 import NSG from "../../models/NSG";
 import RouteTable from "../../models/RouteTable";
-import Arc from "../../models/Arc";
+import ResourceGroup from "../../models/ResourceGroup";
 import AnalysisService from "../../models/AnalysisService";
 import ElasticJobAgent from "../../models/ElasticJobAgent";
 import AnonymousDiagramContext from "../../models/services/AnonymousDiagramContext";
 
 //property panels
+import SubscriptionPropPanel from './PropPanel/SubscriptionPropPanel';
+import ManagementGroupPropPanel from './PropPanel/ManagementGroupPropPanel';
 import ContainerAppsPropPanel from './PropPanel/ContainerAppsPropPanel';
 import ImportExportJobPropPanel from './PropPanel/ImportExportJobPropPanel';
 import AzureFirewallManagerPropPanel from './PropPanel/AzureFirewallManagerPropPanel';
@@ -247,6 +250,8 @@ import NLBPropPanel from "./PropPanel/NLBPropPanel";
 import AppGwPropPanel from "./PropPanel/AppGwPropPanel";
 import DNSPrivateZonePropPanel from "./PropPanel/DNSPrivateZonePropPanel";
 import DNSZonePropPanel from "./PropPanel/DNSZonePropPanel";
+import ResourceGroupPropPanel from "./PropPanel/ResourceGroupPropPanel";
+
 import AppServicePropPanel from "./PropPanel/AppSvcPropPanel";
 import ASEPropPanel from "./PropPanel/ASEPropPanel";
 import FuncPropPanel from "./PropPanel/FuncPropPanel";
@@ -396,6 +401,9 @@ import AzureIcons from './Helpers/AzureIcons';
   render() {
     return (
       <div id="diagramEditor" className="diagramEditor">
+        
+        <ManagementGroupPropPanel ref={this.managementGroupPropPanel} />
+        <SubscriptionPropPanel ref={this.subscriptionPropPanel} />
         <ContainerAppsPropPanel ref={this.containerappPropPanel} />
         <ImportExportJobPropPanel ref={this.importexportjobPropPanel} />
         <AzureFirewallManagerPropPanel ref={this.azfwmanagerPropPanel} />
@@ -540,6 +548,8 @@ import AzureIcons from './Helpers/AzureIcons';
         <AppGwPropPanel ref={this.appgwPropPanel} />
         <DNSPrivateZonePropPanel ref={this.dnsPrivateZonePropPanel} />
         <DNSZonePropPanel ref={this.dnszonePropPanel} />
+        <ResourceGroupPropPanel ref={this.resourcegroupPropPanel} />
+
         {/* share link copy */}
         <Overlay canEscapeKeyClose={false}
            isOpen={this.state.showShareDiagramPopup} onClose={this.closeShareDiagramPopup} >
@@ -584,6 +594,8 @@ import AzureIcons from './Helpers/AzureIcons';
     this.proxpgPropPanel = React.createRef();
     this.wafPropPanel = React.createRef();
     this.containerappPropPanel = React.createRef();
+    this.managementGroupPropPanel = React.createRef();
+    this.subscriptionPropPanel = React.createRef();
     this.privatelinkPropPanel = React.createRef();
     this.localnetworkgwPanel = React.createRef();
     this.pipprefixesPanel = React.createRef();
@@ -648,6 +660,7 @@ import AzureIcons from './Helpers/AzureIcons';
     this.appgwPropPanel = React.createRef();
     this.dnsPrivateZonePropPanel = React.createRef();
     this.dnszonePropPanel = React.createRef();
+    this.resourcegroupPropPanel = React.createRef();
     this.appsvcPropPanel = React.createRef();
     this.asePropPanel = React.createRef();
     this.funcPropPanel = React.createRef();
@@ -707,6 +720,7 @@ import AzureIcons from './Helpers/AzureIcons';
     this.mapsPropPanel = React.createRef();
     this.timeseriesPropPanel = React.createRef();
     this.iotcentralPropPanel = React.createRef();
+    this.resourcegroupPropPanel = React.createRef();
   }
 
   initDiagramCanvas = (model) => {
@@ -1445,6 +1459,10 @@ initDiagramModifiedEvent(isLoadFromSource) {
         if (e.modelChange !== "" ||
             (e.change === go.ChangedEvent.Transaction && e.propertyName === "StartingFirstTransaction")) {
               thisComp.diagram.layout.network = null;
+        }
+
+        if (e.modelChange !== "linkFromPortId" || e.modelChange !== "linkToPortId") {
+           
         }
 
       if(e.isTransactionFinished) {
@@ -4181,7 +4199,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
       case 'Policy':
         this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10316-icon-Policy-Management-Governance.svg'),
+        ({source: require('../../assets/IconCloud/azure/eslz/10316-icon-Policy-Management-Governance.svg'),
           label: 'policy', x: dropContext.x, y: dropContext.y});
       break;
 
@@ -4323,24 +4341,6 @@ loadPastedImageFromBrowserClipboard(src, callback){
           label: 'orbital', x: dropContext.x, y: dropContext.y});
       break;
 
-      case 'Management Group':
-        this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10011-icon-Management Groups-General.svg'),
-          label: 'management group', x: dropContext.x, y: dropContext.y});
-      break;
-
-      case 'Subscription':
-        this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10002-icon-Subscriptions-General.svg'),
-          label: 'subscription', x: dropContext.x, y: dropContext.y});
-      break;
-
-      case 'Resource Group':
-        this.createPictureShape
-        ({source: require('../../assets/IconCloud/azure/nondeployable/10007-icon-Resource Groups-General.svg'),
-          label: 'rg', x: dropContext.x, y: dropContext.y});
-      break;
-
       case 'Azure Kubernetes':
         this.createPictureShape
         ({source: require('../../assets/IconCloud/azure/nondeployable/10023-icon-Kubernetes Services-Compute.svg'),
@@ -4427,7 +4427,7 @@ loadPastedImageFromBrowserClipboard(src, callback){
 
 
   case 'Custom Role':
-    this.createPictureShape ({ source: require('../../assets/IconCloud/azure/nondeployable/identity/02680-icon-Custom Azure AD Roles-Identity.svg'),
+    this.createPictureShape ({ source: require('../../assets/IconCloud/azure/eslz/02680-icon-Custom Azure AD Roles-Identity.svg'),
     label: '', x: dropContext.x, y: dropContext.y});
     break;
 
@@ -4468,6 +4468,36 @@ loadPastedImageFromBrowserClipboard(src, callback){
     break;
 
       //*non VIR
+      case ResourceType.ResourceGroup():
+        var rsc = new ResourceGroup();
+        rsc.ProvisionContext.ResourceType = ResourceType.ResourceGroup();
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/eslz/10007-icon-Resource Groups-General.svg'),
+          label: 'resource group', x: dropContext.x, y: dropContext.y,
+          azcontext: rsc
+        });
+      break;
+
+      case ResourceType.ManagementGroup():
+        var rsc = new ManagementGroup();
+        rsc.ProvisionContext.ResourceType = ResourceType.ManagementGroup();
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/eslz/10011-icon-Management Groups-General.svg'),
+          label: 'management group', x: dropContext.x, y: dropContext.y,
+          azcontext: rsc
+        });
+      break;
+
+      case ResourceType.Subscription():
+        var rsc = new Subscription();
+        rsc.ProvisionContext.ResourceType = ResourceType.Subscription();
+        this.createNonVIRAzureResource({
+          source: require('../../assets/IconCloud/azure/eslz/10002-icon-Subscriptions-General.svg'),
+          label: 'subscription', x: dropContext.x, y: dropContext.y,
+          azcontext: rsc
+        });
+      break;
+
       case ResourceType.ContainerApps():
         var rsc = new ContainerApps();
         rsc.ProvisionContext.ResourceType = ResourceType.ContainerApps();
@@ -5438,6 +5468,23 @@ loadPastedImageFromBrowserClipboard(src, callback){
         });
       break;
 
+      case ResourceType.Subscription():
+        this.subscriptionPropPanel.current.show(userObject, function(savedUserObject){
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+      break;
+
+      case ResourceType.ResourceGroup():
+        this.resourcegroupPropPanel.current.show(userObject, function(savedUserObject){
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+      break;
+
+      case ResourceType.ManagementGroup():
+        this.managementGroupPropPanel.current.show(userObject, function(savedUserObject){
+            onContextSaveCallback(Utils.deepClone(savedUserObject));
+        });
+      break;
 
       case ResourceType.ContainerApps():
         this.containerappPropPanel.current.show(userObject, function(savedUserObject){
@@ -6580,6 +6627,8 @@ loadPastedImageFromBrowserClipboard(src, callback){
       }
 
       var azcontexts = validationResult.AzContexts;
+
+      return;
 
       // if(Utils.IsNullOrUndefine(contexts))
       // {

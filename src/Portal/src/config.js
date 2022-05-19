@@ -6,7 +6,7 @@ export default class Config
     static BaseAPIUrl() {
         if(process.env.REACT_APP_ENV == 'local')
             return  'http://localhost:8089';
-        else if(process.env.REACT_APP_ENV == 'beta')
+        else if(process.env.REACT_APP_ENV == 'beta') 
             return 'https://beta-api.azureworkbench.com';
         else if(process.env.REACT_APP_ENV == 'prod')
             return 'https://api.azureworkbench.com';

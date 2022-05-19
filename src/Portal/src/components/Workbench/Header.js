@@ -26,7 +26,7 @@ import LoginState from '../../services/LoginState';
 import fileDialog from 'file-dialog'
 import 'react-tippy/dist/tippy.css'
 import { Tooltip} from 'react-tippy';
-import moment from 'moment';
+import { CountdownCircleTimer } from 'react-countdown-circle-timer'
 import Toast from './Helpers/Toast';
 import AuthService from '../../services/AuthService';
 import UserProfile from "../../models/UserProfile";
@@ -53,7 +53,9 @@ export default class Header extends Component {
         acctMenuAnchor: null,
         acctMenuOpen: false,
         isDeleteConfirmationDialogOpen: false,
-        loginOptionPopup: false
+        loginOptionPopup: false,
+        bicepButtonCountdownSec: 2,
+        bicepBtnDisabled: false
     }
 
     LoginState.initLoginStateChangeCallback((isLogin) => {
@@ -86,6 +88,7 @@ export default class Header extends Component {
   }
 
   render() {
+
     return (
       <div style={{width:'100%'}}>
         <OverlayTutorial ref={this.overlayTutorial}  />
@@ -115,11 +118,13 @@ export default class Header extends Component {
                   <div>
                     <strong>Generate Bicep</strong>
                   </div>
-                )}>
-                <IconButton color="inherit" aria-label="Edit" onClick={this.generateBicep}>
-                    <img src={require('../../assets/IconCloud/azure/nondeployable/azure-bicep.png')} width="25px" height="25px" alt="" />
-                </IconButton>
+              )}>
+                  <IconButton aria-label="Edit" onClick={this.setBicepTimer} disabled={this.state.bicepBtnDisabled}>
+                      <img src={require('../../assets/IconCloud/azure/nondeployable/azure-bicep.png')} style={{width: '25px', height: '25px'}} />
+                  </IconButton>
               </Tooltip>
+              
+              
 
               <Tooltip
                 title= "Browser Save"
@@ -248,21 +253,6 @@ export default class Header extends Component {
                   <QuickStart  />
                 </IconButton>
               </Popover>
-
-              {/* <Popover content=
-               {
-                   <Menu>
-                     <MenuItem  text="Tutorial" onClick= {() => {
-                      window.open("https://github.com/weixian-zhang/Azure-Workbench",'_blank');
-                      }} />
-                     <MenuDivider />
-                     <MenuItem  text="Shortcut Keys" onClick= {() => {
-                      window.open("https://github.com/weixian-zhang/Azure-Workbench/blob/master/tutorials/ShortcutKeys.md",'_blank');
-                      }} />
-                   </Menu>
-               } position={Position.BOTTOM} interactionKind={PopoverInteractionKind.HOVER}>
-                <HelpIcon />
-              </Popover> */}
               <Popover content=
                {
                    <Menu>
@@ -332,6 +322,31 @@ export default class Header extends Component {
         </Overlay>
       </div>
     );
+  }
+
+  setBicepTimer= async () => {
+
+      this.setState({ bicepBtnDisabled: true });
+
+      this.generateBicep();  
+     
+      var thisComp = this;
+      var countdownSec = this.state.bicepButtonCountdownSec;
+      var interval = setInterval(function() { 
+      
+          countdownSec = countdownSec - 1;
+
+          thisComp.setState({bicepButtonCountdownSec: countdownSec});
+
+          if(thisComp.state.bicepButtonCountdownSec == 0) {
+            clearInterval(interval);
+
+            thisComp.setState({ bicepBtnDisabled: false });
+
+            thisComp.setState({bicepButtonCountdownSec: 2});
+        }
+      }
+      , 2000 );
   }
 
   login = async () => {
@@ -453,11 +468,6 @@ deployDiagramToAzure(subscription) {
   diagramEditor.deployDiagramToAzure(subscription);
 }
 
-//  clearGraph = () => {
-//      var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
-//     diagramEditor.clearGraph();
-//  }
-
 showTutorial = () => {
   this.overlayTutorial.current.show();
 }
@@ -466,10 +476,6 @@ generateBicep = () => {
   var diagramEditor =  this.props.Workbench.current.getDiagramEditor();
   diagramEditor.generateBicep();
 }
-
-//showProvisionOverlay = () => {
-    //this.overlayProvision.current.show(this);
-//}
 
 onOverlayProvisionClose = () => {
   if(this.global.currentSubscription != null)

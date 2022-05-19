@@ -6,6 +6,10 @@
 trigger:
  - dev
 
+variables:
+  - name: REACT_APP_ENV
+    value: 'beta'
+
 stages:
   - stage: Build
     jobs:
@@ -13,14 +17,11 @@ stages:
          
       
         pool:
-          vmImage: ubuntu-latest
+          vmImage: ubuntu-latest        
 
-        variables:
-          REACT_APP_ENV: 'beta'
+        steps:      
 
-        steps:       
-
-        - task: CredScan@3
+        #- task: CredScan@3
         
         - task: Bash@3
           inputs:
@@ -51,6 +52,8 @@ stages:
 
               echo "Agent.BuildDirectory:"
               echo "$(Agent.BuildDirectory)"
+
+              echo $(STATIC_WEBAPP_DEV_PORTAL_TOKEN)
 
         - task: Bash@3
           env:
@@ -103,6 +106,14 @@ stages:
                         appType: 'webApp'
                         WebAppName: 'portal-azworkbench-dev'
                         packageForLinux: '$(System.DefaultWorkingDirectory)/drop'
+
+
+                    - task: AzureStaticWebApp@0
+                      inputs:
+                        workingDirectory: '$(System.DefaultWorkingDirectory)/drop'
+                        app_location: '/'
+                        verbose: true
+                        azure_static_web_apps_api_token: '$(STATIC_WEBAPP_DEV_PORTAL_TOKEN)'
 
                         
                     
