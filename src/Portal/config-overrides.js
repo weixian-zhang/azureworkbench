@@ -3,6 +3,41 @@ const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 module.exports = function override(config, env) {
     config.resolve.plugins = config.resolve.plugins.filter(plugin => !(plugin instanceof ModuleScopePlugin));
 
+    config.module.rules = config.module.rules.map(rule => {
+    if (rule.oneOf instanceof Array) {
+        return {
+            ...rule,
+            oneOf: [
+                {
+                    test: /\.(svg|png|jpg|jpeg|gif|bmp|tiff)$/i,
+                    use: [
+                        {
+                            loader: 'file-loader',
+                            options: {
+                                name: 'static/media/[name].[ext]'
+                            }
+                        }
+                    ]
+                },
+                // {
+                //     test: /\.(svg|png|jpg|jpeg|gif|bmp|tiff)$/i,
+                //     use: [
+                //       {
+                //         loader: 'url-loader',
+                //         options: {
+                //           limit: 8192,
+                //         },
+                //       },
+                //     ],
+                //   },
+                ...rule.oneOf
+            ]
+        };
+    }
+
+    return rule;
+});
+
     return config;
 };
 
