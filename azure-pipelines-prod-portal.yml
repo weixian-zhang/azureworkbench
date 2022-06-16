@@ -21,19 +21,12 @@ stages:
 
         steps:       
 
-        - task: CredScan@3
-          displayName: Scan for credentials
-          inputs:
-            scanFolder: $(portalDirectory)
+        # - task: CredScan@3
+        #   displayName: Scan for credentials
+        #   inputs:
+        #     scanFolder: $(portalDirectory)
             
         #https://docs.opensource.microsoft.com/tools/cg/index.html
-        - task: ComponentGovernanceComponentDetection@0
-          displayName: ComponentGovernanceComponentDetection - Scans open-source package vulnerabilities
-          inputs:
-            scanType: 'Register'
-            verbosity: 'Verbose'
-            sourceScanPath: '$(portalDirectory)'
-            alertWarningLevel: 'High'
         
         - task: Bash@3
           displayName: echo env vars
@@ -69,22 +62,42 @@ stages:
               echo "Portal Directory:"
               echo "$(portalDirectory)"
 
-              
-              
-
         - task: Bash@3
-          env:
-            REACT_APP_ENV: '${{ variables.REACT_APP_ENV }}'
-          displayName: Npm Install
+          displayName: set envar REACT_APP_ENV
           inputs:
             targetType: 'inline'
-            workingDirectory: $(portalDirectory)
-            bashEnvValue: 
             script: |
-              - script: |
-                  echo REACT_APP_ENV=$(REACT_APP_ENV)
-                  npm install
-                  npm run build
+              # Write your commands here
+              
+              echo REACT_APP_ENV=$(REACT_APP_ENV)
+            
+        - task: Npm@1
+          displayName: npm install
+          inputs:
+            command: 'install'
+            workingDir: '$(portalDirectory)'
+            verbose: true
+            
+        - task: Npm@1
+          displayName: npm run build
+          inputs:
+            command: 'custom'
+            workingDir: '$(portalDirectory)'
+            customCommand: 'run build'
+
+        # - task: Bash@3
+        #   env:
+        #     REACT_APP_ENV: '${{ variables.REACT_APP_ENV }}'
+        #   displayName: Npm Install
+        #   inputs:
+        #     targetType: 'inline'
+        #     workingDirectory: $(portalDirectory)
+        #     bashEnvValue: 
+        #     script: |
+        #       - script: |
+        #           echo REACT_APP_ENV=$(REACT_APP_ENV)
+        #           npm install
+        #           npm run build
 
         - task: CopyFiles@2
           inputs:
@@ -116,13 +129,20 @@ stages:
                         artifactName: 'drop'
                         downloadPath: '$(System.DefaultWorkingDirectory)'
                     
-                    - task: AzureRmWebAppDeployment@4
+                    # - task: AzureRmWebAppDeployment@4
+                    #   inputs:
+                    #     ConnectionType: 'AzureRM'
+                    #     azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
+                    #     appType: 'webApp'
+                    #     WebAppName: '$(webappName)'
+                    #     packageForLinux: '$(System.DefaultWorkingDirectory)/drop'   
+
+                    - task: AzureStaticWebApp@0
                       inputs:
-                        ConnectionType: 'AzureRM'
-                        azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
-                        appType: 'webApp'
-                        WebAppName: '$(webappName)'
-                        packageForLinux: '$(System.DefaultWorkingDirectory)/drop'        
+                        workingDirectory: '$(System.DefaultWorkingDirectory)/drop'
+                        app_location: '/'
+                        verbose: true
+                        azure_static_web_apps_api_token: '$(STATIC_WEBAPP_DEV_PORTAL_TOKEN)'     
                     
                     
   
