@@ -22,12 +22,24 @@ stages:
                inputs:
                  packageType: 'sdk'
                  version: '5.0.x'
+
+             - task: CmdLine@2
+               displayName: run SonarScanner
+               inputs:
+                 script: 'dotnet sonarscanner begin /k:"azure-workbench" /d:sonar.host.url="http://20.187.189.60:9000"  /d:sonar.login="5d1c9afad827caca8188fb0ff74ce11b03ac2750"' 
+             
                  
              - task: DotNetCoreCLI@2
                displayName: dotnet build
                inputs:
                  command: 'build'
                  workingDirectory: src/ApiServer/AzW.Web.API
+                 
+             - task: CmdLine@2
+               displayName: end SonarScanner
+               inputs:
+                 script: 'dotnet sonarscanner end /d:sonar.login="5d1c9afad827caca8188fb0ff74ce11b03ac2750"'
+            
 
              - task: SonarQubePrepare@5
                inputs:
