@@ -48,7 +48,7 @@ stages:
                    projectKey: '5d1c9afad827caca8188fb0ff74ce11b03ac2750'
                    projectName: 'azure-workbench'
 
-             - task: SonarQubeAnalyze@5
+            #  - task: SonarQubeAnalyze@5
 
              - task: SonarQubePublish@5
                inputs:
