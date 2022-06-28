@@ -11,68 +11,75 @@ stages:
                 vmImage: ubuntu-latest
         
             steps:
+
+             - task: SonarQubePrepare@5
+               inputs:
+                 SonarQube: 'SonarQube-ACI-Community-8.9.9'
+                 scannerMode: 'MSBuild'
+                 projectKey: '5d1c9afad827caca8188fb0ff74ce11b03ac2750'
+                 projectName: 'azure-workbench'
             
-             - task: UseDotNet@2
-               displayName: set sdk .Net 5.0
-               inputs:
-                 packageType: 'sdk'
-                 version: '5.0.x'
+    #          - task: UseDotNet@2
+    #            displayName: set sdk .Net 5.0
+    #            inputs:
+    #              packageType: 'sdk'
+    #              version: '5.0.x'
                  
-             - task: DotNetCoreCLI@2
-               displayName: dotnet build
-               inputs:
-                 command: 'build'
-                 workingDirectory: src/ApiServer/AzW.Web.API
+    #          - task: DotNetCoreCLI@2
+    #            displayName: dotnet build
+    #            inputs:
+    #              command: 'build'
+    #              workingDirectory: src/ApiServer/AzW.Web.API
                  
              
-             - task: DotNetCoreCLI@2
-               displayName: dotnet publish
-               inputs:
-                  command: 'publish'
-                  publishWebProjects: true
-                  arguments: '-o $(Build.ArtifactStagingDirectory)/publish'
-                  zipAfterPublish: false
-                  workingDirectory: src/ApiServer/AzW.Web.API
+    #          - task: DotNetCoreCLI@2
+    #            displayName: dotnet publish
+    #            inputs:
+    #               command: 'publish'
+    #               publishWebProjects: true
+    #               arguments: '-o $(Build.ArtifactStagingDirectory)/publish'
+    #               zipAfterPublish: false
+    #               workingDirectory: src/ApiServer/AzW.Web.API
                   
-             - task: PublishBuildArtifacts@1
-               displayName: publish build artifact
-               inputs:
-                 PathtoPublish: $(Build.ArtifactStagingDirectory)/publish/AzW.Web.API
-                 ArtifactName: 'drop'
+    #          - task: PublishBuildArtifacts@1
+    #            displayName: publish build artifact
+    #            inputs:
+    #              PathtoPublish: $(Build.ArtifactStagingDirectory)/publish/AzW.Web.API
+    #              ArtifactName: 'drop'
                  
                  
-    - stage: Deploy
-      jobs:
-        - deployment:
-          environment: Dev
-          strategy:
-            runOnce:
-              deploy:
-                steps:
+    # - stage: Deploy
+    #   jobs:
+    #     - deployment:
+    #       environment: Dev
+    #       strategy:
+    #         runOnce:
+    #           deploy:
+    #             steps:
                 
-                 - task: DownloadBuildArtifacts@1
-                   displayName: Download artifact
-                   inputs:
-                      buildType: 'current'
-                      downloadType: 'single'
-                      artifactName: 'drop'
-                      downloadPath: '$(System.DefaultWorkingDirectory)'
+    #              - task: DownloadBuildArtifacts@1
+    #                displayName: Download artifact
+    #                inputs:
+    #                   buildType: 'current'
+    #                   downloadType: 'single'
+    #                   artifactName: 'drop'
+    #                   downloadPath: '$(System.DefaultWorkingDirectory)'
                   
-                #  - task: AzureWebApp@1
-                #    inputs:
-                #       azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
-                #       appType: 'webApp'
-                #       appName: 'webapp-api-dev'
-                #       package: '$(System.ArtifactsDirectory)'
-                #       deploymentMethod: 'zipDeploy'
+    #             #  - task: AzureWebApp@1
+    #             #    inputs:
+    #             #       azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
+    #             #       appType: 'webApp'
+    #             #       appName: 'webapp-api-dev'
+    #             #       package: '$(System.ArtifactsDirectory)'
+    #             #       deploymentMethod: 'zipDeploy'
                       
-                 - task: AzureRmWebAppDeployment@4
-                   inputs:
-                      ConnectionType: 'AzureRM'
-                      azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
-                      appType: 'webApp'
-                      WebAppName: 'webapp-api-dev'
-                      packageForLinux: '$(System.DefaultWorkingDirectory)/drop'
+    #              - task: AzureRmWebAppDeployment@4
+    #                inputs:
+    #                   ConnectionType: 'AzureRM'
+    #                   azureSubscription: 'Weixian-Azure(ee611083-4581-4ba1-8116-a502d4539206)'
+    #                   appType: 'webApp'
+    #                   WebAppName: 'webapp-api-dev'
+    #                   packageForLinux: '$(System.DefaultWorkingDirectory)/drop'
 
                  
         
