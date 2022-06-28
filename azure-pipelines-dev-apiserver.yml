@@ -11,6 +11,13 @@ stages:
                 vmImage: ubuntu-latest
         
             steps:
+            
+             - task: DotNetCoreCLI@2
+               displayName: DotNet Install SonarScanner
+               inputs:
+                command: 'custom'
+                custom: 'tool install'
+                arguments: '--global dotnet-sonarscanner'
 
              - task: SonarQubePrepare@5
                inputs:
@@ -18,6 +25,13 @@ stages:
                  scannerMode: 'MSBuild'
                  projectKey: '5d1c9afad827caca8188fb0ff74ce11b03ac2750'
                  projectName: 'azure-workbench'
+
+             - task: SonarQubeAnalyze@5
+
+             - task: SonarQubePublish@5
+               inputs:
+                 pollingTimeoutSec: '300'
+               
             
     #          - task: UseDotNet@2
     #            displayName: set sdk .Net 5.0
