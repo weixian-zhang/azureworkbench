@@ -12,12 +12,10 @@ stages:
         
             steps:
             
-             - task: DotNetCoreCLI@2
+             - task: CmdLine@2
                displayName: DotNet Install SonarScanner
                inputs:
-                command: 'custom'
-                custom: 'tool install'
-                arguments: '--global dotnet-sonarscanner'
+                 script: 'dotnet tool install --global dotnet-sonarscanner'
 
              - task: SonarQubePrepare@5
                inputs:
