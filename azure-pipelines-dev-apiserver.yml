@@ -17,30 +17,30 @@ stages:
                inputs:
                  script: 'dotnet tool install --global dotnet-sonarscanner'              
             
-    #          - task: UseDotNet@2
-    #            displayName: set sdk .Net 5.0
-    #            inputs:
-    #              packageType: 'sdk'
-    #              version: '5.0.x'
+             - task: UseDotNet@2
+               displayName: set sdk .Net 5.0
+               inputs:
+                 packageType: 'sdk'
+                 version: '5.0.x'
                  
-    #          - task: DotNetCoreCLI@2
-    #            displayName: dotnet build
-    #            inputs:
-    #              command: 'build'
-    #              workingDirectory: src/ApiServer/AzW.Web.API
+             - task: DotNetCoreCLI@2
+               displayName: dotnet build
+               inputs:
+                 command: 'build'
+                 workingDirectory: src/ApiServer/AzW.Web.API
 
-            #  - task: SonarQubePrepare@5
-            #    inputs:
-            #        SonarQube: 'SonarQube-ACI-Community-8.9.9'
-            #        scannerMode: 'MSBuild'
-            #        projectKey: '5d1c9afad827caca8188fb0ff74ce11b03ac2750'
-            #        projectName: 'azure-workbench'
+             - task: SonarQubePrepare@5
+               inputs:
+                   SonarQube: 'SonarQube-ACI-Community-8.9.9'
+                   scannerMode: 'MSBuild'
+                   projectKey: '5d1c9afad827caca8188fb0ff74ce11b03ac2750'
+                   projectName: 'azure-workbench'
 
-            #  - task: SonarQubeAnalyze@5
+             - task: SonarQubeAnalyze@5
 
-            #  - task: SonarQubePublish@5
-            #    inputs:
-            #      pollingTimeoutSec: '300'
+             - task: SonarQubePublish@5
+               inputs:
+                 pollingTimeoutSec: '300'
                  
              
     #          - task: DotNetCoreCLI@2
